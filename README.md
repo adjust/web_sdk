@@ -1,6 +1,6 @@
 ## Summary
 
-This is the guide to the Javascript SDK of adjust™ for web apps. You can read more about adjust™ at [adjust.com].
+This is the guide to the Javascript SDK of Adjust™ for web apps. You can read more about Adjust™ at [adjust.com].
 
 ## Table of contents
 
@@ -62,7 +62,7 @@ window.Adjust = function(app_token, environment, os_name) {
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2018 adjust GmbH, http://www.adjust.com
+Copyright (c) 2012-2018 Adjust GmbH, http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
