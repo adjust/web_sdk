@@ -29,7 +29,7 @@ There are a few things to keep in mind while implementing the JS SDK:
 
 There are two ways to differentiate users coming from native apps to users coming from web apps if you are not running ad campaigns for your web apps:
 
-- Create new app(s) in your Adjust dashboard for your web app, pick one of the supported platforms during the creation and use this app token in the Adjust SDK to initialise it. All traffic from your app will then be labelled under the `Organic` tracker in your Adjust dashboard.
+- Create new app(s) in your Adjust dashboard for your web app, pick one of the supported platforms during the creation and use this app token in the Adjust SDK to initialise it. As with your native apps, organic traffic from your app will then be labelled under the `Organic` tracker in your Adjust dashboard.
 - Use one of your pre-existing app and hardcode a pre-installed tracker token in the Adjust SDK. All traffic from your app will then be labelled under the hardcoded tracker in your Adjust dashboard.
 
 This is what the implementation would be:
