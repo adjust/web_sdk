@@ -9,9 +9,9 @@
    req.onreadystatechange = function() {
      if (req.readyState == 4) {
        if (req.status >= 200 && req.status < 400) {
-         !!success_cb && success_cb(req.responseText);
+         !!success_cb && success_cb(JSON.parse(req.responseText));
        } else if (!!error_cb) {
-         !!error_cb && error_cb(new Error("Server responded with HTTP " + req.status), xhr);
+         error_cb(new Error("Server responded with HTTP " + req.status + ". Response text: "+req.responseText));
        }
      }
    };
@@ -63,8 +63,11 @@
      params["app_token"] = app_token;
      params["os_name"]   = os_name;
      params["environment"] = environment;
+
+     return new Promise(function(resolve, reject) {
+      sendRequest("GET", "https://app.adjust.com/session?" + encodeQueryString(params), undefined, resolve, reject);
+     });
      
-     sendRequest("GET", "https://app.adjust.com/session?" + encodeQueryString(params));
    };
 
    this.trackEvent = function(event_token, device_ids) {
@@ -74,7 +77,9 @@
      params["os_name"]     = os_name;
      params["environment"] = environment;
      
-     sendRequest("GET", "https://app.adjust.com/event?" + encodeQueryString(params));
+     return new Promise(function(resolve, reject) {
+      sendRequest("GET", "https://app.adjust.com/event?" + encodeQueryString(params), undefined, resolve, reject);
+     });
    };
  }
 })(window);
