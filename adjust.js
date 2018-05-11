@@ -11,7 +11,9 @@
        if (req.status >= 200 && req.status < 400) {
          !!success_cb && success_cb(JSON.parse(req.responseText));
        } else if (!!error_cb) {
-         error_cb(new Error("Server responded with HTTP " + req.status + ". Response text: "+req.responseText));
+         var errorResponse = JSON.parse(req.responseText);
+         errorResponse.statusCode = req.status;
+         error_cb(errorResponse);
        }
      }
    };
