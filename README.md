@@ -50,9 +50,9 @@ var _adjust = new Adjust({
 });
 
 _adjust.trackSession(_sessionConfig, function (result) {
-    successCb(result, 'session');
+    console.log(result);
   }, function (errorMsg, error) {
-    errorCb(errorMsg, error, 'session');
+    console.log(errorMsg, error);
   }
 );
 ```
@@ -89,9 +89,9 @@ var _eventConfig = {
 };
 
 _adjust.trackEvent(_eventConfig, function (result) {
-  successCb(result, 'event');
+  console.log(result);
 }, function (errorMsg, error) {
-  errorCb(errorMsg, error, 'event');
+  console.log(errorMsg, error);
 });
 ```
 
@@ -118,9 +118,9 @@ var _eventConfig = {
 };
 
 _adjust.trackEvent(_eventConfig, function (result) {
-  successCb(result, 'event');
+  console.log(result);
 }, function (errorMsg, error) {
-  errorCb(errorMsg, error, 'event');
+  console.log(errorMsg, error);
 });
 ```
 
@@ -151,9 +151,9 @@ var _eventConfig = {
 };
 
 _adjust.trackEvent(_eventConfig, function (result) {
-  successCb(result, 'event');
+  console.log(result);
 }, function (errorMsg, error) {
-  errorCb(errorMsg, error, 'event');
+  console.log(errorMsg, error);
 });
 ```
 
