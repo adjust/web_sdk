@@ -41,11 +41,11 @@ With this in mind, initialisation of Adjust JS SDK would look like this inside y
 
 ```js
 var _adjust = new Adjust({
-  app_token: '2fm9gkqubvpc',
-  environment: 'sandbox', // or 'production'
+  app_token: 'YourAppToken',
+  environment: 'production', // or 'sandbox' in case you are testing SDK locally with your web app
   os_name: 'android',
   device_ids: {
-    gps_adid: '5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
+    gps_adid: '5056e23a-dc1d-418f-b5a2-4ab3e75daab2' // each web app user needs to have unique identifier
   }
 });
 
