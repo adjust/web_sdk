@@ -57,24 +57,20 @@
 
     options = options || {};
 
-    var _appToken = options.app_token;
-    var _environment = options.environment;
-    var _osName = options.os_name || 'android';
+    var _baseParams = cloneObj(options.device_ids);
+
+    _baseParams.app_token = options.app_token;
+    _baseParams.environment = options.environment;
+    _baseParams.os_name = options.os_name || 'android';
 
     return {
       trackSession: trackSession,
       trackEvent: trackEvent
     };
 
-    function trackSession(options, onSuccess, onError) {
+    function trackSession(onSuccess, onError) {
 
-      options = options || {};
-
-      var params = cloneObj(options.device_ids);
-
-      params.app_token = _appToken;
-      params.environment = _environment;
-      params.os_name = _osName;
+      var params = cloneObj(_baseParams);
 
       sendRequest('GET', 'https://app.adjust.com/session?' + encodeQueryString(params), null, onSuccess, onError);
 
@@ -84,10 +80,12 @@
 
       options = options || {};
 
+      var params = cloneObj(_baseParams);
       var revenue = _getRevenue(options);
       var callbackParams = _getMap(options.callback_params);
       var partnerParams = _getMap(options.partner_params);
-      var params = cloneObj(options.device_ids);
+
+      params.event_token = options.event_token;
 
       if (revenue) {
         params.revenue = revenue.revenue;
@@ -101,11 +99,6 @@
       if (partnerParams) {
         params.partner_params = JSON.stringify(partnerParams);
       }
-
-      params.event_token = options.event_token;
-      params.app_token = _appToken;
-      params.environment = _environment;
-      params.os_name = _osName;
 
       sendRequest('GET', 'https://app.adjust.com/event?' + encodeQueryString(params), null, onSuccess, onError)
 

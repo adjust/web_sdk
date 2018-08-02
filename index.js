@@ -2,23 +2,17 @@
   'use strict';
 
   // Example of SDK initialization
-  var _deviceIds = {
-    gps_adid: '5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
-  };
-
   var _adjust = new Adjust({
     app_token: '2fm9gkqubvpc',
     environment: 'sandbox', // or 'production'
-    os_name: 'android'
+    os_name: 'android',
+    device_ids: {
+      gps_adid: '5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
+    }
   });
-
-  var _sessionConfig = {
-    device_ids: _deviceIds
-  };
 
   var _eventConfig = {
     event_token: 'g3mfiw',
-    device_ids: _deviceIds,
     revenue: 1000,
     currency: 'EUR',
     callback_params: [{
@@ -60,7 +54,7 @@
 
     prepareLog();
 
-    _adjust.trackSession(_sessionConfig, function (result) {
+    _adjust.trackSession(function (result) {
       successCb(result, 'session');
     }, function (errorMsg, error) {
       errorCb(errorMsg, error, 'session');
