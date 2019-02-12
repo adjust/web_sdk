@@ -31,7 +31,7 @@ function _encodeParams (params) {
       if (isObject(pair[1])) {
         return !isEmpty(pair[1])
       }
-      return !!pair[1]
+      return !!pair[1] || (pair[1] === 0)
     })
     .map(pair => pair.map(value => {
       if (isObject(value)) {

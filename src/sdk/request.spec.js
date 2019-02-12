@@ -109,13 +109,15 @@ describe('perform api requests', () => {
           very: 'nice',
           empty: '',
           empty2: null,
+          zero: 0,
+          empty3: undefined,
           bla: 'ble',
           obj: {}
         }
       })).resolves.toEqual({
         status: 'success'
       })
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?some=thing&very=nice&bla=ble', true)
+      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?some=thing&very=nice&zero=0&bla=ble', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
