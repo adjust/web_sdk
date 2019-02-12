@@ -16,20 +16,20 @@ const _mandatory = [
 /**
  * Available parameters to set
  *
- * @type {{app_token: null, environment: null, os_name: null, device_ids: {}}}
+ * @type {{app_token: string, environment: string, os_name: string, device_ids: {}}}
  * @private
  */
 let _params = {
-  app_token: null,
-  environment: null,
-  os_name: null,
+  app_token: '',
+  environment: '',
+  os_name: '',
   device_ids: {},
 }
 
 /**
  * Get app token parameter
  *
- * @returns {null}
+ * @returns {string}
  */
 function getAppToken () {
   return _params.app_token
@@ -38,7 +38,7 @@ function getAppToken () {
 /**
  * Get environment parameter
  *
- * @returns {null}
+ * @returns {string}
  */
 function getEnvironment () {
   return _params.environment
@@ -47,7 +47,7 @@ function getEnvironment () {
 /**
  * Get os name parameter
  *
- * @returns {null}
+ * @returns {string}
  */
 function getOsName () {
   return _params.os_name
@@ -173,9 +173,9 @@ function _isInitiated () {
  */
 function _clear () {
   _params = {
-    app_token: null,
-    environment: null,
-    os_name: null,
+    app_token: '',
+    environment: '',
+    os_name: '',
     device_ids: {},
   }
 }
