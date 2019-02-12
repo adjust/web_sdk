@@ -1,0 +1,84 @@
+@import "~normalize.css";
+
+body {
+  font-family: Helvetica, sans-serif;
+}
+
+ul {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
+
+  li {
+    display: inline-block;
+
+    a {
+      display: block;
+    }
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+.container {
+  margin: 20px;
+}
+
+.content {
+  width: 700px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  color: #666;
+  font-size: 20px;
+  margin-bottom: 50px;
+}
+
+h5 {
+  margin-bottom: 2px;
+  color: #999;
+  font-weight: normal;
+}
+
+button {
+  display: block;
+  margin: 0 auto 20px;
+  width: 200px;
+  font-size: 15px;
+  padding:  10px;
+  border: 1px solid #999;
+  background: #ddd;
+  box-shadow: none;
+  outline: none;
+  cursor: pointer;
+  color: #555;
+
+  &:hover {
+    background: #eee;
+  }
+}
+
+pre {
+  border: 2px solid #ccc;
+  background-color: #fefefe;
+  min-height: 100px;
+  padding: 10px;
+  overflow: auto;
+  white-space: pre-line;
+  line-height: 20px;
+  color: #ccc;
+  margin-top: 30px;
+
+  &.success {
+    color: #2b8b00;
+  }
+
+  &.error {
+    color: #e02d45;
+  }
+}
+
