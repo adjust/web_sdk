@@ -1,0 +1,47 @@
+{
+  "name": "web-sdk",
+  "version": "4.1.0",
+  "description": "",
+  "scripts": {
+    "build:example": "webpack --mode production",
+    "build:sdk": "webpack --config sdk.config.js",
+    "build": "npm-run-all build:example build:sdk",
+    "start": "webpack-dev-server --content-base dist --hot --mode development",
+    "lint": "eslint ./src --ext .js",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
+  },
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "babel-jest": "^24.0.0",
+    "babel-loader": "^8.0.4",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "css-loader": "^1.0.1",
+    "eslint": "^5.9.0",
+    "eslint-loader": "^2.1.1",
+    "file-loader": "^2.0.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.0.0",
+    "jest-localstorage-mock": "^2.4.0",
+    "mini-css-extract-plugin": "^0.4.5",
+    "node-sass": "^4.10.0",
+    "npm-run-all": "^4.1.5",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  },
+  "dependencies": {
+    "normalize.css": "^8.0.1"
+  }
+}
