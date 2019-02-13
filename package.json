@@ -1,5 +1,5 @@
 {
-  "name": "web-sdk",
+  "name": "adjust-sdk",
   "version": "4.1.0",
   "description": "",
   "scripts": {
@@ -15,6 +15,7 @@
     "test:all": "npm test && npm run lint"
   },
   "private": true,
+  "main": "dist/sdk.js",
   "keywords": [],
   "author": "",
   "license": "MIT",

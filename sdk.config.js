@@ -1,6 +1,6 @@
 /* eslint-disable */
 const path = require('path')
-const webpack = require('webpack');
+const webpack = require('webpack')
 
 module.exports = {
   mode: 'production',
@@ -9,7 +9,10 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].min.js'
+    filename: '[name].js',
+    library: 'adjustSDK',
+    libraryTarget: 'umd',
+    libraryExport: 'default'
   },
   plugins: [
     new webpack.DefinePlugin({
