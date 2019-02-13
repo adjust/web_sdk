@@ -1,13 +1,8 @@
 import './assets/scss/index.scss'
-import adjust from './sdk/main.js'
+import adjustSDK from './sdk/main'
+import app from './app'
 
-const _trackSessionBtn = document.querySelector('#track-session')
-const _trackEventBtn = document.querySelector('#track-event')
-const _logContainer = document.querySelector('#log')
-const _loading = {}
-let _waitingForResponseMsg = 'waiting for response, please wait...'
-
-const _appConfig = {
+const appConfig = {
   app_token: '2fm9gkqubvpc',
   environment: 'sandbox',
   os_name: 'android',
@@ -16,7 +11,7 @@ const _appConfig = {
   }
 }
 
-const _eventConfig = {
+const eventConfig = {
   eventToken: 'g3mfiw',
   revenue: 1000,
   currency: 'EUR',
@@ -39,68 +34,37 @@ const _eventConfig = {
   }]
 }
 
-adjust.init(_appConfig)
+// INIT: Initiate adjust sdk with specified configuration
+adjustSDK.init(appConfig)
 
-_trackSessionBtn.addEventListener('click', handleTrackSession)
-_trackEventBtn.addEventListener('click', handleTrackEvent)
+app.start(trackSession, trackEvent)
 
-
-function handleTrackSession () {
-
-  if (_loading.session) {
-    return
-  }
-
-  _loading.session = true
-
-  prepareLog()
-
-  adjust.trackSession()
-    .then(result => successCb(result, 'session'))
-    .catch(error => errorCb(error, 'session'))
-
+function trackSession () {
+  return new Promise((resolve, reject) => {
+    // SESSION TRACKING: initiate session tracking and debug the result
+    return adjustSDK.trackSession()
+      .then(result => {
+        app.log(result) // logs to console
+        resolve(result)
+      })
+      .catch(error => {
+        app.log(error) // logs to console
+        reject(error.response)
+      })
+  })
 }
 
-function handleTrackEvent () {
-
-  if (_loading.event) {
-    return
-  }
-
-  _loading.event = true
-
-  prepareLog()
-
-  adjust.trackEvent(_eventConfig)
-    .then(result => successCb(result, 'event'))
-    .catch(error => errorCb(error, 'event'))
-
-}
-
-function prepareLog () {
-
-  _logContainer.textContent = _waitingForResponseMsg
-  _logContainer.classList.remove('success')
-  _logContainer.classList.remove('error')
-
-}
-
-function successCb (result, what) {
-
-  _loading[what] = false
-
-  _logContainer.textContent = 'SUCCESS :)\n\n'
-  _logContainer.textContent += result
-  _logContainer.classList.add('success')
-
-}
-
-function errorCb (error, what) {
-
-  _loading[what] = false
-
-  _logContainer.textContent = 'ERROR :(\n\n'
-  _logContainer.textContent += error.response
-  _logContainer.classList.add('error')
-
+function trackEvent () {
+  return new Promise((resolve, reject) => {
+    // EVENT TRACKING: initiate event tracking with specified configuration and debug the result
+    return adjustSDK.trackEvent(eventConfig)
+      .then(result => {
+        app.log(result) // logs to console
+        resolve(result)
+      })
+      .catch(error => {
+        app.log(error) // logs to console
+        reject(error.response)
+      })
+  })
 }

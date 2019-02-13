@@ -35,7 +35,7 @@ h1 {
   text-align: center;
   color: #666;
   font-size: 20px;
-  margin-bottom: 50px;
+  margin: 20px 0 50px;
 }
 
 h5 {
@@ -46,7 +46,6 @@ h5 {
 
 button {
   display: block;
-  margin: 0 auto 20px;
   width: 200px;
   font-size: 15px;
   padding:  10px;
@@ -65,13 +64,12 @@ button {
 pre {
   border: 2px solid #ccc;
   background-color: #fefefe;
-  min-height: 100px;
+  min-height: 200px;
   padding: 10px;
   overflow: auto;
-  white-space: pre-line;
   line-height: 20px;
   color: #ccc;
-  margin-top: 30px;
+  margin-top: 10px;
 
   &.success {
     color: #2b8b00;
@@ -80,5 +78,9 @@ pre {
   &.error {
     color: #e02d45;
   }
+}
+
+.section {
+  margin-bottom: 20px;
 }
 
