@@ -1,5 +1,6 @@
 /* eslint-disable */
 const path = require('path')
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'production',
@@ -10,6 +11,12 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].min.js'
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      SDK_VERSION: JSON.stringify(require('./package.json').version),
+      IS_TEST: false
+    })
+  ],
   module: {
     rules: [{
       enforce: 'pre',
