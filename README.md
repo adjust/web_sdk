@@ -40,7 +40,7 @@ There are a few things to keep in mind while implementing the JS SDK:
 With this in mind, initialisation of Adjust JS SDK would look like this inside your web app:
 
 ```js
-var _adjust = new Adjust({
+adjustSDK.init({
   app_token: 'YourAppToken',
   environment: 'production', // or 'sandbox' in case you are testing SDK locally with your web app
   os_name: 'android',
@@ -49,12 +49,13 @@ var _adjust = new Adjust({
   }
 });
 
-_adjust.trackSession(function (result) {
+adjustSDK.trackSession()
+  .then(function (result) {
     console.log(result);
-  }, function (errorMsg, error) {
-    console.log(errorMsg, error);
-  }
-);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
 ```
 
 ## <a id="additional-features"></a>Additional features
@@ -66,15 +67,17 @@ Once you integrate the Adjust JS SDK into your web app, you can take advantage o
 You can use adjust to track events. Lets say you want to track every tap on a particular button. You would create a new event token in your [dashboard], which has an associated event token - looking something like `abc123`. In order to track this event from your web app, you should do following:
 
 ```js
-var _eventConfig = {
+var eventConfig = {
   event_token: 'EventToken'
 };
 
-_adjust.trackEvent(_eventConfig, function (result) {
-  successCb(result, 'event');
-}, function (errorMsg, error) {
-  errorCb(errorMsg, error, 'event');
-});
+adjustSDK.trackEvent(eventConfig)
+  .then(function (result) {
+    console.log(result);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
 ```
 
 ### <a id="revenue-tracking"></a>Revenue tracking
@@ -82,17 +85,19 @@ _adjust.trackEvent(_eventConfig, function (result) {
 You can attach revenue to event being tracked with Adjust JS SDK in case you would like to track some purchase that happened inside your web app. In order to that, you need to attach `revenue` and `currency` parameters when tracking event:
 
 ```js
-var _eventConfig = {
+var eventConfig = {
   event_token: 'EventToken',
   revenue: 10,
   currency: 'EUR'
 };
 
-_adjust.trackEvent(_eventConfig, function (result) {
-  console.log(result);
-}, function (errorMsg, error) {
-  console.log(errorMsg, error);
-});
+adjustSDK.trackEvent(eventConfig)
+  .then(function (result) {
+    console.log(result);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
 ```
 
 When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here][currency-conversion].
@@ -106,7 +111,7 @@ You can register a callback URL for your events in your [dashboard]. We will sen
 For example, suppose you have registered the URL `http://www.mydomain.com/callback` then track an event like this:
 
 ```js
-var _eventConfig = {
+var eventConfig = {
   event_token: 'EventToken',
   callback_params: [{
     key: 'key',
@@ -117,11 +122,13 @@ var _eventConfig = {
   }],
 };
 
-_adjust.trackEvent(_eventConfig, function (result) {
-  console.log(result);
-}, function (errorMsg, error) {
-  console.log(errorMsg, error);
-});
+adjustSDK.trackEvent(eventConfig)
+  .then(function (result) {
+    console.log(result);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
 ```
 
 In that case we would track the event and send a request to:
@@ -139,7 +146,7 @@ You can also add parameters to be transmitted to network partners, which have be
 This works similarly to the callback parameters mentioned above, but can be added by adding `partner_params` parameter to the map object passed to `trackEvent` method.
 
 ```js
-var _eventConfig = {
+var eventConfig = {
   event_token: 'EventToken',
   partner_params: [{
     key: 'key',
@@ -150,11 +157,13 @@ var _eventConfig = {
   }],
 };
 
-_adjust.trackEvent(_eventConfig, function (result) {
-  console.log(result);
-}, function (errorMsg, error) {
-  console.log(errorMsg, error);
-});
+adjustSDK.trackEvent(eventConfig)
+  .then(function (result) {
+    console.log(result);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
 ```
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].
@@ -186,7 +195,7 @@ SOFTWARE.
 
 [adjust.com]:   https://adjust.com
 [dashboard]:    http://adjust.com
-[example-app]:  index.js
+[example-app]:  src/index.js
 
 [callbacks-guide]:      https://docs.adjust.com/en/callbacks
 [special-partners]:     https://docs.adjust.com/en/special-partners
