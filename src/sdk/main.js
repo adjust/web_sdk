@@ -87,6 +87,7 @@ function trackSession () {
 
   return request({
     url: '/session',
+    method: 'POST',
     params: _getBaseParams()
   })
 }
@@ -105,6 +106,7 @@ function trackEvent (params = {}) {
 
   return request({
     url: '/event',
+    method: 'POST',
     params:  Object.assign(
       _getBaseParams(),
       Object.assign({

@@ -99,6 +99,7 @@ describe('test initiated instance', () => {
 
     expect(request.default).toHaveBeenCalledWith({
       url: '/session',
+      method: 'POST',
       params: {
         app_token: 'some-app-token',
         environment: 'production',
@@ -119,6 +120,7 @@ describe('test initiated instance', () => {
 
     expect(request.default).toHaveBeenCalledWith({
       url: '/event',
+      method: 'POST',
       params: {
         event_token: 'some-event-token1',
         callback_params: {'some-key': 'some-value'},
@@ -141,6 +143,7 @@ describe('test initiated instance', () => {
 
     expect(request.default).toHaveBeenCalledWith({
       url: '/event',
+      method: 'POST',
       params: {
         event_token: 'some-event-token2',
         callback_params: {},
@@ -166,6 +169,7 @@ describe('test initiated instance', () => {
 
     expect(request.default).toHaveBeenCalledWith({
       url: '/event',
+      method: 'POST',
       params: {
         event_token: 'some-event-token3',
         callback_params: {'some-key': 'some-value'},
