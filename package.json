@@ -6,7 +6,7 @@
     "build:example": "webpack --mode production --config webpack.example.config.js",
     "build:sdk": "webpack --config webpack.sdk.config.js",
     "build": "npm-run-all build:example build:sdk",
-    "start": "webpack-dev-server --content-base dist --hot --mode development",
+    "start": "webpack-dev-server --content-base dist --hot --mode development --config webpack.example.config.js",
     "lint": "eslint ./src --ext .js",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest",
