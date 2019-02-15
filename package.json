@@ -3,8 +3,8 @@
   "version": "4.1.0",
   "description": "",
   "scripts": {
-    "build:example": "webpack --mode production",
-    "build:sdk": "webpack --config sdk.config.js",
+    "build:example": "webpack --mode production --config webpack.example.config.js",
+    "build:sdk": "webpack --config webpack.sdk.config.js",
     "build": "npm-run-all build:example build:sdk",
     "start": "webpack-dev-server --content-base dist --hot --mode development",
     "lint": "eslint ./src --ext .js",
@@ -39,7 +39,8 @@
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
-    "uglifyjs-webpack-plugin": "^2.0.1",
+    "terser-webpack-plugin": "^1.2.2",
+    "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"

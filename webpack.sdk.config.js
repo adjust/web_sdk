@@ -1,11 +1,13 @@
 /* eslint-disable */
 const path = require('path')
 const webpack = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
   mode: 'production',
   entry: {
-    sdk: path.resolve(__dirname, 'src/sdk/main.js')
+    sdk: path.resolve(__dirname, 'src/sdk/main.js'),
+    'sdk.min': path.resolve(__dirname, 'src/sdk/main.js')
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -13,6 +15,12 @@ module.exports = {
     library: 'adjustSDK',
     libraryTarget: 'umd',
     libraryExport: 'default'
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      include: /\.min\.js$/
+    })]
   },
   plugins: [
     new webpack.DefinePlugin({

@@ -1,9 +1,9 @@
 /* eslint-disable */
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
 
 module.exports = {
@@ -13,10 +13,9 @@ module.exports = {
   },
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
+      new TerserPlugin({
         cache: true,
-        parallel: true,
-        sourceMap: true
+        parallel: true
       }),
       new OptimizeCSSAssetsPlugin({})
     ]
@@ -26,8 +25,8 @@ module.exports = {
       template: path.resolve(__dirname, 'src/index.html')
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "[id].css"
+      filename: '[name].css',
+      chunkFilename: '[id].css'
     }),
     new webpack.DefinePlugin({
       SDK_VERSION: JSON.stringify(require('./package.json').version),
@@ -47,7 +46,7 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: [
-            "@babel/preset-env"
+            '@babel/preset-env'
           ]
         }
       }
@@ -62,7 +61,7 @@ module.exports = {
       test: /\.html$/,
       use: [
         {
-          loader: "html-loader",
+          loader: 'html-loader',
           options: {
             minimize: true,
             interpolate: true
