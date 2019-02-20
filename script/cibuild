@@ -1,0 +1,4 @@
+#!/bin/bash
+git clean -xdf
+npm i
+npm run test:all
