@@ -2,6 +2,24 @@ import config from './config'
 import {isEmpty, isObject} from './utilities'
 
 /**
+ * Get filtered response from successful request
+ *
+ * @param {Object} xhr
+ * @param {String} url
+ * @returns {Object}
+ * @private
+ */
+function _getSuccessObject (xhr, url) {
+
+  const response = xhr.response ? JSON.parse(xhr.response) : {}
+  const append = /\/attribution/.test(url) ? ['attribution', 'message'] : []
+
+  return ['adid', 'timestamp', 'ask_in', ...append]
+    .filter(key => response[key])
+    .reduce((acc, key) => Object.assign(acc, {[key]: response[key]}), {})
+}
+
+/**
  * Get an error object with necessary data
  *
  * @param {Object} xhr
@@ -75,8 +93,7 @@ export default function request ({url, method = 'GET', params = {}}) {
       if (xhr.readyState !== 4) return
 
       if (xhr.status >= 200 && xhr.status < 300) {
-        // TODO expose fixed structure
-        resolve(JSON.parse(xhr.response))
+        resolve(_getSuccessObject(xhr, url))
       } else {
         reject(_getErrorObject(xhr))
       }

@@ -67,8 +67,13 @@ describe('perform api requests', () => {
 
   describe('resolved requests', () => {
 
+    const response = {
+      adid: '123123',
+      timestamp: '2019-01-01'
+    }
+
     beforeEach(() => {
-      mockXHR = createMockXHR({status: 'success'})
+      mockXHR = createMockXHR(response)
       window.XMLHttpRequest = jest.fn(() => mockXHR)
 
       jest.spyOn(mockXHR, 'open')
@@ -87,9 +92,7 @@ describe('perform api requests', () => {
           very: 'nice',
           and: {test: 'object'}
         }
-      })).resolves.toEqual({
-        status: 'success'
-      })
+      })).resolves.toEqual(response)
       expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
@@ -114,9 +117,7 @@ describe('perform api requests', () => {
           bla: 'ble',
           obj: {}
         }
-      })).resolves.toEqual({
-        status: 'success'
-      })
+      })).resolves.toEqual(response)
       expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?some=thing&very=nice&zero=0&bla=ble', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
@@ -136,9 +137,7 @@ describe('perform api requests', () => {
           some: 'thing',
           very: 'nice'
         }
-      })).resolves.toEqual({
-        status: 'success'
-      })
+      })).resolves.toEqual(response)
       expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
@@ -147,5 +146,66 @@ describe('perform api requests', () => {
       mockXHR.onreadystatechange()
 
     })
+  })
+
+  describe('filter response returned to client', () => {
+
+    const prepare = (response) => {
+      mockXHR = createMockXHR(response)
+      window.XMLHttpRequest = jest.fn(() => mockXHR)
+    }
+
+    it('returns response with whitelisted attributes when not attribution endpoint', () => {
+
+      prepare({
+        adid: '123123',
+        some: 'thing',
+        attribution: 'thing',
+        message: 'bla',
+        timestamp: '2019-02-02'
+      })
+
+      expect(request({
+        url: '/session',
+        params: {
+          some: 'thing',
+          very: 'nice',
+          and: {test: 'object'}
+        }
+      })).resolves.toEqual({
+        adid: '123123',
+        timestamp: '2019-02-02'
+      })
+
+      mockXHR.onreadystatechange()
+    })
+
+    it('returns response with whitelisted attributes for attribution endpoint', () => {
+
+      prepare({
+        adid: '123123',
+        some: 'thing',
+        attribution: 'thing',
+        message: 'bla',
+        timestamp: '2019-02-02'
+      })
+
+      expect(request({
+        url: '/attribution',
+        params: {
+          some: 'thing',
+          very: 'nice',
+          and: {test: 'object'}
+        }
+      })).resolves.toEqual({
+        adid: '123123',
+        attribution: 'thing',
+        message: 'bla',
+        timestamp: '2019-02-02'
+      })
+
+      mockXHR.onreadystatechange()
+    })
+
   })
 })
