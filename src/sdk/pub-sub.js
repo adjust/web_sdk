@@ -78,9 +78,21 @@ function publish (name, args) {
   })
 }
 
+/**
+ * Destroy all registered events with their callbacks
+ */
+function destroy () {
+  for (const name in _list) {
+    if (_list.hasOwnProperty(name)) {
+      delete _list[name]
+    }
+  }
+}
+
 export {
   subscribe,
   unsubscribe,
-  publish
+  publish,
+  destroy
 }
 

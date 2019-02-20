@@ -1,7 +1,7 @@
 import request from './request'
 import {buildList} from './utilities'
 import {checkAttribution} from './attribution'
-import {subscribe} from './pub-sub'
+import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 
 /**
  * Definition of mandatory fields
@@ -133,6 +133,7 @@ function trackEvent (params = {}) {
 function destroy () {
   _clear()
   // TODO destroy everything else that is needed
+  pubSubDestroy()
 }
 
 /**

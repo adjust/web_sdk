@@ -4,16 +4,12 @@ import * as PubSub from '../pub-sub'
 describe('test publish-subscribe pattern', () => {
 
   const callbacks = {
-    one: {cb: function () {}, id: null},
-    two: {cb: function () {}, id: null},
-    three: {cb: function () {}, id: null}
+    one: {cb: jest.fn(), id: null},
+    two: {cb: jest.fn(), id: null},
+    three: {cb: jest.fn(), id: null}
   }
 
   beforeAll(() => {
-    jest.spyOn(callbacks.one, 'cb')
-    jest.spyOn(callbacks.two, 'cb')
-    jest.spyOn(callbacks.three, 'cb')
-
     callbacks.one.id = PubSub.subscribe('pretty-event', callbacks.one.cb)
     callbacks.two.id = PubSub.subscribe('ugly-event', callbacks.two.cb)
     callbacks.three.id =  PubSub.subscribe('pretty-event', callbacks.three.cb)
@@ -25,6 +21,7 @@ describe('test publish-subscribe pattern', () => {
 
   afterAll(() => {
     jest.restoreAllMocks()
+    PubSub.destroy()
   })
 
   it('publishes pretty event', () => {
@@ -90,9 +87,7 @@ describe('test publish-subscribe pattern', () => {
 
   it('calls callback multiple times when subscribes to multiple events', () => {
 
-    const callback = {cb: function () {}, id: null}
-
-    jest.spyOn(callback, 'cb')
+    const callback = {cb: jest.fn(), id: null}
 
     callback.id = PubSub.subscribe('pretty-event', callback.cb)
     callback.id = PubSub.subscribe('ugly-event', callback.cb)
@@ -107,5 +102,36 @@ describe('test publish-subscribe pattern', () => {
     callback.cb.mockRestore()
 
   })
+
+  it('destroys all cashed callbacks', () => {
+
+    const callback1 = jest.fn()
+    const callback2 = jest.fn()
+
+    PubSub.subscribe('event1', callback1)
+    PubSub.subscribe('event2', callback2)
+
+    PubSub.publish('event1', {})
+    PubSub.publish('event2', {})
+
+    expect(callback1).toHaveBeenCalledTimes(1)
+    expect(callback1).toHaveBeenCalledWith('event1', {})
+    expect(callback2).toHaveBeenCalledTimes(1)
+    expect(callback2).toHaveBeenCalledWith('event2', {})
+
+    callback1.mockClear()
+    callback2.mockClear()
+
+    PubSub.destroy()
+
+    PubSub.publish('event1')
+    PubSub.publish('event2')
+
+    expect(callback1).not.toHaveBeenCalled()
+    expect(callback2).not.toHaveBeenCalled()
+
+  })
+
+
 })
 
