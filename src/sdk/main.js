@@ -1,5 +1,7 @@
 import request from './request'
 import {buildList} from './utilities'
+import {checkAttribution} from './attribution'
+import {subscribe} from './pub-sub'
 
 /**
  * Definition of mandatory fields
@@ -56,9 +58,10 @@ function getOsName () {
 /**
  * Initiate the instance with parameters
  *
- * @param params
+ * @param {Object} params
+ * @param {Function=} cb
  */
-function init (params = {}) {
+function init (params = {}, cb) {
 
   if (_isInitiated()) {
     throw new Error('You already initiated your instance')
@@ -71,6 +74,10 @@ function init (params = {}) {
   }
 
   _params = Object.assign({}, params)
+
+  if (typeof cb === 'function') {
+    subscribe('attribution:changed', cb)
+  }
 
 }
 
@@ -85,11 +92,13 @@ function trackSession () {
     throw new Error('You must init your instance')
   }
 
+  const params = _getBaseParams()
+
   return request({
     url: '/session',
     method: 'POST',
-    params: _getBaseParams()
-  })
+    params
+  }).then(result => checkAttribution(result, params))
 }
 
 /**

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import {buildList, isEmpty, isObject} from './utilities'
+import {buildList, isEmpty, isObject} from '../utilities'
 
 describe('test for utility methods', () => {
   describe('tests for buildList', () => {

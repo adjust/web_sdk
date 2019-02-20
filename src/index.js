@@ -34,8 +34,13 @@ const eventConfig = {
   }]
 }
 
+const attributionCallback = (e, attribution) => {
+  console.log('Attribution was changed:') // eslint-disable-line
+  console.log(attribution) // eslint-disable-line
+}
+
 // INIT: Initiate adjust sdk with specified configuration
-adjustSDK.init(appConfig)
+adjustSDK.init(appConfig, attributionCallback)
 
 app.start(trackSession, trackEvent)
 

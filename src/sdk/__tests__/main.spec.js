@@ -1,9 +1,15 @@
 /* eslint-disable */
-import * as request from './request'
-import mainInstance from './main.js'
-import sameInstance from './main.js'
+import * as request from '../request'
+import * as Attribution from '../attribution'
+import * as PubSub from '../pub-sub'
+import mainInstance from '../main.js'
+import sameInstance from '../main.js'
 
-jest.mock('./request')
+jest.mock('../request')
+
+const external = {
+  attributionCb () {}
+}
 
 describe('test uninitiated instance', () => {
   it('throws an error when not all parameters provided', () => {
@@ -46,6 +52,11 @@ describe('test uninitiated instance', () => {
 
 describe('test initiated instance', () => {
   beforeAll(() => {
+    jest.spyOn(request, 'default')
+    jest.spyOn(Attribution, 'checkAttribution')
+    jest.spyOn(external, 'attributionCb')
+    jest.spyOn(PubSub, 'subscribe')
+
     mainInstance.init({
       app_token: 'some-app-token',
       environment: 'production',
@@ -53,19 +64,12 @@ describe('test initiated instance', () => {
       device_ids: {
         gps_adid: 'really-sweet-value'
       }
-    })
+    }, external.attributionCb)
   })
 
   afterAll(() => {
+    jest.restoreAllMocks()
     mainInstance.destroy()
-  })
-
-  beforeEach(() => {
-    jest.spyOn(request, 'default')
-  })
-
-  afterEach(() => {
-    request.default.mockClear()
   })
 
   it('sets basic configuration', () => {
@@ -73,6 +77,15 @@ describe('test initiated instance', () => {
     expect(mainInstance.getAppToken()).toEqual('some-app-token')
     expect(mainInstance.getEnvironment()).toEqual('production')
     expect(mainInstance.getOsName()).toEqual('android')
+    expect(PubSub.subscribe).toHaveBeenCalledWith('attribution:changed', external.attributionCb)
+
+  })
+
+  it('calls client-defined attribution callback when attribution is changed', () => {
+
+    PubSub.publish('attribution:changed', {tracker_token: 'some-token'})
+
+    expect(external.attributionCb).toHaveBeenCalledWith('attribution:changed', {tracker_token: 'some-token'})
 
   })
 
@@ -93,20 +106,32 @@ describe('test initiated instance', () => {
 
   })
 
-  it('resolves trackSession request successfully', () => {
+  it('resolves trackSession request and checks attribution', () => {
 
-    expect(mainInstance.trackSession()).resolves.toEqual({status: 'success'})
+    expect.assertions(3)
 
-    expect(request.default).toHaveBeenCalledWith({
-      url: '/session',
-      method: 'POST',
-      params: {
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        gps_adid: 'really-sweet-value'
-      }
-    })
+    return mainInstance.trackSession()
+      .then(result => {
+        expect(result).toEqual({status: 'success'})
+        expect(request.default).toHaveBeenCalledWith({
+          url: '/session',
+          method: 'POST',
+          params: {
+            app_token: 'some-app-token',
+            environment: 'production',
+            os_name: 'android',
+            gps_adid: 'really-sweet-value'
+          }
+        })
+        expect(Attribution.checkAttribution).toHaveBeenCalledWith({
+          status: 'success'
+        }, {
+          app_token: 'some-app-token',
+          environment: 'production',
+          os_name: 'android',
+          gps_adid: 'really-sweet-value'
+        })
+      })
 
   })
 
