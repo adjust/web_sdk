@@ -12,7 +12,7 @@ function _getErrorObject (xhr) {
   return {
     status: xhr.status,
     statusText: xhr.statusText,
-    response: xhr.response,
+    response: JSON.parse(xhr.response),
     responseText: xhr.responseText
   }
 }
@@ -74,8 +74,9 @@ export default function request ({url, method = 'GET', params = {}}) {
 
       if (xhr.readyState !== 4) return
 
-      if (xhr.status >= 200 && xhr.status < 300){
-        resolve(xhr.response)
+      if (xhr.status >= 200 && xhr.status < 300) {
+        // TODO expose fixed structure
+        resolve(JSON.parse(xhr.response))
       } else {
         reject(_getErrorObject(xhr))
       }

@@ -54,7 +54,7 @@ function _cb (result, type, what) {
 
   _loading[what] = false
 
-  logContainer.textContent = JSON.stringify(JSON.parse(result), undefined, 2)
+  logContainer.textContent = JSON.stringify(result, undefined, 2)
   logContainer.classList.add(type)
 
 }

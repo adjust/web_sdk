@@ -1,5 +1,5 @@
 /* eslint-disable */
-import request from './request'
+import request from '../request'
 
 function createMockXHR (response, status = 200, statusText = 'OK') {
   return {
@@ -9,7 +9,7 @@ function createMockXHR (response, status = 200, statusText = 'OK') {
     readyState: 4,
     status: status,
     statusText: statusText,
-    response: response,
+    response: JSON.stringify(response),
     responseText: JSON.stringify(response)
   }
 }
