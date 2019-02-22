@@ -1,4 +1,5 @@
 @import "~normalize.css";
+@import "loader";
 
 body {
   font-family: Helvetica, sans-serif;
@@ -46,7 +47,7 @@ h5 {
 
 button {
   display: block;
-  width: 200px;
+  width: 150px;
   font-size: 15px;
   padding:  10px;
   border: 1px solid #999;
@@ -64,12 +65,12 @@ button {
 pre {
   border: 2px solid #ccc;
   background-color: #fefefe;
-  min-height: 200px;
+  min-height: 150px;
   padding: 10px;
   overflow: auto;
   line-height: 20px;
   color: #ccc;
-  margin-top: 10px;
+  margin-top: 0;
 
   &.success {
     color: #2b8b00;
@@ -82,5 +83,24 @@ pre {
 
 .section {
   margin-bottom: 20px;
+}
+
+label {
+  color: #999;
+  display: block;
+
+  i {
+    font-style: normal;
+  }
+
+  span {
+    display: block;
+    padding: 20px 0 7px;
+    margin-right: 210px;
+  }
+
+  button {
+    float: right;
+  }
 }
 

@@ -2,12 +2,25 @@
   <h1>Web SDK demo</h1>
 
   <div class="section">
-    <button id="track-session">track session</button>
-    <pre id="log-session">Hit "track session" to see the log</pre>
+    <label for="log-session">
+      <button id="track-session">track session</button>
+      <span>Session</span>
+    </label>
+    <pre id="log-session"></pre>
   </div>
 
   <div class="section">
-    <button id="track-event">track event</button>
-    <pre id="log-event">Hit "track event" to see the log</pre>
+    <label for="log-event">
+      <button id="track-event">track event</button>
+      <span>Event</span>
+    </label>
+    <pre id="log-event"></pre>
   </div>
+
+  <div class="section">
+    <label for="log-attribution"><span>Attribution - <i id="attribution-status">no change</i></span></label>
+    <pre id="log-attribution"></pre>
+  </div>
+
+
 </div>
