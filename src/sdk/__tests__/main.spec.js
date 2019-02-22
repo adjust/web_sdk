@@ -81,15 +81,15 @@ describe('test initiated instance', () => {
     expect(mainInstance.getAppToken()).toEqual('some-app-token')
     expect(mainInstance.getEnvironment()).toEqual('production')
     expect(mainInstance.getOsName()).toEqual('android')
-    expect(PubSub.subscribe).toHaveBeenCalledWith('attribution:changed', external.attributionCb)
+    expect(PubSub.subscribe).toHaveBeenCalledWith('attribution:change', external.attributionCb)
 
   })
 
   it('calls client-defined attribution callback when attribution is changed', () => {
 
-    PubSub.publish('attribution:changed', {tracker_token: 'some-token'})
+    PubSub.publish('attribution:change', {tracker_token: 'some-token'})
 
-    expect(external.attributionCb).toHaveBeenCalledWith('attribution:changed', {tracker_token: 'some-token'})
+    expect(external.attributionCb).toHaveBeenCalledWith('attribution:change', {tracker_token: 'some-token'})
 
   })
 

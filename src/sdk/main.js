@@ -76,7 +76,7 @@ function init (params = {}, cb) {
   _params = Object.assign({}, params)
 
   if (typeof cb === 'function') {
-    subscribe('attribution:changed', cb)
+    subscribe('attribution:change', cb)
   }
 
 }
@@ -98,7 +98,7 @@ function trackSession () {
     url: '/session',
     method: 'POST',
     params
-  }).then(result => checkAttribution(result, params))
+  }).then(result => _checkAttribution(result, params))
 }
 
 /**
@@ -127,7 +127,7 @@ function trackEvent (params = {}) {
         partner_params: _convertToMap(params.partnerParams),
       }, _getRevenue(params.revenue, params.currency))
     )
-  }).then(result => checkAttribution(result, baseParams))
+  }).then(result => _checkAttribution(result, baseParams))
 }
 
 /**
@@ -226,6 +226,19 @@ function _getRevenue (revenue, currency) {
  */
 function _convertToMap (params = []) {
   return params.reduce((acc, o) => Object.assign(acc, {[o.key]: o.value}), {})
+}
+
+/**
+ * Check attribution asynchronously and pass the previous result immediately
+ *
+ * @param {Object} result
+ * @param {Object} params
+ * @returns {Object}
+ * @private
+ */
+function _checkAttribution (result, params) {
+  checkAttribution(result, params)
+  return result
 }
 
 const Adjust = {
