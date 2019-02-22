@@ -67,6 +67,10 @@ describe('test initiated instance', () => {
     }, external.attributionCb)
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   afterAll(() => {
     jest.restoreAllMocks()
     mainInstance.destroy()
@@ -137,24 +141,35 @@ describe('test initiated instance', () => {
 
   it('resolves trackEvent request successfully without revenue and some map params', () => {
 
-    expect(mainInstance.trackEvent({
+    expect.assertions(3)
+
+    return mainInstance.trackEvent({
       eventToken: 'some-event-token1',
       callbackParams: [{key: 'some-key', value: 'some-value'}],
       revenue: 0
-    })).resolves.toEqual({status: 'success'})
-
-    expect(request.default).toHaveBeenCalledWith({
-      url: '/event',
-      method: 'POST',
-      params: {
-        event_token: 'some-event-token1',
-        callback_params: {'some-key': 'some-value'},
-        partner_params: {},
+    }).then(result => {
+      expect(result).toEqual({status: 'success'})
+      expect(request.default).toHaveBeenCalledWith({
+        url: '/event',
+        method: 'POST',
+        params: {
+          event_token: 'some-event-token1',
+          callback_params: {'some-key': 'some-value'},
+          partner_params: {},
+          app_token: 'some-app-token',
+          environment: 'production',
+          os_name: 'android',
+          gps_adid: 'really-sweet-value'
+        }
+      })
+      expect(Attribution.checkAttribution).toHaveBeenCalledWith({
+        status: 'success'
+      }, {
         app_token: 'some-app-token',
         environment: 'production',
         os_name: 'android',
         gps_adid: 'really-sweet-value'
-      }
+      })
     })
 
   })

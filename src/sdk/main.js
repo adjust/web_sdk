@@ -113,18 +113,21 @@ function trackEvent (params = {}) {
     throw new Error('You must init your instance')
   }
 
+  const baseParams = _getBaseParams()
+
   return request({
     url: '/event',
     method: 'POST',
     params:  Object.assign(
-      _getBaseParams(),
+      {},
+      baseParams,
       Object.assign({
         event_token: params.eventToken,
         callback_params: _convertToMap(params.callbackParams),
         partner_params: _convertToMap(params.partnerParams),
       }, _getRevenue(params.revenue, params.currency))
     )
-  })
+  }).then(result => checkAttribution(result, baseParams))
 }
 
 /**
