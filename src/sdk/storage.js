@@ -48,11 +48,12 @@ function setItem (name, value) {
  * Get particular item from the storage and return parsed value
  *
  * @param {string} name
+ * @param {*} [defaultValue={}]
  * @returns {Object}
  */
-function getItem (name) {
+function getItem (name, defaultValue = {}) {
   const value = _store.getItem(`${_storeName}.${name}`)
-  return value ? JSON.parse(value) : {}
+  return value ? JSON.parse(value) : defaultValue
 }
 
 /**

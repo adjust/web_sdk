@@ -20,7 +20,7 @@ let _timeoutId = null
  */
 function _isSame (adid, newAttr) {
 
-  const oldAttr = getItem('attribution')
+  const oldAttr = getItem('attribution', {})
   const check = [
     'tracker_token',
     'tracker_name',
