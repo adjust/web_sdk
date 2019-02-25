@@ -1,10 +1,10 @@
 /* eslint-disable */
 import * as Attribution from '../attribution'
-import * as request from '../request'
+import * as Api from '../api'
 import * as Storage from '../storage'
 import * as PubSub from '../pub-sub'
 
-jest.mock('../request')
+jest.mock('../api')
 jest.useFakeTimers()
 
 function flushPromises() {
@@ -14,7 +14,7 @@ function flushPromises() {
 describe('test attribution functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(request, 'default')
+    jest.spyOn(Api, 'request')
     jest.spyOn(Storage, 'setItem')
     jest.spyOn(Storage, 'getItem')
     jest.spyOn(PubSub, 'publish')
@@ -48,7 +48,7 @@ describe('test attribution functionality', () => {
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
     Storage.getItem.mockReturnValue(Object.assign({adid: '123'}, currentAttribution.attribution))
-    request.default.mockResolvedValue(currentAttribution)
+    Api.request.mockResolvedValue(currentAttribution)
 
     expect.assertions(5)
 
@@ -56,7 +56,7 @@ describe('test attribution functionality', () => {
       .then(result => {
         expect(result).toEqual(currentAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(3000)
-        expect(request.default).toHaveBeenCalledWith({
+        expect(Api.request).toHaveBeenCalledWith({
           url: '/attribution',
           params: {some: 'params'}
         })
@@ -73,7 +73,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
 
     Storage.getItem.mockReturnValue(oldAttribution)
-    request.default.mockResolvedValue(newAttribution)
+    Api.request.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
 
@@ -81,7 +81,7 @@ describe('test attribution functionality', () => {
       .then(result => {
         expect(result).toEqual(newAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
-        expect(request.default).toHaveBeenCalledWith({
+        expect(Api.request).toHaveBeenCalledWith({
           url: '/attribution',
           params: {some: 'params'}
         })
@@ -100,7 +100,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
 
     Storage.getItem.mockReturnValue(oldAttribution)
-    request.default.mockResolvedValue(newAttribution)
+    Api.request.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
 
@@ -108,7 +108,7 @@ describe('test attribution functionality', () => {
       .then(result => {
         expect(result).toEqual(newAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
-        expect(request.default).toHaveBeenCalledWith({
+        expect(Api.request).toHaveBeenCalledWith({
           url: '/attribution',
           params: {some: 'params'}
         })
@@ -127,7 +127,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
 
     Storage.getItem.mockReturnValue(oldAttribution)
-    request.default.mockResolvedValue({ask_in: 3000})
+    Api.request.mockResolvedValue({ask_in: 3000})
 
     Attribution.checkAttribution({ask_in: 2000}, {some: 'params'})
 
@@ -153,8 +153,8 @@ describe('test attribution functionality', () => {
             expect(Storage.setItem).not.toHaveBeenCalled()
             expect(PubSub.publish).not.toHaveBeenCalled()
 
-            request.default.mockClear()
-            request.default.mockResolvedValue(newAttribution)
+            Api.request.mockClear()
+            Api.request.mockResolvedValue(newAttribution)
 
             jest.runOnlyPendingTimers()
 

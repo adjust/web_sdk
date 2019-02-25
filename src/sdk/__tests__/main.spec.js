@@ -1,11 +1,11 @@
 /* eslint-disable */
-import * as request from '../request'
+import * as Api from '../api'
 import * as Attribution from '../attribution'
 import * as PubSub from '../pub-sub'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 
-jest.mock('../request')
+jest.mock('../api')
 
 const external = {
   attributionCb () {}
@@ -52,7 +52,7 @@ describe('test uninitiated instance', () => {
 
 describe('test initiated instance', () => {
   beforeAll(() => {
-    jest.spyOn(request, 'default')
+    jest.spyOn(Api, 'request')
     jest.spyOn(Attribution, 'checkAttribution')
     jest.spyOn(external, 'attributionCb')
     jest.spyOn(PubSub, 'subscribe')
@@ -117,7 +117,7 @@ describe('test initiated instance', () => {
     return mainInstance.trackSession()
       .then(result => {
         expect(result).toEqual({status: 'success'})
-        expect(request.default).toHaveBeenCalledWith({
+        expect(Api.request).toHaveBeenCalledWith({
           url: '/session',
           method: 'POST',
           params: {
@@ -149,7 +149,7 @@ describe('test initiated instance', () => {
       revenue: 0
     }).then(result => {
       expect(result).toEqual({status: 'success'})
-      expect(request.default).toHaveBeenCalledWith({
+      expect(Api.request).toHaveBeenCalledWith({
         url: '/event',
         method: 'POST',
         params: {
@@ -181,7 +181,7 @@ describe('test initiated instance', () => {
       revenue: 1000
     })).resolves.toEqual({status: 'success'})
 
-    expect(request.default).toHaveBeenCalledWith({
+    expect(Api.request).toHaveBeenCalledWith({
       url: '/event',
       method: 'POST',
       params: {
@@ -207,7 +207,7 @@ describe('test initiated instance', () => {
       currency: 'EUR'
     })).resolves.toEqual({status: 'success'})
 
-    expect(request.default).toHaveBeenCalledWith({
+    expect(Api.request).toHaveBeenCalledWith({
       url: '/event',
       method: 'POST',
       params: {

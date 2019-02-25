@@ -1,5 +1,5 @@
 /* eslint-disable */
-import request from '../request'
+import * as Api from '../api'
 
 function createMockXHR (response, status = 200, statusText = 'OK') {
   return {
@@ -30,7 +30,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(request({
+    expect(Api.request({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -51,7 +51,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(request({
+    expect(Api.request({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -85,7 +85,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(request({
+      expect(Api.request({
         url: '/some-url',
         params: {
           some: 'thing',
@@ -105,7 +105,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(request({
+      expect(Api.request({
         url: '/some-url',
         params: {
           some: 'thing',
@@ -130,7 +130,7 @@ describe('perform api requests', () => {
 
       expect.assertions(5)
 
-      expect(request({
+      expect(Api.request({
         url: '/some-url',
         method: 'POST',
         params: {
@@ -165,7 +165,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      expect(request({
+      expect(Api.request({
         url: '/session',
         params: {
           some: 'thing',
@@ -190,7 +190,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      expect(request({
+      expect(Api.request({
         url: '/attribution',
         params: {
           some: 'thing',

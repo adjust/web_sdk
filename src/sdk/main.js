@@ -1,4 +1,4 @@
-import request from './request'
+import {request} from './api'
 import {buildList} from './utilities'
 import {checkAttribution} from './attribution'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'

@@ -30,7 +30,7 @@ function _getErrorObject (xhr) {
   return {
     status: xhr.status,
     statusText: xhr.statusText,
-    response: JSON.parse(xhr.response),
+    response: xhr.response ? JSON.parse(xhr.response) : {error: 'Unknown error, retry will follow'},
     responseText: xhr.responseText
   }
 }
@@ -68,7 +68,7 @@ function _encodeParams (params) {
  * @param {Object} [params={}]
  * @returns {Promise}
  */
-export default function request ({url, method = 'GET', params = {}}) {
+function request ({url, method = 'GET', params = {}}) {
 
   const encodedParams = _encodeParams(params)
 
@@ -104,4 +104,8 @@ export default function request ({url, method = 'GET', params = {}}) {
     xhr.send(method === 'GET' ? undefined : encodedParams)
 
   })
+}
+
+export {
+  request
 }
