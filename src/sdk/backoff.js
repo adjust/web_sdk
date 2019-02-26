@@ -8,13 +8,13 @@ const HOUR = 60 * MINUTE
  * @type {Object}
  */
 const _options = {
-  long: {
-    delay: 2 * MINUTE,
-    maxDelay: 24 * HOUR,
+  default: {
+    delay: 200,
+    maxDelay: HOUR,
     minRange: 0.5,
     maxRange: 1.0,
   },
-  short: {
+  test: {
     delay: 100,
     maxDelay: 300
   }
@@ -40,7 +40,7 @@ function _randomInRange (min, max) {
  */
 export default function backOff (attempts) {
 
-  let options = IS_TEST ? _options.short : _options.long
+  let options = IS_TEST ? _options.test : _options.default
   let delay = options.delay * Math.pow(2, attempts - 1)
 
   delay = Math.min(delay, options.maxDelay)
