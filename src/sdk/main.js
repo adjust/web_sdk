@@ -81,6 +81,19 @@ function init (params = {}, cb) {
 }
 
 /**
+ * Check if result has error and throw, otherwise return
+ *
+ * @param {Object} result
+ * @returns {Object}
+ * @private
+ */
+function _interceptResult (result) {
+  if (result && result.error) { throw result }
+
+  return result
+}
+
+/**
  * Track session with already initiated instance
  *
  * @returns {Promise}
@@ -95,7 +108,7 @@ function trackSession () {
     url: '/session',
     method: 'POST',
     params: _getBaseParams()
-  })
+  }).then(_interceptResult)
 }
 
 /**
@@ -121,7 +134,7 @@ function trackEvent (params = {}) {
         partner_params: _convertToMap(params.partnerParams),
       }, _getRevenue(params.revenue, params.currency))
     }
-  })
+  }).then(_interceptResult)
 }
 
 /**

@@ -5,6 +5,7 @@ Here you can find changes for this project. When updating to a new version be su
 ### Added
 - sdk is now exposed under all module definitions, so it works under CommonJS and AMD environments and is also available through global `adjustSDK`
 - attribution callback support 
+- retry mechanism for failed attribution requests 
 
 ### Changed
 - using exposed single instance instead of initiating it manually with the `new` (`adjustSDK.init(YOUR_CONFIG)`)

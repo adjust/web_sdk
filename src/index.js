@@ -56,7 +56,7 @@ function trackSession () {
       })
       .catch(error => {
         app.log(error) // logs to console
-        reject(error.response)
+        reject(error)
       })
   })
 }
@@ -72,7 +72,7 @@ function trackEvent () {
       })
       .catch(error => {
         app.log(error) // logs to console
-        reject(error.response)
+        reject(error)
       })
   })
 }

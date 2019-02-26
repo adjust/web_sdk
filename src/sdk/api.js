@@ -35,19 +35,23 @@ function _getSuccessObject (xhr, url) {
  * Get an error object with necessary data
  *
  * @param {Object} xhr
- * @param {boolean=} parseResponse
+ * @param {boolean=} onlyResponse
  * @returns {Object}
  * @private
  */
-function _getErrorObject (xhr, parseResponse) {
+function _getErrorObject (xhr, onlyResponse) {
+
+  if (onlyResponse) {
+    return JSON.parse(xhr.response)
+  }
 
   const error = {error: 'Unknown error, retry will follow'}
 
   return {
     status: xhr.status,
     statusText: xhr.statusText,
-    response: parseResponse ? JSON.parse(xhr.response) : error,
-    responseText: parseResponse ? xhr.responseText : JSON.stringify(error)
+    response: error,
+    responseText: JSON.stringify(error)
   }
 }
 

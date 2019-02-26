@@ -76,12 +76,7 @@ describe('perform api requests', () => {
     expect(Api.request({
       url: '/some-url',
       params: {}
-    })).resolves.toEqual({
-      status: 400,
-      statusText: 'Some error',
-      response: {error: 'some error'},
-      responseText: JSON.stringify({error: 'some error'})
-    })
+    })).resolves.toEqual({error: 'some error'})
 
     mockXHR.onreadystatechange()
 
