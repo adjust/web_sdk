@@ -1,6 +1,5 @@
 /* eslint-disable */
 import * as Api from '../api'
-import * as Attribution from '../attribution'
 import * as PubSub from '../pub-sub'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
@@ -53,7 +52,6 @@ describe('test uninitiated instance', () => {
 describe('test initiated instance', () => {
   beforeAll(() => {
     jest.spyOn(Api, 'request')
-    jest.spyOn(Attribution, 'checkAttribution')
     jest.spyOn(external, 'attributionCb')
     jest.spyOn(PubSub, 'subscribe')
 
@@ -112,64 +110,44 @@ describe('test initiated instance', () => {
 
   it('resolves trackSession request and checks attribution', () => {
 
-    expect.assertions(3)
-
-    return mainInstance.trackSession()
-      .then(result => {
-        expect(result).toEqual({status: 'success'})
-        expect(Api.request).toHaveBeenCalledWith({
-          url: '/session',
-          method: 'POST',
-          params: {
-            app_token: 'some-app-token',
-            environment: 'production',
-            os_name: 'android',
-            gps_adid: 'really-sweet-value'
-          }
-        })
-        expect(Attribution.checkAttribution).toHaveBeenCalledWith({
-          status: 'success'
-        }, {
-          app_token: 'some-app-token',
-          environment: 'production',
-          os_name: 'android',
-          gps_adid: 'really-sweet-value'
-        })
-      })
+    expect(mainInstance.trackSession()).resolves.toEqual({status: 'success'})
+    expect(Api.request).toHaveBeenCalledWith({
+      url: '/session',
+      method: 'POST',
+      params: {
+        app_token: 'some-app-token',
+        environment: 'production',
+        os_name: 'android',
+        gps_adid: 'really-sweet-value'
+      }
+    })
 
   })
 
   it('resolves trackEvent request successfully without revenue and some map params', () => {
 
-    expect.assertions(3)
-
-    return mainInstance.trackEvent({
+    expect(mainInstance.trackEvent({
       eventToken: 'some-event-token1',
       callbackParams: [{key: 'some-key', value: 'some-value'}],
       revenue: 0
-    }).then(result => {
-      expect(result).toEqual({status: 'success'})
-      expect(Api.request).toHaveBeenCalledWith({
-        url: '/event',
-        method: 'POST',
-        params: {
-          event_token: 'some-event-token1',
-          callback_params: {'some-key': 'some-value'},
-          partner_params: {},
+    })).resolves.toEqual({status: 'success'})
+
+    expect(Api.request).toHaveBeenCalledWith({
+      url: '/event',
+      method: 'POST',
+      params: {
+        base: {
           app_token: 'some-app-token',
           environment: 'production',
           os_name: 'android',
           gps_adid: 'really-sweet-value'
+        },
+        other: {
+          event_token: 'some-event-token1',
+          callback_params: {'some-key': 'some-value'},
+          partner_params: {}
         }
-      })
-      expect(Attribution.checkAttribution).toHaveBeenCalledWith({
-        status: 'success'
-      }, {
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        gps_adid: 'really-sweet-value'
-      })
+      }
     })
 
   })
@@ -185,13 +163,17 @@ describe('test initiated instance', () => {
       url: '/event',
       method: 'POST',
       params: {
-        event_token: 'some-event-token2',
-        callback_params: {},
-        partner_params: {},
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        gps_adid: 'really-sweet-value'
+        base: {
+          app_token: 'some-app-token',
+          environment: 'production',
+          os_name: 'android',
+          gps_adid: 'really-sweet-value'
+        },
+        other: {
+          event_token: 'some-event-token2',
+          callback_params: {},
+          partner_params: {}
+        }
       }
     })
 
@@ -211,15 +193,19 @@ describe('test initiated instance', () => {
       url: '/event',
       method: 'POST',
       params: {
-        event_token: 'some-event-token3',
-        callback_params: {'some-key': 'some-value'},
-        partner_params: {key1: 'value1', key2: 'value2'},
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        gps_adid: 'really-sweet-value',
-        revenue: "100.00000",
-        currency: 'EUR'
+        base: {
+          app_token: 'some-app-token',
+          environment: 'production',
+          os_name: 'android',
+          gps_adid: 'really-sweet-value',
+        },
+        other: {
+          event_token: 'some-event-token3',
+          callback_params: {'some-key': 'some-value'},
+          partner_params: {key1: 'value1', key2: 'value2'},
+          revenue: "100.00000",
+          currency: 'EUR'
+        }
       }
     })
   })

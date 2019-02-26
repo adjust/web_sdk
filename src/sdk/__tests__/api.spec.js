@@ -1,5 +1,6 @@
 /* eslint-disable */
 import * as Api from '../api'
+import * as Attribution from '../attribution'
 
 function createMockXHR (response, status = 200, statusText = 'OK') {
   return {
@@ -23,9 +24,9 @@ describe('perform api requests', () => {
     window.XMLHttpRequest = oldXMLHttpRequest
   })
 
-  it('throws failed request', () => {
+  it('rejects when network issue', () => {
 
-    mockXHR = createMockXHR({error: 'internal error'}, 500, 'Internal Server error')
+    mockXHR = createMockXHR({error: 'connection failed'}, 500, 'Connection failed')
     window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -35,18 +36,18 @@ describe('perform api requests', () => {
       params: {}
     })).rejects.toEqual({
       status: 500,
-      statusText: 'Internal Server error',
-      response: {error: 'internal error'},
-      responseText: JSON.stringify({error: 'internal error'})
+      statusText: 'Connection failed',
+      response: {error: 'Unknown error, retry will follow'},
+      responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
     })
 
     mockXHR.onerror()
 
   })
 
-  it('throws bad request', () => {
+  it('rejects when status 0', () => {
 
-    mockXHR = createMockXHR({error: 'bad request'}, 400, 'Bad Request')
+    mockXHR = createMockXHR('', 0, 'Network issue')
     window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -55,10 +56,52 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
+      status: 0,
+      statusText: 'Network issue',
+      response: {error: 'Unknown error, retry will follow'},
+      responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
+    })
+
+    mockXHR.onreadystatechange()
+
+  })
+
+  it('resolves error returned from server (because of retry mechanism)', () => {
+
+    mockXHR = createMockXHR({error: 'some error'}, 400, 'Some error')
+    window.XMLHttpRequest = jest.fn(() => mockXHR)
+
+    expect.assertions(1)
+
+    expect(Api.request({
+      url: '/some-url',
+      params: {}
+    })).resolves.toEqual({
       status: 400,
-      statusText: 'Bad Request',
-      response: {error: 'bad request'},
-      responseText: JSON.stringify({error: 'bad request'})
+      statusText: 'Some error',
+      response: {error: 'some error'},
+      responseText: JSON.stringify({error: 'some error'})
+    })
+
+    mockXHR.onreadystatechange()
+
+  })
+
+  it('reject badly formed json from server', () => {
+
+    mockXHR = createMockXHR('bla bla not json', 200, 'OK')
+    window.XMLHttpRequest = jest.fn(() => mockXHR)
+
+    expect.assertions(1)
+
+    expect(Api.request({
+      url: '/some-url',
+      params: {}
+    })).rejects.toEqual({
+      status: 200,
+      statusText: 'OK',
+      response: {error: 'Unknown error, retry will follow'},
+      responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
     })
 
     mockXHR.onreadystatechange()
@@ -108,14 +151,18 @@ describe('perform api requests', () => {
       expect(Api.request({
         url: '/some-url',
         params: {
-          some: 'thing',
-          very: 'nice',
-          empty: '',
-          empty2: null,
-          zero: 0,
-          empty3: undefined,
-          bla: 'ble',
-          obj: {}
+          base: {
+            some: 'thing',
+            very: 'nice',
+            empty: '',
+            empty2: null,
+          },
+          other: {
+            zero: 0,
+            empty3: undefined,
+            bla: 'ble',
+            obj: {}
+          }
         }
       })).resolves.toEqual(response)
       expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?some=thing&very=nice&zero=0&bla=ble', true)
@@ -168,9 +215,13 @@ describe('perform api requests', () => {
       expect(Api.request({
         url: '/session',
         params: {
-          some: 'thing',
-          very: 'nice',
-          and: {test: 'object'}
+          base: {
+            some: 'thing',
+            very: 'nice'
+          },
+          other: {
+            and: {test: 'object'}
+          }
         }
       })).resolves.toEqual({
         adid: '123123',
@@ -207,5 +258,118 @@ describe('perform api requests', () => {
       mockXHR.onreadystatechange()
     })
 
+  })
+
+  describe('check attribution response', () => {
+
+    const prepare = (response) => {
+      mockXHR = createMockXHR(response)
+      window.XMLHttpRequest = jest.fn(() => mockXHR)
+    }
+
+    beforeAll(() => {
+      jest.spyOn(Attribution, 'checkAttribution')
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    afterAll(() => {
+      jest.restoreAllMocks()
+    })
+
+    it('checks attribution info on session request with ask_in', () => {
+
+      prepare({
+        adid: '123123',
+        message: 'bla',
+        timestamp: '2019-02-02',
+        ask_in: 2500
+      })
+
+      expect.assertions(2)
+
+      Api.request({
+        url: '/session',
+        params: {
+          app_token: '123abc',
+          environment: 'sandbox',
+          os_name: 'ios'
+        }
+      }).then(result => {
+        expect(result).toEqual({
+          adid: '123123',
+          timestamp: '2019-02-02',
+          ask_in: 2500
+        })
+        expect(Attribution.checkAttribution).toHaveBeenCalledWith(
+          result, {
+          app_token: '123abc',
+          environment: 'sandbox',
+          os_name: 'ios'
+        })
+      })
+
+      mockXHR.onreadystatechange()
+
+    })
+
+    it('does not check attribution info on session request without ask_in', () => {
+
+      prepare({
+        adid: '123123',
+        message: 'bla',
+        timestamp: '2019-02-02'
+      })
+
+      expect.assertions(2)
+
+      Api.request({
+        url: '/session',
+        params: {
+          app_token: '123abc',
+          environment: 'sandbox',
+          os_name: 'ios'
+        }
+      }).then(result => {
+        expect(result).toEqual({
+          adid: '123123',
+          timestamp: '2019-02-02'
+        })
+        expect(Attribution.checkAttribution).not.toHaveBeenCalled()
+      })
+
+      mockXHR.onreadystatechange()
+
+    })
+
+    it('checks attribution info on any request with ask_in', () => {
+
+      prepare({
+        message: 'bla',
+        ask_in: 2500
+      })
+
+      expect.assertions(2)
+
+      Api.request({
+        url: '/anything',
+        params: {
+          app_token: '123abc'
+        }
+      }).then(result => {
+        expect(result).toEqual({
+          ask_in: 2500
+        })
+        expect(Attribution.checkAttribution).toHaveBeenCalledWith(
+          result, {
+            app_token: '123abc'
+          })
+      })
+
+      mockXHR.onreadystatechange()
+
+    })
   })
 })

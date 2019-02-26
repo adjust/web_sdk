@@ -39,8 +39,25 @@ function isObject (obj) {
   return typeof obj === 'object' && obj !== null
 }
 
+/**
+ * Check if string is valid json
+ *
+ * @param {string} string
+ * @returns {boolean}
+ * @private
+ */
+function isValidJson (string) {
+  try {
+    const json = JSON.parse(string)
+    return (typeof json === 'object')
+  } catch (e) {
+    return false
+  }
+}
+
 export {
   buildList,
   isEmpty,
-  isObject
+  isObject,
+  isValidJson
 }

@@ -1,5 +1,17 @@
 import config from './config'
-import {isEmpty, isObject} from './utilities'
+import {isEmpty, isObject, isValidJson} from './utilities'
+import {checkAttribution} from './attribution'
+
+/**
+ * Check if attribution requst
+ *
+ * @param {string} url
+ * @returns {boolean}
+ * @private
+ */
+function _isAttributionRequest (url) {
+  return /\/attribution/.test(url)
+}
 
 /**
  * Get filtered response from successful request
@@ -12,7 +24,7 @@ import {isEmpty, isObject} from './utilities'
 function _getSuccessObject (xhr, url) {
 
   const response = xhr.response ? JSON.parse(xhr.response) : {}
-  const append = /\/attribution/.test(url) ? ['attribution', 'message'] : []
+  const append = _isAttributionRequest(url) ? ['attribution', 'message'] : []
 
   return ['adid', 'timestamp', 'ask_in', ...append]
     .filter(key => response[key])
@@ -23,15 +35,19 @@ function _getSuccessObject (xhr, url) {
  * Get an error object with necessary data
  *
  * @param {Object} xhr
+ * @param {boolean=} parseResponse
  * @returns {Object}
  * @private
  */
-function _getErrorObject (xhr) {
+function _getErrorObject (xhr, parseResponse) {
+
+  const error = {error: 'Unknown error, retry will follow'}
+
   return {
     status: xhr.status,
     statusText: xhr.statusText,
-    response: xhr.response ? JSON.parse(xhr.response) : {error: 'Unknown error, retry will follow'},
-    responseText: xhr.responseText
+    response: parseResponse ? JSON.parse(xhr.response) : error,
+    responseText: parseResponse ? xhr.responseText : JSON.stringify(error)
   }
 }
 
@@ -43,6 +59,14 @@ function _getErrorObject (xhr) {
  * @private
  */
 function _encodeParams (params) {
+
+  const baseParams = params.base || {}
+  const otherParams = params.other || {}
+
+  params = params.base
+    ? Object.assign({}, baseParams, otherParams)
+    : params
+
   return Object
     .entries(params)
     .filter(pair => {
@@ -61,14 +85,41 @@ function _encodeParams (params) {
 }
 
 /**
- * Request factory to perform all kind of api requests
+ * Handle xhr response from server
+ *
+ * @param {Function} reject
+ * @param {Function} resolve
+ * @param {Object} xhr
+ * @param {string} url
+ * @private
+ */
+function _handleReadyStateChange (reject, resolve, {xhr, url}) {
+
+  if (xhr.readyState !== 4) return
+
+  if (xhr.status >= 200 && xhr.status < 300) {
+    if (isValidJson(xhr.response)) {
+      resolve(_getSuccessObject(xhr, url))
+    } else {
+      reject(_getErrorObject(xhr))
+    }
+  } else if (xhr.status === 0) {
+    reject(_getErrorObject(xhr))
+  } else {
+    resolve(_getErrorObject(xhr, true))
+  }
+
+}
+
+/**
+ * Build xhr to perform all kind of api requests
  *
  * @param {string} url
  * @param {string} [method='GET']
  * @param {Object} [params={}]
  * @returns {Promise}
  */
-function request ({url, method = 'GET', params = {}}) {
+function _buildXhr ({url, method = 'GET', params = {}}) {
 
   const encodedParams = _encodeParams(params)
 
@@ -88,22 +139,39 @@ function request ({url, method = 'GET', params = {}}) {
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
     }
 
-    xhr.onreadystatechange = () => {
-
-      if (xhr.readyState !== 4) return
-
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(_getSuccessObject(xhr, url))
-      } else {
-        reject(_getErrorObject(xhr))
-      }
-    }
-
+    xhr.onreadystatechange = () => _handleReadyStateChange(reject, resolve, {xhr, url})
     xhr.onerror = () => reject(_getErrorObject(xhr))
 
     xhr.send(method === 'GET' ? undefined : encodedParams)
 
   })
+}
+
+/**
+ * Check attribution asynchronously and pass the previous result immediately
+ *
+ * @param {Object} result
+ * @param {Object} options
+ * @returns {Object}
+ * @private
+ */
+function _checkAttribution (result, options) {
+
+  if (!_isAttributionRequest(options.url) && result.ask_in) {
+    checkAttribution(result, options.params)
+  }
+  return result
+}
+
+/**
+ * Request factory to perform all kind of api requests
+ *
+ * @param {Object} options
+ * @returns {Promise}
+ */
+function request (options) {
+  return _buildXhr(options)
+    .then(result => _checkAttribution(result, options))
 }
 
 export {

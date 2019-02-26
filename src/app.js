@@ -75,7 +75,7 @@ function log (message) {
   console.log(message) // eslint-disable-line
 }
 
-function wait (result) {
+function wait (result = {}) {
 
   if (!result.ask_in) { return }
 

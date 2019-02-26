@@ -1,6 +1,5 @@
 import {request} from './api'
 import {buildList} from './utilities'
-import {checkAttribution} from './attribution'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 
 /**
@@ -92,13 +91,11 @@ function trackSession () {
     throw new Error('You must init your instance')
   }
 
-  const params = _getBaseParams()
-
   return request({
     url: '/session',
     method: 'POST',
-    params
-  }).then(result => _checkAttribution(result, params))
+    params: _getBaseParams()
+  })
 }
 
 /**
@@ -113,21 +110,18 @@ function trackEvent (params = {}) {
     throw new Error('You must init your instance')
   }
 
-  const baseParams = _getBaseParams()
-
   return request({
     url: '/event',
     method: 'POST',
-    params:  Object.assign(
-      {},
-      baseParams,
-      Object.assign({
+    params: {
+      base: _getBaseParams(),
+      other: Object.assign({
         event_token: params.eventToken,
         callback_params: _convertToMap(params.callbackParams),
         partner_params: _convertToMap(params.partnerParams),
       }, _getRevenue(params.revenue, params.currency))
-    )
-  }).then(result => _checkAttribution(result, baseParams))
+    }
+  })
 }
 
 /**
@@ -226,19 +220,6 @@ function _getRevenue (revenue, currency) {
  */
 function _convertToMap (params = []) {
   return params.reduce((acc, o) => Object.assign(acc, {[o.key]: o.value}), {})
-}
-
-/**
- * Check attribution asynchronously and pass the previous result immediately
- *
- * @param {Object} result
- * @param {Object} params
- * @returns {Object}
- * @private
- */
-function _checkAttribution (result, params) {
-  checkAttribution(result, params)
-  return result
 }
 
 const Adjust = {
