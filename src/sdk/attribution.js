@@ -1,14 +1,15 @@
 import {request} from './api'
 import {setItem, getItem} from './storage'
 import {publish} from './pub-sub'
+import backOff from './backoff'
 
 /**
- * Timeout id to keep when delayed attribution check is about to happen
+ * Timeout id and wait when delayed attribution check is about to happen
  *
- * @type {Number}
+ * @type {Object}
  * @private
  */
-let _timeoutId = null
+let _timeout = {id: null, attempts: 0}
 
 /**
  * Check if new attribution is the same as old one
@@ -58,6 +59,55 @@ function _setAttribution (result = {}) {
 }
 
 /**
+ * Make delayed request after provided time
+ *
+ * @param {number} wait
+ * @param {Object} params
+ * @returns {Promise}
+ * @private
+ */
+function _delayedRequest (wait, params) {
+
+  clearTimeout(_timeout.id)
+
+  return new Promise(resolve => {
+    _timeout.id = setTimeout(() => {
+      return _request(resolve, params)
+    }, wait)
+  })
+}
+
+/**
+ * Retry request after some pre-calculated time
+ *
+ * @param {Object} params
+ * @returns {Promise}
+ * @private
+ */
+function _retry (params) {
+
+  _timeout.attempts += 1
+
+  return _delayedRequest(backOff(_timeout.attempts), params)
+}
+
+/**
+ * Make the request and retry if necessary
+ *
+ * @param {Function} resolve
+ * @param {Object} params
+ * @returns {Promise}
+ * @private
+ */
+function _request (resolve, params) {
+  return request({
+    url: '/attribution',
+    params: params.base || params
+  }).then(result => resolve(_requestAttribution(result, params)))
+    .catch(() => _retry(params))
+}
+
+/**
  * Request the attribution if needed and when retrieved then try to preserve it
  *
  * @param {Object} result
@@ -72,23 +122,16 @@ function _requestAttribution (result = {}, params) {
     return Promise.resolve(result)
   }
 
-  clearTimeout(_timeoutId)
+  _timeout.attempts = 0
 
-  return new Promise(resolve => {
-    _timeoutId = setTimeout(() => {
-      return request({url: '/attribution', params})
-        .then(result => resolve(_requestAttribution(result, params)))
-    }, result.ask_in)
-  })
-
-
+  return _delayedRequest(result.ask_in, params)
 }
 
 /**
  * Check attribution of the user and perform certain actions if retrieved
  *
  * @param {Object} sessionResult
- * @param {Number} sessionResult.ask_in
+ * @param {number} sessionResult.ask_in
  * @param {Object} params
  */
 export function checkAttribution (sessionResult = {}, params) {
