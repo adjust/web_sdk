@@ -1,5 +1,5 @@
 import config from './config'
-import {isEmpty, isObject, isValidJson} from './utilities'
+import {isEmpty, isObject, isValidJson, getTimestamp} from './utilities'
 import {checkAttribution} from './attribution'
 
 /**
@@ -66,10 +66,14 @@ function _encodeParams (params) {
 
   const baseParams = params.base || {}
   const otherParams = params.other || {}
+  const autoParams = {
+    created_at: getTimestamp(),
+    sent_at: getTimestamp()
+  }
 
   params = params.base
-    ? Object.assign({}, baseParams, otherParams)
-    : params
+    ? Object.assign(autoParams, baseParams, otherParams)
+    : Object.assign(autoParams, params)
 
   return Object
     .entries(params)

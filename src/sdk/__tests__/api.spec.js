@@ -1,6 +1,8 @@
 /* eslint-disable */
 import * as Api from '../api'
 import * as Attribution from '../attribution'
+import * as Utilities from '../utilities'
+import {getTimestamp} from '../utilities'
 
 function createMockXHR (response, status = 200, statusText = 'OK') {
   return {
@@ -20,8 +22,15 @@ describe('perform api requests', () => {
   const oldXMLHttpRequest = window.XMLHttpRequest
   let mockXHR = null
 
+  beforeAll(() => {
+    jest.spyOn(Utilities, 'getTimestamp')
+    Utilities.getTimestamp.mockReturnValue('some-time')
+  })
   afterEach(() => {
     window.XMLHttpRequest = oldXMLHttpRequest
+  })
+  afterAll(() => {
+    jest.restoreAllMocks()
   })
 
   it('rejects when network issue', () => {
@@ -131,7 +140,7 @@ describe('perform api requests', () => {
           and: {test: 'object'}
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D', true)
+      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -160,7 +169,7 @@ describe('perform api requests', () => {
           }
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?some=thing&very=nice&zero=0&bla=ble', true)
+      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -183,7 +192,7 @@ describe('perform api requests', () => {
       expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
-      expect(mockXHR.send).toHaveBeenCalledWith('some=thing&very=nice')
+      expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice')
 
       mockXHR.onreadystatechange()
 
@@ -300,10 +309,11 @@ describe('perform api requests', () => {
         })
         expect(Attribution.checkAttribution).toHaveBeenCalledWith(
           result, {
-          app_token: '123abc',
-          environment: 'sandbox',
-          os_name: 'ios'
-        })
+            app_token: '123abc',
+            environment: 'sandbox',
+            os_name: 'ios',
+            created_at: 'some-time'
+          })
       })
 
       mockXHR.onreadystatechange()
@@ -359,7 +369,8 @@ describe('perform api requests', () => {
         })
         expect(Attribution.checkAttribution).toHaveBeenCalledWith(
           result, {
-            app_token: '123abc'
+            app_token: '123abc',
+            created_at: 'some-time'
           })
       })
 

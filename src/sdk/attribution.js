@@ -2,6 +2,7 @@ import {request} from './api'
 import {setItem, getItem} from './storage'
 import {publish} from './pub-sub'
 import backOff from './backoff'
+import {getTimestamp} from './utilities'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen
@@ -102,7 +103,7 @@ function _retry (params) {
 function _request (resolve, params) {
   return request({
     url: '/attribution',
-    params: params.base || params
+    params: Object.assign((params.base || params), {created_at: params.created_at})
   }).then(result => resolve(_requestAttribution(result, params)))
     .catch(() => _retry(params))
 }
@@ -139,6 +140,8 @@ export function checkAttribution (sessionResult = {}, params) {
   if (!sessionResult.ask_in) {
     return Promise.resolve(sessionResult)
   }
+
+  params.created_at = getTimestamp()
 
   return _requestAttribution(sessionResult, params)
 }

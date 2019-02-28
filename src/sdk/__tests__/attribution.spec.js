@@ -3,6 +3,7 @@ import * as Attribution from '../attribution'
 import * as Api from '../api'
 import * as Storage from '../storage'
 import * as PubSub from '../pub-sub'
+import * as Utilities from '../utilities'
 
 jest.mock('../api')
 jest.useFakeTimers()
@@ -18,6 +19,9 @@ describe('test attribution functionality', () => {
     jest.spyOn(Storage, 'setItem')
     jest.spyOn(Storage, 'getItem')
     jest.spyOn(PubSub, 'publish')
+    jest.spyOn(Utilities, 'getTimestamp')
+
+    Utilities.getTimestamp.mockReturnValue('some-time')
   })
 
   afterEach(() => {
@@ -58,7 +62,10 @@ describe('test attribution functionality', () => {
         expect(setTimeout.mock.calls[0][1]).toBe(3000)
         expect(Api.request).toHaveBeenCalledWith({
           url: '/attribution',
-          params: {some: 'params'}
+          params: {
+            some: 'params',
+            created_at: 'some-time'
+          }
         })
         expect(Storage.setItem).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
@@ -83,7 +90,10 @@ describe('test attribution functionality', () => {
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
         expect(Api.request).toHaveBeenCalledWith({
           url: '/attribution',
-          params: {some: 'params'}
+          params: {
+            some: 'params',
+            created_at: 'some-time'
+          }
         })
 
         expect(Storage.setItem).toHaveBeenCalledWith('attribution', {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'})
@@ -110,7 +120,12 @@ describe('test attribution functionality', () => {
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
         expect(Api.request).toHaveBeenCalledWith({
           url: '/attribution',
-          params: {app_token: '123abc', environment: 'sandbox', os_name: 'ios'}
+          params: {
+            app_token: '123abc',
+            environment: 'sandbox',
+            os_name: 'ios',
+            created_at: 'some-time'
+          }
         })
 
         expect(Storage.setItem).toHaveBeenCalledWith('attribution', {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'})

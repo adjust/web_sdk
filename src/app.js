@@ -101,7 +101,7 @@ function wait (result = {}) {
 }
 
 function _format (date) {
-  const d = new Date(date.replace(/\+0000$/, ''))
+  const d = new Date(date.replace('Z', ''))
   return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`
 }
 
