@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as Api from '../api'
+import * as request from '../request'
 import * as Attribution from '../attribution'
 import * as Utilities from '../utilities'
 import {getTimestamp} from '../utilities'
@@ -40,7 +40,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(Api.request({
+    expect(request.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -61,7 +61,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(Api.request({
+    expect(request.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -82,7 +82,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(Api.request({
+    expect(request.default({
       url: '/some-url',
       params: {}
     })).resolves.toEqual({error: 'some error'})
@@ -98,7 +98,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(Api.request({
+    expect(request.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -132,7 +132,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(Api.request({
+      expect(request.default({
         url: '/some-url',
         params: {
           some: 'thing',
@@ -152,7 +152,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(Api.request({
+      expect(request.default({
         url: '/some-url',
         params: {
           base: {
@@ -181,7 +181,7 @@ describe('perform api requests', () => {
 
       expect.assertions(5)
 
-      expect(Api.request({
+      expect(request.default({
         url: '/some-url',
         method: 'POST',
         params: {
@@ -216,7 +216,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      expect(Api.request({
+      expect(request.default({
         url: '/session',
         params: {
           base: {
@@ -245,7 +245,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      expect(Api.request({
+      expect(request.default({
         url: '/attribution',
         params: {
           some: 'thing',
@@ -294,7 +294,7 @@ describe('perform api requests', () => {
 
       expect.assertions(2)
 
-      Api.request({
+      request.default({
         url: '/session',
         params: {
           app_token: '123abc',
@@ -330,7 +330,7 @@ describe('perform api requests', () => {
 
       expect.assertions(2)
 
-      Api.request({
+      request.default({
         url: '/session',
         params: {
           app_token: '123abc',
@@ -358,7 +358,7 @@ describe('perform api requests', () => {
 
       expect.assertions(2)
 
-      Api.request({
+      request.default({
         url: '/anything',
         params: {
           app_token: '123abc'

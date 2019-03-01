@@ -1,11 +1,11 @@
 /* eslint-disable */
 import * as Attribution from '../attribution'
-import * as Api from '../api'
+import * as request from '../request'
 import * as Storage from '../storage'
 import * as PubSub from '../pub-sub'
 import * as Utilities from '../utilities'
 
-jest.mock('../api')
+jest.mock('../request')
 jest.useFakeTimers()
 
 function flushPromises() {
@@ -15,7 +15,7 @@ function flushPromises() {
 describe('test attribution functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(Api, 'request')
+    jest.spyOn(request, 'default')
     jest.spyOn(Storage, 'setItem')
     jest.spyOn(Storage, 'getItem')
     jest.spyOn(PubSub, 'publish')
@@ -52,7 +52,7 @@ describe('test attribution functionality', () => {
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
     Storage.getItem.mockReturnValue(Object.assign({adid: '123'}, currentAttribution.attribution))
-    Api.request.mockResolvedValue(currentAttribution)
+    request.default.mockResolvedValue(currentAttribution)
 
     expect.assertions(5)
 
@@ -60,7 +60,7 @@ describe('test attribution functionality', () => {
       .then(result => {
         expect(result).toEqual(currentAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(3000)
-        expect(Api.request).toHaveBeenCalledWith({
+        expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
             some: 'params',
@@ -80,7 +80,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
 
     Storage.getItem.mockReturnValue(oldAttribution)
-    Api.request.mockResolvedValue(newAttribution)
+    request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
 
@@ -88,7 +88,7 @@ describe('test attribution functionality', () => {
       .then(result => {
         expect(result).toEqual(newAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
-        expect(Api.request).toHaveBeenCalledWith({
+        expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
             some: 'params',
@@ -110,7 +110,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
 
     Storage.getItem.mockReturnValue(oldAttribution)
-    Api.request.mockResolvedValue(newAttribution)
+    request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
 
@@ -118,7 +118,7 @@ describe('test attribution functionality', () => {
       .then(result => {
         expect(result).toEqual(newAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
-        expect(Api.request).toHaveBeenCalledWith({
+        expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
             app_token: '123abc',
@@ -142,7 +142,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
 
     Storage.getItem.mockReturnValue(oldAttribution)
-    Api.request.mockResolvedValue({ask_in: 3000})
+    request.default.mockResolvedValue({ask_in: 3000})
 
     Attribution.checkAttribution({ask_in: 2000}, {some: 'params'})
 
@@ -168,8 +168,8 @@ describe('test attribution functionality', () => {
         expect(Storage.setItem).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
 
-        Api.request.mockClear()
-        Api.request.mockResolvedValue(newAttribution)
+        request.default.mockClear()
+        request.default.mockResolvedValue(newAttribution)
 
         jest.runOnlyPendingTimers()
 
@@ -184,7 +184,7 @@ describe('test attribution functionality', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
-    Api.request.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue({error: 'An error'})
 
     Attribution.checkAttribution({ask_in: 2000}, {some: 'params'})
 
@@ -201,7 +201,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       }).then(() => {
-        expect(Api.request).toHaveBeenCalledTimes(1)
+        expect(request.default).toHaveBeenCalledTimes(1)
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout.mock.calls[1][1]).toEqual(100)
 
@@ -209,7 +209,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       }).then(() => {
-        expect(Api.request).toHaveBeenCalledTimes(2)
+        expect(request.default).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenCalledTimes(3)
         expect(setTimeout.mock.calls[2][1]).toEqual(200)
 
@@ -217,7 +217,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       }).then(() => {
-        expect(Api.request).toHaveBeenCalledTimes(3)
+        expect(request.default).toHaveBeenCalledTimes(3)
         expect(setTimeout).toHaveBeenCalledTimes(4)
         expect(setTimeout.mock.calls[3][1]).toEqual(300)
 
@@ -225,19 +225,19 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       }).then(() => {
-        expect(Api.request).toHaveBeenCalledTimes(4)
+        expect(request.default).toHaveBeenCalledTimes(4)
         expect(setTimeout).toHaveBeenCalledTimes(5)
         expect(setTimeout.mock.calls[4][1]).toEqual(300)
 
         setTimeout.mockClear()
-        Api.request.mockClear()
-        Api.request.mockResolvedValue(currentAttribution)
+        request.default.mockClear()
+        request.default.mockResolvedValue(currentAttribution)
 
         jest.runOnlyPendingTimers()
 
         return flushPromises()
       }).then(() => {
-        expect(Api.request).toHaveBeenCalledTimes(1)
+        expect(request.default).toHaveBeenCalledTimes(1)
         expect(setTimeout).not.toHaveBeenCalled()
 
         return flushPromises()

@@ -177,11 +177,7 @@ function _checkAttribution (result, options) {
  * @param {Object} options
  * @returns {Promise}
  */
-function request (options) {
+export default function request (options) {
   return _buildXhr(options)
     .then(result => _checkAttribution(result, options))
-}
-
-export {
-  request
 }

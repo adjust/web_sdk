@@ -1,4 +1,4 @@
-import {request} from './api'
+import request from './request'
 import {setItem, getItem} from './storage'
 import {publish} from './pub-sub'
 import backOff from './backoff'
