@@ -3,23 +3,12 @@ import backOff from './backoff'
 import {getItem, setItem} from './storage'
 
 /**
- * Queue mechanism options
- *
- * @type {{defaultWait: number}}
- *
- * @private
- */
-const _options = {
-  defaultWait: 150
-}
-
-/**
  * Timeout id and wait when pending request is about to happen
  *
  * @type {Object}
  * @private
  */
-let _timeout = {id: null, attempts: 0}
+let _timeout = {id: null, attempts: 0, wait: 150}
 
 /**
  * Remove from the top and continue running pending requests
@@ -32,10 +21,11 @@ function _continue () {
 
   pending.shift()
 
-  _timeout.attempts = 0
-
   setItem('queue', pending)
-  setItem('wait', _options.defaultWait)
+
+  _timeout.attempts = 0
+  _timeout.wait = 150
+
   run()
 }
 
@@ -47,8 +37,8 @@ function _continue () {
 function _retry () {
 
   _timeout.attempts += 1
+  _timeout.wait = backOff(_timeout.attempts)
 
-  setItem('wait', backOff(_timeout.attempts))
   run()
 }
 
@@ -78,7 +68,6 @@ function push ({url, method, params}) {
  */
 function run () {
 
-  const wait = getItem('wait', _options.defaultWait)
   const pending = getItem('queue', [])
   const params = pending[0]
 
@@ -93,7 +82,7 @@ function run () {
     return request(params)
       .then(_continue)
       .catch(_retry)
-  }, wait)
+  }, _timeout.wait)
 }
 
 export default {
