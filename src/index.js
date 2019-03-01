@@ -35,8 +35,6 @@ const eventConfig = {
 }
 
 const attributionCallback = (e, attribution) => {
-  app.log('Attribution was changed:')
-  app.log(attribution)
   app.logAttribution(attribution)
 }
 
@@ -46,33 +44,9 @@ adjustSDK.init(appConfig, attributionCallback)
 app.start(trackSession, trackEvent)
 
 function trackSession () {
-  return new Promise((resolve, reject) => {
-    // SESSION TRACKING: initiate session tracking and debug the result
-    return adjustSDK.trackSession()
-      .then(result => {
-        app.log(result) // logs to console
-        app.wait(result)
-        resolve(result)
-      })
-      .catch(error => {
-        app.log(error) // logs to console
-        reject(error)
-      })
-  })
+  adjustSDK.trackSession()
 }
 
 function trackEvent () {
-  return new Promise((resolve, reject) => {
-    // EVENT TRACKING: initiate event tracking with specified configuration and debug the result
-    return adjustSDK.trackEvent(eventConfig)
-      .then(result => {
-        app.log(result) // logs to console
-        app.wait(result)
-        resolve(result)
-      })
-      .catch(error => {
-        app.log(error) // logs to console
-        reject(error)
-      })
-  })
+  adjustSDK.trackEvent(eventConfig)
 }

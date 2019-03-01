@@ -18,7 +18,7 @@ const _timeout = {
   attribution: null
 }
 
-function _handleClick (what, cb) {
+function _handleClick (what, action) {
 
   if (_loading[what]) {
     return
@@ -29,10 +29,9 @@ function _handleClick (what, cb) {
   _prepareLog(what)
   clearTimeout(_timeout[what])
 
-  return _timeout[what] = setTimeout(() => {
-    return cb()
-      .then(result => _cb(result, 'success', what))
-      .catch(error => _cb(error, 'error', what))
+  _timeout[what] = setTimeout(() => {
+    action()
+    _log(what)
   }, 500)
 
 }
@@ -52,14 +51,14 @@ function _prepareLog (what) {
 
 }
 
-function _cb (result, type, what) {
+function _log (what) {
 
   const logContainer = _getLogContainer(what)
 
   _loading[what] = false
 
-  logContainer.textContent = JSON.stringify(result, undefined, 2)
-  logContainer.classList.add(type)
+  logContainer.textContent = `${what} has been triggered, check network console`
+  logContainer.classList.add('success')
   logContainer.classList.remove('loading')
 
 }
@@ -68,35 +67,6 @@ function start (sessionCb, eventCb) {
 
   _elements.sessionBtn.addEventListener('click', () => _handleClick('session', sessionCb))
   _elements.eventBtn.addEventListener('click', () => _handleClick('event', eventCb))
-
-}
-
-function log (message) {
-  console.log(message) // eslint-disable-line
-}
-
-function wait (result = {}) {
-
-  if (!result.ask_in) { return }
-
-  const logContainer = _getLogContainer('attribution')
-
-  logContainer.textContent = 'waiting...'
-  logContainer.classList.remove('success')
-  logContainer.classList.add('loading')
-
-  clearTimeout(_timeout.attribution)
-
-  _timeout.attribution = setTimeout(() => {
-    try {
-      JSON.parse(logContainer.textContent)
-    } catch (error) {
-      _elements.attributionStatus.textContent = `no change at ${_format(result.timestamp)}`
-      logContainer.textContent = ''
-      logContainer.classList.remove('success')
-      logContainer.classList.remove('loading')
-    }
-  }, result.ask_in + 300)
 
 }
 
@@ -119,8 +89,6 @@ function logAttribution (result) {
 
 const App = {
   start,
-  log,
-  wait,
   logAttribution
 }
 

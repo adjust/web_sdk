@@ -79,6 +79,10 @@ pre {
   &.error {
     color: #e02d45;
   }
+
+  &.small {
+    min-height: 60px;
+  }
 }
 
 .section {
