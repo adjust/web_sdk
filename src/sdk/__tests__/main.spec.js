@@ -1,10 +1,13 @@
 /* eslint-disable */
 import * as request from '../request'
 import * as PubSub from '../pub-sub'
+import * as Queue from '../queue'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
+import * as Utilities from '../utilities'
 
 jest.mock('../request')
+jest.useFakeTimers()
 
 const external = {
   attributionCb () {}
@@ -54,6 +57,9 @@ describe('test initiated instance', () => {
     jest.spyOn(request, 'default')
     jest.spyOn(external, 'attributionCb')
     jest.spyOn(PubSub, 'subscribe')
+    jest.spyOn(Queue.default, 'push')
+    jest.spyOn(Utilities, 'getTimestamp')
+    Utilities.getTimestamp.mockReturnValue('some-time')
 
     mainInstance.init({
       app_token: 'some-app-token',
@@ -70,7 +76,9 @@ describe('test initiated instance', () => {
   })
 
   afterAll(() => {
+    jest.clearAllTimers()
     jest.restoreAllMocks()
+    localStorage.clear()
     mainInstance.destroy()
   })
 
@@ -110,33 +118,38 @@ describe('test initiated instance', () => {
 
   it('resolves trackSession request and checks attribution', () => {
 
-    expect(mainInstance.trackSession()).resolves.toEqual({status: 'success'})
-    expect(request.default).toHaveBeenCalledWith({
+    const requestConfig = {
       url: '/session',
       method: 'POST',
       params: {
+        created_at: 'some-time',
         app_token: 'some-app-token',
         environment: 'production',
         os_name: 'android',
         gps_adid: 'really-sweet-value'
       }
-    })
+    }
+
+    mainInstance.trackSession()
+
+    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+
+    jest.runAllTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default).toHaveBeenCalledWith(requestConfig)
+    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
   })
 
   it('resolves trackEvent request successfully without revenue and some map params', () => {
 
-    expect(mainInstance.trackEvent({
-      eventToken: 'some-event-token1',
-      callbackParams: [{key: 'some-key', value: 'some-value'}],
-      revenue: 0
-    })).resolves.toEqual({status: 'success'})
-
-    expect(request.default).toHaveBeenCalledWith({
+    const requestConfig = {
       url: '/event',
       method: 'POST',
       params: {
         base: {
+          created_at: 'some-time',
           app_token: 'some-app-token',
           environment: 'production',
           os_name: 'android',
@@ -148,22 +161,32 @@ describe('test initiated instance', () => {
           partner_params: {}
         }
       }
+    };
+
+    mainInstance.trackEvent({
+      eventToken: 'some-event-token1',
+      callbackParams: [{key: 'some-key', value: 'some-value'}],
+      revenue: 0
     })
+
+    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+
+    jest.runAllTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default).toHaveBeenCalledWith(requestConfig)
+    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
   })
 
   it('resolves trackEvent request successfully with revenue but no currency', () => {
 
-    expect(mainInstance.trackEvent({
-      eventToken: 'some-event-token2',
-      revenue: 1000
-    })).resolves.toEqual({status: 'success'})
-
-    expect(request.default).toHaveBeenCalledWith({
+    const requestConfig = {
       url: '/event',
       method: 'POST',
       params: {
         base: {
+          created_at: 'some-time',
           app_token: 'some-app-token',
           environment: 'production',
           os_name: 'android',
@@ -175,25 +198,31 @@ describe('test initiated instance', () => {
           partner_params: {}
         }
       }
+    }
+
+    mainInstance.trackEvent({
+      eventToken: 'some-event-token2',
+      revenue: 1000
     })
+
+    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+
+    jest.runAllTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default).toHaveBeenCalledWith(requestConfig)
+    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
   })
 
   it('resolves trackEvent request successfully with revenue and some map params', () => {
 
-    expect(mainInstance.trackEvent({
-      eventToken: 'some-event-token3',
-      callbackParams: [{key: 'some-key', value: 'some-value'}],
-      partnerParams: [{key: 'key1', value: 'value1'}, {key: 'key2', value: 'value2'}],
-      revenue: 100,
-      currency: 'EUR'
-    })).resolves.toEqual({status: 'success'})
-
-    expect(request.default).toHaveBeenCalledWith({
+    const requestConfig = {
       url: '/event',
       method: 'POST',
       params: {
         base: {
+          created_at: 'some-time',
           app_token: 'some-app-token',
           environment: 'production',
           os_name: 'android',
@@ -207,7 +236,24 @@ describe('test initiated instance', () => {
           currency: 'EUR'
         }
       }
+    }
+
+    mainInstance.trackEvent({
+      eventToken: 'some-event-token3',
+      callbackParams: [{key: 'some-key', value: 'some-value'}],
+      partnerParams: [{key: 'key1', value: 'value1'}, {key: 'key2', value: 'value2'}],
+      revenue: 100,
+      currency: 'EUR'
     })
+
+    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+
+    jest.runAllTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default).toHaveBeenCalledWith(requestConfig)
+    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
+
   })
 })
 

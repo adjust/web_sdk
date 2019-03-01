@@ -8,7 +8,13 @@ const HOUR = 60 * MINUTE
  * @type {Object}
  */
 const _options = {
-  default: {
+  long: {
+    delay: 2 * MINUTE,
+    maxDelay: 24 * HOUR,
+    minRange: 0.5,
+    maxRange: 1.0,
+  },
+  short: {
     delay: 200,
     maxDelay: HOUR,
     minRange: 0.5,
@@ -36,11 +42,12 @@ function _randomInRange (min, max) {
  * Calculate exponential back-off with jitter factor applied
  *
  * @param {number} attempts
+ * @param {string} [strategy='long']
  * @returns {number}
  */
-export default function backOff (attempts) {
+export default function backOff (attempts, strategy = 'long') {
 
-  let options = IS_TEST ? _options.test : _options.default
+  let options = IS_TEST ? _options.test : _options[strategy]
   let delay = options.delay * Math.pow(2, attempts - 1)
 
   delay = Math.min(delay, options.maxDelay)

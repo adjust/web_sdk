@@ -1,5 +1,5 @@
-import {request} from './api'
-import {buildList} from './utilities'
+import Queue from './queue'
+import {buildList, getTimestamp} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 
 /**
@@ -78,25 +78,12 @@ function init (params = {}, cb) {
     subscribe('attribution:change', cb)
   }
 
-}
+  Queue.run()
 
-/**
- * Check if result has error and throw, otherwise return
- *
- * @param {Object} result
- * @returns {Object}
- * @private
- */
-function _interceptResult (result) {
-  if (result && result.error) { throw result }
-
-  return result
 }
 
 /**
  * Track session with already initiated instance
- *
- * @returns {Promise}
  */
 function trackSession () {
 
@@ -104,18 +91,19 @@ function trackSession () {
     throw new Error('You must init your instance')
   }
 
-  return request({
+  Queue.push({
     url: '/session',
     method: 'POST',
-    params: _getBaseParams()
-  }).then(_interceptResult)
+    params: Object.assign({
+      created_at: getTimestamp()
+    }, _getBaseParams())
+  })
 }
 
 /**
  * Track event with already initiated instance
  *
  * @param {Object} params
- * @returns {Promise}
  */
 function trackEvent (params = {}) {
 
@@ -123,18 +111,20 @@ function trackEvent (params = {}) {
     throw new Error('You must init your instance')
   }
 
-  return request({
+  Queue.push({
     url: '/event',
     method: 'POST',
     params: {
-      base: _getBaseParams(),
+      base: Object.assign({
+        created_at: getTimestamp()
+      }, _getBaseParams()),
       other: Object.assign({
         event_token: params.eventToken,
         callback_params: _convertToMap(params.callbackParams),
         partner_params: _convertToMap(params.partnerParams),
       }, _getRevenue(params.revenue, params.currency))
     }
-  }).then(_interceptResult)
+  })
 }
 
 /**
