@@ -1,6 +1,7 @@
 import request from './request'
 import backOff from './backoff'
 import {getItem, setItem} from './storage'
+import {timePassed} from './utilities'
 
 /**
  * Timeout id and wait when pending request is about to happen
@@ -65,8 +66,13 @@ function push ({url, method, params}) {
 
 /**
  * Run all pending requests
+ * @param {boolean} cleanUpFirst
  */
-function run () {
+function run (cleanUpFirst) {
+
+  if (cleanUpFirst) {
+    _cleanUp()
+  }
 
   const pending = getItem('queue', [])
   const params = pending[0]
@@ -83,6 +89,20 @@ function run () {
       .then(_continue)
       .catch(_retry)
   }, _timeout.wait)
+}
+
+/**
+ * Clean up stale pending requests
+ *
+ * @private
+ */
+function _cleanUp () {
+
+  const pending = getItem('queue', [])
+
+  setItem('queue', pending.filter(call => {
+    return timePassed(call.params.created_at, Date.now()) <= 28
+  }))
 }
 
 export default {

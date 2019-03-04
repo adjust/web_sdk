@@ -291,4 +291,27 @@ describe('test request queuing functionality', () => {
 
   })
 
+  it('cleans up pending requests that are older than 28 days', () => {
+
+    jest.spyOn(Date, 'now').mockReturnValue(new Date('2019-03-03').getTime())
+
+    const queue = [
+      {url: '/url-1', params: {created_at: '2019-02-03T09:10:00.100Z+0100'}},
+      {url: '/url-2', params: {created_at: '2018-12-11T18:10:00.020Z+0100'}},
+      {url: '/url-3', params: {created_at: '2019-01-01T15:05:40.330Z+0100'}},
+      {url: '/url-4', params: {created_at: '2019-02-10T04:15:30.000Z+0100'}},
+      {url: '/url-5', params: {created_at: '2019-02-01T11:20:04.100Z+0100'}},
+      {url: '/url-6', params: {created_at: '2019-03-01T12:00:00.440Z+0100'}}
+    ]
+
+    Storage.setItem('queue', queue)
+
+    Queue.default.run(true)
+
+    const cleaned = Storage.getItem('queue').map(params => params.url)
+
+    expect(cleaned).toEqual(['/url-1', '/url-4', '/url-6'])
+
+  })
+
 })

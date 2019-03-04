@@ -19,9 +19,7 @@ describe('test attribution functionality', () => {
     jest.spyOn(Storage, 'setItem')
     jest.spyOn(Storage, 'getItem')
     jest.spyOn(PubSub, 'publish')
-    jest.spyOn(Utilities, 'getTimestamp')
-
-    Utilities.getTimestamp.mockReturnValue('some-time')
+    jest.spyOn(Utilities, 'getTimestamp').mockReturnValue('some-time')
   })
 
   afterEach(() => {

@@ -58,8 +58,7 @@ describe('test initiated instance', () => {
     jest.spyOn(external, 'attributionCb')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(Queue.default, 'push')
-    jest.spyOn(Utilities, 'getTimestamp')
-    Utilities.getTimestamp.mockReturnValue('some-time')
+    jest.spyOn(Utilities, 'getTimestamp').mockReturnValue('some-time')
 
     mainInstance.init({
       app_token: 'some-app-token',

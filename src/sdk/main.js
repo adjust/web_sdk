@@ -78,7 +78,7 @@ function init (params = {}, cb) {
     subscribe('attribution:change', cb)
   }
 
-  Queue.run()
+  Queue.run(true)
 
 }
 

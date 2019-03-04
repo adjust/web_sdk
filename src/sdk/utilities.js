@@ -143,10 +143,46 @@ function getTimestamp (d) {
   return `${date}T${time}Z${timezone}`
 }
 
+/**
+ * Extract timestamp from the date
+ *
+ * @param {string|number} d
+ * @returns {number}
+ * @private
+ */
+function _extractTimestamp (d) {
+
+  const date = /Z/.test(d) ? d.replace('Z', '') : d
+
+  return new Date(date).getTime()
+}
+
+/**
+ * Calculate time passed between two days (in days)
+ *
+ * @param {string|number} d1
+ * @param {string|number} d2
+ * @returns {number}
+ */
+function timePassed (d1, d2) {
+
+  if (!d1 || !d2) {
+    return 0
+  }
+
+  const date1 = _extractTimestamp(d1)
+  const date2 = _extractTimestamp(d2)
+
+  const diff = Math.abs(date2 - date1)
+
+  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+}
+
 export {
   buildList,
   isEmpty,
   isObject,
   isValidJson,
-  getTimestamp
+  getTimestamp,
+  timePassed
 }
