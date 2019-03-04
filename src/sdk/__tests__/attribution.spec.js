@@ -3,7 +3,7 @@ import * as Attribution from '../attribution'
 import * as request from '../request'
 import * as Storage from '../storage'
 import * as PubSub from '../pub-sub'
-import * as Utilities from '../utilities'
+import * as Time from '../time'
 
 jest.mock('../request')
 jest.useFakeTimers()
@@ -19,7 +19,7 @@ describe('test attribution functionality', () => {
     jest.spyOn(Storage, 'setItem')
     jest.spyOn(Storage, 'getItem')
     jest.spyOn(PubSub, 'publish')
-    jest.spyOn(Utilities, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
 
   afterEach(() => {

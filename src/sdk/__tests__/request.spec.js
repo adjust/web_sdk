@@ -1,8 +1,7 @@
 /* eslint-disable */
 import * as request from '../request'
 import * as Attribution from '../attribution'
-import * as Utilities from '../utilities'
-import {getTimestamp} from '../utilities'
+import * as Time from '../time'
 
 function createMockXHR (response, status = 200, statusText = 'OK') {
   return {
@@ -23,7 +22,7 @@ describe('perform api requests', () => {
   let mockXHR = null
 
   beforeAll(() => {
-    jest.spyOn(Utilities, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
   afterEach(() => {
     window.XMLHttpRequest = oldXMLHttpRequest

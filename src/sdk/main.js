@@ -1,5 +1,6 @@
 import Queue from './queue'
-import {buildList, getTimestamp} from './utilities'
+import {buildList} from './utilities'
+import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 
 /**

@@ -2,7 +2,7 @@ import request from './request'
 import {setItem, getItem} from './storage'
 import {publish} from './pub-sub'
 import backOff from './backoff'
-import {getTimestamp} from './utilities'
+import {getTimestamp} from './time'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen

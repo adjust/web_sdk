@@ -1,7 +1,7 @@
 import request from './request'
 import backOff from './backoff'
 import {getItem, setItem} from './storage'
-import {timePassed} from './utilities'
+import {timePassed} from './time'
 
 /**
  * Timeout id and wait when pending request is about to happen

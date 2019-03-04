@@ -4,7 +4,7 @@ import * as PubSub from '../pub-sub'
 import * as Queue from '../queue'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
-import * as Utilities from '../utilities'
+import * as Time from '../time'
 
 jest.mock('../request')
 jest.useFakeTimers()
@@ -58,7 +58,7 @@ describe('test initiated instance', () => {
     jest.spyOn(external, 'attributionCb')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(Queue.default, 'push')
-    jest.spyOn(Utilities, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
 
     mainInstance.init({
       app_token: 'some-app-token',

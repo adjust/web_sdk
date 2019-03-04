@@ -1,5 +1,6 @@
 import config from './config'
-import {isEmpty, isObject, isValidJson, getTimestamp} from './utilities'
+import {isEmpty, isObject, isValidJson} from './utilities'
+import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
 
 /**
