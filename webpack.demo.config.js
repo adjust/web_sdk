@@ -8,7 +8,7 @@ const webpack = require('webpack')
 
 module.exports = {
   output: {
-    path: path.resolve(__dirname, 'example'),
+    path: path.resolve(__dirname, 'demo'),
     filename: '[name].js'
   },
   optimization: {
