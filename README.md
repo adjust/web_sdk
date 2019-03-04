@@ -54,12 +54,6 @@ adjustSDK.init({
 });
 
 adjustSDK.trackSession()
-  .then(function (result) {
-    console.log(result);
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
 ```
 
 ## <a id="additional-features"></a>Additional features
@@ -76,12 +70,6 @@ var eventConfig = {
 };
 
 adjustSDK.trackEvent(eventConfig)
-  .then(function (result) {
-    console.log(result);
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
 ```
 
 ### <a id="revenue-tracking"></a>Revenue tracking
@@ -96,12 +84,6 @@ var eventConfig = {
 };
 
 adjustSDK.trackEvent(eventConfig)
-  .then(function (result) {
-    console.log(result);
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
 ```
 
 When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here][currency-conversion].
@@ -127,12 +109,6 @@ var eventConfig = {
 };
 
 adjustSDK.trackEvent(eventConfig)
-  .then(function (result) {
-    console.log(result);
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
 ```
 
 In that case we would track the event and send a request to:
@@ -162,12 +138,6 @@ var eventConfig = {
 };
 
 adjustSDK.trackEvent(eventConfig)
-  .then(function (result) {
-    console.log(result);
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
 ```
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].

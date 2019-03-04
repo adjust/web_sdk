@@ -41,6 +41,8 @@ const attributionCallback = (e, attribution) => {
 // INIT: Initiate adjust sdk with specified configuration
 adjustSDK.init(appConfig, attributionCallback)
 
+
+// NOTE: this is custom demo app implementation
 app.start(trackSession, trackEvent)
 
 function trackSession () {
