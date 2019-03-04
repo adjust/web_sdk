@@ -1,6 +1,4 @@
-const SECOND = 1000
-const MINUTE = 60 * SECOND
-const HOUR = 60 * MINUTE
+import Constants from './constants'
 
 /**
  * Options for the back-off strategy for different environments
@@ -9,14 +7,14 @@ const HOUR = 60 * MINUTE
  */
 const _options = {
   long: {
-    delay: 2 * MINUTE,
-    maxDelay: 24 * HOUR,
+    delay: 2 * Constants.minute,
+    maxDelay: Constants.day,
     minRange: 0.5,
     maxRange: 1.0,
   },
   short: {
     delay: 200,
-    maxDelay: HOUR,
+    maxDelay: Constants.hour,
     minRange: 0.5,
     maxRange: 1.0,
   },

@@ -1,3 +1,5 @@
+import Constants from './constants'
+
 /**
  * Build human readable list
  *
@@ -158,13 +160,14 @@ function _extractTimestamp (d) {
 }
 
 /**
- * Calculate time passed between two days (in days)
+ * Calculate time passed between two days (in provided unit, default in days)
  *
  * @param {string|number} d1
  * @param {string|number} d2
+ * @param {string} [unit='day']
  * @returns {number}
  */
-function timePassed (d1, d2) {
+function timePassed (d1, d2, unit = 'day') {
 
   if (!d1 || !d2) {
     return 0
@@ -172,10 +175,10 @@ function timePassed (d1, d2) {
 
   const date1 = _extractTimestamp(d1)
   const date2 = _extractTimestamp(d2)
-
+  const divider = Constants[unit] || Constants.day
   const diff = Math.abs(date2 - date1)
 
-  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+  return Math.round(diff / divider)
 }
 
 export {

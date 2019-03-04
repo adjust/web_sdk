@@ -104,13 +104,55 @@ describe('test for utility methods', () => {
 
     })
 
-    it('calculates the difference between two dates', () => {
+    it('calculates the difference between two dates in days', () => {
 
       let date1 = '2019-01-01T09:00:01.111Z+0100'
       let date2 = '2019-02-15T15:10:12.100Z+0100'
 
-      expect(Utilities.timePassed(date1, date2)).toEqual(46)
+      expect(Utilities.timePassed(date1, date2)).toEqual(45)
       expect(Utilities.timePassed(date1)).toEqual(0)
+
+    })
+
+    it('calculates the difference between two dates in hours', () => {
+
+      let date1 = '2019-01-01T09:00:00.000Z+0100'
+      let date2 = '2019-01-01T15:10:00.000Z+0100'
+
+      expect(Utilities.timePassed(date1, date2, 'hour')).toEqual(6)
+
+      date1 = '2019-01-05T11:10:00.000Z+0100'
+      date2 = '2019-01-06T08:55:00.000Z+0100'
+
+      expect(Utilities.timePassed(date1, date2, 'hour')).toEqual(22)
+
+    })
+
+    it('calculates the difference between two dates in minutes', () => {
+
+      let date1 = '2019-01-01T09:05:30.000Z+0100'
+      let date2 = '2019-01-01T09:40:45.000Z+0100'
+
+      expect(Utilities.timePassed(date1, date2, 'minute')).toEqual(35)
+
+      date1 = '2019-01-05T16:17:00.000Z+0100'
+      date2 = '2019-01-07T12:42:00.000Z+0100'
+
+      expect(Utilities.timePassed(date1, date2, 'hour')).toEqual(44)
+
+    })
+
+    it('calculates the difference between two dates in seconds', () => {
+
+      let date1 = '2019-01-01T09:05:30.300Z+0100'
+      let date2 = '2019-01-01T09:05:45.555Z+0100'
+
+      expect(Utilities.timePassed(date1, date2, 'second')).toEqual(15)
+
+      date1 = '2019-01-01T09:05:20.200Z+0100'
+      date2 = '2019-01-01T09:07:04.300Z+0100'
+
+      expect(Utilities.timePassed(date1, date2, 'second')).toEqual(104)
 
     })
 
