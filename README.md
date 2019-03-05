@@ -52,8 +52,6 @@ adjustSDK.init({
 }, function (newAttribution) {
   console.log(newAttribution) // define your attribution callback function
 });
-
-adjustSDK.trackSession()
 ```
 
 ## <a id="additional-features"></a>Additional features

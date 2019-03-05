@@ -119,7 +119,7 @@ function timePassed (d1, d2, unit = 'day') {
   const divider = Constants[unit] || Constants.day
   const diff = Math.abs(date2 - date1)
 
-  return Math.round(diff / divider)
+  return diff / divider
 }
 
 export {

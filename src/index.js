@@ -43,11 +43,7 @@ adjustSDK.init(appConfig, attributionCallback)
 
 
 // NOTE: this is custom demo app implementation
-app.start(trackSession, trackEvent)
-
-function trackSession () {
-  adjustSDK.trackSession()
-}
+app.start(trackEvent)
 
 function trackEvent () {
   adjustSDK.trackEvent(eventConfig)

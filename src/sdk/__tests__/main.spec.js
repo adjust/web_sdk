@@ -39,11 +39,7 @@ describe('test uninitiated instance', () => {
 
   it('throws an error when trying to skip init', () => {
 
-    expect.assertions(2)
-
-    expect(() => {
-      mainInstance.trackSession()
-    }).toThrow(new Error('You must init your instance'))
+    expect.assertions(1)
 
     expect(() => {
       mainInstance.trackEvent()
@@ -112,32 +108,6 @@ describe('test initiated instance', () => {
     expect(mainInstance.getAppToken()).toEqual('some-app-token')
     expect(mainInstance.getEnvironment()).toEqual('production')
     expect(mainInstance.getOsName()).toEqual('android')
-
-  })
-
-  it('resolves trackSession request and checks attribution', () => {
-
-    const requestConfig = {
-      url: '/session',
-      method: 'POST',
-      params: {
-        created_at: 'some-time',
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        gps_adid: 'really-sweet-value'
-      }
-    }
-
-    mainInstance.trackSession()
-
-    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
-
-    jest.runAllTimers()
-
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default).toHaveBeenCalledWith(requestConfig)
-    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
   })
 

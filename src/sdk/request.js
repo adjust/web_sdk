@@ -1,7 +1,8 @@
-import config from './config'
+import Config from './config'
 import {isEmpty, isObject, isValidJson} from './utilities'
 import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
+import {setLastActive} from './session'
 
 /**
  * Check if attribution requst
@@ -132,7 +133,7 @@ function _buildXhr ({url, method = 'GET', params = {}}) {
 
   const encodedParams = _encodeParams(params)
 
-  url = config.baseUrl + url
+  url = Config.baseUrl + url
 
   if (method === 'GET') {
     url += `?${encodedParams}`
@@ -143,7 +144,7 @@ function _buildXhr ({url, method = 'GET', params = {}}) {
     let xhr = new XMLHttpRequest()
 
     xhr.open(method, url, true)
-    xhr.setRequestHeader('Client-SDK', config.version)
+    xhr.setRequestHeader('Client-SDK', Config.version)
     if (method === 'POST') {
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
     }
@@ -180,5 +181,9 @@ function _checkAttribution (result, options) {
  */
 export default function request (options) {
   return _buildXhr(options)
+    .then(result => {
+      setLastActive()
+      return result
+    })
     .then(result => _checkAttribution(result, options))
 }

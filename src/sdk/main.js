@@ -2,6 +2,7 @@ import Queue from './queue'
 import {buildList} from './utilities'
 import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
+import {watchSession, destroy as sessionDestroy} from './session'
 
 /**
  * Definition of mandatory fields
@@ -79,26 +80,9 @@ function init (params = {}, cb) {
     subscribe('attribution:change', cb)
   }
 
+  watchSession(_getBaseParams())
+
   Queue.run(true)
-
-}
-
-/**
- * Track session with already initiated instance
- */
-function trackSession () {
-
-  if (!_isInitiated()) {
-    throw new Error('You must init your instance')
-  }
-
-  Queue.push({
-    url: '/session',
-    method: 'POST',
-    params: Object.assign({
-      created_at: getTimestamp()
-    }, _getBaseParams())
-  })
 }
 
 /**
@@ -133,7 +117,7 @@ function trackEvent (params = {}) {
  */
 function destroy () {
   _clear()
-  // TODO destroy everything else that is needed
+  sessionDestroy()
   pubSubDestroy()
 }
 
@@ -231,7 +215,6 @@ const Adjust = {
   getEnvironment,
   getOsName,
   init,
-  trackSession,
   trackEvent,
   destroy
 }

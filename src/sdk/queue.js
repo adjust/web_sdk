@@ -1,3 +1,4 @@
+import Config from './config'
 import request from './request'
 import backOff from './backoff'
 import {getItem, setItem} from './storage'
@@ -101,7 +102,7 @@ function _cleanUp () {
   const pending = getItem('queue', [])
 
   setItem('queue', pending.filter(call => {
-    return timePassed(call.params.created_at, Date.now()) <= 28
+    return timePassed(call.params.created_at, Date.now()) <= Config.requestValidityWindow
   }))
 }
 
