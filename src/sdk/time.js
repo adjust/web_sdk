@@ -101,14 +101,13 @@ function _extractTimestamp (d) {
 }
 
 /**
- * Calculate time passed between two days (in provided unit, default in days)
+ * Calculate time passed between two dates in milliseconds
  *
  * @param {string|number} d1
  * @param {string|number} d2
- * @param {string} [unit='day']
  * @returns {number}
  */
-function timePassed (d1, d2, unit = 'day') {
+function timePassed (d1, d2) {
 
   if (!d1 || !d2) {
     return 0
@@ -116,10 +115,8 @@ function timePassed (d1, d2, unit = 'day') {
 
   const date1 = _extractTimestamp(d1)
   const date2 = _extractTimestamp(d2)
-  const divider = Constants[unit] || Constants.day
-  const diff = Math.abs(date2 - date1)
 
-  return diff / divider
+  return Math.abs(date2 - date1)
 }
 
 export {

@@ -1,5 +1,4 @@
 import Config from './config'
-import Constants from './constants'
 import Queue from './queue'
 import {setItem, getItem} from './storage'
 import {on, off, isEmpty} from './utilities'
@@ -123,7 +122,7 @@ function _startTimer () {
 
   _stopTimer()
 
-  _intervalId = setInterval(() => setLastActive, 60 * Constants.second)
+  _intervalId = setInterval(() => setLastActive, Config.sessionTimerWindow)
 }
 
 /**
@@ -160,7 +159,7 @@ function _checkSession () {
   _startTimer()
 
   const lastActive = getItem('lastActive', 0)
-  const diff = timePassed(lastActive, Date.now(), 'minute')
+  const diff = timePassed(lastActive, Date.now())
 
   if (!lastActive || diff >= Config.sessionWindow) {
     _trackSession()

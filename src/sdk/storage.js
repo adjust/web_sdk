@@ -49,7 +49,7 @@ function setItem (name, value) {
  *
  * @param {string} name
  * @param {*} [defaultValue={}]
- * @returns {Object}
+ * @returns {*}
  */
 function getItem (name, defaultValue = {}) {
   const value = _store.getItem(`${_storeName}.${name}`)

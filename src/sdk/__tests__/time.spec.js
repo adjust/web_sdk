@@ -1,5 +1,6 @@
 /* eslint-disable */
 import * as Time from '../time'
+import * as Constants from '../constants'
 
 describe('test for time methods', () => {
   it('formats when negative timezone offset', () => {
@@ -48,8 +49,8 @@ describe('test for time methods', () => {
     let date1 = '2019-01-01T09:00:01.111Z+0100'
     let date2 = '2019-02-15T15:10:12.100Z+0100'
 
-    expect(Time.timePassed(date1, date2)).toEqual(45)
-    expect(Time.timePassed(date1)).toEqual(0)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.day)).toEqual(45)
+    expect(Math.round(Time.timePassed(date1))).toEqual(0)
 
   })
 
@@ -58,12 +59,12 @@ describe('test for time methods', () => {
     let date1 = '2019-01-01T09:00:00.000Z+0100'
     let date2 = '2019-01-01T15:10:00.000Z+0100'
 
-    expect(Time.timePassed(date1, date2, 'hour')).toEqual(6)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.hour)).toEqual(6)
 
     date1 = '2019-01-05T11:10:00.000Z+0100'
     date2 = '2019-01-06T08:55:00.000Z+0100'
 
-    expect(Time.timePassed(date1, date2, 'hour')).toEqual(22)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.hour)).toEqual(22)
 
   })
 
@@ -72,12 +73,12 @@ describe('test for time methods', () => {
     let date1 = '2019-01-01T09:05:30.000Z+0100'
     let date2 = '2019-01-01T09:40:45.000Z+0100'
 
-    expect(Time.timePassed(date1, date2, 'minute')).toEqual(35)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.minute)).toEqual(35)
 
-    date1 = '2019-01-05T16:17:00.000Z+0100'
-    date2 = '2019-01-07T12:42:00.000Z+0100'
+    date1 = '2019-01-01T16:17:00.000Z+0100'
+    date2 = '2019-01-01T18:42:00.000Z+0100'
 
-    expect(Time.timePassed(date1, date2, 'hour')).toEqual(44)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.minute)).toEqual(145)
 
   })
 
@@ -86,12 +87,12 @@ describe('test for time methods', () => {
     let date1 = '2019-01-01T09:05:30.300Z+0100'
     let date2 = '2019-01-01T09:05:45.555Z+0100'
 
-    expect(Time.timePassed(date1, date2, 'second')).toEqual(15)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.second)).toEqual(15)
 
     date1 = '2019-01-01T09:05:20.200Z+0100'
     date2 = '2019-01-01T09:07:04.300Z+0100'
 
-    expect(Time.timePassed(date1, date2, 'second')).toEqual(104)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.second)).toEqual(104)
 
   })
 
