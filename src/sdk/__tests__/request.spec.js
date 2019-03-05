@@ -18,6 +18,7 @@ function createMockXHR (response, status = 200, statusText = 'OK') {
 
 describe('perform api requests', () => {
 
+  const gpsAdid = '&gps_adid=5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
   const oldXMLHttpRequest = window.XMLHttpRequest
   let mockXHR = null
 
@@ -138,7 +139,7 @@ describe('perform api requests', () => {
           and: {test: 'object'}
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D', true)
+      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D' + gpsAdid, true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -153,21 +154,17 @@ describe('perform api requests', () => {
       expect(request.default({
         url: '/some-url',
         params: {
-          base: {
-            some: 'thing',
-            very: 'nice',
-            empty: '',
-            empty2: null,
-          },
-          other: {
-            zero: 0,
-            empty3: undefined,
-            bla: 'ble',
-            obj: {}
-          }
+          some: 'thing',
+          very: 'nice',
+          empty: '',
+          empty2: null,
+          zero: 0,
+          empty3: undefined,
+          bla: 'ble',
+          obj: {}
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble', true)
+      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble' + gpsAdid, true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -190,7 +187,7 @@ describe('perform api requests', () => {
       expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
-      expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice')
+      expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice' + gpsAdid)
 
       mockXHR.onreadystatechange()
 
@@ -217,13 +214,9 @@ describe('perform api requests', () => {
       expect(request.default({
         url: '/session',
         params: {
-          base: {
-            some: 'thing',
-            very: 'nice'
-          },
-          other: {
-            and: {test: 'object'}
-          }
+          some: 'thing',
+          very: 'nice',
+          and: {test: 'object'}
         }
       })).resolves.toEqual({
         adid: '123123',
@@ -305,13 +298,7 @@ describe('perform api requests', () => {
           timestamp: '2019-02-02',
           ask_in: 2500
         })
-        expect(Attribution.checkAttribution).toHaveBeenCalledWith(
-          result, {
-            app_token: '123abc',
-            environment: 'sandbox',
-            os_name: 'ios',
-            created_at: 'some-time'
-          })
+        expect(Attribution.checkAttribution).toHaveBeenCalledWith(result)
       })
 
       mockXHR.onreadystatechange()
@@ -365,11 +352,7 @@ describe('perform api requests', () => {
         expect(result).toEqual({
           ask_in: 2500
         })
-        expect(Attribution.checkAttribution).toHaveBeenCalledWith(
-          result, {
-            app_token: '123abc',
-            created_at: 'some-time'
-          })
+        expect(Attribution.checkAttribution).toHaveBeenCalledWith(result)
       })
 
       mockXHR.onreadystatechange()

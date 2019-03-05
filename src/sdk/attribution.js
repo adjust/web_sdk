@@ -1,3 +1,4 @@
+import Config from './config'
 import request from './request'
 import {setItem, getItem} from './storage'
 import {publish} from './pub-sub'
@@ -11,6 +12,14 @@ import {getTimestamp} from './time'
  * @private
  */
 let _timeout = {id: null, attempts: 0}
+
+/**
+ * Cache create_at date when trying to check attribution
+ *
+ * @type {Date}
+ * @private
+ */
+let _createdAt = null
 
 /**
  * Check if new attribution is the same as old one
@@ -63,17 +72,16 @@ function _setAttribution (result = {}) {
  * Make delayed request after provided time
  *
  * @param {number} wait
- * @param {Object} params
  * @returns {Promise}
  * @private
  */
-function _delayedRequest (wait, params) {
+function _delayedRequest (wait) {
 
   clearTimeout(_timeout.id)
 
   return new Promise(resolve => {
     _timeout.id = setTimeout(() => {
-      return _request(resolve, params)
+      return _request(resolve)
     }, wait)
   })
 }
@@ -81,42 +89,41 @@ function _delayedRequest (wait, params) {
 /**
  * Retry request after some pre-calculated time
  *
- * @param {Object} params
  * @returns {Promise}
  * @private
  */
-function _retry (params) {
+function _retry () {
 
   _timeout.attempts += 1
 
-  return _delayedRequest(backOff(_timeout.attempts), params)
+  return _delayedRequest(backOff(_timeout.attempts))
 }
 
 /**
  * Make the request and retry if necessary
  *
  * @param {Function} resolve
- * @param {Object} params
  * @returns {Promise}
  * @private
  */
-function _request (resolve, params) {
+function _request (resolve) {
   return request({
     url: '/attribution',
-    params: Object.assign((params.base || params), {created_at: params.created_at})
-  }).then(result => resolve(_requestAttribution(result, params)))
-    .catch(() => _retry(params))
+    params: Object.assign({
+      created_at: _createdAt
+    }, Config.baseParams)
+  }).then(result => resolve(_requestAttribution(result)))
+    .catch(_retry)
 }
 
 /**
  * Request the attribution if needed and when retrieved then try to preserve it
  *
  * @param {Object} result
- * @param {Object} params
  * @returns {Promise}
  * @private
  */
-function _requestAttribution (result = {}, params) {
+function _requestAttribution (result = {}) {
 
   if (!result.ask_in) {
     _setAttribution(result)
@@ -125,7 +132,7 @@ function _requestAttribution (result = {}, params) {
 
   _timeout.attempts = 0
 
-  return _delayedRequest(result.ask_in, params)
+  return _delayedRequest(result.ask_in)
 }
 
 /**
@@ -133,16 +140,15 @@ function _requestAttribution (result = {}, params) {
  *
  * @param {Object} sessionResult
  * @param {number} sessionResult.ask_in
- * @param {Object} params
  */
-export function checkAttribution (sessionResult = {}, params) {
+export function checkAttribution (sessionResult = {}) {
 
   if (!sessionResult.ask_in) {
     return Promise.resolve(sessionResult)
   }
 
-  params.created_at = getTimestamp()
+  _createdAt = getTimestamp()
 
-  return _requestAttribution(sessionResult, params)
+  return _requestAttribution(sessionResult)
 }
 

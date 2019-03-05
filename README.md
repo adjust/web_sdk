@@ -45,10 +45,7 @@ With this in mind, initialisation of Adjust JS SDK would look like this inside y
 adjustSDK.init({
   app_token: 'YourAppToken',
   environment: 'production', // or 'sandbox' in case you are testing SDK locally with your web app
-  os_name: 'android',
-  device_ids: {
-    gps_adid: '5056e23a-dc1d-418f-b5a2-4ab3e75daab2' // each web app user needs to have unique identifier
-  }
+  os_name: 'android'
 }, function (newAttribution) {
   console.log(newAttribution) // define your attribution callback function
 });

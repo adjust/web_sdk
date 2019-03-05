@@ -58,7 +58,7 @@ function isValidJson (string) {
 /**
  * Bind event to an element
  *
- * @param {Element} element
+ * @param {Window|Document} element
  * @param {string} eventName
  * @param {Function} func
  */
@@ -73,7 +73,7 @@ function on (element, eventName, func) {
 /**
  * Unbind event off an element
  *
- * @param {Element} element
+ * @param {Window|Document} element
  * @param {string} eventName
  * @param {Function} func
  */

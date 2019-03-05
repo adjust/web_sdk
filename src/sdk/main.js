@@ -1,3 +1,4 @@
+import Config from './config'
 import Queue from './queue'
 import {buildList} from './utilities'
 import {getTimestamp} from './time'
@@ -17,46 +18,6 @@ const _mandatory = [
 ]
 
 /**
- * Available parameters to set
- *
- * @type {{app_token: string, environment: string, os_name: string, device_ids: {}}}
- * @private
- */
-let _params = {
-  app_token: '',
-  environment: '',
-  os_name: '',
-  device_ids: {},
-}
-
-/**
- * Get app token parameter
- *
- * @returns {string}
- */
-function getAppToken () {
-  return _params.app_token
-}
-
-/**
- * Get environment parameter
- *
- * @returns {string}
- */
-function getEnvironment () {
-  return _params.environment
-}
-
-/**
- * Get os name parameter
- *
- * @returns {string}
- */
-function getOsName () {
-  return _params.os_name
-}
-
-/**
  * Initiate the instance with parameters
  *
  * @param {Object} params
@@ -74,13 +35,13 @@ function init (params = {}, cb) {
     throw new Error(missingParamsMessage)
   }
 
-  _params = Object.assign({}, params)
+  Object.assign(Config.baseParams, params)
 
   if (typeof cb === 'function') {
     subscribe('attribution:change', cb)
   }
 
-  watchSession(_getBaseParams())
+  watchSession()
 
   Queue.run(true)
 }
@@ -99,16 +60,13 @@ function trackEvent (params = {}) {
   Queue.push({
     url: '/event',
     method: 'POST',
-    params: {
-      base: Object.assign({
-        created_at: getTimestamp()
-      }, _getBaseParams()),
-      other: Object.assign({
-        event_token: params.eventToken,
-        callback_params: _convertToMap(params.callbackParams),
-        partner_params: _convertToMap(params.partnerParams),
-      }, _getRevenue(params.revenue, params.currency))
-    }
+    params: Object.assign({
+      created_at: getTimestamp()
+    }, Config.baseParams, Object.assign({
+      event_token: params.eventToken,
+      callback_params: _convertToMap(params.callbackParams),
+      partner_params: _convertToMap(params.partnerParams),
+    }, _getRevenue(params.revenue, params.currency)))
   })
 }
 
@@ -116,23 +74,9 @@ function trackEvent (params = {}) {
  * Destroy the instance
  */
 function destroy () {
-  _clear()
   sessionDestroy()
   pubSubDestroy()
-}
-
-/**
- * Get base params for api calls
- *
- * @returns {Object}
- * @private
- */
-function _getBaseParams () {
-  return Object.assign({
-    app_token: _params.app_token,
-    environment: _params.environment,
-    os_name: _params.os_name
-  }, _params.device_ids)
+  _clear()
 }
 
 /**
@@ -160,7 +104,10 @@ function _getMissingParams (params) {
  * @private
  */
 function _isInitiated () {
-  return !!(_params.app_token && _params.environment && _params.os_name)
+
+  const params = Config.baseParams
+
+  return !!(params.app_token && params.environment && params.os_name)
 }
 
 /**
@@ -169,12 +116,11 @@ function _isInitiated () {
  * @private
  */
 function _clear () {
-  _params = {
+  Object.assign(Config.baseParams, {
     app_token: '',
     environment: '',
-    os_name: '',
-    device_ids: {},
-  }
+    os_name: ''
+  })
 }
 
 /**
@@ -211,9 +157,6 @@ function _convertToMap (params = []) {
 }
 
 const Adjust = {
-  getAppToken,
-  getEnvironment,
-  getOsName,
   init,
   trackEvent,
   destroy

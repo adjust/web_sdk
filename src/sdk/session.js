@@ -1,8 +1,16 @@
 import Config from './config'
 import Queue from './queue'
 import {setItem, getItem} from './storage'
-import {on, off, isEmpty} from './utilities'
+import {on, off} from './utilities'
 import {getTimestamp, timePassed} from './time'
+
+/**
+ * Flag to mark if session watch is already on
+ *
+ * @type {boolean}
+ * @private
+ */
+let _started = false
 
 /**
  * Interval id to use when stopping the timer
@@ -11,14 +19,6 @@ import {getTimestamp, timePassed} from './time'
  * @private
  */
 let _intervalId
-
-/**
- * Cached base params coming from the initialization
- *
- * @type {Object}
- * @private
- */
-let _baseParams = {}
 
 /**
  * Browser-specific prefixes for accessing Page Visibility API
@@ -33,20 +33,20 @@ const _adapter = _getVisibilityApiAccess()
  * - check session initially
  * - set the timer to update last active timestamp
  * - bind to visibility change event to track window state (if out of focus or closed)
- *
- * @param {Object} params
  */
-function watchSession (params) {
+function watchSession () {
 
-  if (!isEmpty(_baseParams)) {
+  if (_started) {
     throw new Error('Session watch already initiated')
   }
 
-  _baseParams = Object.assign({}, params)
+  _started = true
 
   _checkSession()
 
-  on(document, _adapter.visibilitychange, _handleVisibilityChange)
+  if (_adapter) {
+    on(document, _adapter.visibilitychange, _handleVisibilityChange)
+  }
 }
 
 /**
@@ -61,17 +61,19 @@ function setLastActive () {
  */
 function destroy () {
 
-  _baseParams = {}
+  _started = false
 
   _stopTimer()
 
-  off(document, _adapter.visibilitychange, _handleVisibilityChange)
+  if (_adapter) {
+    off(document, _adapter.visibilitychange, _handleVisibilityChange)
+  }
 }
 
 /**
  * Get Page Visibility API attributes that can be accessed depending on the browser implementation
  *
- * @returns {{hidden: string, visibilitychange: string}}
+ * @returns {{hidden: string, visibilitychange: string}|null}
  * @private
  */
 function _getVisibilityApiAccess () {
@@ -94,7 +96,7 @@ function _getVisibilityApiAccess () {
     }
   }
 
-  throw new Error('Page Visibility API is not supported')
+  return null
 }
 
 /**
@@ -145,7 +147,7 @@ function _trackSession () {
     method: 'POST',
     params: Object.assign({
       created_at: getTimestamp()
-    }, _baseParams)
+    }, Config.baseParams)
   })
 }
 

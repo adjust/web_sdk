@@ -2,9 +2,11 @@
 import * as request from '../request'
 import * as PubSub from '../pub-sub'
 import * as Queue from '../queue'
+import * as Time from '../time'
+import * as Session from '../session'
+import * as Config from '../config'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
-import * as Time from '../time'
 
 jest.mock('../request')
 jest.useFakeTimers()
@@ -55,14 +57,12 @@ describe('test initiated instance', () => {
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(Queue.default, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Session, 'watchSession').mockImplementation(() => {})
 
     mainInstance.init({
       app_token: 'some-app-token',
       environment: 'production',
-      os_name: 'android',
-      device_ids: {
-        gps_adid: 'really-sweet-value'
-      }
+      os_name: 'android'
     }, external.attributionCb)
   })
 
@@ -79,10 +79,11 @@ describe('test initiated instance', () => {
 
   it('sets basic configuration', () => {
 
-    expect(mainInstance.getAppToken()).toEqual('some-app-token')
-    expect(mainInstance.getEnvironment()).toEqual('production')
-    expect(mainInstance.getOsName()).toEqual('android')
+    expect(Config.default.baseParams.app_token).toEqual('some-app-token')
+    expect(Config.default.baseParams.environment).toEqual('production')
+    expect(Config.default.baseParams.os_name).toEqual('android')
     expect(PubSub.subscribe).toHaveBeenCalledWith('attribution:change', external.attributionCb)
+    expect(Session.watchSession).toHaveBeenCalledTimes(1)
 
   })
 
@@ -105,9 +106,9 @@ describe('test initiated instance', () => {
     }).toThrow(new Error('You already initiated your instance'))
 
     expect(mainInstance).toBe(sameInstance)
-    expect(mainInstance.getAppToken()).toEqual('some-app-token')
-    expect(mainInstance.getEnvironment()).toEqual('production')
-    expect(mainInstance.getOsName()).toEqual('android')
+    expect(Config.default.baseParams.app_token).toEqual('some-app-token')
+    expect(Config.default.baseParams.environment).toEqual('production')
+    expect(Config.default.baseParams.os_name).toEqual('android')
 
   })
 
@@ -117,18 +118,13 @@ describe('test initiated instance', () => {
       url: '/event',
       method: 'POST',
       params: {
-        base: {
-          created_at: 'some-time',
-          app_token: 'some-app-token',
-          environment: 'production',
-          os_name: 'android',
-          gps_adid: 'really-sweet-value'
-        },
-        other: {
-          event_token: 'some-event-token1',
-          callback_params: {'some-key': 'some-value'},
-          partner_params: {}
-        }
+        created_at: 'some-time',
+        app_token: 'some-app-token',
+        environment: 'production',
+        os_name: 'android',
+        event_token: 'some-event-token1',
+        callback_params: {'some-key': 'some-value'},
+        partner_params: {}
       }
     };
 
@@ -154,18 +150,13 @@ describe('test initiated instance', () => {
       url: '/event',
       method: 'POST',
       params: {
-        base: {
-          created_at: 'some-time',
-          app_token: 'some-app-token',
-          environment: 'production',
-          os_name: 'android',
-          gps_adid: 'really-sweet-value'
-        },
-        other: {
-          event_token: 'some-event-token2',
-          callback_params: {},
-          partner_params: {}
-        }
+        created_at: 'some-time',
+        app_token: 'some-app-token',
+        environment: 'production',
+        os_name: 'android',
+        event_token: 'some-event-token2',
+        callback_params: {},
+        partner_params: {}
       }
     }
 
@@ -190,20 +181,15 @@ describe('test initiated instance', () => {
       url: '/event',
       method: 'POST',
       params: {
-        base: {
-          created_at: 'some-time',
-          app_token: 'some-app-token',
-          environment: 'production',
-          os_name: 'android',
-          gps_adid: 'really-sweet-value',
-        },
-        other: {
-          event_token: 'some-event-token3',
-          callback_params: {'some-key': 'some-value'},
-          partner_params: {key1: 'value1', key2: 'value2'},
-          revenue: "100.00000",
-          currency: 'EUR'
-        }
+        created_at: 'some-time',
+        app_token: 'some-app-token',
+        environment: 'production',
+        os_name: 'android',
+        event_token: 'some-event-token3',
+        callback_params: {'some-key': 'some-value'},
+        partner_params: {key1: 'value1', key2: 'value2'},
+        revenue: "100.00000",
+        currency: 'EUR'
       }
     }
 

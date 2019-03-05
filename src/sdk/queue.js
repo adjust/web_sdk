@@ -67,7 +67,7 @@ function push ({url, method, params}) {
 
 /**
  * Run all pending requests
- * @param {boolean} cleanUpFirst
+ * @param {boolean=} cleanUpFirst
  */
 function run (cleanUpFirst) {
 

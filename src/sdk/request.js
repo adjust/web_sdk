@@ -66,16 +66,13 @@ function _getErrorObject (xhr, onlyResponse) {
  */
 function _encodeParams (params) {
 
-  const baseParams = params.base || {}
-  const otherParams = params.other || {}
-  const autoParams = {
+  params = Object.assign({
     created_at: getTimestamp(),
     sent_at: getTimestamp()
-  }
+  }, params)
 
-  params = params.base
-    ? Object.assign(autoParams, baseParams, otherParams)
-    : Object.assign(autoParams, params)
+  // TODO this will be remove once backend fully supports web_sdk
+  params.gps_adid = '5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
 
   return Object
     .entries(params)
@@ -168,7 +165,7 @@ function _buildXhr ({url, method = 'GET', params = {}}) {
 function _checkAttribution (result, options) {
 
   if (!_isAttributionRequest(options.url) && result.ask_in) {
-    checkAttribution(result, options.params)
+    checkAttribution(result)
   }
   return result
 }

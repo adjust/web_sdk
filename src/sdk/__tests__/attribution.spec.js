@@ -1,4 +1,5 @@
 /* eslint-disable */
+import * as Config from '../config'
 import * as Attribution from '../attribution'
 import * as request from '../request'
 import * as Storage from '../storage'
@@ -15,6 +16,13 @@ function flushPromises() {
 describe('test attribution functionality', () => {
 
   beforeAll(() => {
+
+    Object.assign(Config.default.baseParams, {
+      app_token: '123abc',
+      environment: 'sandbox',
+      os_name: 'ios'
+    })
+
     jest.spyOn(request, 'default')
     jest.spyOn(Storage, 'setItem')
     jest.spyOn(Storage, 'getItem')
@@ -27,6 +35,12 @@ describe('test attribution functionality', () => {
   })
 
   afterAll(() => {
+    Object.assign(Config.default.baseParams, {
+      app_token: '',
+      environment: '',
+      os_name: ''
+    })
+
     jest.clearAllTimers()
     jest.restoreAllMocks()
   })
@@ -54,15 +68,17 @@ describe('test attribution functionality', () => {
 
     expect.assertions(5)
 
-    Attribution.checkAttribution({ask_in: 3000}, {some: 'params'})
+    Attribution.checkAttribution({ask_in: 3000})
       .then(result => {
         expect(result).toEqual(currentAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(3000)
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
-            some: 'params',
-            created_at: 'some-time'
+            created_at: 'some-time',
+            app_token: '123abc',
+            environment: 'sandbox',
+            os_name: 'ios'
           }
         })
         expect(Storage.setItem).not.toHaveBeenCalled()
@@ -82,15 +98,17 @@ describe('test attribution functionality', () => {
 
     expect.assertions(5)
 
-    Attribution.checkAttribution({ask_in: 2000}, {some: 'params'})
+    Attribution.checkAttribution({ask_in: 2000})
       .then(result => {
         expect(result).toEqual(newAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
-            some: 'params',
-            created_at: 'some-time'
+            created_at: 'some-time',
+            app_token: '123abc',
+            environment: 'sandbox',
+            os_name: 'ios'
           }
         })
 
@@ -112,17 +130,17 @@ describe('test attribution functionality', () => {
 
     expect.assertions(5)
 
-    Attribution.checkAttribution({ask_in: 2000}, {base: {app_token: '123abc', environment: 'sandbox', os_name: 'ios'}})
+    Attribution.checkAttribution({ask_in: 2000})
       .then(result => {
         expect(result).toEqual(newAttribution)
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
+            created_at: 'some-time',
             app_token: '123abc',
             environment: 'sandbox',
-            os_name: 'ios',
-            created_at: 'some-time'
+            os_name: 'ios'
           }
         })
 
@@ -142,7 +160,7 @@ describe('test attribution functionality', () => {
     Storage.getItem.mockReturnValue(oldAttribution)
     request.default.mockResolvedValue({ask_in: 3000})
 
-    Attribution.checkAttribution({ask_in: 2000}, {some: 'params'})
+    Attribution.checkAttribution({ask_in: 2000})
 
     jest.advanceTimersByTime(1)
 
@@ -184,7 +202,7 @@ describe('test attribution functionality', () => {
 
     request.default.mockRejectedValue({error: 'An error'})
 
-    Attribution.checkAttribution({ask_in: 2000}, {some: 'params'})
+    Attribution.checkAttribution({ask_in: 2000})
 
     jest.advanceTimersByTime(1)
 

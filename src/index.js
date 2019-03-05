@@ -5,10 +5,7 @@ import app from './app'
 const appConfig = {
   app_token: '2fm9gkqubvpc',
   environment: 'sandbox',
-  os_name: 'android',
-  device_ids: {
-    gps_adid: '5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
-  }
+  os_name: 'android'
 }
 
 const eventConfig = {
