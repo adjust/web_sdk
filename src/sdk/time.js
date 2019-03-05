@@ -1,5 +1,3 @@
-import Constants from './constants'
-
 /**
  * Prepend zero to be used in certain format
  *

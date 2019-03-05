@@ -85,11 +85,41 @@ function off (element, eventName, func) {
   }
 }
 
+/**
+ * Get Page Visibility API attributes that can be accessed depending on the browser implementation
+ *
+ * @returns {{hidden: string, visibilitychange: string}|null}
+ * @private
+ */
+function getVisibilityApiAccess () {
+
+  if (typeof document.hidden !== 'undefined') {
+    return {
+      hidden: IS_TEST ? 'testHidden' : 'hidden',
+      visibilitychange: 'visibilitychange'
+    }
+  }
+
+  const prefixes = ['moz', 'ms', 'o', 'webkit']
+
+  for (let i = 0; i <= prefixes.length; i += 1) {
+    if (typeof document[`${prefixes[i]}Hidden`] !== 'undefined') {
+      return {
+        hidden: `${prefixes[i]}Hidden`,
+        visibilitychange: `${prefixes[i]}visibilitychange`
+      }
+    }
+  }
+
+  return null
+}
+
 export {
   buildList,
   isEmpty,
   isObject,
   isValidJson,
+  getVisibilityApiAccess,
   on,
   off
 }

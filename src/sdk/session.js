@@ -1,7 +1,7 @@
 import Config from './config'
 import Queue from './queue'
 import {setItem, getItem} from './storage'
-import {on, off} from './utilities'
+import {on, off, getVisibilityApiAccess} from './utilities'
 import {getTimestamp, timePassed} from './time'
 
 /**
@@ -26,7 +26,7 @@ let _intervalId
  * @type {{hidden, visibilitychange}}
  * @private
  */
-const _adapter = _getVisibilityApiAccess()
+const _adapter = getVisibilityApiAccess()
 
 /**
  * Initiate session watch:
@@ -71,35 +71,6 @@ function destroy () {
 }
 
 /**
- * Get Page Visibility API attributes that can be accessed depending on the browser implementation
- *
- * @returns {{hidden: string, visibilitychange: string}|null}
- * @private
- */
-function _getVisibilityApiAccess () {
-
-  if (typeof document.hidden !== 'undefined') {
-    return {
-      hidden: 'hidden',
-      visibilitychange: 'visibilitychange'
-    }
-  }
-
-  const prefixes = ['moz', 'ms', 'o', 'webkit']
-
-  for (let i = 0; i <= prefixes.length; i += 1) {
-    if (typeof document[`${prefixes[i]}Hidden`] !== 'undefined') {
-      return {
-        hidden: `${prefixes[i]}Hidden`,
-        visibilitychange: `${prefixes[i]}visibilitychange`
-      }
-    }
-  }
-
-  return null
-}
-
-/**
  * Handle visibility change and perform certain actions:
  * - if page is hidden then stop the timer and update last active timestamp
  * - if page is visible then check for the session and restart the timer
@@ -124,7 +95,7 @@ function _startTimer () {
 
   _stopTimer()
 
-  _intervalId = setInterval(() => setLastActive, Config.sessionTimerWindow)
+  _intervalId = setInterval(setLastActive, Config.sessionTimerWindow)
 }
 
 /**
