@@ -1,7 +1,5 @@
 const _elements = {
-  sessionBtn: document.querySelector('#track-session'),
   eventBtn: document.querySelector('#track-event'),
-  sessionLog: document.querySelector('#log-session'),
   eventLog: document.querySelector('#log-event'),
   attributionLog: document.querySelector('#log-attribution'),
   attributionStatus: document.querySelector('#attribution-status')
@@ -63,9 +61,8 @@ function _log (what) {
 
 }
 
-function start (sessionCb, eventCb) {
+function start (eventCb) {
 
-  _elements.sessionBtn.addEventListener('click', () => _handleClick('session', sessionCb))
   _elements.eventBtn.addEventListener('click', () => _handleClick('event', eventCb))
 
 }
