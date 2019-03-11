@@ -7,8 +7,8 @@ const ClientConfig = {
 }
 
 const Config = {
-  version: `js${SDK_VERSION}`,
-  baseUrl: IS_TEST ? '' : 'https://app.adjust.com',
+  version: `js${__ADJUST__SDK_VERSION}`,
+  baseUrl: __ADJUST__IS_TEST ? '' : 'https://app.adjust.com',
   sessionWindow: 30 * Constants.minute,
   sessionTimerWindow: 60 * Constants.second,
   requestValidityWindow: 28 * Constants.day,

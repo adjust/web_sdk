@@ -13,17 +13,25 @@ import {getTimestamp, timePassed} from './time'
 let _started = false
 
 /**
- * Interval id to use when stopping the timer
+ * Reference to interval id to be used for clearing
  *
  * @type {number}
  * @private
  */
-let _intervalId
+let _idInterval
+
+/**
+ * Reference to timeout id to be used for clearing
+ *
+ * @type {number}
+ * @private
+ */
+let _idTimeout
 
 /**
  * Browser-specific prefixes for accessing Page Visibility API
  *
- * @type {{hidden, visibilitychange}}
+ * @type {{hidden, visibilityChange}}
  * @private
  */
 const _adapter = getVisibilityApiAccess()
@@ -45,7 +53,7 @@ function watchSession () {
   _checkSession()
 
   if (_adapter) {
-    on(document, _adapter.visibilitychange, _handleVisibilityChange)
+    on(document, _adapter.visibilityChange, _handleVisibilityChange)
   }
 }
 
@@ -66,7 +74,8 @@ function destroy () {
   _stopTimer()
 
   if (_adapter) {
-    off(document, _adapter.visibilitychange, _handleVisibilityChange)
+    clearTimeout(_idTimeout)
+    off(document, _adapter.visibilityChange, _handleVisibilityChange)
   }
 }
 
@@ -78,12 +87,17 @@ function destroy () {
  * @private
  */
 function _handleVisibilityChange () {
-  if (document[_adapter.hidden]) {
-    _stopTimer()
-    setLastActive()
-  } else {
-    _checkSession()
-  }
+
+  clearTimeout(_idTimeout)
+
+  _idTimeout = setTimeout(() => {
+    if (document[_adapter.hidden]) {
+      _stopTimer()
+      setLastActive()
+    } else {
+      _checkSession()
+    }
+  }, 0)
 }
 
 /**
@@ -95,7 +109,7 @@ function _startTimer () {
 
   _stopTimer()
 
-  _intervalId = setInterval(setLastActive, Config.sessionTimerWindow)
+  _idInterval = setInterval(setLastActive, Config.sessionTimerWindow)
 }
 
 /**
@@ -104,7 +118,7 @@ function _startTimer () {
  * @private
  */
 function _stopTimer () {
-  clearInterval(_intervalId)
+  clearInterval(_idInterval)
 }
 
 /**

@@ -37,7 +37,7 @@ function _randomInRange (min, max) {
 }
 
 /**
- * Calculate exponential back-off with jitter factor applied
+ * Calculate exponential back-off with optional jitter factor applied
  *
  * @param {number} attempts
  * @param {string} [strategy='long']
@@ -45,7 +45,7 @@ function _randomInRange (min, max) {
  */
 export default function backOff (attempts, strategy = 'long') {
 
-  let options = IS_TEST ? _options.test : _options[strategy]
+  let options = __ADJUST__IS_TEST ? _options.test : _options[strategy]
   let delay = options.delay * Math.pow(2, attempts - 1)
 
   delay = Math.min(delay, options.maxDelay)

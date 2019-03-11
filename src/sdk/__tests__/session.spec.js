@@ -190,6 +190,8 @@ describe('test session functionality', () => {
 
       global.document.dispatchEvent(new Event('visibilitychange'))
 
+      jest.runOnlyPendingTimers()
+
       expect(setInterval).not.toHaveBeenCalled()
       expect(clearInterval).not.toHaveBeenCalled()
 
@@ -209,6 +211,8 @@ describe('test session functionality', () => {
       expect(Storage.setItem).not.toHaveBeenCalled()
 
       global.document.dispatchEvent(new Event('visibilitychange'))
+
+      jest.runOnlyPendingTimers()
 
       expect(setInterval).toHaveBeenCalledTimes(1)
       expect(clearInterval).toHaveBeenCalledTimes(2)
@@ -248,6 +252,8 @@ describe('test session functionality', () => {
       expect(Storage.setItem).not.toHaveBeenCalled()
 
       global.document.dispatchEvent(new Event('visibilitychange'))
+
+      jest.runOnlyPendingTimers()
 
       expect(clearInterval).toHaveBeenCalledTimes(2)
       expect(setInterval).toHaveBeenCalledTimes(2)
@@ -291,6 +297,8 @@ describe('test session functionality', () => {
       Storage.setItem('lastActive', now + Config.default.sessionWindow)
 
       global.document.dispatchEvent(new Event('visibilitychange'))
+
+      jest.runOnlyPendingTimers()
 
       expect(Queue.default.push).toHaveBeenCalledTimes(1)
 

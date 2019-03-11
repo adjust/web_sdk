@@ -10,8 +10,8 @@
   "extends": "eslint:recommended",
   "globals": {
     "Promise": true,
-    "SDK_VERSION": true,
-    "IS_TEST": true
+    "__ADJUST__SDK_VERSION": true,
+    "__ADJUST__IS_TEST": true
   },
   "rules": {
     "semi": ["error", "never"],

@@ -80,7 +80,7 @@ function on (element, eventName, func) {
 function off (element, eventName, func) {
   if (element.removeEventListener) {
     element.removeEventListener(eventName, func, false)
-  } else if (element.attachEvent)  {
+  } else if (element.detachEvent)  {
     element.detachEvent(`on${eventName}`, func)
   }
 }
@@ -88,15 +88,15 @@ function off (element, eventName, func) {
 /**
  * Get Page Visibility API attributes that can be accessed depending on the browser implementation
  *
- * @returns {{hidden: string, visibilitychange: string}|null}
+ * @returns {{hidden: string, visibilityChange: string}|null}
  * @private
  */
 function getVisibilityApiAccess () {
 
   if (typeof document.hidden !== 'undefined') {
     return {
-      hidden: IS_TEST ? 'testHidden' : 'hidden',
-      visibilitychange: 'visibilitychange'
+      hidden: __ADJUST__IS_TEST ? 'testHidden' : 'hidden',
+      visibilityChange: 'visibilitychange'
     }
   }
 
@@ -106,7 +106,7 @@ function getVisibilityApiAccess () {
     if (typeof document[`${prefixes[i]}Hidden`] !== 'undefined') {
       return {
         hidden: `${prefixes[i]}Hidden`,
-        visibilitychange: `${prefixes[i]}visibilitychange`
+        visibilityChange: `${prefixes[i]}visibilitychange`
       }
     }
   }
