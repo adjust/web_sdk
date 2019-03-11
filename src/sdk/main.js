@@ -41,9 +41,9 @@ function init (params = {}, cb) {
     subscribe('attribution:change', cb)
   }
 
-  watchSession()
-
   Queue.run(true)
+
+  watchSession()
 }
 
 /**
