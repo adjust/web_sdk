@@ -2,6 +2,7 @@
 import * as request from '../request'
 import * as Attribution from '../attribution'
 import * as Time from '../time'
+import * as Identity from '../identity'
 
 function createMockXHR (response, status = 200, statusText = 'OK') {
   return {
@@ -24,6 +25,7 @@ describe('perform api requests', () => {
 
   beforeAll(() => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Identity, 'getUuid').mockReturnValue('some-uuid')
   })
   afterEach(() => {
     window.XMLHttpRequest = oldXMLHttpRequest
@@ -139,7 +141,7 @@ describe('perform api requests', () => {
           and: {test: 'object'}
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D' + gpsAdid, true)
+      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D&web_uuid=some-uuid' + gpsAdid, true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -164,7 +166,7 @@ describe('perform api requests', () => {
           obj: {}
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble' + gpsAdid, true)
+      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble&web_uuid=some-uuid' + gpsAdid, true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -187,7 +189,7 @@ describe('perform api requests', () => {
       expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
       expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
-      expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice' + gpsAdid)
+      expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice&web_uuid=some-uuid' + gpsAdid)
 
       mockXHR.onreadystatechange()
 

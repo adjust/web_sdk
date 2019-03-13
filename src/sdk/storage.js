@@ -39,9 +39,11 @@ function _getStorage () {
  *
  * @param {string} name
  * @param {*} value
+ * @returns {*}
  */
 function setItem (name, value) {
   _store.setItem(`${_storeName}.${name}`, JSON.stringify(value))
+  return value
 }
 
 /**
