@@ -5,7 +5,8 @@
   "scripts": {
     "build:demo": "webpack --mode production --config webpack.demo.config.js",
     "build:sdk": "webpack --config webpack.sdk.config.js",
-    "build": "npm-run-all build:demo build:sdk",
+    "build:snippet": "terser ./src/sdk/snippet.js -o ./dist/sdk.snippet.min.js -c -m",
+    "build": "npm-run-all build:demo build:sdk build:snippet",
     "start": "webpack-dev-server --content-base dist --hot --mode development --config webpack.demo.config.js",
     "lint": "eslint ./src --ext .js",
     "lint:fix": "npm run lint -- --fix",
@@ -39,6 +40,7 @@
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "terser": "^3.17.0",
     "terser-webpack-plugin": "^1.2.2",
     "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.27.1",
