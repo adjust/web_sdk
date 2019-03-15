@@ -3,14 +3,18 @@ import adjustSDK from './sdk/main'
 import app from './app'
 
 const appConfig = {
-  app_token: '2fm9gkqubvpc',
-  environment: 'sandbox',
+  app_token: 'src556ylophc',
+  environment: 'production',
   os_name: 'android'
 }
 
-const eventConfig = {
-  eventToken: 'g3mfiw',
-  revenue: 1000,
+const someEventConfig = {
+  eventToken: 'yywcyo'
+}
+
+const revenueEventConfig = {
+  eventToken: 'wmxoqe',
+  revenue: 10,
   currency: 'EUR',
   callbackParams: [{
     key: 'some-key-1',
@@ -40,8 +44,13 @@ adjustSDK.init(appConfig, attributionCallback)
 
 
 // NOTE: this is custom demo app implementation
-app.start(trackEvent)
+app.start(trackEvent, trackRevenueEvent)
 
 function trackEvent () {
-  adjustSDK.trackEvent(eventConfig)
+  adjustSDK.trackEvent(someEventConfig)
+}
+
+function trackRevenueEvent (revenue) {
+  revenueEventConfig.revenue = revenue || revenueEventConfig.revenue
+  adjustSDK.trackEvent(revenueEventConfig)
 }

@@ -19,7 +19,7 @@ function createMockXHR (response, status = 200, statusText = 'OK') {
 
 describe('perform api requests', () => {
 
-  const gpsAdid = '&gps_adid=5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
+  const gpsAdid = '&gps_adid=some-uuid'
   const oldXMLHttpRequest = window.XMLHttpRequest
   let mockXHR = null
 

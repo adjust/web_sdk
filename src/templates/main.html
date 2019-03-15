@@ -1,12 +1,17 @@
 <div class="content">
   <h1>Web SDK demo</h1>
 
-  <div class="section">
-    <label for="log-event">
-      <button id="track-event">track event</button>
-      <span>Event</span>
-    </label>
-    <pre id="log-event" class="small"></pre>
+  <div class="section-row">
+    <label class="long">Some Event</label>
+    <button id="event-btn">track</button>
+    <pre id="log-event" class="inline"></pre>
+  </div>
+
+  <div class="section-row">
+    <label for="revenue-event-input">Revenue Event</label>
+    <input type="number" name="revenue-event-input" id="revenue-event-input" placeholder="10" min="0"><i>€</i>
+    <button id="revenue-event-btn">track</button>
+    <pre id="log-revenue-event" class="inline"></pre>
   </div>
 
   <div class="section">

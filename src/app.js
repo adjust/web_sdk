@@ -1,18 +1,23 @@
 const _elements = {
-  eventBtn: document.querySelector('#track-event'),
+  eventBtn: document.querySelector('#event-btn'),
   eventLog: document.querySelector('#log-event'),
+  revenueEventBtn: document.querySelector('#revenue-event-btn'),
+  revenueEventInput: document.querySelector('#revenue-event-input'),
+  revenueEventLog: document.querySelector('#log-revenue-event'),
   attributionLog: document.querySelector('#log-attribution'),
   attributionStatus: document.querySelector('#attribution-status')
 }
 
 const _loading = {
   session: false,
-  event: false
+  event: false,
+  revenueEvent: false
 }
 
 const _timeout = {
   session: null,
   event: null,
+  revenueEvent: null,
   attribution: null
 }
 
@@ -55,15 +60,16 @@ function _log (what) {
 
   _loading[what] = false
 
-  logContainer.textContent = `${what} has been triggered, check network console`
+  logContainer.textContent = 'triggered! check network console'
   logContainer.classList.add('success')
   logContainer.classList.remove('loading')
 
 }
 
-function start (eventCb) {
+function start (eventCb, revenueEventCb) {
 
   _elements.eventBtn.addEventListener('click', () => _handleClick('event', eventCb))
+  _elements.revenueEventBtn.addEventListener('click', () => _handleClick('revenueEvent', () => revenueEventCb(_elements.revenueEventInput.value)))
 
 }
 

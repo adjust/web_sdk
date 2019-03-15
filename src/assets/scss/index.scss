@@ -47,7 +47,7 @@ h5 {
 
 button {
   display: block;
-  width: 150px;
+  width: 100px;
   font-size: 15px;
   padding:  10px;
   border: 1px solid #999;
@@ -56,6 +56,7 @@ button {
   outline: none;
   cursor: pointer;
   color: #555;
+  margin-left: 20px;
 
   &:hover {
     background: #eee;
@@ -63,7 +64,7 @@ button {
 }
 
 pre {
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
   background-color: #fefefe;
   min-height: 150px;
   padding: 10px;
@@ -83,10 +84,30 @@ pre {
   &.small {
     min-height: 60px;
   }
+
+  &.inline {
+    display: inline-block;
+    min-height: 21px;
+    margin: 0;
+    width: 343px;
+    vertical-align: middle;
+    padding: 8px 10px;
+  }
 }
 
 .section {
   margin-bottom: 20px;
+}
+
+.section-row {
+  margin-bottom: 20px;
+
+  label,
+  input,
+  button {
+    display: inline-block;
+    vertical-align: middle;
+  }
 }
 
 label {
@@ -105,6 +126,24 @@ label {
 
   button {
     float: right;
+  }
+
+  &.long {
+    width: 204px;
+  }
+}
+
+input {
+  padding: 5px 2px;
+}
+
+input[type=number] {
+  width: 70px;
+  text-align: right;
+
+  + i {
+    font-style: normal;
+    color: #999;
   }
 }
 

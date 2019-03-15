@@ -74,7 +74,7 @@ function _encodeParams (params) {
 
   params.web_uuid = getUuid()
   // TODO this will be remove once backend fully supports web_sdk
-  params.gps_adid = '5056e23a-dc1d-418f-b5a2-4ab3e75daab2'
+  params.gps_adid = params.web_uuid
 
   return Object
     .entries(params)
