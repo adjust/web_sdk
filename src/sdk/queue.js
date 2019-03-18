@@ -55,7 +55,7 @@ function push ({url, method, params}) {
 
   const pending = getItem('queue', [])
 
-  pending.push({url, method, params})
+  pending.push(Object.assign({timestamp: Date.now()}, {url, method, params}))
 
   setItem('queue', pending)
 
@@ -76,17 +76,17 @@ function run (cleanUpFirst) {
   }
 
   const pending = getItem('queue', [])
-  const params = pending[0]
+  const call = pending[0]
 
   clearTimeout(_timeout.id)
   _timeout.id = null
 
-  if (!params) {
+  if (!call) {
     return
   }
 
   _timeout.id = setTimeout(() => {
-    return request(params)
+    return request({url: call.url, method: call.method, params: call.params})
       .then(_continue)
       .catch(_retry)
   }, _timeout.wait)
@@ -102,7 +102,7 @@ function _cleanUp () {
   const pending = getItem('queue', [])
 
   setItem('queue', pending.filter(call => {
-    return timePassed(call.params.created_at, Date.now()) <= Config.requestValidityWindow
+    return timePassed(call.timestamp, Date.now()) <= Config.requestValidityWindow
   }))
 }
 

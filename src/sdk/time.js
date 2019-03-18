@@ -71,12 +71,11 @@ function _getTimezone (date) {
 /**
  * Get the timestamp in the backend format
  *
- * @param {Date=} d
  * @returns {string}
  */
-function getTimestamp (d) {
-  d = d || new Date()
+function getTimestamp () {
 
+  const d = new Date()
   const date = _getDate(d)
   const time = _getTime(d)
   const timezone = _getTimezone(d)
@@ -85,24 +84,10 @@ function getTimestamp (d) {
 }
 
 /**
- * Extract timestamp from the date
- *
- * @param {string|number} d
- * @returns {number}
- * @private
- */
-function _extractTimestamp (d) {
-
-  const date = /Z/.test(d) ? d.replace('Z', '') : d
-
-  return new Date(date).getTime()
-}
-
-/**
  * Calculate time passed between two dates in milliseconds
  *
- * @param {string|number} d1
- * @param {string|number} d2
+ * @param {number} d1
+ * @param {number} d2
  * @returns {number}
  */
 function timePassed (d1, d2) {
@@ -111,10 +96,7 @@ function timePassed (d1, d2) {
     return 0
   }
 
-  const date1 = _extractTimestamp(d1)
-  const date2 = _extractTimestamp(d2)
-
-  return Math.abs(date2 - date1)
+  return Math.abs(d2 - d1)
 }
 
 export {

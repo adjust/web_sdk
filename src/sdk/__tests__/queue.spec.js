@@ -6,6 +6,8 @@ import * as Storage from '../storage'
 jest.mock('../request')
 jest.useFakeTimers()
 
+const now = 1552914489217
+
 function flushPromises() {
   return new Promise(resolve => setImmediate(resolve))
 }
@@ -13,6 +15,8 @@ function flushPromises() {
 describe('test request queuing functionality', () => {
 
   beforeAll(() => {
+    jest.spyOn(Date, 'now').mockReturnValue(now)
+
     jest.spyOn(Queue.default, 'push')
     jest.spyOn(Queue.default, 'run')
     jest.spyOn(request, 'default')
@@ -37,7 +41,7 @@ describe('test request queuing functionality', () => {
     Queue.default.push(config)
 
     expect.assertions(4)
-    expect(Storage.setItem).toHaveBeenCalledWith('queue', [config])
+    expect(Storage.setItem).toHaveBeenCalledWith('queue', [Object.assign({timestamp: now}, config)])
 
     jest.runAllTimers()
 
@@ -63,7 +67,11 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(11)
 
-    expect(Storage.setItem).toHaveBeenLastCalledWith('queue', [config1, config2, config3])
+    expect(Storage.setItem).toHaveBeenLastCalledWith('queue', [
+      Object.assign({timestamp: now}, config1),
+      Object.assign({timestamp: now}, config2),
+      Object.assign({timestamp: now}, config3)
+    ])
 
     jest.advanceTimersByTime(150)
 
@@ -111,7 +119,10 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(30)
 
-    expect(Storage.setItem).toHaveBeenCalledWith('queue', [config1, config2])
+    expect(Storage.setItem).toHaveBeenCalledWith('queue', [
+      Object.assign({timestamp: now}, config1),
+      Object.assign({timestamp: now}, config2)
+    ])
 
     jest.advanceTimersByTime(150)
 
@@ -224,7 +235,11 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(20)
 
-    expect(Storage.setItem).toHaveBeenCalledWith('queue', [config1, config2, config3])
+    expect(Storage.setItem).toHaveBeenCalledWith('queue', [
+      Object.assign({timestamp: now}, config1),
+      Object.assign({timestamp: now}, config2),
+      Object.assign({timestamp: now}, config3)
+    ])
 
     jest.advanceTimersByTime(150)
 
@@ -296,12 +311,12 @@ describe('test request queuing functionality', () => {
     jest.spyOn(Date, 'now').mockReturnValue(new Date('2019-03-03').getTime())
 
     const queue = [
-      {url: '/url-1', params: {created_at: '2019-02-03T09:10:00.100Z+0100'}},
-      {url: '/url-2', params: {created_at: '2018-12-11T18:10:00.020Z+0100'}},
-      {url: '/url-3', params: {created_at: '2019-01-01T15:05:40.330Z+0100'}},
-      {url: '/url-4', params: {created_at: '2019-02-10T04:15:30.000Z+0100'}},
-      {url: '/url-5', params: {created_at: '2019-02-01T11:20:04.100Z+0100'}},
-      {url: '/url-6', params: {created_at: '2019-03-01T12:00:00.440Z+0100'}}
+      {timestamp: 1549181400100, url: '/url-1', params: {created_at: '2019-02-03T09:10:00.100Z+0100'}},
+      {timestamp: 1544548200020, url: '/url-2', params: {created_at: '2018-12-11T18:10:00.020Z+0100'}},
+      {timestamp: 1546351540330, url: '/url-3', params: {created_at: '2019-01-01T15:05:40.330Z+0100'}},
+      {timestamp: 1549768530000, url: '/url-4', params: {created_at: '2019-02-10T04:15:30.000Z+0100'}},
+      {timestamp: 1549016404100, url: '/url-5', params: {created_at: '2019-02-01T11:20:04.100Z+0100'}},
+      {timestamp: 1551438000440, url: '/url-6', params: {created_at: '2019-03-01T12:00:00.440Z+0100'}}
     ]
 
     Storage.setItem('queue', queue)
