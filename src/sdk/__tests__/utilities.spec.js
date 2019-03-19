@@ -60,4 +60,26 @@ describe('test for utility methods', () => {
       expect(Utilities.isObject({la: 'lala'})).toBeTruthy()
     })
   })
+
+  describe('test for findIndex', () => {
+    it('returns an index of an element if found', () => {
+      expect(Utilities.findIndex([{
+        id: 1, text: 'bla'
+      }, {
+        id: 2, text: 'smor'
+      }, {
+        id: 3, text: 'trt'
+      }], 'id', 2)).toEqual(1)
+    })
+
+    it('returns -1 if not found', () => {
+      expect(Utilities.findIndex([{
+        id: 1, text: 'bla'
+      }, {
+        id: 2, text: 'smor'
+      }, {
+        id: 3, text: 'trt'
+      }], 'id', 4)).toEqual(-1)
+    })
+  })
 })

@@ -49,7 +49,7 @@ function isObject (obj) {
 function isValidJson (string) {
   try {
     const json = JSON.parse(string)
-    return (typeof json === 'object')
+    return isObject(json)
   } catch (e) {
     return false
   }
@@ -114,6 +114,25 @@ function getVisibilityApiAccess () {
   return null
 }
 
+/**
+ * Find index of an element in the list and return it
+ *
+ * @param {Array} array
+ * @param {string} key
+ * @param {*} value
+ * @returns {Number}
+ */
+function findIndex (array, key, value) {
+  for (let i = 0; i < array.length; i += 1) {
+    if (array[i][key] === value) {
+      return i
+    }
+  }
+
+  return -1
+}
+
+
 export {
   buildList,
   isEmpty,
@@ -121,5 +140,6 @@ export {
   isValidJson,
   getVisibilityApiAccess,
   on,
-  off
+  off,
+  findIndex
 }
