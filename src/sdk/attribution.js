@@ -1,10 +1,10 @@
 import Config from './config'
-import request from './request'
-import {publish} from './pub-sub'
-import backOff from './backoff'
-import {getTimestamp} from './time'
-import {getCurrent} from './identity'
 import Storage from './storage'
+import request from './request'
+import identity from './identity'
+import backOff from './backoff'
+import {publish} from './pub-sub'
+import {getTimestamp} from './time'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen
@@ -20,7 +20,7 @@ let _timeout = {id: null, attempts: 0}
  * @type {string}
  * @private
  */
-let _createdAt = null
+let _createdAt = ''
 
 /**
  * Check if new attribution is the same as old one
@@ -42,7 +42,7 @@ function _isSame (adid, newAttribution) {
     'click_label'
   ]
 
-  return getCurrent()
+  return identity()
     .then(user => {
       const oldAttribution = user.attribution || {}
       const anyDifferent = check.some(key => {

@@ -5,16 +5,13 @@ import * as Session from '../session'
 import * as Storage from '../storage'
 import * as Time from '../time'
 import * as Queue from '../queue'
-import * as Identity from '../identity'
+import * as identity from '../identity'
+import {flushPromises} from './_helper'
 
 jest.useFakeTimers()
 
 const now = 1551916800000
 let dateNowSpy
-
-function flushPromises() {
-  return new Promise(resolve => setImmediate(resolve))
-}
 
 describe('test session functionality', () => {
 
@@ -175,7 +172,7 @@ describe('test session functionality', () => {
 
       expect(Utilities.on).toHaveBeenCalled()
 
-      return Identity.getCurrent()
+      return identity.default()
         .then(current => {
 
           expect(current.lastActive).toBeUndefined()
@@ -198,7 +195,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(Identity.getCurrent)
+        .then(identity.default)
         .then(current => {
           expect(current.lastActive).not.toBeUndefined()
         })
@@ -217,7 +214,7 @@ describe('test session functionality', () => {
 
           expect(Utilities.on).toHaveBeenCalled()
 
-          return Identity.getCurrent()
+          return identity.default()
         })
         .then(current => {
 
@@ -235,7 +232,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(Identity.getCurrent)
+        .then(identity.default)
         .then(current => {
           expect(current.lastActive).toBe(1551916800002)
         })
@@ -386,7 +383,7 @@ describe('test session functionality', () => {
 
           expect(Queue.default.push).not.toHaveBeenCalled()
 
-          return Identity.getCurrent()
+          return identity.default()
         })
         .then(current => {
           return Storage.default.updateItem('user', Object.assign({}, current, {lastActive: now + Config.default.sessionWindow}))

@@ -1,13 +1,12 @@
 /* eslint-disable */
-import * as Identity from '../identity'
+import * as identity from '../identity'
 import * as Storage from '../storage'
 
 describe('test identity methods', () => {
 
   beforeAll(() => {
-    jest.spyOn(Identity, 'getUuid')
-    jest.spyOn(Identity, 'getCurrent')
-    jest.spyOn(Storage.default, 'getItem')
+    jest.spyOn(identity, 'default')
+    jest.spyOn(Storage.default, 'getFirst')
     jest.spyOn(Storage.default, 'addItem')
   })
   afterEach(() => {
@@ -18,62 +17,23 @@ describe('test identity methods', () => {
     jest.restoreAllMocks()
   })
 
-  it('returns uuid if exists, otherwise generates new one and preserves it (without sync)', () => {
-
-    const current1 = Identity.getUuid()
-
-    expect(Storage.default.addItem).not.toHaveBeenCalled()
-    expect(Storage.default.getItem).not.toHaveBeenCalled()
-
-    Storage.default.addItem.mockClear()
-    Storage.default.getItem.mockClear()
-
-    const current2 = Identity.getUuid()
-
-    expect(current1.uuid).toEqual(current2.uuid)
-    expect(Storage.default.addItem).not.toHaveBeenCalled()
-    expect(Storage.default.getItem).not.toHaveBeenCalled()
-
-
-  })
-
-  it('returns uuid if exists, otherwise generates new one and preserves it (with sync)', () => {
-
-    const current1 = Identity.getUuid(true)
-
-    expect(Storage.default.addItem).toHaveBeenCalledTimes(1)
-    expect(Storage.default.getItem).not.toHaveBeenCalled()
-
-    Storage.default.addItem.mockClear()
-    Storage.default.getItem.mockClear()
-
-    const current2 = Identity.getUuid(true)
-
-    expect(current1.uuid).toEqual(current2.uuid)
-    expect(Storage.default.addItem).not.toHaveBeenCalled()
-    expect(Storage.default.getItem).toHaveBeenCalledTimes(1)
-
-  })
-
-  it ('returns current user if exists, otherwise generates new one and preserves it', () => {
+  it('returns current user if exists, otherwise generates new one and preserves it', () => {
 
     let uuid1
     let uuid2
 
-    expect.assertions(5)
-
-    return Identity.getCurrent()
+    return identity.default()
       .then(user => {
 
         uuid1 = user.uuid
 
         expect(Storage.default.addItem).toHaveBeenCalledTimes(1)
-        expect(Storage.default.getItem).not.toHaveBeenCalled()
+        expect(Storage.default.getFirst).toHaveBeenCalledTimes(1)
 
         Storage.default.addItem.mockClear()
-        Storage.default.getItem.mockClear()
+        Storage.default.getFirst.mockClear()
 
-        return Identity.getCurrent()
+        return identity.default()
       })
       .then(user => {
 
@@ -81,9 +41,8 @@ describe('test identity methods', () => {
 
         expect(uuid1).toEqual(uuid2)
         expect(Storage.default.addItem).not.toHaveBeenCalled()
-        expect(Storage.default.getItem).toHaveBeenCalledTimes(1)
+        expect(Storage.default.getFirst).toHaveBeenCalledTimes(1)
 
       })
-
   })
 })

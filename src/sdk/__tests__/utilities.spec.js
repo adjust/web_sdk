@@ -61,6 +61,22 @@ describe('test for utility methods', () => {
     })
   })
 
+  describe('tests for isValidJSON', () => {
+    it('returns false if not valid json', () => {
+      expect(Utilities.isValidJson('some string')).toBeFalsy()
+      expect(Utilities.isValidJson('{bla:}')).toBeFalsy()
+      expect(Utilities.isValidJson('{bla:"test"}')).toBeFalsy()
+      expect(Utilities.isValidJson(null)).toBeFalsy()
+      expect(Utilities.isValidJson('')).toBeFalsy()
+      expect(Utilities.isValidJson(123)).toBeFalsy()
+    })
+    it('returns true if valid json', () => {
+      expect(Utilities.isValidJson('{"bla":"test"}')).toBeTruthy()
+      expect(Utilities.isValidJson('{"bla":"test", "bla2":{"test": "bla"}}')).toBeTruthy()
+      expect(Utilities.isValidJson('{}')).toBeTruthy()
+    })
+  })
+
   describe('test for findIndex', () => {
     it('returns an index of an element if found', () => {
       expect(Utilities.findIndex([{

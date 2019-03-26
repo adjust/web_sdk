@@ -62,9 +62,7 @@ function _open () {
       e.target.transaction.onabort = reject
 
       db.createObjectStore('queue', {keyPath: 'timestamp', autoIncrement: false})
-
-      const userStore = db.createObjectStore('user', {keyPath: 'uuid', autoIncrement: false})
-      userStore.createIndex('uuidIndex', 'uuid', {unique: true})
+      db.createObjectStore('user', {keyPath: 'uuid', autoIncrement: false})
 
     }
 
@@ -81,13 +79,13 @@ function _open () {
  * Initiate the transaction for requested action
  *
  * @param {string} storeName
- * @param {Object|*} target
+ * @param {Object=} target
  * @param {string} action
  * @param {string} [mode=readonly]
  * @returns {Promise}
  * @private
  */
-function _initTransaction (storeName, target, action, mode = 'readonly') {
+function _initTransaction ({storeName, target, action, mode = 'readonly'}) {
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
@@ -115,8 +113,8 @@ function _initTransaction (storeName, target, action, mode = 'readonly') {
  *
  * @param {string} storeName
  * @param {string} action
- * @param {IDBKeyRange} range
- * @param {boolean} firstOnly
+ * @param {IDBKeyRange=} range
+ * @param {boolean=} firstOnly
  * @param {string} [mode=readonly]
  * @returns {Promise}
  * @private
@@ -124,7 +122,6 @@ function _initTransaction (storeName, target, action, mode = 'readonly') {
 function _openCursor ({storeName, action, range, firstOnly, mode = 'readonly'}) {
   return _open()
     .then(() => {
-
       return new Promise((resolve, reject) => {
 
         const transaction = _db.transaction([storeName], mode)
@@ -132,13 +129,11 @@ function _openCursor ({storeName, action, range, firstOnly, mode = 'readonly'}) 
         const cursorRequest = store.openCursor(range)
         const items = []
 
-        transaction.oncomplete = () => {
-          resolve(firstOnly ? items[0] : items)
-        }
+        transaction.oncomplete = () => resolve(firstOnly ? items[0] : items)
         transaction.onerror = reject
         transaction.onabort = reject
 
-        cursorRequest.onsuccess = (e) => {
+        cursorRequest.onsuccess = e => {
 
           const cursor = e.target.result
 
@@ -190,7 +185,7 @@ function getFirst (storeName) {
  * @returns {Promise}
  */
 function getItem (storeName, id) {
-  return _initTransaction(storeName, id, 'get')
+  return _initTransaction({storeName, target: id, action: 'get'})
 }
 
 /**
@@ -201,7 +196,7 @@ function getItem (storeName, id) {
  * @returns {Promise}
  */
 function addItem (storeName, item) {
-  return _initTransaction(storeName, item, 'add', 'readwrite')
+  return _initTransaction({storeName, target: item, action: 'add', mode: 'readwrite'})
 }
 
 /**
@@ -212,7 +207,7 @@ function addItem (storeName, item) {
  * @returns {Promise}
  */
 function updateItem (storeName, item) {
-  return _initTransaction(storeName, item, 'put', 'readwrite')
+  return _initTransaction({storeName, target: item, action: 'put', mode: 'readwrite'})
 }
 
 /**
@@ -223,7 +218,7 @@ function updateItem (storeName, item) {
  * @returns {Promise}
  */
 function deleteItem (storeName, id) {
-  return _initTransaction(storeName, id, 'delete', 'readwrite')
+  return _initTransaction({storeName, target: id, action: 'delete', mode: 'readwrite'})
 }
 
 /**
@@ -247,7 +242,7 @@ function deleteBulk (storeName, upperBound) {
  * @returns {Promise}
  */
 function clear (storeName) {
-  return _initTransaction(storeName, null, 'clear', 'readwrite')
+  return _initTransaction({storeName, action: 'clear', mode: 'readwrite'})
 }
 
 /**

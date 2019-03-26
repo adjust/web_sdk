@@ -219,7 +219,16 @@ function deleteItem (storeName, id) {
   })
 }
 
-function _max (array, key, bound) {
+/**
+ * Find index of the item with the closest value to the bound
+ *
+ * @param {Array} array
+ * @param {string} key
+ * @param {number} bound
+ * @returns {number}
+ * @private
+ */
+function _findMax (array, key, bound) {
 
   if (!array.length) {
     return -1
@@ -259,7 +268,7 @@ function deleteBulk (storeName, upperBound) {
 
       items.sort(isNaN(first[key]) ? undefined : ((a, b) => a[key] - b[key]))
 
-      const index = _max(items, key, upperBound)
+      const index = _findMax(items, key, upperBound)
 
       if (index === -1) {
         return []

@@ -5,14 +5,11 @@ import * as request from '../request'
 import * as Storage from '../storage'
 import * as PubSub from '../pub-sub'
 import * as Time from '../time'
-import * as Identity from '../identity'
+import * as identity from '../identity'
+import {flushPromises} from './_helper'
 
 jest.mock('../request')
 jest.useFakeTimers()
-
-function flushPromises() {
-  return new Promise(resolve => setImmediate(resolve))
-}
 
 describe('test attribution functionality', () => {
 
@@ -26,7 +23,7 @@ describe('test attribution functionality', () => {
 
     jest.spyOn(request, 'default')
     jest.spyOn(Storage.default, 'updateItem')
-    jest.spyOn(Identity, 'getCurrent')
+    jest.spyOn(identity, 'default')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
@@ -64,7 +61,7 @@ describe('test attribution functionality', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
-    Identity.getCurrent.mockResolvedValue({attribution: Object.assign({adid: '123'}, currentAttribution.attribution)})
+    identity.default.mockResolvedValue({attribution: Object.assign({adid: '123'}, currentAttribution.attribution)})
     request.default.mockResolvedValue(currentAttribution)
 
     expect.assertions(4)
@@ -95,7 +92,7 @@ describe('test attribution functionality', () => {
 
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
 
-    Identity.getCurrent.mockResolvedValue({})
+    identity.default.mockResolvedValue({})
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
@@ -128,7 +125,7 @@ describe('test attribution functionality', () => {
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
 
-    Identity.getCurrent.mockResolvedValue({attribution: oldAttribution})
+    identity.default.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
@@ -161,7 +158,7 @@ describe('test attribution functionality', () => {
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
 
-    Identity.getCurrent.mockResolvedValue({attribution: oldAttribution})
+    identity.default.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
@@ -194,7 +191,7 @@ describe('test attribution functionality', () => {
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
 
-    Identity.getCurrent.mockResolvedValue({attribution: oldAttribution})
+    identity.default.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue({ask_in: 3000})
 
     Attribution.checkAttribution({ask_in: 2000})

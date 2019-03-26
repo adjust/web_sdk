@@ -3,7 +3,7 @@ import {isEmpty, isObject, isValidJson} from './utilities'
 import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
 import {setLastActive} from './session'
-import {getUuid} from './identity'
+import identity from './identity'
 
 /**
  * Check if attribution requst
@@ -62,17 +62,18 @@ function _getErrorObject (xhr, onlyResponse) {
  * Encode key-value pairs to be used in url
  *
  * @param {Object} params
+ * @param {string} uuid
  * @returns {string}
  * @private
  */
-function _encodeParams (params) {
+function _encodeParams (params, uuid) {
 
   params = Object.assign({
     created_at: getTimestamp(),
     sent_at: getTimestamp()
   }, params)
 
-  params.web_uuid = getUuid().uuid
+  params.web_uuid = uuid
   // TODO this will be remove once backend fully supports web_sdk
   params.gps_adid = params.web_uuid
 
@@ -130,30 +131,34 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
  */
 function _buildXhr ({url, method = 'GET', params = {}}) {
 
-  const encodedParams = _encodeParams(params)
+  return identity()
+    .then(current => {
 
-  url = Config.baseUrl + url
+      const encodedParams = _encodeParams(params, current.uuid)
 
-  if (method === 'GET') {
-    url += `?${encodedParams}`
-  }
+      url = Config.baseUrl + url
 
-  return new Promise((resolve, reject) => {
+      if (method === 'GET') {
+        url += `?${encodedParams}`
+      }
 
-    let xhr = new XMLHttpRequest()
+      return new Promise((resolve, reject) => {
 
-    xhr.open(method, url, true)
-    xhr.setRequestHeader('Client-SDK', Config.version)
-    if (method === 'POST') {
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-    }
+        let xhr = new XMLHttpRequest()
 
-    xhr.onreadystatechange = () => _handleReadyStateChange(reject, resolve, {xhr, url})
-    xhr.onerror = () => reject(_getErrorObject(xhr))
+        xhr.open(method, url, true)
+        xhr.setRequestHeader('Client-SDK', Config.version)
+        if (method === 'POST') {
+          xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+        }
 
-    xhr.send(method === 'GET' ? undefined : encodedParams)
+        xhr.onreadystatechange = () => _handleReadyStateChange(reject, resolve, {xhr, url})
+        xhr.onerror = () => reject(_getErrorObject(xhr))
 
-  })
+        xhr.send(method === 'GET' ? undefined : encodedParams)
+
+      })
+    })
 }
 
 /**

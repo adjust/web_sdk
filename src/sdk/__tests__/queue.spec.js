@@ -2,16 +2,13 @@
 import * as Queue from '../queue'
 import * as request from '../request'
 import * as Storage from '../storage'
+import {flushPromises} from './_helper'
 
 jest.mock('../request')
 jest.useFakeTimers()
 
 const now = 1552914489217
 let dateNowSpy
-
-function flushPromises() {
-  return new Promise(resolve => setImmediate(resolve))
-}
 
 describe('test request queuing functionality', () => {
 

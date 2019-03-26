@@ -1,5 +1,6 @@
 import Config from './config'
 import Queue from './queue'
+import Storage from './storage'
 import {buildList} from './utilities'
 import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
@@ -76,6 +77,7 @@ function trackEvent (params = {}) {
 function destroy () {
   sessionDestroy()
   pubSubDestroy()
+  Storage.destroy()
   _clear()
 }
 

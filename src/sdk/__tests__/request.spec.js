@@ -2,20 +2,8 @@
 import * as request from '../request'
 import * as Attribution from '../attribution'
 import * as Time from '../time'
-import * as Identity from '../identity'
-
-function createMockXHR (response, status = 200, statusText = 'OK') {
-  return {
-    open: jest.fn(),
-    send: jest.fn(),
-    setRequestHeader: jest.fn(),
-    readyState: 4,
-    status: status,
-    statusText: statusText,
-    response: JSON.stringify(response),
-    responseText: JSON.stringify(response)
-  }
-}
+import * as identity from '../identity'
+import {flushPromises, createMockXHR} from './_helper'
 
 describe('perform api requests', () => {
 
@@ -25,7 +13,7 @@ describe('perform api requests', () => {
 
   beforeAll(() => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
-    jest.spyOn(Identity, 'getUuid').mockReturnValue({uuid: 'some-uuid'})
+    jest.spyOn(identity, 'default').mockResolvedValue({uuid: 'some-uuid'})
   })
   afterEach(() => {
     window.XMLHttpRequest = oldXMLHttpRequest
@@ -51,8 +39,10 @@ describe('perform api requests', () => {
       responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
     })
 
-    mockXHR.onerror()
-
+    return flushPromises()
+      .then(() => {
+        mockXHR.onerror()
+      })
   })
 
   it('rejects when status 0', () => {
@@ -72,8 +62,10 @@ describe('perform api requests', () => {
       responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
     })
 
-    mockXHR.onreadystatechange()
-
+    return flushPromises()
+      .then(() => {
+        mockXHR.onreadystatechange()
+      })
   })
 
   it('resolves error returned from server (because of retry mechanism)', () => {
@@ -88,8 +80,10 @@ describe('perform api requests', () => {
       params: {}
     })).resolves.toEqual({error: 'some error'})
 
-    mockXHR.onreadystatechange()
-
+    return flushPromises()
+      .then(() => {
+        mockXHR.onreadystatechange()
+      })
   })
 
   it('reject badly formed json from server', () => {
@@ -109,8 +103,10 @@ describe('perform api requests', () => {
       responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
     })
 
-    mockXHR.onreadystatechange()
-
+    return flushPromises()
+      .then(() => {
+        mockXHR.onreadystatechange()
+      })
   })
 
   describe('resolved requests', () => {
@@ -141,12 +137,16 @@ describe('perform api requests', () => {
           and: {test: 'object'}
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D&web_uuid=some-uuid' + gpsAdid, true)
-      expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
-      expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
-      mockXHR.onreadystatechange()
+      return flushPromises()
+        .then(() => {
 
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D&web_uuid=some-uuid' + gpsAdid, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+        })
     })
 
     it('excludes empty values from the request params', () => {
@@ -166,12 +166,16 @@ describe('perform api requests', () => {
           obj: {}
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble&web_uuid=some-uuid' + gpsAdid, true)
-      expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
-      expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
-      mockXHR.onreadystatechange()
+      return flushPromises()
+        .then(() => {
 
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble&web_uuid=some-uuid' + gpsAdid, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+        })
     })
 
     it('performs POST request', () => {
@@ -186,13 +190,17 @@ describe('perform api requests', () => {
           very: 'nice'
         }
       })).resolves.toEqual(response)
-      expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
-      expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
-      expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
-      expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice&web_uuid=some-uuid' + gpsAdid)
 
-      mockXHR.onreadystatechange()
+      return flushPromises()
+        .then(() => {
 
+          expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
+          expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice&web_uuid=some-uuid' + gpsAdid)
+
+          mockXHR.onreadystatechange()
+        })
     })
   })
 
@@ -225,7 +233,10 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      mockXHR.onreadystatechange()
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
     })
 
     it('returns response with whitelisted attributes for attribution endpoint', () => {
@@ -252,9 +263,11 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      mockXHR.onreadystatechange()
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
     })
-
   })
 
   describe('check attribution response', () => {
@@ -303,8 +316,10 @@ describe('perform api requests', () => {
         expect(Attribution.checkAttribution).toHaveBeenCalledWith(result)
       })
 
-      mockXHR.onreadystatechange()
-
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
     })
 
     it('does not check attribution info on session request without ask_in', () => {
@@ -332,8 +347,10 @@ describe('perform api requests', () => {
         expect(Attribution.checkAttribution).not.toHaveBeenCalled()
       })
 
-      mockXHR.onreadystatechange()
-
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
     })
 
     it('checks attribution info on any request with ask_in', () => {
@@ -357,8 +374,10 @@ describe('perform api requests', () => {
         expect(Attribution.checkAttribution).toHaveBeenCalledWith(result)
       })
 
-      mockXHR.onreadystatechange()
-
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
     })
   })
 })
