@@ -7,6 +7,7 @@ module.exports = {
   },
   setupFiles: ['jest-localstorage-mock'],
   globals: {
+    __ADJUST__NAMESPACE: 'adjust-sdk',
     __ADJUST__SDK_VERSION: 'TEST',
     __ADJUST__IS_TEST: true
   }

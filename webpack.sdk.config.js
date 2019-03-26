@@ -24,6 +24,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
+      __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
       __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version),
       __ADJUST__IS_TEST: false
     })

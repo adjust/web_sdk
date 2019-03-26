@@ -10,6 +10,7 @@
   "extends": "eslint:recommended",
   "globals": {
     "Promise": true,
+    "__ADJUST__NAMESPACE": true,
     "__ADJUST__SDK_VERSION": true,
     "__ADJUST__IS_TEST": true
   },
