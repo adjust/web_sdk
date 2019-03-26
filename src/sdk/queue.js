@@ -1,8 +1,7 @@
 import Config from './config'
 import request from './request'
 import backOff from './backoff'
-import {getItem, setItem} from './storage'
-import {timePassed} from './time'
+import Storage from './storage'
 
 /**
  * Timeout id and wait when pending request is about to happen
@@ -17,18 +16,15 @@ let _timeout = {id: null, attempts: 0, wait: 150}
  *
  * @private
  */
-function _continue () {
+function _continue (timestamp) {
+  return Storage.deleteItem('queue', timestamp)
+    .then(() => {
 
-  const pending = getItem('queue', [])
+      _timeout.attempts = 0
+      _timeout.wait = 150
 
-  pending.shift()
-
-  setItem('queue', pending)
-
-  _timeout.attempts = 0
-  _timeout.wait = 150
-
-  run()
+      return run()
+    })
 }
 
 /**
@@ -41,7 +37,7 @@ function _retry () {
   _timeout.attempts += 1
   _timeout.wait = backOff(_timeout.attempts)
 
-  run()
+  return run()
 }
 
 /**
@@ -52,58 +48,75 @@ function _retry () {
  * @param {Object} params
  */
 function push ({url, method, params}) {
-
-  const pending = getItem('queue', [])
-
-  pending.push(Object.assign({timestamp: Date.now()}, {url, method, params}))
-
-  setItem('queue', pending)
-
-  if (!_timeout.id) {
-    run()
-  }
-
+  return Storage.addItem('queue', Object.assign({timestamp: Date.now()}, {url, method, params}))
+    .then(() => _timeout.id ? {} : run())
 }
 
 /**
- * Run all pending requests
- * @param {boolean=} cleanUpFirst
+ * Make the request and retry if necessary
+ *
+ * @param {Object} pending
+ * @returns {Promise<any>}
+ * @private
  */
-function run (cleanUpFirst) {
+function _request (pending) {
+  return request({
+    url: pending.url,
+    method: pending.method,
+    params: pending.params
+  }).then(() => _continue(pending.timestamp))
+    .catch(_retry)
+}
 
-  if (cleanUpFirst) {
-    _cleanUp()
-  }
-
-  const pending = getItem('queue', [])
-  const call = pending[0]
+/**
+ * Make delayed request after some time
+ *
+ * @param {Object} pending
+ * @returns {Promise}
+ * @private
+ */
+function _delayedRequest (pending) {
 
   clearTimeout(_timeout.id)
   _timeout.id = null
 
-  if (!call) {
-    return
+  if (!pending) {
+    return Promise.resolve({})
   }
 
-  _timeout.id = setTimeout(() => {
-    return request({url: call.url, method: call.method, params: call.params})
-      .then(_continue)
-      .catch(_retry)
-  }, _timeout.wait)
+  return new Promise(() => {
+    _timeout.id = setTimeout(() => {
+      return _request(pending)
+    }, _timeout.wait)
+  })
+}
+
+/**
+ * Run all pending requests
+ *
+ * @param {boolean=} cleanUpFirst
+ */
+function run (cleanUpFirst) {
+
+  let chain = Promise.resolve([])
+
+  if (cleanUpFirst) {
+    chain = chain.then(_cleanUp)
+  }
+
+  return chain
+    .then(() => Storage.getFirst('queue'))
+    .then(_delayedRequest)
 }
 
 /**
  * Clean up stale pending requests
  *
  * @private
+ * @returns {Promise}
  */
 function _cleanUp () {
-
-  const pending = getItem('queue', [])
-
-  setItem('queue', pending.filter(call => {
-    return timePassed(call.timestamp, Date.now()) <= Config.requestValidityWindow
-  }))
+  return Storage.deleteBulk('queue', Date.now() - Config.requestValidityWindow)
 }
 
 export default {

@@ -72,7 +72,7 @@ function _encodeParams (params) {
     sent_at: getTimestamp()
   }, params)
 
-  params.web_uuid = getUuid()
+  params.web_uuid = getUuid().uuid
   // TODO this will be remove once backend fully supports web_sdk
   params.gps_adid = params.web_uuid
 

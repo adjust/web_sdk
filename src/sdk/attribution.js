@@ -1,9 +1,10 @@
 import Config from './config'
 import request from './request'
-import {setItem, getItem} from './storage'
 import {publish} from './pub-sub'
 import backOff from './backoff'
 import {getTimestamp} from './time'
+import {getCurrent} from './identity'
+import Storage from './storage'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen
@@ -16,7 +17,7 @@ let _timeout = {id: null, attempts: 0}
 /**
  * Cache create_at date when trying to check attribution
  *
- * @type {Date}
+ * @type {string}
  * @private
  */
 let _createdAt = null
@@ -25,13 +26,12 @@ let _createdAt = null
  * Check if new attribution is the same as old one
  *
  * @param {string} adid
- * @param {Object} newAttr
- * @returns {boolean}
+ * @param {Object} newAttribution
+ * @returns {Promise}
  * @private
  */
-function _isSame (adid, newAttr) {
+function _isSame (adid, newAttribution) {
 
-  const oldAttr = getItem('attribution', {})
   const check = [
     'tracker_token',
     'tracker_name',
@@ -42,30 +42,46 @@ function _isSame (adid, newAttr) {
     'click_label'
   ]
 
-  const anyDifferent = check.some(attr => {
-    return oldAttr[attr] !== newAttr[attr]
-  })
+  return getCurrent()
+    .then(user => {
+      const oldAttribution = user.attribution || {}
+      const anyDifferent = check.some(key => {
+        return oldAttribution[key] !== newAttribution[key]
+      })
+      const isSame = !anyDifferent && adid === oldAttribution.adid
 
-  return !anyDifferent && adid === oldAttr.adid
+      return {isSame: isSame, user: user}
+    })
 }
 
 /**
  * Set new attribution and notify client's callback
  *
- * @param {Object} result
- * @param {Object} result.attribution
+ * @param {Object} attributionResult
+ * @param {Object} attributionResult.attribution
  * @private
  */
-function _setAttribution (result = {}) {
+function _setAttribution (attributionResult = {}) {
 
-  const adid = result.adid || null
-  const attribution = result.attribution || {}
+  const adid = attributionResult.adid || null
+  const attribution = attributionResult.attribution || {}
 
-  if (_isSame(adid, attribution)) { return }
-
-  setItem('attribution', Object.assign({adid: adid}, attribution))
-  publish('attribution:change', result)
-
+  return _isSame(adid, attribution)
+    .then(result => {
+      if (!result.isSame) {
+        return Storage.updateItem(
+          'user',
+          Object.assign({}, result.user, {attribution: Object.assign({adid: adid}, attribution)})
+        )
+      }
+      return null
+    })
+    .then(changed => {
+      if (changed) {
+        publish('attribution:change', attributionResult)
+      }
+      return attributionResult
+    })
 }
 
 /**
@@ -79,9 +95,9 @@ function _delayedRequest (wait) {
 
   clearTimeout(_timeout.id)
 
-  return new Promise(resolve => {
+  return new Promise(() => {
     _timeout.id = setTimeout(() => {
-      return _request(resolve)
+      return _request()
     }, wait)
   })
 }
@@ -102,17 +118,16 @@ function _retry () {
 /**
  * Make the request and retry if necessary
  *
- * @param {Function} resolve
  * @returns {Promise}
  * @private
  */
-function _request (resolve) {
+function _request () {
   return request({
     url: '/attribution',
     params: Object.assign({
       created_at: _createdAt
     }, Config.baseParams)
-  }).then(result => resolve(_requestAttribution(result)))
+  }).then(_requestAttribution)
     .catch(_retry)
 }
 
@@ -126,8 +141,7 @@ function _request (resolve) {
 function _requestAttribution (result = {}) {
 
   if (!result.ask_in) {
-    _setAttribution(result)
-    return Promise.resolve(result)
+    return _setAttribution(result)
   }
 
   _timeout.attempts = 0

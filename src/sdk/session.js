@@ -1,6 +1,7 @@
 import Config from './config'
 import Queue from './queue'
-import {setItem, getItem} from './storage'
+import Storage from './storage'
+import {getCurrent} from './identity'
 import {on, off, getVisibilityApiAccess} from './utilities'
 import {getTimestamp, timePassed} from './time'
 
@@ -61,7 +62,11 @@ function watchSession () {
  * Set last active timestamp
  */
 function setLastActive () {
-  setItem('lastActive', Date.now())
+  return getCurrent()
+    .then(user => Storage.updateItem(
+      'user',
+      Object.assign({}, user, {lastActive: Date.now()})
+    ))
 }
 
 /**
@@ -145,12 +150,15 @@ function _checkSession () {
 
   _startTimer()
 
-  const lastActive = getItem('lastActive', 0)
-  const diff = timePassed(lastActive, Date.now())
+  getCurrent()
+    .then(user => {
+      const lastActive = user.lastActive || 0
+      const diff = timePassed(lastActive, Date.now())
 
-  if (!lastActive || diff >= Config.sessionWindow) {
-    _trackSession()
-  }
+      if (!lastActive || diff >= Config.sessionWindow) {
+        _trackSession()
+      }
+    })
 }
 
 export {

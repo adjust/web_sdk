@@ -1,5 +1,4 @@
 /* eslint-disable */
-import * as request from '../request'
 import * as PubSub from '../pub-sub'
 import * as Queue from '../queue'
 import * as Time from '../time'
@@ -8,7 +7,6 @@ import * as Config from '../config'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 
-jest.mock('../request')
 jest.useFakeTimers()
 
 const external = {
@@ -52,10 +50,9 @@ describe('test uninitiated instance', () => {
 
 describe('test initiated instance', () => {
   beforeAll(() => {
-    jest.spyOn(request, 'default')
     jest.spyOn(external, 'attributionCb')
     jest.spyOn(PubSub, 'subscribe')
-    jest.spyOn(Queue.default, 'push')
+    jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Session, 'watchSession').mockImplementation(() => {})
 
@@ -136,12 +133,6 @@ describe('test initiated instance', () => {
 
     expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
 
-    jest.runAllTimers()
-
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default).toHaveBeenCalledWith(requestConfig)
-    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
-
   })
 
   it('resolves trackEvent request successfully with revenue but no currency', () => {
@@ -166,12 +157,6 @@ describe('test initiated instance', () => {
     })
 
     expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
-
-    jest.runAllTimers()
-
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default).toHaveBeenCalledWith(requestConfig)
-    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
   })
 
@@ -203,11 +188,6 @@ describe('test initiated instance', () => {
 
     expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
 
-    jest.runAllTimers()
-
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default).toHaveBeenCalledWith(requestConfig)
-    expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
   })
 })

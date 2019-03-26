@@ -5,6 +5,7 @@ import * as request from '../request'
 import * as Storage from '../storage'
 import * as PubSub from '../pub-sub'
 import * as Time from '../time'
+import * as Identity from '../identity'
 
 jest.mock('../request')
 jest.useFakeTimers()
@@ -24,8 +25,8 @@ describe('test attribution functionality', () => {
     })
 
     jest.spyOn(request, 'default')
-    jest.spyOn(Storage, 'setItem')
-    jest.spyOn(Storage, 'getItem')
+    jest.spyOn(Storage.default, 'updateItem')
+    jest.spyOn(Identity, 'getCurrent')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
@@ -63,14 +64,17 @@ describe('test attribution functionality', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
-    Storage.getItem.mockReturnValue(Object.assign({adid: '123'}, currentAttribution.attribution))
+    Identity.getCurrent.mockResolvedValue({attribution: Object.assign({adid: '123'}, currentAttribution.attribution)})
     request.default.mockResolvedValue(currentAttribution)
 
-    expect.assertions(5)
+    expect.assertions(4)
 
     Attribution.checkAttribution({ask_in: 3000})
-      .then(result => {
-        expect(result).toEqual(currentAttribution)
+
+    jest.runAllTimers()
+
+    return flushPromises()
+      .then(() => {
         expect(setTimeout.mock.calls[0][1]).toBe(3000)
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
@@ -81,26 +85,27 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.setItem).not.toHaveBeenCalled()
+        expect(Storage.default.updateItem).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
-    jest.runAllTimers()
   })
 
-  it('sets timeout for attribution endpoint to be called which returns different attribution (network is different)', () => {
+  it('sets timeout for attribution endpoint to be called if no attribution found', () => {
 
-    const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
 
-    Storage.getItem.mockReturnValue(oldAttribution)
+    Identity.getCurrent.mockResolvedValue({})
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
 
     Attribution.checkAttribution({ask_in: 2000})
-      .then(result => {
-        expect(result).toEqual(newAttribution)
+
+    jest.runAllTimers()
+
+    return flushPromises()
+      .then(() => {
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
@@ -111,12 +116,43 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-
-        expect(Storage.setItem).toHaveBeenCalledWith('attribution', {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'})
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
       })
 
+  })
+
+  it('sets timeout for attribution endpoint to be called which returns different attribution (network is different)', () => {
+
+    const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
+    const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
+
+    Identity.getCurrent.mockResolvedValue({attribution: oldAttribution})
+    request.default.mockResolvedValue(newAttribution)
+
+    expect.assertions(5)
+
+    Attribution.checkAttribution({ask_in: 2000})
+
     jest.runAllTimers()
+
+    return flushPromises()
+      .then(() => {
+        expect(setTimeout.mock.calls[0][1]).toBe(2000)
+        expect(request.default).toHaveBeenCalledWith({
+          url: '/attribution',
+          params: {
+            created_at: 'some-time',
+            app_token: '123abc',
+            environment: 'sandbox',
+            os_name: 'ios'
+          }
+        })
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}})
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
+      })
 
   })
 
@@ -125,14 +161,17 @@ describe('test attribution functionality', () => {
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
 
-    Storage.getItem.mockReturnValue(oldAttribution)
+    Identity.getCurrent.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(5)
 
     Attribution.checkAttribution({ask_in: 2000})
-      .then(result => {
-        expect(result).toEqual(newAttribution)
+
+    jest.runAllTimers()
+
+    return flushPromises()
+      .then(() => {
         expect(setTimeout.mock.calls[0][1]).toBe(2000)
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
@@ -143,12 +182,10 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-
-        expect(Storage.setItem).toHaveBeenCalledWith('attribution', {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'})
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
       })
-
-    jest.runAllTimers()
 
   })
 
@@ -157,21 +194,21 @@ describe('test attribution functionality', () => {
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
 
-    Storage.getItem.mockReturnValue(oldAttribution)
+    Identity.getCurrent.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue({ask_in: 3000})
 
     Attribution.checkAttribution({ask_in: 2000})
 
     jest.advanceTimersByTime(1)
 
-    expect.assertions(10)
+    expect.assertions(11)
 
     return flushPromises()
       .then(() => {
 
         expect(setTimeout).toHaveBeenCalledTimes(1)
         expect(setTimeout.mock.calls[0][1]).toEqual(2000)
-        expect(Storage.setItem).not.toHaveBeenCalled()
+        expect(Storage.default.updateItem).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
 
         jest.advanceTimersByTime(2001)
@@ -181,7 +218,7 @@ describe('test attribution functionality', () => {
 
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout.mock.calls[1][1]).toEqual(3000)
-        expect(Storage.setItem).not.toHaveBeenCalled()
+        expect(Storage.default.updateItem).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
 
         request.default.mockClear()
@@ -191,7 +228,8 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       }).then(() => {
-        expect(Storage.setItem).toHaveBeenCalledWith('attribution', {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'})
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
       })
   })

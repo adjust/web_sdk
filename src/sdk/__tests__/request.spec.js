@@ -25,7 +25,7 @@ describe('perform api requests', () => {
 
   beforeAll(() => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
-    jest.spyOn(Identity, 'getUuid').mockReturnValue('some-uuid')
+    jest.spyOn(Identity, 'getUuid').mockReturnValue({uuid: 'some-uuid'})
   })
   afterEach(() => {
     window.XMLHttpRequest = oldXMLHttpRequest

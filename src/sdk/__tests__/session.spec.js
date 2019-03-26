@@ -5,6 +5,7 @@ import * as Session from '../session'
 import * as Storage from '../storage'
 import * as Time from '../time'
 import * as Queue from '../queue'
+import * as Identity from '../identity'
 
 jest.useFakeTimers()
 
@@ -22,7 +23,7 @@ describe('test session functionality', () => {
 
     jest.spyOn(Utilities, 'on')
     jest.spyOn(Utilities, 'off')
-    jest.spyOn(Storage, 'setItem')
+    jest.spyOn(Storage.default, 'updateItem')
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
 
@@ -64,9 +65,13 @@ describe('test session functionality', () => {
 
     it('sets last active timestamp directly', () => {
 
-      Session.setLastActive()
+      expect.assertions(2)
 
-      expect(Storage.setItem).toHaveBeenCalledWith('lastActive', now)
+      return Session.setLastActive()
+        .then(() => {
+          expect(Storage.default.updateItem.mock.calls[0][0]).toBe('user')
+          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: now})
+        })
 
     })
 
@@ -91,27 +96,39 @@ describe('test session functionality', () => {
 
     it('sets interval for last active timestamp to be updated every n seconds', () => {
 
-      dateNowSpy.mockReturnValue(1551916800001)
-
       Session.watchSession()
 
       expect.assertions(9)
+
       expect(setInterval).toHaveBeenCalledTimes(1)
 
-      jest.runOnlyPendingTimers()
-
-      expect(Storage.setItem).toHaveBeenCalledTimes(1)
-      expect(Storage.setItem).toHaveBeenLastCalledWith('lastActive', 1551916800001)
-
       return flushPromises()
+        .then(() => {
+          dateNowSpy.mockReturnValue(1551916800001)
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
+          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+
+          return flushPromises()
+        })
         .then(() => {
 
           dateNowSpy.mockReturnValueOnce(1551916800002)
 
           jest.runOnlyPendingTimers()
 
-          expect(Storage.setItem).toHaveBeenCalledTimes(2)
-          expect(Storage.setItem).toHaveBeenLastCalledWith('lastActive', 1551916800002)
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(2)
+          expect(Storage.default.updateItem.mock.calls[1][1]).toMatchObject({lastActive: 1551916800002})
 
           return flushPromises()
         })
@@ -121,12 +138,17 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
-          expect(Storage.setItem).toHaveBeenCalledTimes(3)
-          expect(Storage.setItem).toHaveBeenLastCalledWith('lastActive', 1551916800003)
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(3)
+          expect(Storage.default.updateItem.mock.calls[2][1]).toMatchObject({lastActive: 1551916800003})
 
           Session.destroy()
 
           return flushPromises()
+
         })
         .then(() => {
 
@@ -134,8 +156,12 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
-          expect(Storage.setItem).toHaveBeenCalledTimes(3)
-          expect(Storage.setItem).toHaveBeenLastCalledWith('lastActive', 1551916800003)
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(3)
+          expect(Storage.default.updateItem.mock.calls[2][1]).toMatchObject({lastActive: 1551916800003})
 
           return flushPromises()
         })
@@ -145,40 +171,74 @@ describe('test session functionality', () => {
 
       Session.watchSession()
 
+      expect.assertions(4)
+
       expect(Utilities.on).toHaveBeenCalled()
-      expect(Storage.getItem('lastActive', 0)).toBe(0)
 
-      jest.runOnlyPendingTimers()
+      return Identity.getCurrent()
+        .then(current => {
 
-      expect(Queue.default.push).toHaveBeenCalledWith({
-        url: '/session',
-        method: 'POST',
-        params: {
-          created_at: now,
-          app_token: '123abc',
-          environment: 'sandbox',
-          os_name: 'ios'
-        }
-      })
-      expect(Storage.getItem('lastActive', 0)).not.toBe(0)
+          expect(current.lastActive).toBeUndefined()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(Queue.default.push).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {
+              created_at: now,
+              app_token: '123abc',
+              environment: 'sandbox',
+              os_name: 'ios'
+            }
+          })
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(Identity.getCurrent)
+        .then(current => {
+          expect(current.lastActive).not.toBeUndefined()
+        })
 
     })
 
     it('skips initial install track if already tracked', () => {
 
-      Storage.setItem('lastActive', now)
+      dateNowSpy.mockReturnValue(now)
 
-      Session.watchSession()
+      expect.assertions(4)
 
-      expect(Utilities.on).toHaveBeenCalled()
-      expect(Storage.getItem('lastActive', 0)).toBe(now)
+      return Session.setLastActive()
+        .then(() => {
+          Session.watchSession()
 
-      dateNowSpy.mockReturnValue(1551916800002)
+          expect(Utilities.on).toHaveBeenCalled()
 
-      jest.runOnlyPendingTimers()
+          return Identity.getCurrent()
+        })
+        .then(current => {
 
-      expect(Queue.default.push).not.toHaveBeenCalled()
-      expect(Storage.getItem('lastActive', 0)).toBe(1551916800002)
+          expect(current.lastActive).toBe(now)
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Queue.default.push).not.toHaveBeenCalled()
+
+          dateNowSpy.mockReturnValue(1551916800002)
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(Identity.getCurrent)
+        .then(current => {
+          expect(current.lastActive).toBe(1551916800002)
+        })
 
     })
 
@@ -208,34 +268,48 @@ describe('test session functionality', () => {
       expect.assertions(11)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
-      expect(Storage.setItem).not.toHaveBeenCalled()
-
-      global.document.dispatchEvent(new Event('visibilitychange'))
-
-      jest.runOnlyPendingTimers()
-
-      expect(setInterval).toHaveBeenCalledTimes(1)
-      expect(clearInterval).toHaveBeenCalledTimes(2)
-      expect(Storage.setItem).toHaveBeenCalledTimes(1)
-      expect(Storage.setItem).toHaveBeenCalledWith('lastActive', 1551916800001)
-
-      jest.runOnlyPendingTimers()
-
-      // nothing changed because timer is not running
-      expect(Storage.setItem).toHaveBeenCalledTimes(1)
-      expect(Storage.setItem).toHaveBeenCalledWith('lastActive', 1551916800001)
 
       return flushPromises()
         .then(() => {
+          expect(Storage.default.updateItem).not.toHaveBeenCalled()
+
+          global.document.dispatchEvent(new Event('visibilitychange'))
+
+          jest.runOnlyPendingTimers()
+
+          expect(setInterval).toHaveBeenCalledTimes(1)
+          expect(clearInterval).toHaveBeenCalledTimes(2)
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
+          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          // nothing changed because timer is not running
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
+          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
 
           dateNowSpy.mockReturnValueOnce(1551916800002)
 
           jest.runOnlyPendingTimers()
 
-          // again nothing changed because timer is not running
-          expect(Storage.setItem).toHaveBeenCalledTimes(1)
-          expect(Storage.setItem).toHaveBeenCalledWith('lastActive', 1551916800001)
+          return flushPromises()
         })
+        .then(() => {
+          // again nothing changed because timer is not running
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
+          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+        })
+
+
     })
 
     it('restarts timer and stores last active state every n seconds when back to foreground', () => {
@@ -247,60 +321,87 @@ describe('test session functionality', () => {
       Session.watchSession()
 
       expect.assertions(10)
-      expect(clearInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
-      expect(setInterval).toHaveBeenCalledTimes(1)
-      expect(Storage.setItem).not.toHaveBeenCalled()
-
-      global.document.dispatchEvent(new Event('visibilitychange'))
-
-      jest.runOnlyPendingTimers()
-
-      expect(clearInterval).toHaveBeenCalledTimes(2)
-      expect(setInterval).toHaveBeenCalledTimes(2)
-      expect(Storage.setItem).not.toHaveBeenCalled()
-
-      jest.runOnlyPendingTimers()
-
-      // update within the timer
-      expect(Storage.setItem).toHaveBeenCalledTimes(1)
-      expect(Storage.setItem).toHaveBeenCalledWith('lastActive', 1551916800001)
+      expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
+      expect(clearInterval).toHaveBeenCalledTimes(1)
 
       return flushPromises()
         .then(() => {
+          expect(Storage.default.updateItem).not.toHaveBeenCalled()
+
+          global.document.dispatchEvent(new Event('visibilitychange'))
+
+          jest.runOnlyPendingTimers()
+
+          expect(setInterval).toHaveBeenCalledTimes(2)
+          expect(clearInterval).toHaveBeenCalledTimes(2)
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Storage.default.updateItem).not.toHaveBeenCalled()
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          // update within the timer
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
+          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
 
           dateNowSpy.mockReturnValueOnce(1551916800002)
 
           jest.runOnlyPendingTimers()
 
+          return flushPromises()
+        })
+        .then(() => {
           // update within the timer (second run)
-          expect(Storage.setItem).toHaveBeenCalledTimes(2)
-          expect(Storage.setItem).toHaveBeenLastCalledWith('lastActive', 1551916800002)
-
+          expect(Storage.default.updateItem).toHaveBeenCalledTimes(2)
+          expect(Storage.default.updateItem.mock.calls[1][1]).toMatchObject({lastActive: 1551916800002})
         })
 
     })
 
     it('checks session if certain time passed when back to foreground', () => {
 
-      Storage.setItem('lastActive', now) // prevent initial session tracking
-
       dateNowSpy.mockReturnValue(now)
 
-      global.document.testHidden = false
+      expect.assertions(2)
 
-      Session.watchSession()
+      return Session.setLastActive()
+        .then(() => {
 
-      jest.runOnlyPendingTimers()
+          global.document.testHidden = false
 
-      expect(Queue.default.push).not.toHaveBeenCalled()
+          Session.watchSession()
 
-      Storage.setItem('lastActive', now + Config.default.sessionWindow)
+          jest.runOnlyPendingTimers()
 
-      global.document.dispatchEvent(new Event('visibilitychange'))
+          return flushPromises()
+        })
+        .then(() => {
 
-      jest.runOnlyPendingTimers()
+          expect(Queue.default.push).not.toHaveBeenCalled()
 
-      expect(Queue.default.push).toHaveBeenCalledTimes(1)
+          return Identity.getCurrent()
+        })
+        .then(current => {
+          return Storage.default.updateItem('user', Object.assign({}, current, {lastActive: now + Config.default.sessionWindow}))
+        })
+        .then(() => {
+
+          global.document.dispatchEvent(new Event('visibilitychange'))
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(Queue.default.push).toHaveBeenCalledTimes(1)
+        })
 
     })
   })
