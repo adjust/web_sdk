@@ -1,5 +1,5 @@
 import Config from './config'
-import {isEmpty, isObject, isValidJson} from './utilities'
+import {extend, isEmpty, isObject, isValidJson} from './utilities'
 import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
 import {setLastActive} from './session'
@@ -31,7 +31,7 @@ function _getSuccessObject (xhr, url) {
 
   return ['adid', 'timestamp', 'ask_in', ...append]
     .filter(key => response[key])
-    .reduce((acc, key) => Object.assign(acc, {[key]: response[key]}), {})
+    .reduce((acc, key) => extend(acc, {[key]: response[key]}), {})
 }
 
 /**
@@ -68,7 +68,7 @@ function _getErrorObject (xhr, onlyResponse) {
  */
 function _encodeParams (params, uuid) {
 
-  params = Object.assign({
+  params = extend({
     created_at: getTimestamp(),
     sent_at: getTimestamp()
   }, params)

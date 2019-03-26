@@ -1,7 +1,7 @@
 import Config from './config'
 import Queue from './queue'
 import Storage from './storage'
-import {buildList} from './utilities'
+import {buildList, extend} from './utilities'
 import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
@@ -36,7 +36,7 @@ function init (params = {}, cb) {
     throw new Error(missingParamsMessage)
   }
 
-  Object.assign(Config.baseParams, params)
+  extend(Config.baseParams, params)
 
   if (typeof cb === 'function') {
     subscribe('attribution:change', cb)
@@ -61,9 +61,9 @@ function trackEvent (params = {}) {
   Queue.push({
     url: '/event',
     method: 'POST',
-    params: Object.assign({
+    params: extend({
       created_at: getTimestamp()
-    }, Config.baseParams, Object.assign({
+    }, Config.baseParams, extend({
       event_token: params.eventToken,
       callback_params: _convertToMap(params.callbackParams),
       partner_params: _convertToMap(params.partnerParams),
@@ -118,7 +118,7 @@ function _isInitiated () {
  * @private
  */
 function _clear () {
-  Object.assign(Config.baseParams, {
+  extend(Config.baseParams, {
     app_token: '',
     environment: '',
     os_name: ''
@@ -155,7 +155,7 @@ function _getRevenue (revenue, currency) {
  * @private
  */
 function _convertToMap (params = []) {
-  return params.reduce((acc, o) => Object.assign(acc, {[o.key]: o.value}), {})
+  return params.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
 }
 
 const Adjust = {

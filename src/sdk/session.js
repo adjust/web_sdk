@@ -2,7 +2,7 @@ import Config from './config'
 import Queue from './queue'
 import Storage from './storage'
 import identity from './identity'
-import {on, off, getVisibilityApiAccess} from './utilities'
+import {on, off, getVisibilityApiAccess, extend} from './utilities'
 import {getTimestamp, timePassed} from './time'
 
 /**
@@ -65,7 +65,7 @@ function setLastActive () {
   return identity()
     .then(user => Storage.updateItem(
       'user',
-      Object.assign({}, user, {lastActive: Date.now()})
+      extend({}, user, {lastActive: Date.now()})
     ))
 }
 
@@ -135,7 +135,7 @@ function _trackSession () {
   Queue.push({
     url: '/session',
     method: 'POST',
-    params: Object.assign({
+    params: extend({
       created_at: getTimestamp()
     }, Config.baseParams)
   })

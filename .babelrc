@@ -1,5 +1,6 @@
 {
   "presets": ["@babel/preset-env"],
+  "plugins": ["@babel/plugin-transform-object-assign"],
   "env": {
     "test": {
       "plugins": ["transform-es2015-modules-commonjs"]

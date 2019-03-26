@@ -2,6 +2,7 @@ import Config from './config'
 import request from './request'
 import backOff from './backoff'
 import Storage from './storage'
+import {extend} from './utilities'
 
 /**
  * Timeout id and wait when pending request is about to happen
@@ -48,7 +49,7 @@ function _retry () {
  * @param {Object} params
  */
 function push ({url, method, params}) {
-  return Storage.addItem('queue', Object.assign({timestamp: Date.now()}, {url, method, params}))
+  return Storage.addItem('queue', extend({timestamp: Date.now()}, {url, method, params}))
     .then(() => _timeout.id ? {} : run())
 }
 

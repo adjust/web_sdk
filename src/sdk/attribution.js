@@ -5,6 +5,7 @@ import identity from './identity'
 import backOff from './backoff'
 import {publish} from './pub-sub'
 import {getTimestamp} from './time'
+import {extend} from './utilities'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen
@@ -71,7 +72,7 @@ function _setAttribution (attributionResult = {}) {
       if (!result.isSame) {
         return Storage.updateItem(
           'user',
-          Object.assign({}, result.user, {attribution: Object.assign({adid: adid}, attribution)})
+          extend({}, result.user, {attribution: extend({adid: adid}, attribution)})
         )
       }
       return null
@@ -124,7 +125,7 @@ function _retry () {
 function _request () {
   return request({
     url: '/attribution',
-    params: Object.assign({
+    params: extend({
       created_at: _createdAt
     }, Config.baseParams)
   }).then(_requestAttribution)

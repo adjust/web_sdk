@@ -98,4 +98,30 @@ describe('test for utility methods', () => {
       }], 'id', 4)).toEqual(-1)
     })
   })
+
+  describe('test for extend', () => {
+    it('extends existing object', () => {
+
+      let obj = {name: 'something', year: 2018}
+
+      Utilities.extend(obj, {test: 'bla'})
+
+      expect(obj).toEqual({name: 'something', year: 2018, test: 'bla'})
+
+      Utilities.extend(obj, {year: 2019})
+
+      expect(obj).toEqual({name: 'something', year: 2019, test: 'bla'})
+    })
+
+    it('clones from another object', () => {
+
+      let obj1 = {name: 'something', year: 2018}
+      let obj2 = Utilities.extend({test: 'bla'}, obj1)
+      let obj3 = Utilities.extend({}, obj2, {year: 2019})
+
+      expect(obj1).toEqual({name: 'something', year: 2018})
+      expect(obj2).toEqual({test: 'bla', name: 'something', year: 2018})
+      expect(obj3).toEqual({test: 'bla', name: 'something', year: 2019})
+    })
+  })
 })

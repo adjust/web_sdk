@@ -132,6 +132,16 @@ function findIndex (array, key, value) {
   return -1
 }
 
+/**
+ * Wraps the Object.assign method which is later replaced with polyfill for IE
+ *
+ * @param {Object} args
+ * @returns {Object}
+ */
+function extend (...args) {
+  return Object.assign(...args)
+}
+
 
 export {
   buildList,
@@ -141,5 +151,6 @@ export {
   getVisibilityApiAccess,
   on,
   off,
-  findIndex
+  findIndex,
+  extend
 }
