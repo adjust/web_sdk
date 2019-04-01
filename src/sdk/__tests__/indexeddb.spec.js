@@ -10,7 +10,7 @@ describe('IndexedDB usage', () => {
 
   afterEach(() => {
     IndexedDB.default.clear('queue')
-    IndexedDB.default.clear('user')
+    IndexedDB.default.clear('activityState')
   })
 
   afterAll(() => {
@@ -95,21 +95,21 @@ describe('IndexedDB usage', () => {
 
   })
 
-  it('gets item from the user store', () => {
+  it('gets item from the activityState store', () => {
 
     expect.assertions(3)
 
-    return IndexedDB.default.addItem('user', {uuid: 1, lastActive: 12345})
-      .then(() => IndexedDB.default.addItem('user', {uuid: 2, lastActive: 12346}))
-      .then(() => IndexedDB.default.getItem('user', 2))
+    return IndexedDB.default.addItem('activityState', {uuid: 1, lastActive: 12345})
+      .then(() => IndexedDB.default.addItem('activityState', {uuid: 2, lastActive: 12346}))
+      .then(() => IndexedDB.default.getItem('activityState', 2))
       .then(result => {
         expect(result).toEqual({uuid: 2, lastActive: 12346})
 
-        return IndexedDB.default.getItem('user', 3)
+        return IndexedDB.default.getItem('activityState', 3)
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
-        expect(error.message).toEqual('No record found with uuid 3 in user store')
+        expect(error.message).toEqual('No record found with uuid 3 in activityState store')
       })
 
   })
@@ -144,18 +144,18 @@ describe('IndexedDB usage', () => {
 
   })
 
-  it('updates items in the user store', () => {
+  it('updates items in the activityState store', () => {
 
     expect.assertions(3)
 
-    return IndexedDB.default.addItem('user', {uuid: 1, lastActive: 12345})
+    return IndexedDB.default.addItem('activityState', {uuid: 1, lastActive: 12345})
       .then(() => {
-        return IndexedDB.default.addItem('user', {uuid: 2, lastActive: 12346})
+        return IndexedDB.default.addItem('activityState', {uuid: 2, lastActive: 12346})
       })
       .then(() => {
-        return IndexedDB.default.updateItem('user', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
+        return IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
       })
-      .then(() => IndexedDB.default.getAll('user'))
+      .then(() => IndexedDB.default.getAll('activityState'))
       .then(result => {
 
         expect(result).toEqual([
@@ -163,9 +163,9 @@ describe('IndexedDB usage', () => {
           {uuid: 2, lastActive: 12346}
         ])
 
-        return IndexedDB.default.updateItem('user', {uuid: 2, lastActive: 12348})
+        return IndexedDB.default.updateItem('activityState', {uuid: 2, lastActive: 12348})
       })
-      .then(() => IndexedDB.default.getAll('user'))
+      .then(() => IndexedDB.default.getAll('activityState'))
       .then(result => {
 
         expect(result).toEqual([
@@ -173,9 +173,9 @@ describe('IndexedDB usage', () => {
           {uuid: 2, lastActive: 12348}
         ])
 
-        return IndexedDB.default.updateItem('user', {uuid: 3, lastActive: 12349})
+        return IndexedDB.default.updateItem('activityState', {uuid: 3, lastActive: 12349})
       })
-      .then(() => IndexedDB.default.getAll('user'))
+      .then(() => IndexedDB.default.getAll('activityState'))
       .then(result => {
 
         expect(result).toEqual([

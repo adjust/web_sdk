@@ -25,7 +25,7 @@ describe('test request queuing functionality', () => {
     jest.clearAllMocks()
 
     Storage.default.clear('queue')
-    Storage.default.clear('user')
+    Storage.default.clear('activityState')
   })
 
   afterAll(() => {

@@ -66,7 +66,7 @@ describe('test session functionality', () => {
 
       return Session.setLastActive()
         .then(() => {
-          expect(Storage.default.updateItem.mock.calls[0][0]).toBe('user')
+          expect(Storage.default.updateItem.mock.calls[0][0]).toBe('activityState')
           expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: now})
         })
 
@@ -386,7 +386,7 @@ describe('test session functionality', () => {
           return identity.default()
         })
         .then(current => {
-          return Storage.default.updateItem('user', Object.assign({}, current, {lastActive: now + Config.default.sessionWindow}))
+          return Storage.default.updateItem('activityState', Object.assign({}, current, {lastActive: now + Config.default.sessionWindow}))
         })
         .then(() => {
 

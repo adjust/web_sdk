@@ -80,25 +80,25 @@ describe('LocalStorage usage', () => {
 
   })
 
-  it('gets item from the user store', () => {
+  it('gets item from the activityState store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.user`, JSON.stringify([
+    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.activityState`, JSON.stringify([
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
     ]))
 
     expect.assertions(3)
 
-    return LocalStorage.default.getItem('user', 2)
+    return LocalStorage.default.getItem('activityState', 2)
       .then(result => {
         expect(result).toEqual({uuid: 2, lastActive: 12346})
 
-        return LocalStorage.default.getItem('user', 3)
+        return LocalStorage.default.getItem('activityState', 3)
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
-        expect(error.message).toEqual('No record found with uuid 3 in user store')
+        expect(error.message).toEqual('No record found with uuid 3 in activityState store')
       })
 
   })
@@ -148,15 +148,15 @@ describe('LocalStorage usage', () => {
   it('updates items to the queue store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.user`, JSON.stringify([
+    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.activityState`, JSON.stringify([
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
     ]))
 
     expect.assertions(3)
 
-    return LocalStorage.default.updateItem('user', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
-      .then(() => LocalStorage.default.getAll('user'))
+    return LocalStorage.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
+      .then(() => LocalStorage.default.getAll('activityState'))
       .then(result => {
 
         expect(result).toEqual([
@@ -164,9 +164,9 @@ describe('LocalStorage usage', () => {
           {uuid: 2, lastActive: 12346}
         ])
 
-        return LocalStorage.default.updateItem('user', {uuid: 2, lastActive: 12348})
+        return LocalStorage.default.updateItem('activityState', {uuid: 2, lastActive: 12348})
       })
-      .then(() => LocalStorage.default.getAll('user'))
+      .then(() => LocalStorage.default.getAll('activityState'))
       .then(result => {
 
         expect(result).toEqual([
@@ -174,9 +174,9 @@ describe('LocalStorage usage', () => {
           {uuid: 2, lastActive: 12348}
         ])
 
-        return LocalStorage.default.updateItem('user', {uuid: 3, lastActive: 12349})
+        return LocalStorage.default.updateItem('activityState', {uuid: 3, lastActive: 12349})
       })
-      .then(() => LocalStorage.default.getAll('user'))
+      .then(() => LocalStorage.default.getAll('activityState'))
       .then(result => {
 
         expect(result).toEqual([

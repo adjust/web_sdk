@@ -44,14 +44,14 @@ function _isSame (adid, newAttribution) {
   ]
 
   return identity()
-    .then(user => {
-      const oldAttribution = user.attribution || {}
+    .then(activityState => {
+      const oldAttribution = activityState.attribution || {}
       const anyDifferent = check.some(key => {
         return oldAttribution[key] !== newAttribution[key]
       })
       const isSame = !anyDifferent && adid === oldAttribution.adid
 
-      return {isSame: isSame, user: user}
+      return {isSame, activityState}
     })
 }
 
@@ -71,8 +71,8 @@ function _setAttribution (attributionResult = {}) {
     .then(result => {
       if (!result.isSame) {
         return Storage.updateItem(
-          'user',
-          extend({}, result.user, {attribution: extend({adid: adid}, attribution)})
+          'activityState',
+          extend({}, result.activityState, {attribution: extend({adid: adid}, attribution)})
         )
       }
       return null
@@ -151,7 +151,7 @@ function _requestAttribution (result = {}) {
 }
 
 /**
- * Check attribution of the user and perform certain actions if retrieved
+ * Check current attribution and perform certain actions if retrieved
  *
  * @param {Object} sessionResult
  * @param {number} sessionResult.ask_in

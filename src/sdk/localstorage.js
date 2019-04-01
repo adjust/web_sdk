@@ -47,13 +47,13 @@ function _open () {
 
   if (isEmpty(scheme)) {
     scheme.queue = {primaryKey: 'timestamp'}
-    scheme.user = {primaryKey: 'uuid'}
+    scheme.activityState = {primaryKey: 'uuid'}
 
     _set(_schemeKey, scheme)
   }
 
   if (!_get('queue')) { _set('queue', []) }
-  if (!_get('user')) { _set('user', []) }
+  if (!_get('activityState')) { _set('activityState', []) }
 
 }
 

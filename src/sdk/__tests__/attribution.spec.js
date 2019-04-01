@@ -113,7 +113,7 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
         expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
       })
@@ -146,7 +146,7 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
         expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
       })
@@ -179,7 +179,7 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
         expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
       })
@@ -225,7 +225,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       }).then(() => {
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('user')
+        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
         expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
       })

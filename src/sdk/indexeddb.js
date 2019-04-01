@@ -62,7 +62,7 @@ function _open () {
       e.target.transaction.onabort = reject
 
       db.createObjectStore('queue', {keyPath: 'timestamp', autoIncrement: false})
-      db.createObjectStore('user', {keyPath: 'uuid', autoIncrement: false})
+      db.createObjectStore('activityState', {keyPath: 'uuid', autoIncrement: false})
 
     }
 

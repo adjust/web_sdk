@@ -63,9 +63,9 @@ function watchSession () {
  */
 function setLastActive () {
   return identity()
-    .then(user => Storage.updateItem(
-      'user',
-      extend({}, user, {lastActive: Date.now()})
+    .then(activityState => Storage.updateItem(
+      'activityState',
+      extend({}, activityState, {lastActive: Date.now()})
     ))
 }
 
@@ -151,8 +151,8 @@ function _checkSession () {
   _startTimer()
 
   identity()
-    .then(user => {
-      const lastActive = user.lastActive || 0
+    .then(activityState => {
+      const lastActive = activityState.lastActive || 0
       const diff = timePassed(lastActive, Date.now())
 
       if (!lastActive || diff >= Config.sessionWindow) {

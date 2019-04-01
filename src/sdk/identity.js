@@ -16,11 +16,11 @@ function _generateUuid () {
 }
 
 /**
- * Get current user's record
+ * Get activity state record
  *
  * @returns {Promise}
  */
 export default function identity () {
-  return Storage.getFirst('user')
-    .then(user => user ? user : Storage.addItem('user', {uuid: _generateUuid()}))
+  return Storage.getFirst('activityState')
+    .then(activityState => activityState ? activityState : Storage.addItem('activityState', {uuid: _generateUuid()}))
 }
