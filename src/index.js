@@ -5,7 +5,7 @@ import app from './app'
 const appConfig = {
   app_token: 'src556ylophc',
   environment: 'production',
-  os_name: 'android'
+  os_name: 'macos'
 }
 
 const someEventConfig = {
