@@ -16,11 +16,26 @@ function _generateUuid () {
 }
 
 /**
+ * Check if there is activity state, if not create one
+ *
+ * @returns {Promise}
+ */
+function checkActivityState () {
+  // TODO recover from memory and recreate db if not found
+  return Storage.getFirst('activityState')
+    .then(as => as ? as : Storage.addItem('activityState', {uuid: _generateUuid()}))
+}
+
+/**
  * Get activity state record
  *
  * @returns {Promise}
  */
-export default function identity () {
+function getActivityState () {
   return Storage.getFirst('activityState')
-    .then(activityState => activityState ? activityState : Storage.addItem('activityState', {uuid: _generateUuid()}))
+}
+
+export {
+  checkActivityState,
+  getActivityState
 }

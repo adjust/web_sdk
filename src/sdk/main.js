@@ -5,6 +5,7 @@ import {buildList, extend, convertToMap, getRevenue} from './utilities'
 import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
+import {checkActivityState} from './identity'
 
 /**
  * Definition of mandatory fields
@@ -36,15 +37,7 @@ function init (params = {}, cb) {
     throw new Error(missingParamsMessage)
   }
 
-  extend(Config.baseParams, params)
-
-  if (typeof cb === 'function') {
-    subscribe('attribution:change', cb)
-  }
-
-  Queue.run(true)
-
-  watchSession()
+  _start(params, cb)
 }
 
 /**
@@ -110,6 +103,32 @@ function _isInitiated () {
   const params = Config.baseParams
 
   return !!(params.app_token && params.environment && params.os_name)
+}
+
+/**
+ * Start the execution by preparing the environment for the current usage
+ * - subscribe to the attribution change
+ * - register activity state if doesn't exist
+ * - run the package queue if not empty
+ * - start watching the session
+ *
+ * @param {Object} params
+ * @param {Function=} cb
+ * @private
+ */
+function _start (params = {}, cb) {
+
+  extend(Config.baseParams, params)
+
+  if (typeof cb === 'function') {
+    subscribe('attribution:change', cb)
+  }
+
+  checkActivityState()
+    .then(() => {
+      Queue.run(true)
+      watchSession()
+    })
 }
 
 /**

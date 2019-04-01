@@ -1,11 +1,10 @@
 /* eslint-disable */
-import * as identity from '../identity'
+import * as Identity from '../identity'
 import * as Storage from '../storage'
 
 describe('test identity methods', () => {
 
   beforeAll(() => {
-    jest.spyOn(identity, 'default')
     jest.spyOn(Storage.default, 'getFirst')
     jest.spyOn(Storage.default, 'addItem')
   })
@@ -22,7 +21,9 @@ describe('test identity methods', () => {
     let uuid1
     let uuid2
 
-    return identity.default()
+    expect.assertions(5)
+
+    return Identity.checkActivityState()
       .then(activityState => {
 
         uuid1 = activityState.uuid
@@ -33,7 +34,7 @@ describe('test identity methods', () => {
         Storage.default.addItem.mockClear()
         Storage.default.getFirst.mockClear()
 
-        return identity.default()
+        return Identity.checkActivityState()
       })
       .then(activityState => {
 
@@ -44,5 +45,23 @@ describe('test identity methods', () => {
         expect(Storage.default.getFirst).toHaveBeenCalledTimes(1)
 
       })
+  })
+
+  it('returns empty object if activity state does not exist', () => {
+
+    expect.assertions(3)
+
+    return Identity.getActivityState()
+      .then(activityState => {
+        expect(activityState).toBeUndefined()
+
+        return Identity.checkActivityState()
+      })
+      .then(() => Identity.getActivityState())
+      .then(activityState => {
+        expect(activityState).not.toBeUndefined()
+        expect(activityState.uuid).not.toBeUndefined()
+      })
+
   })
 })

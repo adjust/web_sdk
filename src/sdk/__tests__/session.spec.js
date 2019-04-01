@@ -5,7 +5,7 @@ import * as Session from '../session'
 import * as Storage from '../storage'
 import * as Time from '../time'
 import * as Queue from '../queue'
-import * as identity from '../identity'
+import * as Identity from '../identity'
 import {flushPromises} from './_helper'
 
 jest.useFakeTimers()
@@ -60,11 +60,17 @@ describe('test session functionality', () => {
       }).toThrow(new Error('Session watch already initiated'))
     })
 
-    it('sets last active timestamp directly', () => {
+    it('sets last active timestamp if activity state exists', () => {
 
-      expect.assertions(2)
+      expect.assertions(3)
 
       return Session.setLastActive()
+        .then(() => {
+          expect(Storage.default.updateItem).not.toHaveBeenCalled()
+
+          return Identity.checkActivityState()
+        })
+        .then(Session.setLastActive)
         .then(() => {
           expect(Storage.default.updateItem.mock.calls[0][0]).toBe('activityState')
           expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: now})
@@ -168,14 +174,14 @@ describe('test session functionality', () => {
 
       Session.watchSession()
 
-      expect.assertions(4)
+      // expect.assertions(4)
 
       expect(Utilities.on).toHaveBeenCalled()
 
-      return identity.default()
+      return Identity.getActivityState()
         .then(current => {
 
-          expect(current.lastActive).toBeUndefined()
+          expect(current).toBeUndefined()
 
           return flushPromises()
         })
@@ -195,7 +201,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(identity.default)
+        .then(Identity.getActivityState)
         .then(current => {
           expect(current.lastActive).not.toBeUndefined()
         })
@@ -208,13 +214,14 @@ describe('test session functionality', () => {
 
       expect.assertions(4)
 
-      return Session.setLastActive()
+      return Identity.checkActivityState()
+        .then(Session.setLastActive)
         .then(() => {
           Session.watchSession()
 
           expect(Utilities.on).toHaveBeenCalled()
 
-          return identity.default()
+          return Identity.getActivityState()
         })
         .then(current => {
 
@@ -232,7 +239,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(identity.default)
+        .then(Identity.getActivityState)
         .then(current => {
           expect(current.lastActive).toBe(1551916800002)
         })
@@ -368,7 +375,8 @@ describe('test session functionality', () => {
 
       expect.assertions(2)
 
-      return Session.setLastActive()
+      return Identity.checkActivityState()
+        .then(Session.setLastActive)
         .then(() => {
 
           global.document.testHidden = false
@@ -383,7 +391,7 @@ describe('test session functionality', () => {
 
           expect(Queue.default.push).not.toHaveBeenCalled()
 
-          return identity.default()
+          return Identity.getActivityState()
         })
         .then(current => {
           return Storage.default.updateItem('activityState', Object.assign({}, current, {lastActive: now + Config.default.sessionWindow}))

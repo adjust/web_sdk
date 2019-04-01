@@ -57,15 +57,9 @@ describe('IndexedDB usage', () => {
 
         return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
       })
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'})
-      })
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 3, url: '/url3'})
-      })
-      .then(() => {
-        return IndexedDB.default.getAll('queue')
-      })
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'}))
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 3, url: '/url3'}))
+      .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
         expect(result).toEqual([
           {timestamp: 1, url: '/url1'},
@@ -75,20 +69,36 @@ describe('IndexedDB usage', () => {
       })
   })
 
+  it('returns undefined if no row present', () => {
+
+    expect.assertions(1)
+
+    return IndexedDB.default.getFirst('activityState')
+      .then(result => {
+        expect(result).toBeUndefined()
+      })
+
+  })
+
+  it('returns empty array if no rows present', () => {
+
+    expect.assertions(1)
+
+    return IndexedDB.default.getAll('queue')
+      .then(result => {
+        expect(result).toEqual([])
+      })
+
+  })
+
   it('returns first row from particular store', () => {
 
     expect.assertions(1)
 
     return IndexedDB.default.addItem('queue', {timestamp: 1552701608300, url: '/url1'})
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 1552705208300, url: '/url2'})
-      })
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 1552911178981, url: '/url3'})
-      })
-      .then(() => {
-        return IndexedDB.default.getFirst('queue')
-      })
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552705208300, url: '/url2'}))
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552911178981, url: '/url3'}))
+      .then(() => IndexedDB.default.getFirst('queue'))
       .then(result => {
         expect(result).toEqual({timestamp: 1552701608300, url: '/url1'})
       })
@@ -149,12 +159,8 @@ describe('IndexedDB usage', () => {
     expect.assertions(3)
 
     return IndexedDB.default.addItem('activityState', {uuid: 1, lastActive: 12345})
-      .then(() => {
-        return IndexedDB.default.addItem('activityState', {uuid: 2, lastActive: 12346})
-      })
-      .then(() => {
-        return IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
-      })
+      .then(() => IndexedDB.default.addItem('activityState', {uuid: 2, lastActive: 12346}))
+      .then(() => IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}}))
       .then(() => IndexedDB.default.getAll('activityState'))
       .then(result => {
 
@@ -192,12 +198,8 @@ describe('IndexedDB usage', () => {
     expect.assertions(4)
 
     return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'})
-      })
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 3, url: '/url3'})
-      })
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'}))
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 3, url: '/url3'}))
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
 
@@ -243,12 +245,8 @@ describe('IndexedDB usage', () => {
     expect.assertions(3)
 
     return IndexedDB.default.addItem('queue', {timestamp: 1552701608300, url: '/url1'})
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 1552705208300, url: '/url2'})
-      })
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 1552911178981, url: '/url3'})
-      })
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552705208300, url: '/url2'}))
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552911178981, url: '/url3'}))
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
 
@@ -282,9 +280,7 @@ describe('IndexedDB usage', () => {
     expect.assertions(2)
 
     return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
-      .then(() => {
-        return IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'})
-      })
+      .then(() => IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'}))
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
 

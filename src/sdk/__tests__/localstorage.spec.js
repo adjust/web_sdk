@@ -62,6 +62,28 @@ describe('LocalStorage usage', () => {
 
   })
 
+  it('returns undefined if no row present', () => {
+
+    expect.assertions(1)
+
+    return LocalStorage.default.getFirst('activityState')
+      .then(result => {
+        expect(result).toBeUndefined()
+      })
+
+  })
+
+  it('returns empty array if no rows present', () => {
+
+    expect.assertions(1)
+
+    return LocalStorage.default.getAll('queue')
+      .then(result => {
+        expect(result).toEqual([])
+      })
+
+  })
+
   it('returns first row from particular store', () => {
 
     // prepare some rows manually

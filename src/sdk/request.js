@@ -3,7 +3,7 @@ import {extend, isEmpty, isObject, isValidJson} from './utilities'
 import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
 import {setLastActive} from './session'
-import identity from './identity'
+import {checkActivityState} from './identity'
 
 /**
  * Check if attribution requst
@@ -131,10 +131,10 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
  */
 function _buildXhr ({url, method = 'GET', params = {}}) {
 
-  return identity()
-    .then(current => {
+  return checkActivityState()
+    .then(activityState => {
 
-      const encodedParams = _encodeParams(params, current.uuid)
+      const encodedParams = _encodeParams(params, activityState.uuid)
 
       url = Config.baseUrl + url
 

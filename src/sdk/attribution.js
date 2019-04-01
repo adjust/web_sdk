@@ -1,11 +1,11 @@
 import Config from './config'
 import Storage from './storage'
 import request from './request'
-import identity from './identity'
 import backOff from './backoff'
 import {publish} from './pub-sub'
 import {getTimestamp} from './time'
 import {extend} from './utilities'
+import {checkActivityState} from './identity'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen
@@ -43,7 +43,7 @@ function _isSame (adid, newAttribution) {
     'click_label'
   ]
 
-  return identity()
+  return checkActivityState()
     .then(activityState => {
       const oldAttribution = activityState.attribution || {}
       const anyDifferent = check.some(key => {
