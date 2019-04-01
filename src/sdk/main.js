@@ -1,7 +1,7 @@
 import Config from './config'
 import Queue from './queue'
 import Storage from './storage'
-import {buildList, extend} from './utilities'
+import {buildList, extend, convertToMap, getRevenue} from './utilities'
 import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
@@ -65,9 +65,9 @@ function trackEvent (params = {}) {
       created_at: getTimestamp()
     }, Config.baseParams, extend({
       event_token: params.eventToken,
-      callback_params: _convertToMap(params.callbackParams),
-      partner_params: _convertToMap(params.partnerParams),
-    }, _getRevenue(params.revenue, params.currency)))
+      callback_params: convertToMap(params.callbackParams),
+      partner_params: convertToMap(params.partnerParams),
+    }, getRevenue(params.revenue, params.currency)))
   })
 }
 
@@ -123,39 +123,6 @@ function _clear () {
     environment: '',
     os_name: ''
   })
-}
-
-/**
- * Get revenue value if positive and limit to 5 decimal places
- *
- * @param {number} revenue
- * @param {string} currency
- * @returns {Object}
- * @private
- */
-function _getRevenue (revenue, currency) {
-
-  revenue = parseFloat(revenue)
-
-  if (revenue < 0 || !currency) {
-    return {}
-  }
-
-  return {
-    revenue: revenue.toFixed(5),
-    currency
-  }
-}
-
-/**
- * Convert array like map into object map
- *
- * @param {Array} params
- * @returns {Object}
- * @private
- */
-function _convertToMap (params = []) {
-  return params.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
 }
 
 const Adjust = {

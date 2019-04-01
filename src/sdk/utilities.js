@@ -142,6 +142,36 @@ function extend (...args) {
   return Object.assign(...args)
 }
 
+/**
+ * Convert array with key/value item structure into key/value pairs object
+ *
+ * @param {Array} array
+ */
+function convertToMap (array = []) {
+  return array.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
+}
+
+/**
+ * Get revenue value if positive and limit to 5 decimal places
+ *
+ * @param {number} revenue
+ * @param {string} currency
+ * @returns {Object}
+ * @private
+ */
+function getRevenue (revenue, currency) {
+
+  revenue = parseFloat(revenue)
+
+  if (revenue < 0 || !currency) {
+    return {}
+  }
+
+  return {
+    revenue: revenue.toFixed(5),
+    currency
+  }
+}
 
 export {
   buildList,
@@ -152,5 +182,7 @@ export {
   on,
   off,
   findIndex,
-  extend
+  extend,
+  convertToMap,
+  getRevenue
 }
