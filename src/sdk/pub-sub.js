@@ -74,7 +74,9 @@ function publish (name, args) {
   }
 
   _list[name].forEach(item => {
-    item.cb(name, args)
+    if (typeof item.cb === 'function') {
+      setTimeout(() => item.cb(name, args))
+    }
   })
 }
 

@@ -1,6 +1,8 @@
 /* eslint-disable */
 import * as PubSub from '../pub-sub'
 
+jest.useFakeTimers()
+
 describe('test publish-subscribe pattern', () => {
 
   const callbacks = {
@@ -28,6 +30,8 @@ describe('test publish-subscribe pattern', () => {
 
     PubSub.publish('pretty-event', 'something')
 
+    jest.runAllTimers()
+
     expect(callbacks.one.cb).toHaveBeenCalledWith('pretty-event', 'something')
     expect(callbacks.three.cb).toHaveBeenCalledWith('pretty-event', 'something')
     expect(callbacks.two.cb).not.toHaveBeenCalled()
@@ -43,6 +47,8 @@ describe('test publish-subscribe pattern', () => {
     PubSub.publish('ugly-event', 'something-else')
     PubSub.publish('ugly-event', 'something-else')
 
+    jest.runAllTimers()
+
     expect(callbacks.one.cb).not.toHaveBeenCalled()
     expect(callbacks.three.cb).not.toHaveBeenCalled()
     expect(callbacks.two.cb).toHaveBeenCalledWith('ugly-event', 'something-else')
@@ -56,6 +62,8 @@ describe('test publish-subscribe pattern', () => {
   it('publishes event no one is subscribed to', () => {
 
     PubSub.publish('event-no-one-wants')
+
+    jest.runAllTimers()
 
     expect(callbacks.one.cb).not.toHaveBeenCalled()
     expect(callbacks.two.cb).not.toHaveBeenCalled()
@@ -71,6 +79,8 @@ describe('test publish-subscribe pattern', () => {
 
     PubSub.publish('pretty-event', 'something')
 
+    jest.runAllTimers()
+
     expect(callbacks.one.cb).toHaveBeenCalledWith('pretty-event', 'something')
     expect(callbacks.one.cb.mock.calls.length).toBe(1)
 
@@ -79,6 +89,8 @@ describe('test publish-subscribe pattern', () => {
     PubSub.unsubscribe(callbacks.one.id)
 
     PubSub.publish('pretty-event', 'something')
+
+    jest.runAllTimers()
 
     expect(callbacks.one.cb).not.toHaveBeenCalled()
     expect(callbacks.one.cb.mock.calls.length).toBe(0)
@@ -94,6 +106,8 @@ describe('test publish-subscribe pattern', () => {
 
     PubSub.publish('pretty-event', 'something')
     PubSub.publish('ugly-event', 'something-else')
+
+    jest.runAllTimers()
 
     expect(callback.cb.mock.calls[0]).toEqual(['pretty-event', 'something'])
     expect(callback.cb.mock.calls[1]).toEqual(['ugly-event', 'something-else'])
@@ -114,6 +128,8 @@ describe('test publish-subscribe pattern', () => {
     PubSub.publish('event1', {})
     PubSub.publish('event2', {})
 
+    jest.runAllTimers()
+
     expect(callback1).toHaveBeenCalledTimes(1)
     expect(callback1).toHaveBeenCalledWith('event1', {})
     expect(callback2).toHaveBeenCalledTimes(1)
@@ -126,6 +142,8 @@ describe('test publish-subscribe pattern', () => {
 
     PubSub.publish('event1')
     PubSub.publish('event2')
+
+    jest.runAllTimers()
 
     expect(callback1).not.toHaveBeenCalled()
     expect(callback2).not.toHaveBeenCalled()

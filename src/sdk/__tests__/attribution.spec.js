@@ -91,6 +91,7 @@ describe('test attribution functionality', () => {
   it('sets timeout for attribution endpoint to be called if no attribution found', () => {
 
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
+    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
     Identity.checkActivityState.mockResolvedValue({})
     request.default.mockResolvedValue(newAttribution)
@@ -114,8 +115,8 @@ describe('test attribution functionality', () => {
           }
         })
         expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}})
-        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
   })
@@ -124,6 +125,7 @@ describe('test attribution functionality', () => {
 
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
+    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
     Identity.checkActivityState.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue(newAttribution)
@@ -147,8 +149,8 @@ describe('test attribution functionality', () => {
           }
         })
         expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}})
-        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
   })
@@ -157,6 +159,7 @@ describe('test attribution functionality', () => {
 
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
+    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}
 
     Identity.checkActivityState.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue(newAttribution)
@@ -180,8 +183,8 @@ describe('test attribution functionality', () => {
           }
         })
         expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}})
-        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
   })
@@ -190,6 +193,7 @@ describe('test attribution functionality', () => {
 
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
+    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}
 
     Identity.checkActivityState.mockResolvedValue({attribution: oldAttribution})
     request.default.mockResolvedValue({ask_in: 3000})
@@ -226,8 +230,8 @@ describe('test attribution functionality', () => {
         return flushPromises()
       }).then(() => {
         expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}})
-        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', newAttribution)
+        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
   })
 

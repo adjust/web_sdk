@@ -73,8 +73,8 @@ function start (eventCb, revenueEventCb) {
 
 }
 
-function _format (date) {
-  const d = new Date(date.replace('Z', ''))
+function _formatDate () {
+  const d = new Date()
   return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`
 }
 
@@ -86,7 +86,7 @@ function logAttribution (result) {
   logContainer.classList.add('success')
   logContainer.classList.remove('loading')
 
-  _elements.attributionStatus.textContent = `updated at ${_format(result.timestamp)}`
+  _elements.attributionStatus.textContent = `updated at ${_formatDate()}`
 
 }
 

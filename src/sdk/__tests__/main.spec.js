@@ -88,6 +88,8 @@ describe('test initiated instance', () => {
 
     PubSub.publish('attribution:change', {tracker_token: 'some-token'})
 
+    jest.runAllTimers()
+
     expect(external.attributionCb).toHaveBeenCalledWith('attribution:change', {tracker_token: 'some-token'})
 
   })
