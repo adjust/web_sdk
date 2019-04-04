@@ -1,4 +1,6 @@
 import Storage from './storage'
+import ActivityState from './activity-state'
+import {extend} from './utilities'
 
 /**
  * Generate random  uuid v4
@@ -16,26 +18,61 @@ function _generateUuid () {
 }
 
 /**
- * Check if there is activity state, if not create one
+ * Check if there is activity state, if not create one and sync with running memory
  *
  * @returns {Promise}
+ * @private
  */
-function checkActivityState () {
-  // TODO recover from memory and recreate db if not found
+function _sync () {
   return Storage.getFirst('activityState')
-    .then(as => as ? as : Storage.addItem('activityState', {uuid: _generateUuid()}))
+    .then(stored => {
+      if (stored) {
+        return stored
+      }
+
+      const activityState = ActivityState.current || {uuid: _generateUuid()}
+
+      return Storage.addItem('activityState', activityState)
+        .then(() => ActivityState.current = activityState)
+    })
 }
 
 /**
- * Get activity state record
+ * Cache stored activity state into running memory
  *
  * @returns {Promise}
  */
-function getActivityState () {
-  return Storage.getFirst('activityState')
+function startActivityState () {
+  return _sync()
+    .then(stored => ActivityState.current = stored)
+}
+
+/**
+ * Update activity state in memory and store it
+ *
+ * @param {Object} params
+ * @returns {Promise}
+ */
+function updateActivityState (params) {
+  return _sync()
+    .then(stored => {
+
+      const activityState = extend({}, stored, params)
+
+      return Storage.updateItem('activityState', activityState)
+        .then(() => ActivityState.current = activityState)
+    })
+}
+
+/**
+ * Destroy current activity state
+ */
+function destroy () {
+  ActivityState.destroy()
 }
 
 export {
-  checkActivityState,
-  getActivityState
+  startActivityState,
+  updateActivityState,
+  destroy
 }

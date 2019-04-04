@@ -1,11 +1,11 @@
 import Config from './config'
-import Storage from './storage'
 import request from './request'
 import backOff from './backoff'
 import {publish} from './pub-sub'
 import {getTimestamp} from './time'
 import {extend} from './utilities'
-import {checkActivityState} from './identity'
+import {updateActivityState} from './identity'
+import ActivityState from './activity-state'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen
@@ -28,7 +28,7 @@ let _createdAt = ''
  *
  * @param {string} adid
  * @param {Object} attribution
- * @returns {Promise}
+ * @returns {boolean}
  * @private
  */
 function _isSame ({adid = '', attribution = {}}) {
@@ -43,48 +43,31 @@ function _isSame ({adid = '', attribution = {}}) {
     'click_label'
   ]
 
-  return checkActivityState()
-    .then(activityState => {
-      const oldAttribution = activityState.attribution || {}
-      const anyDifferent = check.some(key => {
-        return oldAttribution[key] !== attribution[key]
-      })
+  const oldAttribution = ActivityState.current.attribution || {}
+  const anyDifferent = check.some(key => {
+    return oldAttribution[key] !== attribution[key]
+  })
 
-      return !anyDifferent && adid === oldAttribution.adid
-    })
-}
-
-/**
- * Update the attribution if it was changed
- *
- * @param {Object} result
- * @private
- */
-function _checkAttribution (result = {}) {
-  return _isSame(result)
-    .then(isSame => isSame ? result : _updateAttribution(result))
+  return !anyDifferent && adid === oldAttribution.adid
 }
 
 /**
  * Update attribution and initiate client's callback
  *
  * @param {Object} result
- * @param {string} result.adid
- * @param {Object} result.attribution
  * @private
  */
-function _updateAttribution (result = {}) {
+function _setAttribution (result = {}) {
+  if (_isSame(result)) {
+    return Promise.resolve(result)
+  }
 
-  const attributionResult = extend({adid: result.adid}, result.attribution)
+  const attribution = extend({adid: result.adid}, result.attribution)
 
-  return checkActivityState()
-    .then(activityState => Storage.updateItem(
-      'activityState',
-      extend({}, activityState, {attribution: attributionResult})
-    ))
+  return updateActivityState({attribution})
     .then(() => {
-      publish('attribution:change', attributionResult)
-      return attributionResult
+      publish('attribution:change', attribution)
+      return attribution
     })
 }
 
@@ -145,7 +128,7 @@ function _request () {
 function _requestAttribution (result = {}) {
 
   if (!result.ask_in) {
-    return _checkAttribution(result)
+    return _setAttribution(result)
   }
 
   _timeout.attempts = 0

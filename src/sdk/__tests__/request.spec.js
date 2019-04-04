@@ -2,9 +2,8 @@
 import * as request from '../request'
 import * as Attribution from '../attribution'
 import * as Time from '../time'
-import * as Identity from '../identity'
+import * as ActivityState from '../activity-state'
 import {flushPromises, createMockXHR} from './_helper'
-import {checkActivityState} from '../identity'
 
 describe('perform api requests', () => {
 
@@ -14,7 +13,7 @@ describe('perform api requests', () => {
 
   beforeAll(() => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
-    jest.spyOn(Identity, 'checkActivityState').mockResolvedValue({uuid: 'some-uuid'})
+    ActivityState.default.current = {uuid: 'some-uuid'}
   })
   afterEach(() => {
     window.XMLHttpRequest = oldXMLHttpRequest

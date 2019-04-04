@@ -1,4 +1,5 @@
 import Config from './config'
+import ActivityState from './activity-state'
 
 const _dbName = Config.namespace
 const _dbVersion = 1
@@ -61,14 +62,19 @@ function _open () {
       e.target.transaction.onerror = reject
       e.target.transaction.onabort = reject
 
+      const objectStore = db.createObjectStore('activityState', {keyPath: 'uuid', autoIncrement: false})
       db.createObjectStore('queue', {keyPath: 'timestamp', autoIncrement: false})
-      db.createObjectStore('activityState', {keyPath: 'uuid', autoIncrement: false})
 
+      if (ActivityState.current) {
+        objectStore.add(ActivityState.current)
+      }
     }
 
     request.onsuccess = (e) => {
       _db = e.target.result
       resolve({success: true})
+
+      _db.onclose = destroy
     }
 
     request.onerror = reject
@@ -76,7 +82,27 @@ function _open () {
 }
 
 /**
- * Initiate the transaction for requested action
+ * Get transaction and the store
+ *
+ * @param {string} storeName
+ * @param {string} [mode=readonly]
+ * @param {Function} reject
+ * @returns {{transaction, store: *|IDBObjectStore}}
+ * @private
+ */
+function _getTranStore ({storeName, mode = 'readonly'}, reject) {
+
+  const transaction = _db.transaction([storeName], mode)
+  const store = transaction.objectStore(storeName)
+
+  transaction.onerror = reject
+  transaction.onabort = reject
+
+  return {transaction, store}
+}
+
+/**
+ * Initiate the database request
  *
  * @param {string} storeName
  * @param {Object=} target
@@ -85,16 +111,12 @@ function _open () {
  * @returns {Promise}
  * @private
  */
-function _initTransaction ({storeName, target, action, mode = 'readonly'}) {
+function _initRequest ({storeName, target, action, mode = 'readonly'}) {
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
-        const transaction = _db.transaction([storeName], mode)
-        const store = transaction.objectStore(storeName)
+        const {store} = _getTranStore({storeName, mode}, reject)
         const request = store[action](target)
-
-        transaction.onerror = reject
-        transaction.onabort = reject
 
         request.onsuccess = () => {
           if (action === 'get' && !request.result) {
@@ -123,15 +145,11 @@ function _openCursor ({storeName, action, range, firstOnly, mode = 'readonly'}) 
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
-
-        const transaction = _db.transaction([storeName], mode)
-        const store = transaction.objectStore(storeName)
+        const {transaction, store} = _getTranStore({storeName, mode}, reject)
         const cursorRequest = store.openCursor(range)
         const items = []
 
         transaction.oncomplete = () => resolve(firstOnly ? items[0] : items)
-        transaction.onerror = reject
-        transaction.onabort = reject
 
         cursorRequest.onsuccess = e => {
 
@@ -185,7 +203,7 @@ function getFirst (storeName) {
  * @returns {Promise}
  */
 function getItem (storeName, id) {
-  return _initTransaction({storeName, target: id, action: 'get'})
+  return _initRequest({storeName, target: id, action: 'get'})
 }
 
 /**
@@ -196,7 +214,7 @@ function getItem (storeName, id) {
  * @returns {Promise}
  */
 function addItem (storeName, item) {
-  return _initTransaction({storeName, target: item, action: 'add', mode: 'readwrite'})
+  return _initRequest({storeName, target: item, action: 'add', mode: 'readwrite'})
 }
 
 /**
@@ -207,7 +225,7 @@ function addItem (storeName, item) {
  * @returns {Promise}
  */
 function updateItem (storeName, item) {
-  return _initTransaction({storeName, target: item, action: 'put', mode: 'readwrite'})
+  return _initRequest({storeName, target: item, action: 'put', mode: 'readwrite'})
 }
 
 /**
@@ -218,7 +236,7 @@ function updateItem (storeName, item) {
  * @returns {Promise}
  */
 function deleteItem (storeName, id) {
-  return _initTransaction({storeName, target: id, action: 'delete', mode: 'readwrite'})
+  return _initRequest({storeName, target: id, action: 'delete', mode: 'readwrite'})
 }
 
 /**
@@ -242,7 +260,7 @@ function deleteBulk (storeName, upperBound) {
  * @returns {Promise}
  */
 function clear (storeName) {
-  return _initTransaction({storeName, action: 'clear', mode: 'readwrite'})
+  return _initRequest({storeName, action: 'clear', mode: 'readwrite'})
 }
 
 /**

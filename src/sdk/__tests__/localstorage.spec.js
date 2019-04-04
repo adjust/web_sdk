@@ -1,10 +1,16 @@
 /* eslint-disable */
 import * as LocalStorage from '../localstorage'
+import * as Identity from '../identity'
+import * as ActivityState from '../activity-state'
 
 describe('LocalStorage usage', () => {
 
   afterEach(() => {
     localStorage.clear()
+  })
+
+  afterAll(() => {
+    LocalStorage.default.destroy()
   })
 
   it('checks if localStorage is supported', () => {
@@ -127,10 +133,15 @@ describe('LocalStorage usage', () => {
 
   it('adds items to the queue store', () => {
 
-    expect.assertions(5)
+    expect.assertions(8)
 
     return LocalStorage.default.addItem('queue', {timestamp: 1, url: '/url1'})
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(id => {
+
+        expect(id).toEqual(1)
+
+        return LocalStorage.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -139,7 +150,12 @@ describe('LocalStorage usage', () => {
 
         return LocalStorage.default.addItem('queue', {timestamp: 2, url: '/url2'})
       })
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(id => {
+
+        expect(id).toEqual(2)
+
+        return LocalStorage.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -149,7 +165,12 @@ describe('LocalStorage usage', () => {
 
         return LocalStorage.default.addItem('queue', {timestamp: 3, url: '/url3'})
       })
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(id => {
+
+        expect(id).toEqual(3)
+
+        return LocalStorage.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -167,7 +188,7 @@ describe('LocalStorage usage', () => {
 
   })
 
-  it('updates items to the queue store', () => {
+  it('updates items in the activityState store', () => {
 
     // prepare some rows manually
     window.localStorage.setItem(`${__ADJUST__NAMESPACE}.activityState`, JSON.stringify([
@@ -175,10 +196,15 @@ describe('LocalStorage usage', () => {
       {uuid: 2, lastActive: 12346}
     ]))
 
-    expect.assertions(3)
+    expect.assertions(8)
 
     return LocalStorage.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
-      .then(() => LocalStorage.default.getAll('activityState'))
+      .then(update => {
+
+        expect(update).toEqual(1)
+
+        return LocalStorage.default.getAll('activityState')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -186,25 +212,47 @@ describe('LocalStorage usage', () => {
           {uuid: 2, lastActive: 12346}
         ])
 
-        return LocalStorage.default.updateItem('activityState', {uuid: 2, lastActive: 12348})
+        return LocalStorage.default.updateItem('activityState', {uuid: 1, lastActive: 12348})
       })
-      .then(() => LocalStorage.default.getAll('activityState'))
+      .then(update => {
+
+        expect(update).toEqual(1)
+
+        return LocalStorage.default.getItem('activityState', 1)
+      })
+      .then(result => {
+
+        expect(result).toEqual({uuid: 1, lastActive: 12348})
+
+        return LocalStorage.default.updateItem('activityState', {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}})
+      })
+      .then(update => {
+
+        expect(update).toEqual(2)
+
+        return LocalStorage.default.getAll('activityState')
+      })
       .then(result => {
 
         expect(result).toEqual([
-          {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}},
-          {uuid: 2, lastActive: 12348}
+          {uuid: 1, lastActive: 12348},
+          {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}}
         ])
 
-        return LocalStorage.default.updateItem('activityState', {uuid: 3, lastActive: 12349})
+        return LocalStorage.default.updateItem('activityState', {uuid: 3, lastActive: 12350})
       })
-      .then(() => LocalStorage.default.getAll('activityState'))
+      .then(update => {
+
+        expect(update).toEqual(3)
+
+        return LocalStorage.default.getAll('activityState')
+      })
       .then(result => {
 
         expect(result).toEqual([
-          {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}},
-          {uuid: 2, lastActive: 12348},
-          {uuid: 3, lastActive: 12349}
+          {uuid: 1, lastActive: 12348},
+          {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}},
+          {uuid: 3, lastActive: 12350}
         ])
       })
 
@@ -220,10 +268,15 @@ describe('LocalStorage usage', () => {
       {timestamp: 4, url: '/url4'}
     ]))
 
-    expect.assertions(3)
+    expect.assertions(6)
 
     return LocalStorage.default.deleteItem('queue', 2)
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(deleted => {
+
+        expect(deleted).toEqual(2)
+
+        return LocalStorage.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -234,7 +287,12 @@ describe('LocalStorage usage', () => {
 
         return LocalStorage.default.deleteItem('queue', 4)
       })
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(deleted => {
+
+        expect(deleted).toEqual(4)
+
+        return LocalStorage.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -244,7 +302,12 @@ describe('LocalStorage usage', () => {
 
         return LocalStorage.default.deleteItem('queue', 5)
       })
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(deleted => {
+
+        expect(deleted).toEqual(5)
+
+        return LocalStorage.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -317,6 +380,32 @@ describe('LocalStorage usage', () => {
       .then(() => LocalStorage.default.getAll('queue'))
       .then(result => {
         expect(result).toEqual([])
+      })
+
+  })
+
+  it('restores activityState record from the running memory when db gets destroyed', () => {
+
+    let activityState = null
+
+    return Identity.startActivityState()
+      .then(() => {
+
+        LocalStorage.default.destroy()
+        localStorage.clear()
+
+        activityState = ActivityState.default.current
+
+        expect(activityState.uuid).toBeDefined()
+
+        return LocalStorage.default.getFirst('activityState')
+      })
+      .then(stored => {
+
+        expect(stored).toEqual(activityState)
+        expect(stored.uuid).toBeDefined()
+
+        Identity.destroy()
       })
 
   })

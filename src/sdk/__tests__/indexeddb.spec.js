@@ -2,6 +2,8 @@
 import fakeIDB from 'fake-indexeddb'
 import * as IDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange'
 import * as IndexedDB from '../indexeddb'
+import * as Identity from '../identity'
+import * as ActivityState from '../activity-state'
 
 describe('IndexedDB usage', () => {
 
@@ -126,10 +128,15 @@ describe('IndexedDB usage', () => {
 
   it('adds items to the queue store', () => {
 
-    expect.assertions(3)
+    expect.assertions(5)
 
     return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'}, true)
-      .then(() => IndexedDB.default.getAll('queue'))
+      .then(id => {
+
+        expect(id).toEqual(1)
+
+        return IndexedDB.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -138,7 +145,12 @@ describe('IndexedDB usage', () => {
 
         return IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'})
       })
-      .then(() => IndexedDB.default.getAll('queue'))
+      .then(id => {
+
+        expect(id).toEqual(2)
+
+        return IndexedDB.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -156,12 +168,17 @@ describe('IndexedDB usage', () => {
 
   it('updates items in the activityState store', () => {
 
-    expect.assertions(3)
+    expect.assertions(8)
 
     return IndexedDB.default.addItem('activityState', {uuid: 1, lastActive: 12345})
       .then(() => IndexedDB.default.addItem('activityState', {uuid: 2, lastActive: 12346}))
       .then(() => IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}}))
-      .then(() => IndexedDB.default.getAll('activityState'))
+      .then(update => {
+
+        expect(update).toEqual(1)
+
+        return IndexedDB.default.getAll('activityState')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -169,25 +186,47 @@ describe('IndexedDB usage', () => {
           {uuid: 2, lastActive: 12346}
         ])
 
-        return IndexedDB.default.updateItem('activityState', {uuid: 2, lastActive: 12348})
+          return IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12348})
       })
-      .then(() => IndexedDB.default.getAll('activityState'))
+      .then(update => {
+
+        expect(update).toEqual(1)
+
+        return IndexedDB.default.getItem('activityState', 1)
+      })
+      .then(result => {
+
+        expect(result).toEqual({uuid: 1, lastActive: 12348})
+
+        return IndexedDB.default.updateItem('activityState', {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}})
+      })
+      .then(update => {
+
+        expect(update).toEqual(2)
+
+        return IndexedDB.default.getAll('activityState')
+      })
       .then(result => {
 
         expect(result).toEqual([
-          {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}},
-          {uuid: 2, lastActive: 12348}
+          {uuid: 1, lastActive: 12348},
+          {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}}
         ])
 
-        return IndexedDB.default.updateItem('activityState', {uuid: 3, lastActive: 12349})
+        return IndexedDB.default.updateItem('activityState', {uuid: 3, lastActive: 12350})
       })
-      .then(() => IndexedDB.default.getAll('activityState'))
+      .then(update => {
+
+        expect(update).toEqual(3)
+
+        return IndexedDB.default.getAll('activityState')
+      })
       .then(result => {
 
         expect(result).toEqual([
-          {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}},
-          {uuid: 2, lastActive: 12348},
-          {uuid: 3, lastActive: 12349}
+          {uuid: 1, lastActive: 12348},
+          {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}},
+          {uuid: 3, lastActive: 12350}
         ])
       })
 
@@ -195,7 +234,7 @@ describe('IndexedDB usage', () => {
 
   it('deletes item by item in the queue store', () => {
 
-    expect.assertions(4)
+    expect.assertions(7)
 
     return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
       .then(() => IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'}))
@@ -211,7 +250,12 @@ describe('IndexedDB usage', () => {
 
         return IndexedDB.default.deleteItem('queue', 2)
       })
-      .then(() => IndexedDB.default.getAll('queue'))
+      .then(deleted => {
+
+        expect(deleted).toEqual(2)
+
+        return IndexedDB.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -221,7 +265,12 @@ describe('IndexedDB usage', () => {
 
         return IndexedDB.default.deleteItem('queue', 1)
       })
-      .then(() => IndexedDB.default.getAll('queue'))
+      .then(deleted => {
+
+        expect(deleted).toEqual(1)
+
+        return IndexedDB.default.getAll('queue')
+      })
       .then(result => {
 
         expect(result).toEqual([
@@ -230,9 +279,13 @@ describe('IndexedDB usage', () => {
 
         return IndexedDB.default.deleteItem('queue', 5)
       })
-      .then(() => IndexedDB.default.getAll('queue'))
-      .then(result => {
+      .then(deleted => {
 
+        expect(deleted).toEqual(5)
+
+        return IndexedDB.default.getAll('queue')
+      })
+      .then(result => {
         expect(result).toEqual([
           {timestamp: 3, url: '/url3'}
         ])
@@ -294,6 +347,34 @@ describe('IndexedDB usage', () => {
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
         expect(result).toEqual([])
+      })
+
+  })
+
+  it('restores activityState record from the running memory when db gets destroyed', () => {
+
+    expect.assertions(3)
+
+    let activityState = null
+
+    return Identity.startActivityState()
+      .then(() => {
+
+        IndexedDB.default.destroy()
+        fakeIDB._databases.clear()
+
+        activityState = ActivityState.default.current
+
+        expect(activityState.uuid).toBeDefined()
+
+        return IndexedDB.default.getFirst('activityState')
+      })
+      .then(stored => {
+
+        expect(stored).toEqual(activityState)
+        expect(stored.uuid).toBeDefined()
+
+        Identity.destroy()
       })
 
   })

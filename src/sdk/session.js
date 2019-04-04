@@ -1,9 +1,9 @@
 import Config from './config'
 import Queue from './queue'
-import Storage from './storage'
 import {on, off, getVisibilityApiAccess, extend} from './utilities'
 import {getTimestamp, timePassed} from './time'
-import {getActivityState, checkActivityState} from './identity'
+import {updateActivityState} from './identity'
+import ActivityState from './activity-state'
 
 /**
  * Flag to mark if session watch is already on
@@ -60,14 +60,13 @@ function watchSession () {
 
 /**
  * Set last active timestamp
+ *
+ * @param {boolean=} ignore
  */
-function setLastActive () {
-  return getActivityState()
-    .then(activityState => {
-      if (activityState) {
-        Storage.updateItem('activityState', extend({}, activityState, {lastActive: Date.now()}))
-      }
-    })
+function setLastActive (ignore) {
+  if (!ignore || ActivityState.current) {
+    return updateActivityState({lastActive: Date.now()})
+  }
 }
 
 /**
@@ -99,7 +98,7 @@ function _handleVisibilityChange () {
   _idTimeout = setTimeout(() => {
     if (document[_adapter.hidden]) {
       _stopTimer()
-      setLastActive()
+      setLastActive(true)
     } else {
       _checkSession()
     }
@@ -151,15 +150,13 @@ function _checkSession () {
 
   _startTimer()
 
-  checkActivityState()
-    .then(activityState => {
-      const lastActive = activityState.lastActive || 0
-      const diff = timePassed(lastActive, Date.now())
+  const activityState = ActivityState.current || {}
+  const lastActive = activityState.lastActive || 0
+  const diff = timePassed(lastActive, Date.now())
 
-      if (!lastActive || diff >= Config.sessionWindow) {
-        _trackSession()
-      }
-    })
+  if (!lastActive || diff >= Config.sessionWindow) {
+    _trackSession()
+  }
 }
 
 export {

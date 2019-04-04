@@ -2,10 +2,10 @@
 import * as Config from '../config'
 import * as Attribution from '../attribution'
 import * as request from '../request'
-import * as Storage from '../storage'
 import * as PubSub from '../pub-sub'
 import * as Time from '../time'
 import * as Identity from '../identity'
+import * as ActivityState from '../activity-state'
 import {flushPromises} from './_helper'
 
 jest.mock('../request')
@@ -22,8 +22,7 @@ describe('test attribution functionality', () => {
     })
 
     jest.spyOn(request, 'default')
-    jest.spyOn(Storage.default, 'updateItem')
-    jest.spyOn(Identity, 'checkActivityState')
+    jest.spyOn(Identity, 'updateActivityState')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
@@ -61,7 +60,7 @@ describe('test attribution functionality', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
-    Identity.checkActivityState.mockResolvedValue({attribution: Object.assign({adid: '123'}, currentAttribution.attribution)})
+    ActivityState.default.current = {attribution: Object.assign({adid: '123'}, currentAttribution.attribution)}
     request.default.mockResolvedValue(currentAttribution)
 
     expect.assertions(4)
@@ -82,7 +81,7 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.default.updateItem).not.toHaveBeenCalled()
+        expect(Identity.updateActivityState).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
@@ -93,10 +92,10 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
-    Identity.checkActivityState.mockResolvedValue({})
+    ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(5)
+    expect.assertions(4)
 
     Attribution.checkAttribution({ask_in: 2000})
 
@@ -114,8 +113,7 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -127,10 +125,10 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
-    Identity.checkActivityState.mockResolvedValue({attribution: oldAttribution})
+    ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(5)
+    expect.assertions(4)
 
     Attribution.checkAttribution({ask_in: 2000})
 
@@ -148,8 +146,7 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -161,10 +158,10 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}
 
-    Identity.checkActivityState.mockResolvedValue({attribution: oldAttribution})
+    ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(5)
+    expect.assertions(4)
 
     Attribution.checkAttribution({ask_in: 2000})
 
@@ -182,8 +179,7 @@ describe('test attribution functionality', () => {
             os_name: 'ios'
           }
         })
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -195,21 +191,21 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}
 
-    Identity.checkActivityState.mockResolvedValue({attribution: oldAttribution})
+    ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue({ask_in: 3000})
 
     Attribution.checkAttribution({ask_in: 2000})
 
     jest.advanceTimersByTime(1)
 
-    expect.assertions(11)
+    expect.assertions(10)
 
     return flushPromises()
       .then(() => {
 
         expect(setTimeout).toHaveBeenCalledTimes(1)
         expect(setTimeout.mock.calls[0][1]).toEqual(2000)
-        expect(Storage.default.updateItem).not.toHaveBeenCalled()
+        expect(Identity.updateActivityState).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
 
         jest.advanceTimersByTime(2001)
@@ -219,7 +215,7 @@ describe('test attribution functionality', () => {
 
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout.mock.calls[1][1]).toEqual(3000)
-        expect(Storage.default.updateItem).not.toHaveBeenCalled()
+        expect(Identity.updateActivityState).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
 
         request.default.mockClear()
@@ -229,8 +225,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       }).then(() => {
-        expect(Storage.default.updateItem.mock.calls[0][0]).toEqual('activityState')
-        expect(Storage.default.updateItem.mock.calls[0][1]).toEqual({attribution: formatted})
+        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
   })

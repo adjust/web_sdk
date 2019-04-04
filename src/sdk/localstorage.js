@@ -1,4 +1,5 @@
 import Config from './config'
+import ActivityState from './activity-state'
 import {isEmpty, findIndex} from './utilities'
 
 const _storageName = Config.namespace
@@ -53,7 +54,7 @@ function _open () {
   }
 
   if (!_get('queue')) { _set('queue', []) }
-  if (!_get('activityState')) { _set('activityState', []) }
+  if (!_get('activityState')) { _set('activityState', ActivityState.current ? [ActivityState.current] : []) }
 
 }
 
@@ -80,14 +81,14 @@ function _set (key, value) {
 }
 
 /**
- * Initiate quasi-transaction for requested action
+ * Initiate quasi-database request
  *
  * @param {string} storeName
  * @param {Function} action
  * @returns {Promise}
  * @private
  */
-function _initTransaction (storeName, action) {
+function _initRequest (storeName, action) {
 
   _open()
 
@@ -141,7 +142,7 @@ function getFirst (storeName) {
  * @returns {Promise}
  */
 function getItem (storeName, id) {
-  return _initTransaction(storeName, (resolve, reject, key, items) => {
+  return _initRequest(storeName, (resolve, reject, key, items) => {
 
     const index = findIndex(items, key, id)
 
@@ -161,7 +162,7 @@ function getItem (storeName, id) {
  * @returns {Promise}
  */
 function addItem (storeName, item) {
-  return _initTransaction(storeName, (resolve, reject, key, items) => {
+  return _initRequest(storeName, (resolve, reject, key, items) => {
 
     const index = findIndex(items, key, item[key])
 
@@ -170,7 +171,7 @@ function addItem (storeName, item) {
     } else {
       items.push(item)
       _set(storeName, items)
-      resolve(item)
+      resolve(item[key])
     }
   })
 }
@@ -183,7 +184,7 @@ function addItem (storeName, item) {
  * @returns {Promise}
  */
 function updateItem (storeName, item) {
-  return _initTransaction(storeName, (resolve, _, key, items) => {
+  return _initRequest(storeName, (resolve, _, key, items) => {
 
     const index = findIndex(items, key, item[key])
 
@@ -194,7 +195,7 @@ function updateItem (storeName, item) {
     }
 
     _set(storeName, items)
-    resolve(item)
+    resolve(item[key])
   })
 }
 
@@ -206,7 +207,7 @@ function updateItem (storeName, item) {
  * @returns {Promise}
  */
 function deleteItem (storeName, id) {
-  return _initTransaction(storeName, (resolve, _, key, items) => {
+  return _initRequest(storeName, (resolve, _, key, items) => {
 
     const index = findIndex(items, key, id)
 

@@ -5,7 +5,7 @@ import {buildList, extend, convertToMap, getRevenue} from './utilities'
 import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
-import {checkActivityState} from './identity'
+import {startActivityState, destroy as identityDestroy} from './identity'
 
 /**
  * Definition of mandatory fields
@@ -68,8 +68,9 @@ function trackEvent (params = {}) {
  * Destroy the instance
  */
 function destroy () {
-  sessionDestroy()
   pubSubDestroy()
+  sessionDestroy()
+  identityDestroy()
   Storage.destroy()
   _clear()
 }
@@ -124,7 +125,7 @@ function _start (params = {}, cb) {
     subscribe('attribution:change', cb)
   }
 
-  checkActivityState()
+  startActivityState()
     .then(() => {
       Queue.run(true)
       watchSession()

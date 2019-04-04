@@ -6,6 +6,7 @@ import * as Storage from '../storage'
 import * as Time from '../time'
 import * as Queue from '../queue'
 import * as Identity from '../identity'
+import * as ActivityState from '../activity-state'
 import {flushPromises} from './_helper'
 
 jest.useFakeTimers()
@@ -15,12 +16,18 @@ let dateNowSpy
 
 describe('test session functionality', () => {
 
+  const _reset = () => {
+    Session.destroy()
+    Identity.destroy()
+    localStorage.clear()
+  }
+
   beforeAll(() => {
     dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(now)
 
     jest.spyOn(Utilities, 'on')
     jest.spyOn(Utilities, 'off')
-    jest.spyOn(Storage.default, 'updateItem')
+    jest.spyOn(Identity, 'updateActivityState')
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
 
@@ -31,9 +38,12 @@ describe('test session functionality', () => {
     })
   })
 
+  beforeEach(() => {
+    Storage.default.addItem('activityState', {uuid: '123'}).then(Identity.startActivityState)
+  })
+
   afterEach(() => {
-    Session.destroy()
-    localStorage.clear()
+    _reset()
     jest.clearAllMocks()
   })
 
@@ -60,24 +70,6 @@ describe('test session functionality', () => {
       }).toThrow(new Error('Session watch already initiated'))
     })
 
-    it('sets last active timestamp if activity state exists', () => {
-
-      expect.assertions(3)
-
-      return Session.setLastActive()
-        .then(() => {
-          expect(Storage.default.updateItem).not.toHaveBeenCalled()
-
-          return Identity.checkActivityState()
-        })
-        .then(Session.setLastActive)
-        .then(() => {
-          expect(Storage.default.updateItem.mock.calls[0][0]).toBe('activityState')
-          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: now})
-        })
-
-    })
-
     it('destroys session watch', () => {
 
       Session.watchSession()
@@ -94,7 +86,53 @@ describe('test session functionality', () => {
       expect(() => {
         Session.watchSession()
       }).not.toThrow()
+    })
 
+    it('sets last active timestamp when activity state exists and when not ignored', () => {
+
+      expect.assertions(1)
+
+      Session.setLastActive()
+
+      return flushPromises()
+        .then(() => {
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: now})
+        })
+
+    })
+
+    it('does not set last active timestamp when activity state does not exist and when ignored', () => {
+
+      _reset()
+
+      Identity.startActivityState()
+
+      expect.assertions(1)
+
+      Session.setLastActive(true)
+
+      return flushPromises()
+        .then(() => {
+          expect(Identity.updateActivityState).not.toHaveBeenCalled()
+        })
+    })
+
+    it('sets last active timestamp when activity state does not exist and when not ignored', () => {
+
+      jest.spyOn(Identity, 'updateActivityState').mockImplementationOnce(() => {})
+
+      _reset()
+
+      Identity.startActivityState()
+
+      expect.assertions(1)
+
+      Session.setLastActive()
+
+      return flushPromises()
+        .then(() => {
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: now})
+        })
     })
 
     it('sets interval for last active timestamp to be updated every n seconds', () => {
@@ -115,8 +153,8 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
-          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
 
           return flushPromises()
         })
@@ -130,8 +168,8 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(2)
-          expect(Storage.default.updateItem.mock.calls[1][1]).toMatchObject({lastActive: 1551916800002})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(2)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800002})
 
           return flushPromises()
         })
@@ -145,8 +183,8 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(3)
-          expect(Storage.default.updateItem.mock.calls[2][1]).toMatchObject({lastActive: 1551916800003})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(3)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800003})
 
           Session.destroy()
 
@@ -163,8 +201,8 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(3)
-          expect(Storage.default.updateItem.mock.calls[2][1]).toMatchObject({lastActive: 1551916800003})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(3)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800003})
 
           return flushPromises()
         })
@@ -172,19 +210,18 @@ describe('test session functionality', () => {
 
     it('send install on initial run', () => {
 
+      _reset()
+
+      Identity.startActivityState()
+
       Session.watchSession()
 
-      // expect.assertions(4)
+      expect.assertions(4)
 
       expect(Utilities.on).toHaveBeenCalled()
+      expect(ActivityState.default.current).toBeNull()
 
-      return Identity.getActivityState()
-        .then(current => {
-
-          expect(current).toBeUndefined()
-
-          return flushPromises()
-        })
+      return flushPromises()
         .then(() => {
           expect(Queue.default.push).toHaveBeenCalledWith({
             url: '/session',
@@ -201,9 +238,8 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(Identity.getActivityState)
-        .then(current => {
-          expect(current.lastActive).not.toBeUndefined()
+        .then(() => {
+          expect(ActivityState.default.current.lastActive).toBeDefined()
         })
 
     })
@@ -214,18 +250,12 @@ describe('test session functionality', () => {
 
       expect.assertions(4)
 
-      return Identity.checkActivityState()
-        .then(Session.setLastActive)
+      return Session.setLastActive()
         .then(() => {
           Session.watchSession()
 
           expect(Utilities.on).toHaveBeenCalled()
-
-          return Identity.getActivityState()
-        })
-        .then(current => {
-
-          expect(current.lastActive).toBe(now)
+          expect(ActivityState.default.current.lastActive).toBe(now)
 
           return flushPromises()
         })
@@ -239,9 +269,8 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(Identity.getActivityState)
-        .then(current => {
-          expect(current.lastActive).toBe(1551916800002)
+        .then(() => {
+          expect(ActivityState.default.current.lastActive).toBe(1551916800002)
         })
 
     })
@@ -275,7 +304,7 @@ describe('test session functionality', () => {
 
       return flushPromises()
         .then(() => {
-          expect(Storage.default.updateItem).not.toHaveBeenCalled()
+          expect(Identity.updateActivityState).not.toHaveBeenCalled()
 
           global.document.dispatchEvent(new Event('visibilitychange'))
 
@@ -288,8 +317,8 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
-          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
 
           jest.runOnlyPendingTimers()
 
@@ -298,8 +327,8 @@ describe('test session functionality', () => {
         .then(() => {
 
           // nothing changed because timer is not running
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
-          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
 
           dateNowSpy.mockReturnValueOnce(1551916800002)
 
@@ -309,8 +338,8 @@ describe('test session functionality', () => {
         })
         .then(() => {
           // again nothing changed because timer is not running
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
-          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
         })
 
 
@@ -330,7 +359,7 @@ describe('test session functionality', () => {
 
       return flushPromises()
         .then(() => {
-          expect(Storage.default.updateItem).not.toHaveBeenCalled()
+          expect(Identity.updateActivityState).not.toHaveBeenCalled()
 
           global.document.dispatchEvent(new Event('visibilitychange'))
 
@@ -343,7 +372,7 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Storage.default.updateItem).not.toHaveBeenCalled()
+          expect(Identity.updateActivityState).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 
@@ -352,8 +381,8 @@ describe('test session functionality', () => {
         .then(() => {
 
           // update within the timer
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
-          expect(Storage.default.updateItem.mock.calls[0][1]).toMatchObject({lastActive: 1551916800001})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
 
           dateNowSpy.mockReturnValueOnce(1551916800002)
 
@@ -363,20 +392,19 @@ describe('test session functionality', () => {
         })
         .then(() => {
           // update within the timer (second run)
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(2)
-          expect(Storage.default.updateItem.mock.calls[1][1]).toMatchObject({lastActive: 1551916800002})
+          expect(Identity.updateActivityState).toHaveBeenCalledTimes(2)
+          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800002})
         })
 
     })
 
-    it('checks session if certain time passed when back to foreground', () => {
+    it('checks session if session window reached when back to foreground', () => {
 
       dateNowSpy.mockReturnValue(now)
 
       expect.assertions(2)
 
-      return Identity.checkActivityState()
-        .then(Session.setLastActive)
+      return Session.setLastActive()
         .then(() => {
 
           global.document.testHidden = false
@@ -391,10 +419,7 @@ describe('test session functionality', () => {
 
           expect(Queue.default.push).not.toHaveBeenCalled()
 
-          return Identity.getActivityState()
-        })
-        .then(current => {
-          return Storage.default.updateItem('activityState', Object.assign({}, current, {lastActive: now + Config.default.sessionWindow}))
+          return Identity.updateActivityState(Object.assign({}, ActivityState.default.current, {lastActive: now + Config.default.sessionWindow}))
         })
         .then(() => {
 
@@ -407,7 +432,42 @@ describe('test session functionality', () => {
         .then(() => {
           expect(Queue.default.push).toHaveBeenCalledTimes(1)
         })
+    })
 
+    it('does not check session if session window wasn not reached when back to foreground', () => {
+
+      dateNowSpy.mockReturnValue(now)
+
+      expect.assertions(2)
+
+      return Session.setLastActive()
+        .then(() => {
+
+          global.document.testHidden = false
+
+          Session.watchSession()
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          expect(Queue.default.push).not.toHaveBeenCalled()
+
+          return Identity.updateActivityState(Object.assign({}, ActivityState.default.current, {lastActive: now + Config.default.sessionWindow - 1}))
+        })
+        .then(() => {
+
+          global.document.dispatchEvent(new Event('visibilitychange'))
+
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(Queue.default.push).not.toHaveBeenCalled()
+        })
     })
   })
 })
