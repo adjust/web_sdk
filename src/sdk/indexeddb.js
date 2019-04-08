@@ -5,7 +5,6 @@ import {isEmpty} from './utilities'
 
 const _dbName = Config.namespace
 const _dbVersion = 1
-let _indexedDB
 let _db
 
 /**
@@ -118,7 +117,7 @@ function _handleOpenSuccess (e, resolve) {
  */
 function _open () {
 
-  _indexedDB = _getIDB()
+  const indexedDB = _getIDB()
 
   isSupported(true)
 
@@ -129,7 +128,7 @@ function _open () {
       return
     }
 
-    const request = _indexedDB.open(_dbName, _dbVersion)
+    const request = indexedDB.open(_dbName, _dbVersion)
 
     request.onupgradeneeded = e => _handleUpgradeNeeded(e, reject)
     request.onsuccess = e => _handleOpenSuccess(e, resolve)
