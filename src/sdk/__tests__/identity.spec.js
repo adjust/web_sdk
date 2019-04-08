@@ -1,13 +1,13 @@
 /* eslint-disable */
 import * as Identity from '../identity'
-import * as Storage from '../storage'
+import * as StorageManager from '../storage-manager'
 import * as ActivityState from '../activity-state'
 
 describe('test identity methods', () => {
 
   beforeAll(() => {
-    jest.spyOn(Storage.default, 'getFirst')
-    jest.spyOn(Storage.default, 'addItem')
+    jest.spyOn(StorageManager.default, 'getFirst')
+    jest.spyOn(StorageManager.default, 'addItem')
   })
 
   afterEach(() => {
@@ -23,8 +23,8 @@ describe('test identity methods', () => {
   describe('when activity state exists', () => {
 
     beforeEach(() => {
-      Storage.default.addItem('activityState', {uuid: '123'}).then(Identity.startActivityState)
-      Storage.default.addItem.mockClear()
+      StorageManager.default.addItem('activityState', {uuid: '123'}).then(Identity.startActivityState)
+      StorageManager.default.addItem.mockClear()
     })
 
     it('gets existing activity state', () => {
@@ -42,7 +42,7 @@ describe('test identity methods', () => {
 
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toEqual({uuid: '123'})
-          expect(Storage.default.addItem).not.toHaveBeenCalled()
+          expect(StorageManager.default.addItem).not.toHaveBeenCalled()
         })
     })
 
@@ -50,7 +50,7 @@ describe('test identity methods', () => {
 
       expect.assertions(4)
 
-      return Storage.default.deleteItem('activityState', '123')
+      return StorageManager.default.deleteItem('activityState', '123')
         .then(Identity.startActivityState)
         .then(activityState => {
 
@@ -58,8 +58,8 @@ describe('test identity methods', () => {
 
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toEqual({uuid: '123'})
-          expect(Storage.default.addItem).toHaveBeenCalledTimes(1)
-          expect(Storage.default.addItem).toHaveBeenCalledWith('activityState', {uuid: '123'})
+          expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
+          expect(StorageManager.default.addItem).toHaveBeenCalledWith('activityState', {uuid: '123'})
         })
     })
 
@@ -69,7 +69,7 @@ describe('test identity methods', () => {
 
       Identity.destroy()
 
-      return Storage.default.deleteItem('activityState', '123')
+      return StorageManager.default.deleteItem('activityState', '123')
         .then(Identity.startActivityState)
         .then(activityState => {
 
@@ -78,7 +78,7 @@ describe('test identity methods', () => {
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState.uuid).not.toBe('123')
           expect(activityState.uuid).toBeDefined()
-          expect(Storage.default.addItem).toHaveBeenCalledTimes(1)
+          expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
         })
     })
 
@@ -94,7 +94,7 @@ describe('test identity methods', () => {
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toEqual({uuid: '123', lastActive: 456})
           expect(ActivityState.default.current).toEqual({uuid: '123', lastActive: 456})
-          expect(Storage.default.addItem).not.toHaveBeenCalled()
+          expect(StorageManager.default.addItem).not.toHaveBeenCalled()
         })
     })
   })
@@ -116,7 +116,7 @@ describe('test identity methods', () => {
 
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState.uuid).toBeDefined()
-          expect(Storage.default.addItem).toHaveBeenCalledTimes(1)
+          expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
         })
     })
 
@@ -131,7 +131,7 @@ describe('test identity methods', () => {
 
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toMatchObject({lastActive: 456})
-          expect(Storage.default.addItem).toHaveBeenCalledTimes(1)
+          expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
         })
     })
   })

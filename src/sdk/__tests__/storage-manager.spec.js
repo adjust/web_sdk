@@ -1,11 +1,11 @@
 /* eslint-disable */
-import * as Storage from '../storage'
+import * as StorageManager from '../storage-manager'
 
 describe('sets the available storage', () => {
 
   it('sets localStorage as a storage in jest env', () => {
 
-    expect(Storage.default.type).toBe('localStorage')
+    expect(StorageManager.default.type).toBe('localStorage')
 
   })
 

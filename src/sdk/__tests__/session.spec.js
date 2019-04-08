@@ -2,7 +2,7 @@
 import * as Config from '../config'
 import * as Utilities from '../utilities'
 import * as Session from '../session'
-import * as Storage from '../storage'
+import * as StorageManager from '../storage-manager'
 import * as Time from '../time'
 import * as Queue from '../queue'
 import * as Identity from '../identity'
@@ -39,7 +39,7 @@ describe('test session functionality', () => {
   })
 
   beforeEach(() => {
-    Storage.default.addItem('activityState', {uuid: '123'}).then(Identity.startActivityState)
+    StorageManager.default.addItem('activityState', {uuid: '123'}).then(Identity.startActivityState)
   })
 
   afterEach(() => {

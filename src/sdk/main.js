@@ -1,6 +1,6 @@
 import Config from './config'
 import Queue from './queue'
-import Storage from './storage'
+import StorageManager from './storage-manager'
 import {buildList, extend, convertToMap, getRevenue} from './utilities'
 import {getTimestamp} from './time'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
@@ -71,7 +71,7 @@ function destroy () {
   pubSubDestroy()
   sessionDestroy()
   identityDestroy()
-  Storage.destroy()
+  StorageManager.destroy()
   _clear()
 }
 

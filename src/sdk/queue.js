@@ -1,7 +1,7 @@
 import Config from './config'
 import request from './request'
 import backOff from './backoff'
-import Storage from './storage'
+import StorageManager from './storage-manager'
 import {extend} from './utilities'
 
 /**
@@ -18,7 +18,7 @@ let _timeout = {id: null, attempts: 0, wait: 150}
  * @private
  */
 function _continue (timestamp) {
-  return Storage.deleteItem('queue', timestamp)
+  return StorageManager.deleteItem('queue', timestamp)
     .then(() => {
 
       _timeout.attempts = 0
@@ -49,7 +49,7 @@ function _retry () {
  * @param {Object} params
  */
 function push ({url, method, params}) {
-  return Storage.addItem('queue', extend({timestamp: Date.now()}, {url, method, params}))
+  return StorageManager.addItem('queue', extend({timestamp: Date.now()}, {url, method, params}))
     .then(() => _timeout.id ? {} : run())
 }
 
@@ -106,7 +106,7 @@ function run (cleanUpFirst) {
   }
 
   return chain
-    .then(() => Storage.getFirst('queue'))
+    .then(() => StorageManager.getFirst('queue'))
     .then(_delayedRequest)
 }
 
@@ -117,7 +117,7 @@ function run (cleanUpFirst) {
  * @returns {Promise}
  */
 function _cleanUp () {
-  return Storage.deleteBulk('queue', Date.now() - Config.requestValidityWindow)
+  return StorageManager.deleteBulk('queue', Date.now() - Config.requestValidityWindow)
 }
 
 export default {

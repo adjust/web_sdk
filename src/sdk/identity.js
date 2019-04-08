@@ -1,4 +1,4 @@
-import Storage from './storage'
+import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
 import {extend} from './utilities'
 
@@ -24,7 +24,7 @@ function _generateUuid () {
  * @private
  */
 function _sync () {
-  return Storage.getFirst('activityState')
+  return StorageManager.getFirst('activityState')
     .then(stored => {
       if (stored) {
         return stored
@@ -32,7 +32,7 @@ function _sync () {
 
       const activityState = ActivityState.current || {uuid: _generateUuid()}
 
-      return Storage.addItem('activityState', activityState)
+      return StorageManager.addItem('activityState', activityState)
         .then(() => ActivityState.current = activityState)
     })
 }
@@ -59,7 +59,7 @@ function updateActivityState (params) {
 
       const activityState = extend({}, stored, params)
 
-      return Storage.updateItem('activityState', activityState)
+      return StorageManager.updateItem('activityState', activityState)
         .then(() => ActivityState.current = activityState)
     })
 }
