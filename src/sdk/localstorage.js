@@ -1,10 +1,6 @@
-import Config from './config'
 import ActivityState from './activity-state'
+import QuickStorage from './quick-storage'
 import {isEmpty, findIndex} from './utilities'
-
-const _storageName = Config.namespace
-const _schemeKey = '_scheme'
-let _storage
 
 /**
  * Check if LocalStorage is supported in the current browser
@@ -42,42 +38,22 @@ function _open () {
 
   isSupported(true)
 
-  _storage = window.localStorage
-
-  let scheme = _get(_schemeKey) || {}
+  const scheme = QuickStorage._scheme || {}
 
   if (isEmpty(scheme)) {
     scheme.queue = {primaryKey: 'timestamp'}
     scheme.activityState = {primaryKey: 'uuid'}
 
-    _set(_schemeKey, scheme)
+    QuickStorage._scheme = scheme
   }
 
-  if (!_get('queue')) { _set('queue', []) }
-  if (!_get('activityState')) { _set('activityState', ActivityState.current ? [ActivityState.current] : []) }
+  if (!QuickStorage.queue) {
+    QuickStorage.queue = []
+  }
+  if (!QuickStorage.activityState) {
+    QuickStorage.activityState = ActivityState.current ? [ActivityState.current] : []
+  }
 
-}
-
-/**
- * Get the value for specific key
- *
- * @param {string} key
- * @returns {*}
- * @private
- */
-function _get (key) {
-  return JSON.parse(_storage.getItem(`${_storageName}.${key}`))
-}
-
-/**
- * Set the value for specific key
- *
- * @param {string} key
- * @param {*} value
- * @private
- */
-function _set (key, value) {
-  _storage.setItem(`${_storageName}.${key}`, JSON.stringify(value))
 }
 
 /**
@@ -94,8 +70,8 @@ function _initRequest (storeName, action) {
 
   return new Promise((resolve, reject) => {
 
-    const items = _get(storeName)
-    const key = _get(_schemeKey)[storeName].primaryKey
+    const items = QuickStorage[storeName]
+    const key = QuickStorage._scheme[storeName].primaryKey
 
     return action(resolve, reject, key, items)
   })
@@ -114,7 +90,7 @@ function getAll (storeName, firstOnly) {
 
   return new Promise((resolve, reject) => {
 
-    const value = _get(storeName)
+    const value = QuickStorage[storeName]
 
     if (value instanceof Array) {
       resolve(firstOnly ? value[0] : value)
@@ -170,7 +146,7 @@ function addItem (storeName, item) {
       reject({name: 'ConstraintError', message: `Item with ${key} ${item[key]} already exists`})
     } else {
       items.push(item)
-      _set(storeName, items)
+      QuickStorage[storeName] = items
       resolve(item[key])
     }
   })
@@ -194,7 +170,7 @@ function updateItem (storeName, item) {
       items.splice(index, 1, item)
     }
 
-    _set(storeName, items)
+    QuickStorage[storeName] = items
     resolve(item[key])
   })
 }
@@ -213,7 +189,7 @@ function deleteItem (storeName, id) {
 
     if (index !== -1) {
       items.splice(index, 1)
-      _set(storeName, items)
+      QuickStorage[storeName] = items
     }
 
     resolve(id)
@@ -260,7 +236,7 @@ function deleteBulk (storeName, upperBound) {
   return getAll(storeName)
     .then(items => {
 
-      const key = _get(_schemeKey)[storeName].primaryKey
+      const key = QuickStorage._scheme[storeName].primaryKey
       const first = items[0]
 
       if (!first) {
@@ -277,7 +253,7 @@ function deleteBulk (storeName, upperBound) {
 
       const deleted = items.splice(0, index + 1)
 
-      _set(storeName, items)
+      QuickStorage[storeName] = items
 
       return deleted
     })
@@ -294,18 +270,15 @@ function clear (storeName) {
   _open()
 
   return new Promise(resolve => {
-    _set(storeName, [])
+    QuickStorage[storeName] = []
     resolve({})
   })
-
 }
 
 /**
- * Destroy the reference to the storage
+ * Does nothing, it simply matches the common storage interface
  */
-function destroy () {
-  _storage = null
-}
+function destroy () {}
 
 export default {
   isSupported,

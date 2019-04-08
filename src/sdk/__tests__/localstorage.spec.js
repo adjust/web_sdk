@@ -2,6 +2,7 @@
 import * as LocalStorage from '../localstorage'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
+import * as QuickStorage from '../quick-storage'
 
 describe('LocalStorage usage', () => {
 
@@ -51,11 +52,11 @@ describe('LocalStorage usage', () => {
       })
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.queue`, JSON.stringify([
+    QuickStorage.default.queue = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'},
       {timestamp: 3, url: '/url3'}
-    ]))
+    ]
 
     LocalStorage.default.getAll('queue')
       .then(result => {
@@ -93,11 +94,11 @@ describe('LocalStorage usage', () => {
   it('returns first row from particular store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.queue`, JSON.stringify([
+    QuickStorage.default.queue = [
       {timestamp: 1552701608300, url: '/url1'},
       {timestamp: 1552705208300, url: '/url2'},
       {timestamp: 1552911178981, url: '/url3'},
-    ]))
+    ]
 
     expect.assertions(1)
 
@@ -111,10 +112,10 @@ describe('LocalStorage usage', () => {
   it('gets item from the activityState store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.activityState`, JSON.stringify([
+    QuickStorage.default.activityState = [
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
-    ]))
+    ]
 
     expect.assertions(3)
 
@@ -191,10 +192,10 @@ describe('LocalStorage usage', () => {
   it('updates items in the activityState store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.activityState`, JSON.stringify([
+    QuickStorage.default.activityState = [
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
-    ]))
+    ]
 
     expect.assertions(8)
 
@@ -261,12 +262,12 @@ describe('LocalStorage usage', () => {
   it('deletes item by item in the queue store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.queue`, JSON.stringify([
+    QuickStorage.default.queue = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'},
       {timestamp: 3, url: '/url3'},
       {timestamp: 4, url: '/url4'}
-    ]))
+    ]
 
     expect.assertions(6)
 
@@ -321,11 +322,11 @@ describe('LocalStorage usage', () => {
   it ('deletes items until certain bound from the queue store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.queue`, JSON.stringify([
+    QuickStorage.default.queue = [
       {timestamp: 1552701608300, url: '/url1'},
       {timestamp: 1552705208300, url: '/url2'},
       {timestamp: 1552911178981, url: '/url3'},
-    ]))
+    ]
 
     expect.assertions(3)
 
@@ -360,10 +361,10 @@ describe('LocalStorage usage', () => {
   it('clears items from the queue store', () => {
 
     // prepare some rows manually
-    window.localStorage.setItem(`${__ADJUST__NAMESPACE}.queue`, JSON.stringify([
+    QuickStorage.default.queue = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'}
-    ]))
+    ]
 
     expect.assertions(2)
 

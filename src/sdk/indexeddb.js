@@ -1,5 +1,7 @@
 import Config from './config'
 import ActivityState from './activity-state'
+import QuickStorage from './quick-storage'
+import {isEmpty} from './utilities'
 
 const _dbName = Config.namespace
 const _dbVersion = 1
@@ -35,6 +37,80 @@ function _getIDB () {
 }
 
 /**
+ * Return data to migrate from localStorage if available
+ *
+ * @returns {Object|null}
+ * @private
+ */
+function _migrationNeeded () {
+
+  const scheme = QuickStorage._scheme
+
+  const validScheme = !!(scheme && scheme.queue && scheme.activityState)
+
+  if (validScheme) {
+    return {
+      queue: QuickStorage.queue || [],
+      activityState: QuickStorage.activityState[0]
+    }
+  }
+
+  return null
+}
+
+/**
+ * Handle database upgrade/initialization
+ * - store activity state from memory if database unexpectedly got lost in the middle of the window session
+ * - migrate data from localStorage if available on browser upgrade
+ *
+ * @param {Object} e
+ * @param {Function} reject
+ * @private
+ */
+function _handleUpgradeNeeded (e, reject) {
+
+  const db = e.target.result
+
+  e.target.transaction.onerror = reject
+  e.target.transaction.onabort = reject
+
+  const migration = _migrationNeeded()
+  const inMemoryAvailable = ActivityState.current && !isEmpty(ActivityState.current)
+  const activityStateStore = db.createObjectStore('activityState', {keyPath: 'uuid', autoIncrement: false})
+  const queueStore = db.createObjectStore('queue', {keyPath: 'timestamp', autoIncrement: false})
+
+  if (inMemoryAvailable) {
+    activityStateStore.add(ActivityState.current)
+  }
+
+  if (migration) {
+    migration.queue.forEach(pending => queueStore.add(pending))
+
+    if (!inMemoryAvailable && migration.activityState) {
+      activityStateStore.add(migration.activityState)
+    }
+
+    QuickStorage.clear()
+  }
+}
+
+/**
+ * Handle successful database opening
+ *
+ * @param {Object} e
+ * @param {Function} resolve
+ * @private
+ */
+function _handleOpenSuccess (e, resolve) {
+
+  _db = e.target.result
+
+  resolve({success: true})
+
+  _db.onclose = destroy
+}
+
+/**
  * Open the database connection and create store if not existent
  *
  * @returns {Promise}
@@ -55,28 +131,8 @@ function _open () {
 
     const request = _indexedDB.open(_dbName, _dbVersion)
 
-    request.onupgradeneeded = e => {
-
-      const db = e.target.result
-
-      e.target.transaction.onerror = reject
-      e.target.transaction.onabort = reject
-
-      const objectStore = db.createObjectStore('activityState', {keyPath: 'uuid', autoIncrement: false})
-      db.createObjectStore('queue', {keyPath: 'timestamp', autoIncrement: false})
-
-      if (ActivityState.current) {
-        objectStore.add(ActivityState.current)
-      }
-    }
-
-    request.onsuccess = (e) => {
-      _db = e.target.result
-      resolve({success: true})
-
-      _db.onclose = destroy
-    }
-
+    request.onupgradeneeded = e => _handleUpgradeNeeded(e, reject)
+    request.onsuccess = e => _handleOpenSuccess(e, resolve)
     request.onerror = reject
   })
 }
@@ -267,7 +323,9 @@ function clear (storeName) {
  * Close the database and destroy the reference to it
  */
 function destroy () {
-  _db.close()
+  if (_db) {
+    _db.close()
+  }
   _db = null
 }
 

@@ -4,6 +4,7 @@ import * as IDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange'
 import * as IndexedDB from '../indexeddb'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
+import * as QuickStorage from '../quick-storage'
 
 describe('IndexedDB usage', () => {
 
@@ -17,6 +18,7 @@ describe('IndexedDB usage', () => {
 
   afterAll(() => {
     IndexedDB.default.destroy()
+    localStorage.clear()
   })
 
   it('checks if indexedDB is supported', () => {
@@ -186,7 +188,7 @@ describe('IndexedDB usage', () => {
           {uuid: 2, lastActive: 12346}
         ])
 
-          return IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12348})
+        return IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12348})
       })
       .then(update => {
 
@@ -376,6 +378,107 @@ describe('IndexedDB usage', () => {
 
         Identity.destroy()
       })
+  })
+
+  describe('tests in case indexedDB got supported due to a browser upgrade', () => {
+
+    const schemeDef = {
+      queue: {primaryKey: 'timestamp'},
+      activityState: {primaryKey: 'uuid'}
+    }
+    const queueSet = [
+      {timestamp: 1, url: '/url1'},
+      {timestamp: 2, url: '/url2'}
+    ]
+    const activityStateSet = [
+      {uuid: 1, lastActive: 12345, attribution: {adid: 'blabla', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
+    ]
+
+    beforeEach(() => {
+      Identity.destroy()
+      localStorage.clear()
+      fakeIDB._databases.clear()
+      IndexedDB.default.destroy()
+    })
+
+    it('returns empty results when migration is not available', () => {
+
+      expect.assertions(2)
+
+      return IndexedDB.default.getFirst('activityState')
+        .then(result => {
+          expect(result).toBeUndefined()
+
+          return IndexedDB.default.getAll('queue')
+        })
+        .then(result => {
+          expect(result).toEqual([])
+        })
+
+    })
+
+    it('returns result migrated from the localStorage when upgraded within restarted window session', () => {
+
+      // prepare some rows manually
+      QuickStorage.default._scheme = schemeDef
+      QuickStorage.default.queue = queueSet
+      QuickStorage.default.activityState = activityStateSet
+
+      expect.assertions(5)
+
+      return IndexedDB.default.getFirst('activityState')
+        .then(result => {
+          expect(result).toEqual(activityStateSet[0])
+
+          return IndexedDB.default.getAll('queue')
+        })
+        .then(result => {
+          expect(result).toEqual(queueSet)
+          expect(QuickStorage.default._scheme).toBeNull()
+          expect(QuickStorage.default.queue).toBeNull()
+          expect(QuickStorage.default.activityState).toBeNull()
+        })
+    })
+
+    it('returns result migrated from localStorage for queue when upgraded in the middle of the window session', () => {
+
+      expect.assertions(7)
+
+      let inMemoryActivityState = null
+
+      return Identity.startActivityState()
+        .then(() => {
+
+          inMemoryActivityState = ActivityState.default.current
+
+          expect(inMemoryActivityState.uuid).toBeDefined()
+
+          // prepare some rows manually
+          QuickStorage.default._scheme = schemeDef
+          QuickStorage.default.queue = queueSet
+          QuickStorage.default.activityState = activityStateSet
+
+          IndexedDB.default.destroy()
+          fakeIDB._databases.clear()
+
+          return IndexedDB.default.getFirst('activityState')
+        })
+        .then(result => {
+
+          expect(result).toEqual(inMemoryActivityState)
+          expect(result.uuid).toBeDefined()
+
+          return IndexedDB.default.getAll('queue')
+        })
+        .then(result => {
+          expect(result).toEqual(queueSet)
+          expect(QuickStorage.default._scheme).toBeNull()
+          expect(QuickStorage.default.queue).toBeNull()
+          expect(QuickStorage.default.activityState).toBeNull()
+        })
+
+    })
+
 
   })
 
