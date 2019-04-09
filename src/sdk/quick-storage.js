@@ -1,6 +1,7 @@
 import Config from './config'
+import Scheme from './scheme'
 
-const _storageFields = ['_scheme', 'queue', 'activityState']
+const _storageFields = Object.keys(Scheme)
 const _storageName = Config.namespace
 const _storage = window.localStorage
 

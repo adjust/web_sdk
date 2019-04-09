@@ -411,4 +411,161 @@ describe('LocalStorage usage', () => {
 
   })
 
+  describe('performing add bulk operation', () => {
+
+    it('fails when array is not provided', () => {
+
+      expect.assertions(4)
+
+      return LocalStorage.default.addBulk('eventParams', [])
+        .catch(error => {
+          expect(error.name).toEqual('NoTargetDefined')
+          expect(error.message).toEqual('No array provided to perform add bulk operation into eventParams store')
+
+          return LocalStorage.default.addBulk('queue')
+        })
+        .catch(error => {
+          expect(error.name).toEqual('NoTargetDefined')
+          expect(error.message).toEqual('No array provided to perform add bulk operation into queue store')
+        })
+
+    })
+
+    it('adds rows into eventParams store', () => {
+
+      const eventParamsSet1 = [
+        {key: 'bla', value: 'truc', type: 'callback'},
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      const eventParamsSet2 = [
+        {key: 'key2', value: 'value2', type: 'callback'},
+        {key: 'par', value: 'tner', type: 'partner'}
+      ]
+
+      expect.assertions(3)
+
+      return LocalStorage.default.addBulk('eventParams', eventParamsSet1)
+        .then(result => {
+          expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+
+          return LocalStorage.default.addBulk('eventParams', eventParamsSet2)
+        })
+        .then(result => {
+          expect(result).toEqual([['key2', 'callback'], ['par', 'partner']])
+
+          return LocalStorage.default.getAll('eventParams')
+        })
+        .then(result => {
+          expect(result).toEqual([
+            {key: 'bla', value: 'truc', type: 'callback'},
+            {key: 'key1', value: 'value1', type: 'callback'},
+            {key: 'key2', value: 'value2', type: 'callback'},
+            {key: 'eto', value: 'tako', type: 'partner'},
+            {key: 'par', value: 'tner', type: 'partner'}
+          ])
+        })
+
+    })
+
+    it('adds rows into eventParams store and overwrite existing key at later point', () => {
+
+      const eventParamsSet1 = [
+        {key: 'bla', value: 'truc', type: 'callback'},
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      const eventParamsSet2 = [
+        {key: 'key1', value: 'new key1 value', type: 'callback'},
+        {key: 'par', value: 'tner', type: 'partner'},
+        {key: 'bla', value: 'truc', type: 'partner'}
+      ]
+
+      expect.assertions(3)
+
+      return LocalStorage.default.addBulk('eventParams', eventParamsSet1)
+        .then(result => {
+          expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+
+          return LocalStorage.default.addBulk('eventParams', eventParamsSet2, true)
+        })
+        .then(result => {
+          expect(result).toEqual([['key1', 'callback'], ['par', 'partner'], ['bla', 'partner']])
+
+          return LocalStorage.default.getAll('eventParams')
+        })
+        .then(result => {
+          expect(result).toEqual([
+            {key: 'bla', value: 'truc', type: 'callback'},
+            {key: 'key1', value: 'new key1 value', type: 'callback'},
+            {key: 'bla', value: 'truc', type: 'partner'},
+            {key: 'eto', value: 'tako', type: 'partner'},
+            {key: 'par', value: 'tner', type: 'partner'}
+          ])
+        })
+    })
+
+    it('adds rows into eventParams store and throw error when adding existing key', () => {
+
+      const eventParamsSet1 = [
+        {key: 'bla', value: 'truc', type: 'callback'},
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      const eventParamsSet2 = [
+        {key: 'key1', value: 'new key1 value', type: 'callback'},
+        {key: 'par', value: 'tner', type: 'partner'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      expect.assertions(3)
+
+      return LocalStorage.default.addBulk('eventParams', eventParamsSet1)
+        .then(result => {
+          expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+
+          return LocalStorage.default.addBulk('eventParams', eventParamsSet2)
+        })
+        .catch(error => {
+          expect(error.name).toEqual('ConstraintError')
+          expect(error.message).toEqual('Items with key:type => key1:callback,eto:partner already exist')
+        })
+
+    })
+
+    it('returns callback and partner params from the eventParams store', () => {
+
+      const eventParamsSet = [
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'key2', value: 'value2', type: 'partner'},
+        {key: 'key3', value: 'value3', type: 'partner'},
+        {key: 'key4', value: 'value4', type: 'callback'},
+        {key: 'key5', value: 'value5', type: 'callback'},
+      ]
+
+      expect.assertions(2)
+
+      return LocalStorage.default.addBulk('eventParams', eventParamsSet)
+        .then(() => Promise.all([
+          LocalStorage.default.filterBy('eventParams', 'callback'),
+          LocalStorage.default.filterBy('eventParams', 'partner')
+        ]))
+        .then(([callbackParams, partnerParams]) => {
+          expect(callbackParams).toEqual([
+            {key: 'key1', value: 'value1', type: 'callback'},
+            {key: 'key4', value: 'value4', type: 'callback'},
+            {key: 'key5', value: 'value5', type: 'callback'},
+          ])
+          expect(partnerParams).toEqual([
+            {key: 'key2', value: 'value2', type: 'partner'},
+            {key: 'key3', value: 'value3', type: 'partner'}
+          ])
+        })
+    })
+
+  })
+
 })

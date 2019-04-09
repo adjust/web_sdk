@@ -14,6 +14,7 @@ describe('IndexedDB usage', () => {
   afterEach(() => {
     IndexedDB.default.clear('queue')
     IndexedDB.default.clear('activityState')
+    IndexedDB.default.clear('eventParams')
   })
 
   afterAll(() => {
@@ -45,6 +46,12 @@ describe('IndexedDB usage', () => {
 
   it('returns rows from particular store', () => {
 
+    const queueSet = [
+      {timestamp: 1, url: '/url1'},
+      {timestamp: 2, url: '/url2'},
+      {timestamp: 3, url: '/url3'}
+    ]
+
     expect.assertions(4)
 
     return IndexedDB.default.getAll('test')
@@ -59,10 +66,8 @@ describe('IndexedDB usage', () => {
 
         expect(result).toEqual([])
 
-        return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
+        return IndexedDB.default.addBulk('queue', queueSet)
       })
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'}))
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 3, url: '/url3'}))
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
         expect(result).toEqual([
@@ -97,11 +102,15 @@ describe('IndexedDB usage', () => {
 
   it('returns first row from particular store', () => {
 
+    const queueSet = [
+      {timestamp: 1552701608300, url: '/url1'},
+      {timestamp: 1552705208300, url: '/url2'},
+      {timestamp: 1552911178981, url: '/url3'}
+    ]
+
     expect.assertions(1)
 
-    return IndexedDB.default.addItem('queue', {timestamp: 1552701608300, url: '/url1'})
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552705208300, url: '/url2'}))
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552911178981, url: '/url3'}))
+    return IndexedDB.default.addBulk('queue', queueSet)
       .then(() => IndexedDB.default.getFirst('queue'))
       .then(result => {
         expect(result).toEqual({timestamp: 1552701608300, url: '/url1'})
@@ -111,10 +120,14 @@ describe('IndexedDB usage', () => {
 
   it('gets item from the activityState store', () => {
 
+    const activityStateSet = [
+      {uuid: 1, lastActive: 12345},
+      {uuid: 2, lastActive: 12346}
+    ]
+
     expect.assertions(3)
 
-    return IndexedDB.default.addItem('activityState', {uuid: 1, lastActive: 12345})
-      .then(() => IndexedDB.default.addItem('activityState', {uuid: 2, lastActive: 12346}))
+    return IndexedDB.default.addBulk('activityState', activityStateSet)
       .then(() => IndexedDB.default.getItem('activityState', 2))
       .then(result => {
         expect(result).toEqual({uuid: 2, lastActive: 12346})
@@ -132,7 +145,7 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(5)
 
-    return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'}, true)
+    return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
       .then(id => {
 
         expect(id).toEqual(1)
@@ -170,10 +183,14 @@ describe('IndexedDB usage', () => {
 
   it('updates items in the activityState store', () => {
 
+    const activityStateSet = [
+      {uuid: 1, lastActive: 12345},
+      {uuid: 2, lastActive: 12346}
+    ]
+
     expect.assertions(8)
 
-    return IndexedDB.default.addItem('activityState', {uuid: 1, lastActive: 12345})
-      .then(() => IndexedDB.default.addItem('activityState', {uuid: 2, lastActive: 12346}))
+    return IndexedDB.default.addBulk('activityState', activityStateSet)
       .then(() => IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}}))
       .then(update => {
 
@@ -236,11 +253,15 @@ describe('IndexedDB usage', () => {
 
   it('deletes item by item in the queue store', () => {
 
+    const queueSet = [
+      {timestamp: 1, url: '/url1'},
+      {timestamp: 2, url: '/url2'},
+      {timestamp: 3, url: '/url3'}
+    ]
+
     expect.assertions(7)
 
-    return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'}))
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 3, url: '/url3'}))
+    return IndexedDB.default.addBulk('queue', queueSet)
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
 
@@ -297,11 +318,15 @@ describe('IndexedDB usage', () => {
 
   it ('deletes items until certain bound from the queue store', () => {
 
+    const queueSet = [
+      {timestamp: 1552701608300, url: '/url1'},
+      {timestamp: 1552705208300, url: '/url2'},
+      {timestamp: 1552911178981, url: '/url3'}
+    ]
+
     expect.assertions(3)
 
-    return IndexedDB.default.addItem('queue', {timestamp: 1552701608300, url: '/url1'})
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552705208300, url: '/url2'}))
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 1552911178981, url: '/url3'}))
+    return IndexedDB.default.addBulk('queue', queueSet)
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
 
@@ -332,10 +357,14 @@ describe('IndexedDB usage', () => {
 
   it('clears items from the queue store', () => {
 
+    const queueSet = [
+      {timestamp: 1, url: '/url1'},
+      {timestamp: 2, url: '/url2'}
+    ]
+
     expect.assertions(2)
 
-    return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
-      .then(() => IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'}))
+    return IndexedDB.default.addBulk('queue', queueSet)
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
 
@@ -380,12 +409,162 @@ describe('IndexedDB usage', () => {
       })
   })
 
+  describe('performing add bulk operation', () => {
+
+    it('fails when array is not provided', () => {
+
+      expect.assertions(4)
+
+      return IndexedDB.default.addBulk('eventParams', [])
+        .catch(error => {
+          expect(error.name).toEqual('NoTargetDefined')
+          expect(error.message).toEqual('No array provided to perform add bulk operation into eventParams store')
+
+          return IndexedDB.default.addBulk('queue')
+        })
+        .catch(error => {
+          expect(error.name).toEqual('NoTargetDefined')
+          expect(error.message).toEqual('No array provided to perform add bulk operation into queue store')
+        })
+
+    })
+
+    it('adds rows into eventParams store', () => {
+
+      const eventParamsSet1 = [
+        {key: 'bla', value: 'truc', type: 'callback'},
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      const eventParamsSet2 = [
+        {key: 'key2', value: 'value2', type: 'callback'},
+        {key: 'par', value: 'tner', type: 'partner'}
+      ]
+
+      expect.assertions(3)
+
+      return IndexedDB.default.addBulk('eventParams', eventParamsSet1)
+        .then(result => {
+          expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+
+          return IndexedDB.default.addBulk('eventParams', eventParamsSet2)
+        })
+        .then(result => {
+          expect(result).toEqual([['key2', 'callback'], ['par', 'partner']])
+
+          return IndexedDB.default.getAll('eventParams')
+        })
+        .then(result => {
+          expect(result).toEqual([
+            {key: 'bla', value: 'truc', type: 'callback'},
+            {key: 'key1', value: 'value1', type: 'callback'},
+            {key: 'key2', value: 'value2', type: 'callback'},
+            {key: 'eto', value: 'tako', type: 'partner'},
+            {key: 'par', value: 'tner', type: 'partner'}
+          ])
+        })
+    })
+
+    it('adds rows into eventParams store and overwrite existing key at later point', () => {
+
+      const eventParamsSet1 = [
+        {key: 'bla', value: 'truc', type: 'callback'},
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      const eventParamsSet2 = [
+        {key: 'key1', value: 'new key1 value', type: 'callback'},
+        {key: 'par', value: 'tner', type: 'partner'},
+        {key: 'bla', value: 'truc', type: 'partner'}
+      ]
+
+      expect.assertions(3)
+
+      return IndexedDB.default.addBulk('eventParams', eventParamsSet1)
+        .then(result => {
+          expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+
+          return IndexedDB.default.addBulk('eventParams', eventParamsSet2, true)
+        })
+        .then(result => {
+          expect(result).toEqual([['key1', 'callback'], ['par', 'partner'], ['bla', 'partner']])
+
+          return IndexedDB.default.getAll('eventParams')
+        })
+        .then(result => {
+          expect(result).toEqual([
+            {key: 'bla', value: 'truc', type: 'callback'},
+            {key: 'key1', value: 'new key1 value', type: 'callback'},
+            {key: 'bla', value: 'truc', type: 'partner'},
+            {key: 'eto', value: 'tako', type: 'partner'},
+            {key: 'par', value: 'tner', type: 'partner'}
+          ])
+        })
+    })
+
+    it('adds rows into eventParams store and throw error when adding existing key', () => {
+
+      const eventParamsSet1 = [
+        {key: 'bla', value: 'truc', type: 'callback'},
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      const eventParamsSet2 = [
+        {key: 'key1', value: 'new key1 value', type: 'callback'},
+        {key: 'par', value: 'tner', type: 'partner'},
+        {key: 'eto', value: 'tako', type: 'partner'}
+      ]
+
+      expect.assertions(2)
+
+      return IndexedDB.default.addBulk('eventParams', eventParamsSet1)
+        .then(result => {
+          expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+
+          return IndexedDB.default.addBulk('eventParams', eventParamsSet2)
+        })
+        .catch(error => {
+          expect(error.target._error.name).toEqual('ConstraintError')
+        })
+    })
+
+    it('returns callback and partner params from the eventParams store', () => {
+
+      const eventParamsSet = [
+        {key: 'key1', value: 'value1', type: 'callback'},
+        {key: 'key2', value: 'value2', type: 'partner'},
+        {key: 'key3', value: 'value3', type: 'partner'},
+        {key: 'key4', value: 'value4', type: 'callback'},
+        {key: 'key5', value: 'value5', type: 'callback'},
+      ]
+
+      expect.assertions(2)
+
+      return IndexedDB.default.addBulk('eventParams', eventParamsSet)
+        .then(() => Promise.all([
+          IndexedDB.default.filterBy('eventParams', 'callback'),
+          IndexedDB.default.filterBy('eventParams', 'partner')
+        ]))
+        .then(([callbackParams, partnerParams]) => {
+          expect(callbackParams).toEqual([
+            {key: 'key1', value: 'value1', type: 'callback'},
+            {key: 'key4', value: 'value4', type: 'callback'},
+            {key: 'key5', value: 'value5', type: 'callback'},
+          ])
+          expect(partnerParams).toEqual([
+            {key: 'key2', value: 'value2', type: 'partner'},
+            {key: 'key3', value: 'value3', type: 'partner'}
+          ])
+        })
+    })
+
+  })
+
   describe('tests in case indexedDB got supported due to a browser upgrade', () => {
 
-    const schemeDef = {
-      queue: {primaryKey: 'timestamp'},
-      activityState: {primaryKey: 'uuid'}
-    }
     const queueSet = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'}
@@ -420,11 +599,10 @@ describe('IndexedDB usage', () => {
     it('returns result migrated from the localStorage when upgraded within restarted window session', () => {
 
       // prepare some rows manually
-      QuickStorage.default._scheme = schemeDef
       QuickStorage.default.queue = queueSet
       QuickStorage.default.activityState = activityStateSet
 
-      expect.assertions(5)
+      expect.assertions(4)
 
       return IndexedDB.default.getFirst('activityState')
         .then(result => {
@@ -434,7 +612,6 @@ describe('IndexedDB usage', () => {
         })
         .then(result => {
           expect(result).toEqual(queueSet)
-          expect(QuickStorage.default._scheme).toBeNull()
           expect(QuickStorage.default.queue).toBeNull()
           expect(QuickStorage.default.activityState).toBeNull()
         })
@@ -442,7 +619,7 @@ describe('IndexedDB usage', () => {
 
     it('returns result migrated from localStorage for queue when upgraded in the middle of the window session', () => {
 
-      expect.assertions(7)
+      expect.assertions(6)
 
       let inMemoryActivityState = null
 
@@ -454,7 +631,6 @@ describe('IndexedDB usage', () => {
           expect(inMemoryActivityState.uuid).toBeDefined()
 
           // prepare some rows manually
-          QuickStorage.default._scheme = schemeDef
           QuickStorage.default.queue = queueSet
           QuickStorage.default.activityState = activityStateSet
 
@@ -472,7 +648,6 @@ describe('IndexedDB usage', () => {
         })
         .then(result => {
           expect(result).toEqual(queueSet)
-          expect(QuickStorage.default._scheme).toBeNull()
           expect(QuickStorage.default.queue).toBeNull()
           expect(QuickStorage.default.activityState).toBeNull()
         })

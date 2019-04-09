@@ -1,4 +1,5 @@
 import Config from './config'
+import Scheme from './scheme'
 import ActivityState from './activity-state'
 import QuickStorage from './quick-storage'
 import {isEmpty} from './utilities'
@@ -36,28 +37,6 @@ function _getIDB () {
 }
 
 /**
- * Return data to migrate from localStorage if available
- *
- * @returns {Object|null}
- * @private
- */
-function _migrationNeeded () {
-
-  const scheme = QuickStorage._scheme
-
-  const validScheme = !!(scheme && scheme.queue && scheme.activityState)
-
-  if (validScheme) {
-    return {
-      queue: QuickStorage.queue || [],
-      activityState: QuickStorage.activityState[0]
-    }
-  }
-
-  return null
-}
-
-/**
  * Handle database upgrade/initialization
  * - store activity state from memory if database unexpectedly got lost in the middle of the window session
  * - migrate data from localStorage if available on browser upgrade
@@ -73,24 +52,24 @@ function _handleUpgradeNeeded (e, reject) {
   e.target.transaction.onerror = reject
   e.target.transaction.onabort = reject
 
-  const migration = _migrationNeeded()
   const inMemoryAvailable = ActivityState.current && !isEmpty(ActivityState.current)
-  const activityStateStore = db.createObjectStore('activityState', {keyPath: 'uuid', autoIncrement: false})
-  const queueStore = db.createObjectStore('queue', {keyPath: 'timestamp', autoIncrement: false})
+  const keys = Object.keys(Scheme)
 
-  if (inMemoryAvailable) {
-    activityStateStore.add(ActivityState.current)
-  }
+  keys.forEach(storeName => {
+    const objectStore = db.createObjectStore(storeName, Scheme[storeName].options)
 
-  if (migration) {
-    migration.queue.forEach(pending => queueStore.add(pending))
-
-    if (!inMemoryAvailable && migration.activityState) {
-      activityStateStore.add(migration.activityState)
+    if (Scheme[storeName].index) {
+      objectStore.createIndex(`${Scheme[storeName].index}Index`, Scheme[storeName].index)
     }
 
-    QuickStorage.clear()
-  }
+    if (storeName === 'activityState' && inMemoryAvailable) {
+      objectStore.add(ActivityState.current)
+    } else if (QuickStorage[storeName]) {
+      QuickStorage[storeName].forEach(record => objectStore.add(record))
+    }
+  })
+
+  QuickStorage.clear()
 }
 
 /**
@@ -142,18 +121,23 @@ function _open () {
  * @param {string} storeName
  * @param {string} [mode=readonly]
  * @param {Function} reject
- * @returns {{transaction, store: *|IDBObjectStore}}
+ * @returns {{transaction, store: IDBObjectStore, index: IDBIndex}}
  * @private
  */
 function _getTranStore ({storeName, mode = 'readonly'}, reject) {
 
   const transaction = _db.transaction([storeName], mode)
   const store = transaction.objectStore(storeName)
+  let index
+
+  if (Scheme[storeName].index) {
+    index = store.index(`${Scheme[storeName].index}Index`)
+  }
 
   transaction.onerror = reject
   transaction.onabort = reject
 
-  return {transaction, store}
+  return {transaction, store, index}
 }
 
 /**
@@ -186,6 +170,49 @@ function _initRequest ({storeName, target, action, mode = 'readonly'}) {
 }
 
 /**
+ * Initiate bulk database request by reusing the same transaction to perform the operation
+ *
+ * @param {string} storeName
+ * @param {Array} target
+ * @param {string} action
+ * @param {string} [mode=readonly]
+ * @returns {Promise}
+ * @private
+ */
+function _initBulkRequest ({storeName, target, action, mode = 'readonly'}) {
+  return _open()
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        if (!target || target && !target.length) {
+          return reject({name: 'NoTargetDefined', message: `No array provided to perform ${action} bulk operation into ${storeName} store`})
+        }
+
+        const {transaction, store} = _getTranStore({storeName, mode}, reject)
+        let result = []
+        let current = target[0]
+
+        transaction.oncomplete = () => resolve(result)
+
+        request(store[action](current))
+
+        function request (req) {
+
+          req.onerror = reject
+          req.onsuccess = () => {
+            result.push(req.result)
+
+            current = target[result.length]
+
+            if (result.length < target.length) {
+              request(store[action](current))
+            }
+          }
+        }
+      })
+    })
+}
+
+/**
  * Open cursor for bulk operations or listing
  *
  * @param {string} storeName
@@ -196,12 +223,12 @@ function _initRequest ({storeName, target, action, mode = 'readonly'}) {
  * @returns {Promise}
  * @private
  */
-function _openCursor ({storeName, action, range, firstOnly, mode = 'readonly'}) {
+function _openCursor ({storeName, action = 'list', range, firstOnly, mode = 'readonly'}) {
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
-        const {transaction, store} = _getTranStore({storeName, mode}, reject)
-        const cursorRequest = store.openCursor(range)
+        const {transaction, store, index} = _getTranStore({storeName, mode}, reject)
+        const cursorRequest = (index || store).openCursor(range)
         const items = []
 
         transaction.oncomplete = () => resolve(firstOnly ? items[0] : items)
@@ -237,7 +264,7 @@ function _openCursor ({storeName, action, range, firstOnly, mode = 'readonly'}) 
  */
 
 function getAll (storeName, firstOnly) {
-  return _openCursor({storeName, action: 'list', firstOnly})
+  return _openCursor({storeName, firstOnly})
 }
 
 /**
@@ -254,44 +281,70 @@ function getFirst (storeName) {
  * Get item from a particular store
  *
  * @param {string} storeName
- * @param {*} id
+ * @param {*} target
  * @returns {Promise}
  */
-function getItem (storeName, id) {
-  return _initRequest({storeName, target: id, action: 'get'})
+function getItem (storeName, target) {
+  return _initRequest({storeName, target, action: 'get'})
+}
+
+/**
+ * Return filtered result by value on available index
+ *
+ * @param {string} storeName
+ * @param {string} by
+ * @returns {Promise}
+ */
+function filterBy (storeName, by) {
+
+  const range = IDBKeyRange.only(by)
+
+  return _openCursor({storeName, range})
 }
 
 /**
  * Add item to a particular store
  *
  * @param {string} storeName
- * @param {Object} item
+ * @param {Object} target
  * @returns {Promise}
  */
-function addItem (storeName, item) {
-  return _initRequest({storeName, target: item, action: 'add', mode: 'readwrite'})
+function addItem (storeName, target) {
+  return _initRequest({storeName, target, action: 'add', mode: 'readwrite'})
+}
+
+/**
+ * Add multiple items into particular store
+ *
+ * @param {string} storeName
+ * @param {Array} target
+ * @param {boolean=} overwrite
+ * @returns {Promise}
+ */
+function addBulk (storeName, target, overwrite) {
+  return _initBulkRequest({storeName, target, action: (overwrite ? 'put' : 'add'), mode: 'readwrite'})
 }
 
 /**
  * Update item in a particular store
  *
  * @param {string} storeName
- * @param {Object} item
+ * @param {Object} target
  * @returns {Promise}
  */
-function updateItem (storeName, item) {
-  return _initRequest({storeName, target: item, action: 'put', mode: 'readwrite'})
+function updateItem (storeName, target) {
+  return _initRequest({storeName, target, action: 'put', mode: 'readwrite'})
 }
 
 /**
  * Delete item from a particular store
  *
  * @param {string} storeName
- * @param {*} id
+ * @param {*} target
  * @returns {Promise}
  */
-function deleteItem (storeName, id) {
-  return _initRequest({storeName, target: id, action: 'delete', mode: 'readwrite'})
+function deleteItem (storeName, target) {
+  return _initRequest({storeName, target, action: 'delete', mode: 'readwrite'})
 }
 
 /**
@@ -333,7 +386,9 @@ export default {
   getAll,
   getFirst,
   getItem,
+  filterBy,
   addItem,
+  addBulk,
   updateItem,
   deleteItem,
   deleteBulk,

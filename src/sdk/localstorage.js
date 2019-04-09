@@ -1,6 +1,7 @@
 import ActivityState from './activity-state'
 import QuickStorage from './quick-storage'
-import {isEmpty, findIndex} from './utilities'
+import Scheme from './scheme'
+import {findIndex} from './utilities'
 
 /**
  * Check if LocalStorage is supported in the current browser
@@ -38,22 +39,15 @@ function _open () {
 
   isSupported(true)
 
-  const scheme = QuickStorage._scheme || {}
+  const keys = Object.keys(Scheme)
 
-  if (isEmpty(scheme)) {
-    scheme.queue = {primaryKey: 'timestamp'}
-    scheme.activityState = {primaryKey: 'uuid'}
-
-    QuickStorage._scheme = scheme
-  }
-
-  if (!QuickStorage.queue) {
-    QuickStorage.queue = []
-  }
-  if (!QuickStorage.activityState) {
-    QuickStorage.activityState = ActivityState.current ? [ActivityState.current] : []
-  }
-
+  keys.forEach(storeName => {
+    if (storeName === 'activityState' && !QuickStorage.activityState) {
+      QuickStorage.activityState = ActivityState.current ? [ActivityState.current] : []
+    } else if (!QuickStorage[storeName]) {
+      QuickStorage[storeName] = []
+    }
+  })
 }
 
 /**
@@ -71,9 +65,38 @@ function _initRequest (storeName, action) {
   return new Promise((resolve, reject) => {
 
     const items = QuickStorage[storeName]
-    const key = QuickStorage._scheme[storeName].primaryKey
+    const key = Scheme[storeName].options.keyPath
 
     return action(resolve, reject, key, items)
+  })
+}
+
+/**
+ * Sort the array by provided key (key can be a composite one)
+ *
+ * @param {array} items
+ * @param {string|array} key
+ * @returns {array}
+ * @private
+ */
+function _sort (items, key) {
+
+  const keys = (key instanceof Array ? key : [key]).slice().reverse()
+
+  function compare (a, b, key) {
+    if (a[key] < b[key]) {
+      return -1
+    } else if (a[key] > b[key]) {
+      return 1
+    } else {
+      return 0
+    }
+  }
+
+  return items.sort((a, b) => {
+    return keys.reduce((acc, key) => {
+      return acc || compare(a, b, key)
+    }, 0)
   })
 }
 
@@ -93,7 +116,7 @@ function getAll (storeName, firstOnly) {
     const value = QuickStorage[storeName]
 
     if (value instanceof Array) {
-      resolve(firstOnly ? value[0] : value)
+      resolve(firstOnly ? value[0] : _sort(value, Scheme[storeName].options.keyPath))
     } else {
       reject({name: 'NotFoundError', message: `No store named ${storeName} in this storage`})
     }
@@ -131,6 +154,22 @@ function getItem (storeName, id) {
 }
 
 /**
+ * Return filtered result by value on available index
+ *
+ * @param {string} storeName
+ * @param {string} by
+ * @returns {Promise}
+ */
+function filterBy (storeName, by) {
+  return getAll(storeName)
+    .then(result => {
+      return result.filter(item => {
+        return item[Scheme[storeName].index] === by
+      })
+    })
+}
+
+/**
  * Add item to a particular store
  *
  * @param {string} storeName
@@ -148,6 +187,46 @@ function addItem (storeName, item) {
       items.push(item)
       QuickStorage[storeName] = items
       resolve(item[key])
+    }
+  })
+}
+
+/**
+ * Add multiple items into particular store
+ *
+ * @param {string} storeName
+ * @param {Object} target
+ * @param {boolean=} overwrite
+ * @returns {Promise}
+ */
+function addBulk (storeName, target, overwrite) {
+  return _initRequest(storeName, (resolve, reject, key, items) => {
+
+    const keys = key instanceof Array ? key : [key]
+
+    if (!target || target && !target.length) {
+      return reject({name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into ${storeName} store`})
+    }
+
+    let existing = []
+
+    target.forEach(item => {
+      const index = findIndex(items, keys, item)
+      if (index !== -1) {
+        existing.push({target: item, index})
+      }
+    })
+
+    if (overwrite) {
+      const indexes = existing.map(i => i.index).sort((a, b) => { return b - a })
+      indexes.forEach(index => items.splice(index, 1))
+    }
+
+    if (existing.length && !overwrite) {
+      reject({name: 'ConstraintError', message: `Items with ${keys.join(':')} => ${existing.map(i => keys.map(k => i.target[k]).join(':')).join(',')} already exist`})
+    } else {
+      QuickStorage[storeName] = _sort([...items, ...target], keys)
+      resolve(target.map((item) => keys.map(k => item[k])))
     }
   })
 }
@@ -236,7 +315,7 @@ function deleteBulk (storeName, upperBound) {
   return getAll(storeName)
     .then(items => {
 
-      const key = QuickStorage._scheme[storeName].primaryKey
+      const key = Scheme[storeName].options.keyPath
       const first = items[0]
 
       if (!first) {
@@ -285,7 +364,9 @@ export default {
   getAll,
   getFirst,
   getItem,
+  filterBy,
   addItem,
+  addBulk,
   updateItem,
   deleteItem,
   deleteBulk,
