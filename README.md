@@ -49,7 +49,7 @@ var _adjust = new Adjust({
   }
 });
 
-_adjust.trackSession(_sessionConfig, function (result) {
+_adjust.trackSession(function (result) {
     console.log(result);
   }, function (errorMsg, error) {
     console.log(errorMsg, error);
