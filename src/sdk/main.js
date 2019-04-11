@@ -1,11 +1,11 @@
 import Config from './config'
 import Queue from './queue'
 import StorageManager from './storage-manager'
-import {buildList, extend, convertToMap, getRevenue} from './utilities'
-import {getTimestamp} from './time'
+import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
 import {startActivityState, destroy as identityDestroy} from './identity'
+import {addParams, track} from './event'
 
 /**
  * Definition of mandatory fields
@@ -51,17 +51,27 @@ function trackEvent (params = {}) {
     throw new Error('You must init your instance')
   }
 
-  Queue.push({
-    url: '/event',
-    method: 'POST',
-    params: extend({
-      created_at: getTimestamp()
-    }, Config.baseParams, extend({
-      event_token: params.eventToken,
-      callback_params: convertToMap(params.callbackParams),
-      partner_params: convertToMap(params.partnerParams),
-    }, getRevenue(params.revenue, params.currency)))
-  })
+  track(params)
+}
+
+/**
+ * Add global callback parameters
+ *
+ * @param {Array} params
+ * @returns {Promise}
+ */
+function addCallbackParameters (params) {
+  return addParams(params, 'callback')
+}
+
+/**
+ * Add global partner parameters
+ *
+ * @param {Array} params
+ * @returns {Promise}
+ */
+function addPartnerParameters (params) {
+  return addParams(params, 'partner')
 }
 
 /**
@@ -148,6 +158,8 @@ function _clear () {
 const Adjust = {
   init,
   trackEvent,
+  addCallbackParameters,
+  addPartnerParameters,
   destroy
 }
 

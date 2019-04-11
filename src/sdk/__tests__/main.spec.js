@@ -3,7 +3,9 @@ import * as PubSub from '../pub-sub'
 import * as Queue from '../queue'
 import * as Time from '../time'
 import * as Session from '../session'
+import * as Event from '../event'
 import * as Config from '../config'
+import * as Identity from '../identity'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 
@@ -53,8 +55,12 @@ describe('test initiated instance', () => {
     jest.spyOn(external, 'attributionCb')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
+    jest.spyOn(Queue.default, 'run').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Session, 'watchSession').mockImplementation(() => {})
+    jest.spyOn(Event, 'track').mockImplementation(() => {})
+    jest.spyOn(Event, 'addParams').mockImplementation(() => {})
+    jest.spyOn(Identity, 'startActivityState')
 
     mainInstance.init({
       app_token: 'some-app-token',
@@ -80,6 +86,8 @@ describe('test initiated instance', () => {
     expect(Config.default.baseParams.environment).toEqual('production')
     expect(Config.default.baseParams.os_name).toEqual('android')
     expect(PubSub.subscribe).toHaveBeenCalledWith('attribution:change', external.attributionCb)
+    expect(Identity.startActivityState).toHaveBeenCalledTimes(1)
+    expect(Queue.default.run).toHaveBeenCalledTimes(1)
     expect(Session.watchSession).toHaveBeenCalledTimes(1)
 
   })
@@ -111,85 +119,37 @@ describe('test initiated instance', () => {
 
   })
 
-  it('resolves trackEvent request successfully without revenue and some map params', () => {
+  it('performs track event call', () => {
 
-    const requestConfig = {
-      url: '/event',
-      method: 'POST',
-      params: {
-        created_at: 'some-time',
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        event_token: 'some-event-token1',
-        callback_params: {'some-key': 'some-value'},
-        partner_params: {}
-      }
-    };
+    mainInstance.trackEvent({event_token: 'blabla'})
 
-    mainInstance.trackEvent({
-      eventToken: 'some-event-token1',
-      callbackParams: [{key: 'some-key', value: 'some-value'}],
-      revenue: 0
-    })
-
-    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+    expect(Event.track).toHaveBeenCalledWith({event_token: 'blabla'})
 
   })
 
-  it('resolves trackEvent request successfully with revenue but no currency', () => {
+  it('adds global callback parameters', () => {
 
-    const requestConfig = {
-      url: '/event',
-      method: 'POST',
-      params: {
-        created_at: 'some-time',
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        event_token: 'some-event-token2',
-        callback_params: {},
-        partner_params: {}
-      }
-    }
+    const params = [
+      {key: 'key1', value: 'value1'},
+      {key: 'key2', value: 'value2'}
+    ]
 
-    mainInstance.trackEvent({
-      eventToken: 'some-event-token2',
-      revenue: 1000
-    })
+    mainInstance.addCallbackParameters(params)
 
-    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+    expect(Event.addParams).toHaveBeenCalledWith(params, 'callback')
 
   })
 
-  it('resolves trackEvent request successfully with revenue and some map params', () => {
+  it('adds global partner parameters', () => {
 
-    const requestConfig = {
-      url: '/event',
-      method: 'POST',
-      params: {
-        created_at: 'some-time',
-        app_token: 'some-app-token',
-        environment: 'production',
-        os_name: 'android',
-        event_token: 'some-event-token3',
-        callback_params: {'some-key': 'some-value'},
-        partner_params: {key1: 'value1', key2: 'value2'},
-        revenue: "100.00000",
-        currency: 'EUR'
-      }
-    }
+    const params = [
+      {key: 'key1', value: 'value1'},
+      {key: 'key2', value: 'value2'}
+    ]
 
-    mainInstance.trackEvent({
-      eventToken: 'some-event-token3',
-      callbackParams: [{key: 'some-key', value: 'some-value'}],
-      partnerParams: [{key: 'key1', value: 'value1'}, {key: 'key2', value: 'value2'}],
-      revenue: 100,
-      currency: 'EUR'
-    })
+    mainInstance.addPartnerParameters(params)
 
-    expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
-
+    expect(Event.addParams).toHaveBeenCalledWith(params, 'partner')
 
   })
 })

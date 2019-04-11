@@ -79,13 +79,26 @@ describe('test for utility methods', () => {
 
   describe('test for findIndex', () => {
     it('returns an index of an element if found', () => {
-      expect(Utilities.findIndex([{
-        id: 1, text: 'bla'
-      }, {
-        id: 2, text: 'smor'
-      }, {
-        id: 3, text: 'trt'
-      }], 'id', 2)).toEqual(1)
+
+      const array = [
+        {id: 1, text: 'bla'},
+        {id: 2, text: 'smor'},
+        {id: 3, text: 'trt'}
+      ]
+
+      expect(Utilities.findIndex(array, 'id', 2)).toEqual(1)
+    })
+
+    it('returns an index of an element with composite key', () => {
+
+      const array = [
+        {name: 'bla', type: 'one'},
+        {name: 'trt', type: 'one'},
+        {name: 'smor', type: 'one'},
+        {name: 'smor', type: 'two'}
+      ]
+
+      expect(Utilities.findIndex(array, ['name', 'type'], {name: 'smor', type: 'one'})).toEqual(2)
     })
 
     it('returns -1 if not found', () => {
@@ -122,40 +135,6 @@ describe('test for utility methods', () => {
       expect(obj1).toEqual({name: 'something', year: 2018})
       expect(obj2).toEqual({test: 'bla', name: 'something', year: 2018})
       expect(obj3).toEqual({test: 'bla', name: 'something', year: 2019})
-    })
-  })
-
-  describe('test for convertToMap', () => {
-    it('converts the array into key/value pairs', () => {
-      expect(Utilities.convertToMap([{
-        key: 'some-key-1',
-        value: 'some-value-1'
-      }, {
-        key: 'some-key-2',
-        value: 'some-value-2'
-      }])).toEqual({'some-key-1': 'some-value-1', 'some-key-2': 'some-value-2'})
-    })
-  })
-
-  describe('test for convertToMap', () => {
-    it('returns empty when no revenue provided', () => {
-      expect(Utilities.getRevenue()).toEqual({})
-    })
-
-    it('returns empty when negative revenue provided', () => {
-      expect(Utilities.getRevenue(-10, 'EUR')).toEqual({})
-    })
-
-    it('returns empty when no currency provided', () => {
-      expect(Utilities.getRevenue(10)).toEqual({})
-    })
-
-    it('returns rounded revenue with 5 decimal places', () => {
-      expect(Utilities.getRevenue(10, 'EUR')).toEqual({revenue: '10.00000', currency: 'EUR'})
-    })
-
-    it('returns revenue with 5 decimal places', () => {
-      expect(Utilities.getRevenue(201.14, 'EUR')).toEqual({revenue: '201.14000', currency: 'EUR'})
     })
   })
 })

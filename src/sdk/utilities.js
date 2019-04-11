@@ -118,13 +118,20 @@ function getVisibilityApiAccess () {
  * Find index of an element in the list and return it
  *
  * @param {Array} array
- * @param {string} key
+ * @param {string|Array} key
  * @param {*} value
  * @returns {Number}
  */
 function findIndex (array, key, value) {
+
+  function isEqual (item) {
+    return (key instanceof Array)
+      ? key.every(k => item[k] === value[k])
+      : (item[key] === value)
+  }
+
   for (let i = 0; i < array.length; i += 1) {
-    if (array[i][key] === value) {
+    if (isEqual(array[i])) {
       return i
     }
   }
@@ -142,37 +149,6 @@ function extend (...args) {
   return Object.assign(...args)
 }
 
-/**
- * Convert array with key/value item structure into key/value pairs object
- *
- * @param {Array} array
- */
-function convertToMap (array = []) {
-  return array.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
-}
-
-/**
- * Get revenue value if positive and limit to 5 decimal places
- *
- * @param {number} revenue
- * @param {string} currency
- * @returns {Object}
- * @private
- */
-function getRevenue (revenue, currency) {
-
-  revenue = parseFloat(revenue)
-
-  if (revenue < 0 || !currency) {
-    return {}
-  }
-
-  return {
-    revenue: revenue.toFixed(5),
-    currency
-  }
-}
-
 export {
   buildList,
   isEmpty,
@@ -182,7 +158,5 @@ export {
   on,
   off,
   findIndex,
-  extend,
-  convertToMap,
-  getRevenue
+  extend
 }
