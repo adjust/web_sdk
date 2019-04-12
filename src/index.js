@@ -9,30 +9,25 @@ const appConfig = {
 }
 
 const someEventConfig = {
-  eventToken: 'yywcyo'
+  event_token: 'yywcyo'
 }
 
 const revenueEventConfig = {
-  eventToken: 'wmxoqe',
+  event_token: 'wmxoqe',
   revenue: 10,
   currency: 'EUR',
-  callbackParams: [{
-    key: 'some-key-1',
-    value: 'some-value-1'
-  }, {
-    key: 'some-key-2',
-    value: 'some-value-2'
-  }],
-  partnerParams: [{
-    key: 'some-partner-key-1',
-    value: 'some-partner-value-1'
-  }, {
-    key: 'some-partner-key-2',
-    value: 'some-partner-value-2'
-  }, {
-    key: 'some-partner-key-1',
-    value: 'some-partner-value-3'
-  }]
+  callback_params: [
+    {key: 'some-key-1', value: 'some-value-1'},
+    {key: 'some-key-2', value: 'some-value-2'},
+    {key: 'key1', value: 'new-value1'}
+  ],
+  partner_params: [
+    {key: 'key-1', value: 'new-value-1'},
+    {key: 'some-partner-key-1', value: 'some-partner-value-1'},
+    {key: 'key-2', value: 'new-value-2'},
+    {key: 'some-partner-key-2', value: 'some-partner-value-2'},
+    {key: 'some-partner-key-1', value: 'some-partner-value-3'}
+  ]
 }
 
 const attributionCallback = (e, attribution) => {
@@ -42,6 +37,16 @@ const attributionCallback = (e, attribution) => {
 // INIT: Initiate adjust sdk with specified configuration
 adjustSDK.init(appConfig, attributionCallback)
 
+adjustSDK.addCallbackParameters([
+  {key: 'key1', value: 'last-value1'},
+  {key: 'key2', value: 'value2'}
+])
+
+adjustSDK.addPartnerParameters([
+  {key: 'key-1', value: 'value-1'},
+  {key: 'key-2', value: 'value-2'},
+  {key: 'key-3', value: 'value-3'}
+])
 
 // NOTE: this is custom demo app implementation
 app.start(trackEvent, trackRevenueEvent)

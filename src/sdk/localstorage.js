@@ -39,9 +39,9 @@ function _open () {
 
   isSupported(true)
 
-  const keys = Object.keys(Scheme)
+  const stores = Object.keys(Scheme)
 
-  keys.forEach(storeName => {
+  stores.forEach(storeName => {
     if (storeName === 'activityState' && !QuickStorage.activityState) {
       QuickStorage.activityState = ActivityState.current ? [ActivityState.current] : []
     } else if (!QuickStorage[storeName]) {
