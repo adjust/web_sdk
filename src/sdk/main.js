@@ -5,7 +5,7 @@ import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
 import {startActivityState, destroy as identityDestroy} from './identity'
-import {add, remove} from './global-params'
+import {add, remove, removeAll} from './global-params'
 import event from './event'
 
 /**
@@ -96,6 +96,24 @@ function removePartnerCallbackParameter (key) {
 }
 
 /**
+ * Remove all global callback parameters
+ *
+ * @returns {Promise}
+ */
+function removeAllGlobalCallbackParameters () {
+  return removeAll('callback')
+}
+
+/**
+ * Remove all global partner parameters
+ *
+ * @returns {Promise}
+ */
+function removeAllGlobalPartnerParameters () {
+  return removeAll('partner')
+}
+
+/**
  * Destroy the instance
  */
 function destroy () {
@@ -183,6 +201,8 @@ const Adjust = {
   addGlobalPartnerParameters,
   removeGlobalCallbackParameter,
   removePartnerCallbackParameter,
+  removeAllGlobalCallbackParameters,
+  removeAllGlobalPartnerParameters,
   destroy
 }
 

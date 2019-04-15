@@ -541,7 +541,7 @@ describe('LocalStorage usage', () => {
           {timestamp: 1552911178981, url: '/url3'}
         ])
 
-        return LocalStorage.default.deleteBulk('queue', 1552705208300)
+        return LocalStorage.default.deleteBulk('queue', {upperBound: 1552705208300})
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -551,11 +551,70 @@ describe('LocalStorage usage', () => {
       })
       .then(() => LocalStorage.default.getAll('queue'))
       .then(result => {
-
         expect(result).toEqual([
           {timestamp: 1552911178981, url: '/url3'}
         ])
+      })
 
+  })
+
+  it ('deletes items in bulk by type from the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    QuickStorage.default.globalParams = [
+      {key: 'key4', value: 'value4', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'partner'},
+      {key: 'key3', value: 'value3', type: 'callback'},
+      {key: 'key1', value: 'value1', type: 'partner'},
+      {key: 'key1', value: 'value1', type: 'callback'}
+    ]
+
+    expect.assertions(5)
+
+    return LocalStorage.default.getAll('globalParams')
+      .then(result => {
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'},
+          {key: 'key4', value: 'value4', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return LocalStorage.default.deleteBulk('globalParams', 'partner')
+      })
+      .then(deleted => {
+        expect(deleted).toEqual([
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'},
+          {key: 'key4', value: 'value4', type: 'callback'}
+        ])
+
+        return LocalStorage.default.deleteBulk('globalParams', 'callback')
+      })
+      .then(deleted => {
+        expect(deleted).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'},
+          {key: 'key4', value: 'value4', type: 'callback'}
+        ])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+        expect(result).toEqual([])
       })
 
   })

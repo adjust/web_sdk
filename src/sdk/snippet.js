@@ -28,7 +28,17 @@
   'script',
   'http://sdk.adjust.local/sdk.min.js',
   'adjustSDK',
-  ['init', 'trackEvent', 'addGlobalCallbackParameters', 'addGlobalPartnerParameters', 'destroy'],
+  [
+    'init',
+    'trackEvent',
+    'addGlobalCallbackParameters',
+    'addGlobalPartnerParameters',
+    'removeGlobalCallbackParameter',
+    'removePartnerCallbackParameter',
+    'removeAllGlobalCallbackParameters',
+    'removeAllGlobalPartnerParameters',
+    'destroy'
+  ],
   function (context, queue, methodName) {
     context[methodName] = function () {
       queue.push([methodName, arguments]);

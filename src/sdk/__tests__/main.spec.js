@@ -9,6 +9,7 @@ import * as Identity from '../identity'
 import * as GlobalParams from '../global-params'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
+import {removeAll} from '../global-params'
 
 jest.useFakeTimers()
 
@@ -62,6 +63,7 @@ describe('test initiated instance', () => {
     jest.spyOn(event, 'default').mockImplementation(() => {})
     jest.spyOn(GlobalParams, 'add').mockImplementation(() => {})
     jest.spyOn(GlobalParams, 'remove').mockImplementation(() => {})
+    jest.spyOn(GlobalParams, 'removeAll').mockImplementation(() => {})
     jest.spyOn(Identity, 'startActivityState')
 
     mainInstance.init({
@@ -168,6 +170,22 @@ describe('test initiated instance', () => {
     mainInstance.removePartnerCallbackParameter('some-key')
 
     expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'partner')
+
+  })
+
+  it('removes all global callback parameters', () => {
+
+    mainInstance.removeAllGlobalCallbackParameters('callback')
+
+    expect(GlobalParams.removeAll).toHaveBeenCalledWith('callback')
+
+  })
+
+  it('removes global partner parameter', () => {
+
+    mainInstance.removeAllGlobalPartnerParameters('partner')
+
+    expect(GlobalParams.removeAll).toHaveBeenCalledWith('partner')
 
   })
 })

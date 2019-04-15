@@ -1,7 +1,7 @@
 import ActivityState from './activity-state'
 import QuickStorage from './quick-storage'
 import Scheme from './scheme'
-import {findIndex} from './utilities'
+import {findIndex, isObject} from './utilities'
 
 /**
  * Check if LocalStorage is supported in the current browser
@@ -51,6 +51,20 @@ function _open () {
 }
 
 /**
+ * Get primary keys for particular store
+ *
+ * @param {string} storeName
+ * @returns {Array}
+ * @private
+ */
+function _getKeys (storeName) {
+
+  const keyPath = Scheme[storeName].options.keyPath
+
+  return keyPath instanceof Array ? keyPath.slice() : [keyPath]
+}
+
+/**
  * Initiate quasi-database request
  *
  * @param {string} storeName
@@ -67,8 +81,7 @@ function _initRequest ({storeName, id, item}, action) {
   return new Promise((resolve, reject) => {
 
     const items = QuickStorage[storeName]
-    const keyPath = Scheme[storeName].options.keyPath
-    const keys = keyPath instanceof Array ? keyPath.slice() : [keyPath]
+    const keys = _getKeys(storeName)
 
     if (id) {
       const ids = id instanceof Array ? id.slice() : [id]
@@ -86,20 +99,27 @@ function _initRequest ({storeName, id, item}, action) {
 
 /**
  * Sort the array by provided key (key can be a composite one)
+ * - by default sorts in ascending order by primary keys
+ * - force order by provided value
  *
  * @param {array} items
- * @param {string|array} key
+ * @param {array} keys
+ * @param {string} force
+ * @param {string=} force
  * @returns {array}
  * @private
  */
-function _sort (items, key) {
+function _sort (items, keys, force) {
 
-  const keys = (key instanceof Array ? key : [key]).slice().reverse()
+  const reversed = keys.slice().reverse()
 
   function compare (a, b, key) {
-    if (a[key] < b[key]) {
+    const expr1 = force ? force === a[key] : a[key] < b[key]
+    const expr2 = force ? force > a[key] : a[key] > b[key]
+
+    if (expr1) {
       return -1
-    } else if (a[key] > b[key]) {
+    } else if (expr2) {
       return 1
     } else {
       return 0
@@ -107,7 +127,7 @@ function _sort (items, key) {
   }
 
   return items.sort((a, b) => {
-    return keys.reduce((acc, key) => {
+    return reversed.reduce((acc, key) => {
       return acc || compare(a, b, key)
     }, 0)
   })
@@ -129,7 +149,7 @@ function getAll (storeName, firstOnly) {
     const value = QuickStorage[storeName]
 
     if (value instanceof Array) {
-      resolve(firstOnly ? value[0] : _sort(value, Scheme[storeName].options.keyPath))
+      resolve(firstOnly ? value[0] : _sort(value, _getKeys(storeName)))
     } else {
       reject({name: 'NotFoundError', message: `No store named ${storeName} in this storage`})
     }
@@ -305,7 +325,7 @@ function deleteItem (storeName, id) {
  *
  * @param {Array} array
  * @param {string} key
- * @param {number} bound
+ * @param {number|string} bound
  * @returns {number}
  * @private
  */
@@ -315,40 +335,46 @@ function _findMax (array, key, bound) {
     return -1
   }
 
-  let max = {index: -1, value: 0}
+  let max = {index: -1, value: (isNaN(bound) ? '' : 0)}
 
   for (let i = 0; i < array.length; i += 1) {
     if (array[i][key] <= bound) {
-      if (array[i][key] > max.value) {
+      if (array[i][key] >= max.value) {
         max = {value: array[i][key], index: i}
       }
     } else {
       return max.index
     }
   }
+
+  return max.index
 }
 
 /**
  * Delete items until certain bound (primary key as a bound scope)
  *
  * @param {string} storeName
- * @param {*} upperBound
+ * @param {string|Object} condition
+ * @param {*=} condition.upperBound
  * @returns {Promise}
  */
-function deleteBulk (storeName, upperBound) {
+function deleteBulk (storeName, condition) {
   return getAll(storeName)
     .then(items => {
 
-      const key = Scheme[storeName].options.keyPath
+      const keys = _getKeys(storeName)
+      const key = Scheme[storeName].index || keys[0]
+      const bound = isObject(condition) ? condition.upperBound : condition
+      const force = isObject(condition) ? null : condition
       const first = items[0]
 
       if (!first) {
         return []
       }
 
-      items.sort(isNaN(first[key]) ? undefined : ((a, b) => a[key] - b[key]))
+      _sort(items, keys, force)
 
-      const index = _findMax(items, key, upperBound)
+      const index = _findMax(items, key, bound)
 
       if (index === -1) {
         return []

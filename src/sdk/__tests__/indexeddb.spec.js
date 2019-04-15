@@ -546,7 +546,7 @@ describe('IndexedDB usage', () => {
           {timestamp: 1552911178981, url: '/url3'}
         ])
 
-        return IndexedDB.default.deleteBulk('queue', 1552705208300)
+        return IndexedDB.default.deleteBulk('queue', {upperBound: 1552705208300})
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -556,11 +556,71 @@ describe('IndexedDB usage', () => {
       })
       .then(() => IndexedDB.default.getAll('queue'))
       .then(result => {
-
         expect(result).toEqual([
           {timestamp: 1552911178981, url: '/url3'}
         ])
+      })
 
+  })
+
+  it ('deletes items in bulk by type from the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    const globalParamsSet = [
+      {key: 'key4', value: 'value4', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'partner'},
+      {key: 'key3', value: 'value3', type: 'callback'},
+      {key: 'key1', value: 'value1', type: 'partner'},
+      {key: 'key1', value: 'value1', type: 'callback'}
+    ]
+
+    expect.assertions(5)
+
+    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
+      .then(() => IndexedDB.default.getAll('globalParams'))
+      .then(result => {
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'},
+          {key: 'key4', value: 'value4', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return IndexedDB.default.deleteBulk('globalParams', 'partner')
+      })
+      .then(deleted => {
+        expect(deleted).toEqual([
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'},
+          {key: 'key4', value: 'value4', type: 'callback'}
+        ])
+
+        return IndexedDB.default.deleteBulk('globalParams', 'callback')
+      })
+      .then(deleted => {
+        expect(deleted).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'},
+          {key: 'key4', value: 'value4', type: 'callback'}
+        ])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+        expect(result).toEqual([])
       })
 
   })

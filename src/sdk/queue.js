@@ -117,7 +117,7 @@ function run (cleanUpFirst) {
  * @returns {Promise}
  */
 function _cleanUp () {
-  return StorageManager.deleteBulk('queue', Date.now() - Config.requestValidityWindow)
+  return StorageManager.deleteBulk('queue', {upperBound: Date.now() - Config.requestValidityWindow})
 }
 
 export default {

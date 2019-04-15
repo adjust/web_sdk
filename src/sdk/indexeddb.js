@@ -2,7 +2,7 @@ import Config from './config'
 import Scheme from './scheme'
 import ActivityState from './activity-state'
 import QuickStorage from './quick-storage'
-import {isEmpty} from './utilities'
+import {isEmpty, isObject} from './utilities'
 
 const _dbName = Config.namespace
 const _dbVersion = 1
@@ -353,12 +353,15 @@ function deleteItem (storeName, target) {
  * Delete items until certain bound (primary key as a bound scope)
  *
  * @param {string} storeName
- * @param {*} upperBound
+ * @param {string|Object} condition
+ * @param {*=} condition.upperBound
  * @returns {Promise}
  */
-function deleteBulk (storeName, upperBound) {
+function deleteBulk (storeName, condition) {
 
-  const range = IDBKeyRange.upperBound(upperBound)
+  const range = isObject(condition)
+    ? IDBKeyRange.upperBound(condition.upperBound)
+    : IDBKeyRange.only(condition)
 
   return _openCursor({storeName, action: 'delete', range, mode: 'readwrite'})
 }

@@ -10,13 +10,13 @@ function get () {
   return Promise.all([
     StorageManager.filterBy('globalParams', 'callback'),
     StorageManager.filterBy('globalParams', 'partner')
-  ]).then(([callbackParams, partnerParams]) => ({callbackParams, partnerParams}))
+  ]).then(([callbackParams = [], partnerParams = []]) => ({callbackParams, partnerParams}))
 }
 /**
  * Add global parameters, either callback or partner params
  *
  * @param {Array} params
- * @param {string} type
+ * @param {string} [type='callback']
  * @returns {Promise}
  */
 function add (params, type = 'callback') {
@@ -32,15 +32,25 @@ function add (params, type = 'callback') {
  * Remove global parameter by key and type
  *
  * @param {string} key
- * @param {string} type
+ * @param {string} [type='callback']
  * @returns {Promise}
  */
 function remove (key, type = 'callback') {
   return StorageManager.deleteItem('globalParams', [key, type])
 }
 
+/**
+ * Remove all global parameters of certain type
+ * @param {string} [type='callback']
+ * @returns {Promise}
+ */
+function removeAll (type = 'callback') {
+  return StorageManager.deleteBulk('globalParams', type)
+}
+
 export {
   get,
   add,
-  remove
+  remove,
+  removeAll
 }
