@@ -137,4 +137,20 @@ describe('test for utility methods', () => {
       expect(obj3).toEqual({test: 'bla', name: 'something', year: 2019})
     })
   })
+
+  describe('test for convertToMap', () => {
+    it('converts the array into key/value pairs', () => {
+      expect(Utilities.convertToMap([
+        {key: 'some-key-1', value: 'some-value-1'},
+        {key: 'some-key-2', value: 'some-value-2'},
+        {key: 'some-key-1', value: 'last-value-1'},
+        {key: 'some-key-2', value: 'some-value-2'},
+        {key: 'some-key-3', value: 'some-value-3'}
+      ])).toEqual({
+        'some-key-1': 'last-value-1',
+        'some-key-2': 'some-value-2',
+        'some-key-3': 'some-value-3'
+      })
+    })
+  })
 })

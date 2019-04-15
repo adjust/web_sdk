@@ -1,8 +1,9 @@
 import Config from './config'
 import Queue from './queue'
-import {on, off, getVisibilityApiAccess, extend} from './utilities'
+import {on, off, getVisibilityApiAccess, extend, convertToMap} from './utilities'
 import {getTimestamp, timePassed} from './time'
 import {updateActivityState} from './identity'
+import {get} from './global-params'
 import ActivityState from './activity-state'
 
 /**
@@ -127,18 +128,44 @@ function _stopTimer () {
 }
 
 /**
+ * Prepare parameters for the session tracking
+ *
+ * @param {Array=} [globalCallbackParams=[]]
+ * @param {Array} [globalPartnerParams=[]]
+ * @returns {Object}
+ * @private
+ */
+function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
+
+  const baseParams = extend({
+    created_at: getTimestamp()
+  }, Config.baseParams)
+
+  if (globalCallbackParams.length) {
+    baseParams.callback_params = convertToMap(globalCallbackParams)
+  }
+
+  if (globalPartnerParams.length) {
+    baseParams.partner_params = convertToMap(globalPartnerParams)
+  }
+
+  return baseParams
+}
+
+/**
  * Track session by sending the request to the server
  *
  * @private
  */
 function _trackSession () {
-  Queue.push({
-    url: '/session',
-    method: 'POST',
-    params: extend({
-      created_at: getTimestamp()
-    }, Config.baseParams)
-  })
+  return get()
+    .then(({callbackParams, partnerParams}) => {
+      Queue.push({
+        url: '/session',
+        method: 'POST',
+        params: _prepareParams(callbackParams, partnerParams)
+      })
+    })
 }
 
 /**

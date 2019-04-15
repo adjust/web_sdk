@@ -1,10 +1,11 @@
 /* eslint-disable */
 import * as Config from '../config'
-import * as Event from '../event'
+import * as event from '../event'
 import * as Queue from '../queue'
 import * as Time from '../time'
 import * as Utilities from '../utilities'
 import * as StorageManager from '../storage-manager'
+import * as GlobalParams from '../global-params'
 
 const appConfig = {
   app_token: '123abc',
@@ -40,12 +41,12 @@ describe('event tracking functionality', () => {
   it('throws an error event token is not provided', () => {
 
     expect(() => {
-      Event.track({})
+      event.default({})
     }).toThrow(new Error('You must provide event token in order to track event'))
 
   })
 
-  it('resolves trackEvent request successfully without revenue and some map params', () => {
+  it('resolves event request successfully without revenue and some map params', () => {
 
     const requestConfig = {
       url: '/event',
@@ -60,7 +61,7 @@ describe('event tracking functionality', () => {
 
     expect.assertions(1)
 
-    return Event.track({
+    return event.default({
       event_token: '123abc',
       callback_params: [{key: 'some-key', value: 'some-value'}],
       revenue: 0
@@ -70,7 +71,7 @@ describe('event tracking functionality', () => {
 
   })
 
-  it('resolves trackEvent request successfully with revenue but no currency', () => {
+  it('resolves event request successfully with revenue but no currency', () => {
 
     const requestConfig = {
       url: '/event',
@@ -85,7 +86,7 @@ describe('event tracking functionality', () => {
 
     expect.assertions(1)
 
-    return Event.track({
+    return event.default({
       event_token: '123abc',
       revenue: 1000
     }).then(() => {
@@ -95,7 +96,7 @@ describe('event tracking functionality', () => {
 
   })
 
-  it('resolves trackEvent request successfully with revenue and some map params', () => {
+  it('resolves event request successfully with revenue and some map params', () => {
 
     const requestConfig = {
       url: '/event',
@@ -112,7 +113,7 @@ describe('event tracking functionality', () => {
 
     expect.assertions(1)
 
-    return Event.track({
+    return event.default({
       event_token: '123abc',
       callback_params: [
         {key: 'some-key', value: 'some-value'}
@@ -139,8 +140,8 @@ describe('event tracking functionality', () => {
 
     expect.assertions(1)
 
-    return Event.addParams(callbackParams, 'callback')
-      .then(() => Event.track({
+    return GlobalParams.add(callbackParams, 'callback')
+      .then(() => event.default({
         event_token: 'bla',
         revenue: 34.67,
         currency: 'EUR'
@@ -170,8 +171,8 @@ describe('event tracking functionality', () => {
 
     expect.assertions(1)
 
-    return Event.addParams(callbackParams, 'callback')
-      .then(() => Event.track({
+    return GlobalParams.add(callbackParams, 'callback')
+      .then(() => event.default({
         event_token: 'bla',
         callback_params: [
           {key: 'key1', value: 'new value1'},
@@ -205,11 +206,13 @@ describe('event tracking functionality', () => {
       {key: 'bla', value: 'truc'}
     ]
 
+    expect.assertions(1)
+
     return Promise.all([
-      Event.addParams(callbackParams, 'callback'),
-      Event.addParams(partnerParams, 'partner')
+      GlobalParams.add(callbackParams, 'callback'),
+      GlobalParams.add(partnerParams, 'partner')
     ])
-      .then(() => Event.track({
+      .then(() => event.default({
         event_token: 'bla',
         callback_params: [
           {key: 'key2', value: 'new value2'}
@@ -230,78 +233,6 @@ describe('event tracking functionality', () => {
             partner_params: {some: 'thing', very: 'bad', bla: 'truc', trt: 'prc'}
           })
         })
-      })
-  })
-
-  it('stores callback event params and clean duplicates', () => {
-
-    return Event.addParams([
-      {key: 'key1', value: 'value1'},
-      {key: 'key2', value: 'value2'},
-      {key: 'key1', value: 'last value1'}
-    ]).then(() => StorageManager.default.getAll('globalParams'))
-      .then((result) => {
-
-        expect(result).toEqual([
-          {key: 'key1', value: 'last value1', type: 'callback'},
-          {key: 'key2', value: 'value2', type: 'callback'}
-        ])
-
-      })
-  })
-
-  it('stores partner event params and override repeating keys if adding them at later point', () => {
-
-    return Event.addParams([
-      {key: 'key1', value: 'value1'},
-      {key: 'key2', value: 'value2'},
-      {key: 'key3', value: 'value3'}
-    ], 'partner')
-      .then(() => Event.addParams([
-      {key: 'key1', value: 'new value1'},
-      {key: 'key3', value: 'new value3'}
-    ], 'partner'))
-      .then(() => StorageManager.default.getAll('globalParams'))
-      .then((result) => {
-        expect(result).toEqual([
-          {key: 'key1', value: 'new value1', type: 'partner'},
-          {key: 'key2', value: 'value2', type: 'partner'},
-          {key: 'key3', value: 'new value3', type: 'partner'}
-        ])
-      })
-  })
-
-  it('stores both callback and partner event params and override repeating keys if adding them at later point', () => {
-
-    return Event.addParams([
-      {key: 'key1', value: 'value1'},
-      {key: 'key2', value: 'value2'},
-      {key: 'key3', value: 'value3'},
-      {key: 'key1', value: 'last value1'}
-    ], 'callback')
-      .then(() => Event.addParams([
-      {key: 'key1', value: 'value1'},
-      {key: 'key3', value: 'value3'},
-    ], 'partner'))
-      .then(() => Event.addParams([
-        {key: 'key2', value: 'new value2'},
-        {key: 'key4', value: 'value4'},
-      ], 'callback'))
-      .then(() => Event.addParams([
-        {key: 'key2', value: 'value2'},
-        {key: 'key3', value: 'new value3'},
-      ], 'partner'))
-      .then(() => StorageManager.default.getAll('globalParams'))
-      .then((result) => {
-        expect(result).toEqual([
-          {key: 'key1', value: 'last value1', type: 'callback'},
-          {key: 'key2', value: 'new value2', type: 'callback'},
-          {key: 'key3', value: 'value3', type: 'callback'},
-          {key: 'key4', value: 'value4', type: 'callback'},
-          {key: 'key1', value: 'value1', type: 'partner'},
-          {key: 'key2', value: 'value2', type: 'partner'},
-          {key: 'key3', value: 'new value3', type: 'partner'}
-        ])
       })
   })
 

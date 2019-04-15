@@ -5,7 +5,8 @@ import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
 import {startActivityState, destroy as identityDestroy} from './identity'
-import {addParams, track} from './event'
+import {add} from './global-params'
+import event from './event'
 
 /**
  * Definition of mandatory fields
@@ -51,7 +52,7 @@ function trackEvent (params = {}) {
     throw new Error('You must init your instance')
   }
 
-  track(params)
+  event(params)
 }
 
 /**
@@ -61,7 +62,7 @@ function trackEvent (params = {}) {
  * @returns {Promise}
  */
 function addGlobalCallbackParameters (params) {
-  return addParams(params, 'callback')
+  return add(params, 'callback')
 }
 
 /**
@@ -71,7 +72,7 @@ function addGlobalCallbackParameters (params) {
  * @returns {Promise}
  */
 function addGlobalPartnerParameters (params) {
-  return addParams(params, 'partner')
+  return add(params, 'partner')
 }
 
 /**

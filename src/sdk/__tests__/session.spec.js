@@ -8,6 +8,7 @@ import * as Queue from '../queue'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import {flushPromises} from './_helper'
+import * as GlobalParams from '../global-params'
 
 jest.useFakeTimers()
 
@@ -241,6 +242,61 @@ describe('test session functionality', () => {
         .then(() => {
           expect(ActivityState.default.current.lastActive).toBeDefined()
         })
+
+    })
+
+    it('send install on initial run and append global params', () => {
+
+      _reset()
+
+      const callbackParams = [
+        {key: 'key1', value: 'value1'},
+        {key: 'key2', value: 'value2'}
+      ]
+      const partnerParams = [
+        {key: 'some', value: 'thing'},
+        {key: 'very', value: 'nice'}
+      ]
+
+      expect.assertions(4)
+
+      return Promise.all([
+        GlobalParams.add(callbackParams, 'callback'),
+        GlobalParams.add(partnerParams, 'partner')
+      ])
+      .then(() => {
+
+        Identity.startActivityState()
+
+        Session.watchSession()
+
+        expect(Utilities.on).toHaveBeenCalled()
+        expect(ActivityState.default.current).toBeNull()
+
+        return flushPromises()
+      })
+      .then(() => {
+
+        expect(Queue.default.push).toHaveBeenCalledWith({
+          url: '/session',
+          method: 'POST',
+          params: {
+            created_at: now,
+            app_token: '123abc',
+            environment: 'sandbox',
+            os_name: 'ios',
+            callback_params: {key1: 'value1', key2: 'value2'},
+            partner_params: {some: 'thing', very: 'nice'}
+          }
+        })
+
+        jest.runOnlyPendingTimers()
+
+        return flushPromises()
+      })
+      .then(() => {
+        expect(ActivityState.default.current.lastActive).toBeDefined()
+      })
 
     })
 

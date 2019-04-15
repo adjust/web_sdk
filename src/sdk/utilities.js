@@ -149,6 +149,15 @@ function extend (...args) {
   return Object.assign(...args)
 }
 
+/**
+ * Convert array with key/value item structure into key/value pairs object
+ *
+ * @param {Array} array
+ */
+function convertToMap (array = []) {
+  return array.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
+}
+
 export {
   buildList,
   isEmpty,
@@ -158,5 +167,6 @@ export {
   on,
   off,
   findIndex,
-  extend
+  extend,
+  convertToMap
 }

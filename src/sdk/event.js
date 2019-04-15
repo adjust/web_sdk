@@ -1,18 +1,8 @@
-import {extend, isEmpty} from './utilities'
-import StorageManager from './storage-manager'
+import {extend, isEmpty, convertToMap} from './utilities'
 import Config from './config'
-import {getTimestamp} from './time'
 import Queue from './queue'
-
-/**
- * Convert array with key/value item structure into key/value pairs object
- *
- * @param {Array} array
- * @private
- */
-function _convertToMap (array = []) {
-  return array.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
-}
+import {getTimestamp} from './time'
+import {get} from './global-params'
 
 /**
  * Get revenue value if positive and limit to 5 decimal places
@@ -50,7 +40,7 @@ function _getRevenue (revenue, currency) {
  * @returns {Object}
  * @private
  */
-function _getParams (params, globalCallbackParams = [], globalPartnerParams = []) {
+function _prepareParams (params, globalCallbackParams = [], globalPartnerParams = []) {
 
   const baseParams = extend({
     created_at: getTimestamp()
@@ -59,12 +49,12 @@ function _getParams (params, globalCallbackParams = [], globalPartnerParams = []
   }, _getRevenue(params.revenue, params.currency))
 
   const callbackParams = extend(
-    _convertToMap(globalCallbackParams),
-    _convertToMap(params.callback_params)
+    convertToMap(globalCallbackParams),
+    convertToMap(params.callback_params)
   )
   const partnerParams = extend(
-    _convertToMap(globalPartnerParams),
-    _convertToMap(params.partner_params)
+    convertToMap(globalPartnerParams),
+    convertToMap(params.partner_params)
   )
 
   return extend(baseParams, {
@@ -74,45 +64,23 @@ function _getParams (params, globalCallbackParams = [], globalPartnerParams = []
 }
 
 /**
- * Add global parameters, either callback or partner params
- *
- * @param {Array} params
- * @param {string} type
- * @returns {Promise}
- */
-function addParams (params, type = 'callback') {
-  const map = _convertToMap(params)
-  const prepared = Object
-    .keys(map)
-    .map(key => ({key, value: map[key], type}))
-
-  return StorageManager.addBulk('globalParams', prepared, true)
-}
-
-/**
- * Track event
+ * Track event by sending the request to the server
  *
  * @param {Object} params
  */
-function track (params = {}) {
+export default function event (params = {}) {
 
   if (isEmpty(params) || !params.event_token) {
     throw new Error('You must provide event token in order to track event')
   }
 
-  return Promise.all([
-    StorageManager.filterBy('globalParams', 'callback'),
-    StorageManager.filterBy('globalParams', 'partner')
-  ]).then(([callbackParams, partnerParams]) => {
-    Queue.push({
-      url: '/event',
-      method: 'POST',
-      params: _getParams(params, callbackParams, partnerParams)
+  return get()
+    .then(({callbackParams, partnerParams}) => {
+      Queue.push({
+        url: '/event',
+        method: 'POST',
+        params: _prepareParams(params, callbackParams, partnerParams)
+      })
     })
-  })
 }
 
-export {
-  addParams,
-  track
-}

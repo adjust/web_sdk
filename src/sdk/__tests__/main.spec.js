@@ -3,9 +3,10 @@ import * as PubSub from '../pub-sub'
 import * as Queue from '../queue'
 import * as Time from '../time'
 import * as Session from '../session'
-import * as Event from '../event'
+import * as event from '../event'
 import * as Config from '../config'
 import * as Identity from '../identity'
+import * as GlobalParams from '../global-params'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 
@@ -58,8 +59,8 @@ describe('test initiated instance', () => {
     jest.spyOn(Queue.default, 'run').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Session, 'watchSession').mockImplementation(() => {})
-    jest.spyOn(Event, 'track').mockImplementation(() => {})
-    jest.spyOn(Event, 'addParams').mockImplementation(() => {})
+    jest.spyOn(event, 'default').mockImplementation(() => {})
+    jest.spyOn(GlobalParams, 'add').mockImplementation(() => {})
     jest.spyOn(Identity, 'startActivityState')
 
     mainInstance.init({
@@ -123,7 +124,7 @@ describe('test initiated instance', () => {
 
     mainInstance.trackEvent({event_token: 'blabla'})
 
-    expect(Event.track).toHaveBeenCalledWith({event_token: 'blabla'})
+    expect(event.default).toHaveBeenCalledWith({event_token: 'blabla'})
 
   })
 
@@ -136,7 +137,7 @@ describe('test initiated instance', () => {
 
     mainInstance.addGlobalCallbackParameters(params)
 
-    expect(Event.addParams).toHaveBeenCalledWith(params, 'callback')
+    expect(GlobalParams.add).toHaveBeenCalledWith(params, 'callback')
 
   })
 
@@ -149,7 +150,7 @@ describe('test initiated instance', () => {
 
     mainInstance.addGlobalPartnerParameters(params)
 
-    expect(Event.addParams).toHaveBeenCalledWith(params, 'partner')
+    expect(GlobalParams.add).toHaveBeenCalledWith(params, 'partner')
 
   })
 })
