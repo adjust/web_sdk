@@ -14,7 +14,7 @@ describe('IndexedDB usage', () => {
   afterEach(() => {
     IndexedDB.default.clear('queue')
     IndexedDB.default.clear('activityState')
-    IndexedDB.default.clear('eventParams')
+    IndexedDB.default.clear('globalParams')
   })
 
   afterAll(() => {
@@ -415,10 +415,10 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(4)
 
-      return IndexedDB.default.addBulk('eventParams', [])
+      return IndexedDB.default.addBulk('globalParams', [])
         .catch(error => {
           expect(error.name).toEqual('NoTargetDefined')
-          expect(error.message).toEqual('No array provided to perform add bulk operation into eventParams store')
+          expect(error.message).toEqual('No array provided to perform add bulk operation into globalParams store')
 
           return IndexedDB.default.addBulk('queue')
         })
@@ -429,31 +429,31 @@ describe('IndexedDB usage', () => {
 
     })
 
-    it('adds rows into eventParams store', () => {
+    it('adds rows into globalParams store', () => {
 
-      const eventParamsSet1 = [
+      const globalParamsSet1 = [
         {key: 'bla', value: 'truc', type: 'callback'},
         {key: 'key1', value: 'value1', type: 'callback'},
         {key: 'eto', value: 'tako', type: 'partner'}
       ]
 
-      const eventParamsSet2 = [
+      const globalParamsSet2 = [
         {key: 'key2', value: 'value2', type: 'callback'},
         {key: 'par', value: 'tner', type: 'partner'}
       ]
 
       expect.assertions(3)
 
-      return IndexedDB.default.addBulk('eventParams', eventParamsSet1)
+      return IndexedDB.default.addBulk('globalParams', globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return IndexedDB.default.addBulk('eventParams', eventParamsSet2)
+          return IndexedDB.default.addBulk('globalParams', globalParamsSet2)
         })
         .then(result => {
           expect(result).toEqual([['key2', 'callback'], ['par', 'partner']])
 
-          return IndexedDB.default.getAll('eventParams')
+          return IndexedDB.default.getAll('globalParams')
         })
         .then(result => {
           expect(result).toEqual([
@@ -466,15 +466,15 @@ describe('IndexedDB usage', () => {
         })
     })
 
-    it('adds rows into eventParams store and overwrite existing key at later point', () => {
+    it('adds rows into globalParams store and overwrite existing key at later point', () => {
 
-      const eventParamsSet1 = [
+      const globalParamsSet1 = [
         {key: 'bla', value: 'truc', type: 'callback'},
         {key: 'key1', value: 'value1', type: 'callback'},
         {key: 'eto', value: 'tako', type: 'partner'}
       ]
 
-      const eventParamsSet2 = [
+      const globalParamsSet2 = [
         {key: 'key1', value: 'new key1 value', type: 'callback'},
         {key: 'par', value: 'tner', type: 'partner'},
         {key: 'bla', value: 'truc', type: 'partner'}
@@ -482,16 +482,16 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(3)
 
-      return IndexedDB.default.addBulk('eventParams', eventParamsSet1)
+      return IndexedDB.default.addBulk('globalParams', globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return IndexedDB.default.addBulk('eventParams', eventParamsSet2, true)
+          return IndexedDB.default.addBulk('globalParams', globalParamsSet2, true)
         })
         .then(result => {
           expect(result).toEqual([['key1', 'callback'], ['par', 'partner'], ['bla', 'partner']])
 
-          return IndexedDB.default.getAll('eventParams')
+          return IndexedDB.default.getAll('globalParams')
         })
         .then(result => {
           expect(result).toEqual([
@@ -504,15 +504,15 @@ describe('IndexedDB usage', () => {
         })
     })
 
-    it('adds rows into eventParams store and throw error when adding existing key', () => {
+    it('adds rows into globalParams store and throw error when adding existing key', () => {
 
-      const eventParamsSet1 = [
+      const globalParamsSet1 = [
         {key: 'bla', value: 'truc', type: 'callback'},
         {key: 'key1', value: 'value1', type: 'callback'},
         {key: 'eto', value: 'tako', type: 'partner'}
       ]
 
-      const eventParamsSet2 = [
+      const globalParamsSet2 = [
         {key: 'key1', value: 'new key1 value', type: 'callback'},
         {key: 'par', value: 'tner', type: 'partner'},
         {key: 'eto', value: 'tako', type: 'partner'}
@@ -520,20 +520,20 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(2)
 
-      return IndexedDB.default.addBulk('eventParams', eventParamsSet1)
+      return IndexedDB.default.addBulk('globalParams', globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return IndexedDB.default.addBulk('eventParams', eventParamsSet2)
+          return IndexedDB.default.addBulk('globalParams', globalParamsSet2)
         })
         .catch(error => {
           expect(error.target._error.name).toEqual('ConstraintError')
         })
     })
 
-    it('returns callback and partner params from the eventParams store', () => {
+    it('returns callback and partner params from the globalParams store', () => {
 
-      const eventParamsSet = [
+      const globalParamsSet = [
         {key: 'key1', value: 'value1', type: 'callback'},
         {key: 'key2', value: 'value2', type: 'partner'},
         {key: 'key3', value: 'value3', type: 'partner'},
@@ -543,10 +543,10 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(2)
 
-      return IndexedDB.default.addBulk('eventParams', eventParamsSet)
+      return IndexedDB.default.addBulk('globalParams', globalParamsSet)
         .then(() => Promise.all([
-          IndexedDB.default.filterBy('eventParams', 'callback'),
-          IndexedDB.default.filterBy('eventParams', 'partner')
+          IndexedDB.default.filterBy('globalParams', 'callback'),
+          IndexedDB.default.filterBy('globalParams', 'partner')
         ]))
         .then(([callbackParams, partnerParams]) => {
           expect(callbackParams).toEqual([

@@ -134,7 +134,7 @@ describe('test initiated instance', () => {
       {key: 'key2', value: 'value2'}
     ]
 
-    mainInstance.addCallbackParameters(params)
+    mainInstance.addGlobalCallbackParameters(params)
 
     expect(Event.addParams).toHaveBeenCalledWith(params, 'callback')
 
@@ -147,7 +147,7 @@ describe('test initiated instance', () => {
       {key: 'key2', value: 'value2'}
     ]
 
-    mainInstance.addPartnerParameters(params)
+    mainInstance.addGlobalPartnerParameters(params)
 
     expect(Event.addParams).toHaveBeenCalledWith(params, 'partner')
 

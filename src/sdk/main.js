@@ -60,7 +60,7 @@ function trackEvent (params = {}) {
  * @param {Array} params
  * @returns {Promise}
  */
-function addCallbackParameters (params) {
+function addGlobalCallbackParameters (params) {
   return addParams(params, 'callback')
 }
 
@@ -70,7 +70,7 @@ function addCallbackParameters (params) {
  * @param {Array} params
  * @returns {Promise}
  */
-function addPartnerParameters (params) {
+function addGlobalPartnerParameters (params) {
   return addParams(params, 'partner')
 }
 
@@ -158,8 +158,8 @@ function _clear () {
 const Adjust = {
   init,
   trackEvent,
-  addCallbackParameters,
-  addPartnerParameters,
+  addGlobalCallbackParameters,
+  addGlobalPartnerParameters,
   destroy
 }
 

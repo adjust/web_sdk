@@ -10,7 +10,7 @@ describe('test low-level localStorage manipulation', () => {
   const activityStateSet = [
     {uuid: 1, lastActive: 12345, attribution: {adid: 'blabla', tracker_token: '123abc'}}
   ]
-  const eventParamsSet = [
+  const globalParamsSet = [
     {key: 'a-key', value: 'a-value', type: 'callback'},
     {key: 'eto', value: 'tako', type: 'callback'},
     {key: 'key1', value: 'value1', type: 'partner'}
@@ -37,7 +37,7 @@ describe('test low-level localStorage manipulation', () => {
 
     const queueProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'queue')
     const activityStateProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'activityState')
-    const eventParamsProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'eventParams')
+    const globalParamsProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'globalParams')
 
     expect(queueProp.get).toBeDefined()
     expect(queueProp.set).toBeDefined()
@@ -45,8 +45,8 @@ describe('test low-level localStorage manipulation', () => {
     expect(activityStateProp.get).toBeDefined()
     expect(activityStateProp.set).toBeDefined()
 
-    expect(eventParamsProp.get).toBeDefined()
-    expect(eventParamsProp.set).toBeDefined()
+    expect(globalParamsProp.get).toBeDefined()
+    expect(globalParamsProp.set).toBeDefined()
 
   })
 
@@ -54,12 +54,12 @@ describe('test low-level localStorage manipulation', () => {
 
     expect(QuickStorage.default.queue).toBeNull()
     expect(QuickStorage.default.activityState).toBeNull()
-    expect(QuickStorage.default.eventParams).toBeNull()
+    expect(QuickStorage.default.globalParams).toBeNull()
 
     expect(localStorage.getItem).toHaveBeenCalledTimes(3)
     expect(localStorage.getItem.mock.calls[0][0]).toEqual('adjust-sdk.queue')
     expect(localStorage.getItem.mock.calls[1][0]).toEqual('adjust-sdk.activityState')
-    expect(localStorage.getItem.mock.calls[2][0]).toEqual('adjust-sdk.eventParams')
+    expect(localStorage.getItem.mock.calls[2][0]).toEqual('adjust-sdk.globalParams')
 
   })
 
@@ -67,17 +67,17 @@ describe('test low-level localStorage manipulation', () => {
 
     QuickStorage.default.queue = queueSet
     QuickStorage.default.activityState = activityStateSet
-    QuickStorage.default.eventParams = eventParamsSet
+    QuickStorage.default.globalParams = globalParamsSet
 
     expect(localStorage.setItem).toHaveBeenCalledTimes(3)
 
     expect(QuickStorage.default.queue).toEqual(queueSet)
     expect(QuickStorage.default.activityState).toEqual(activityStateSet)
-    expect(QuickStorage.default.eventParams).toEqual(eventParamsSet)
+    expect(QuickStorage.default.globalParams).toEqual(globalParamsSet)
 
     expect(localStorage.setItem.mock.calls[0][1]).toEqual(JSON.stringify(queueSet))
     expect(localStorage.setItem.mock.calls[1][1]).toEqual(JSON.stringify(activityStateSet))
-    expect(localStorage.setItem.mock.calls[2][1]).toEqual(JSON.stringify(eventParamsSet))
+    expect(localStorage.setItem.mock.calls[2][1]).toEqual(JSON.stringify(globalParamsSet))
 
   })
 
@@ -87,23 +87,23 @@ describe('test low-level localStorage manipulation', () => {
 
     QuickStorage.default.queue = queueSet
     QuickStorage.default.activityState = activityStateSet
-    QuickStorage.default.eventParams = eventParamsSet
+    QuickStorage.default.globalParams = globalParamsSet
 
     expect(localStorage.getItem('should-stay-intact')).toBe('something')
     expect(localStorage.getItem('adjust-sdk.queue')).toEqual(JSON.stringify(queueSet))
     expect(localStorage.getItem('adjust-sdk.activityState')).toEqual(JSON.stringify(activityStateSet))
-    expect(localStorage.getItem('adjust-sdk.eventParams')).toEqual(JSON.stringify(eventParamsSet))
+    expect(localStorage.getItem('adjust-sdk.globalParams')).toEqual(JSON.stringify(globalParamsSet))
 
     QuickStorage.default.clear()
 
     expect(QuickStorage.default.queue).toBeNull()
     expect(QuickStorage.default.activityState).toBeNull()
-    expect(QuickStorage.default.eventParams).toBeNull()
+    expect(QuickStorage.default.globalParams).toBeNull()
 
     expect(localStorage.getItem('should-stay-intact')).toBe('something')
     expect(localStorage.getItem('adjust-sdk.queue')).toBeNull()
     expect(localStorage.getItem('adjust-sdk.activityState')).toBeNull()
-    expect(localStorage.getItem('adjust-sdk.eventParams')).toBeNull()
+    expect(localStorage.getItem('adjust-sdk.globalParams')).toBeNull()
 
   })
 

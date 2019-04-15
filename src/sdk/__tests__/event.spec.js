@@ -22,7 +22,7 @@ describe('event tracking functionality', () => {
   })
 
   afterEach(() => {
-    StorageManager.default.clear('eventParams')
+    StorageManager.default.clear('globalParams')
     jest.clearAllMocks()
   })
 
@@ -239,7 +239,7 @@ describe('event tracking functionality', () => {
       {key: 'key1', value: 'value1'},
       {key: 'key2', value: 'value2'},
       {key: 'key1', value: 'last value1'}
-    ]).then(() => StorageManager.default.getAll('eventParams'))
+    ]).then(() => StorageManager.default.getAll('globalParams'))
       .then((result) => {
 
         expect(result).toEqual([
@@ -261,7 +261,7 @@ describe('event tracking functionality', () => {
       {key: 'key1', value: 'new value1'},
       {key: 'key3', value: 'new value3'}
     ], 'partner'))
-      .then(() => StorageManager.default.getAll('eventParams'))
+      .then(() => StorageManager.default.getAll('globalParams'))
       .then((result) => {
         expect(result).toEqual([
           {key: 'key1', value: 'new value1', type: 'partner'},
@@ -291,7 +291,7 @@ describe('event tracking functionality', () => {
         {key: 'key2', value: 'value2'},
         {key: 'key3', value: 'new value3'},
       ], 'partner'))
-      .then(() => StorageManager.default.getAll('eventParams'))
+      .then(() => StorageManager.default.getAll('globalParams'))
       .then((result) => {
         expect(result).toEqual([
           {key: 'key1', value: 'last value1', type: 'callback'},

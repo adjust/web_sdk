@@ -37,12 +37,12 @@ const attributionCallback = (e, attribution) => {
 // INIT: Initiate adjust sdk with specified configuration
 adjustSDK.init(appConfig, attributionCallback)
 
-adjustSDK.addCallbackParameters([
+adjustSDK.addGlobalCallbackParameters([
   {key: 'key1', value: 'last-value1'},
   {key: 'key2', value: 'value2'}
 ])
 
-adjustSDK.addPartnerParameters([
+adjustSDK.addGlobalPartnerParameters([
   {key: 'key-1', value: 'value-1'},
   {key: 'key-2', value: 'value-2'},
   {key: 'key-3', value: 'value-3'}

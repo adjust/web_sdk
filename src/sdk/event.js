@@ -74,7 +74,7 @@ function _getParams (params, globalCallbackParams = [], globalPartnerParams = []
 }
 
 /**
- * Add event parameters, either callback or partner params
+ * Add global parameters, either callback or partner params
  *
  * @param {Array} params
  * @param {string} type
@@ -86,7 +86,7 @@ function addParams (params, type = 'callback') {
     .keys(map)
     .map(key => ({key, value: map[key], type}))
 
-  return StorageManager.addBulk('eventParams', prepared, true)
+  return StorageManager.addBulk('globalParams', prepared, true)
 }
 
 /**
@@ -101,8 +101,8 @@ function track (params = {}) {
   }
 
   return Promise.all([
-    StorageManager.filterBy('eventParams', 'callback'),
-    StorageManager.filterBy('eventParams', 'partner')
+    StorageManager.filterBy('globalParams', 'callback'),
+    StorageManager.filterBy('globalParams', 'partner')
   ]).then(([callbackParams, partnerParams]) => {
     Queue.push({
       url: '/event',

@@ -11,7 +11,7 @@ export default {
       autoIncrement: false
     }
   },
-  eventParams: {
+  globalParams: {
     index: 'type',
     options: {
       keyPath: ['key', 'type'],
