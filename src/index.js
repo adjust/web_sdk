@@ -32,6 +32,9 @@ const revenueEventConfig = {
 
 const attributionCallback = (e, attribution) => {
   app.logAttribution(attribution)
+
+  adjustSDK.removeGlobalCallbackParameter('key1')
+  adjustSDK.removePartnerCallbackParameter('key-1')
 }
 
 // INIT: Initiate adjust sdk with specified configuration

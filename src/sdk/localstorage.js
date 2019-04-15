@@ -54,20 +54,33 @@ function _open () {
  * Initiate quasi-database request
  *
  * @param {string} storeName
+ * @param {*=} id
+ * @param {Object=} item
  * @param {Function} action
  * @returns {Promise}
  * @private
  */
-function _initRequest (storeName, action) {
+function _initRequest ({storeName, id, item}, action) {
 
   _open()
 
   return new Promise((resolve, reject) => {
 
     const items = QuickStorage[storeName]
-    const key = Scheme[storeName].options.keyPath
+    const keyPath = Scheme[storeName].options.keyPath
+    const keys = keyPath instanceof Array ? keyPath.slice() : [keyPath]
 
-    return action(resolve, reject, key, items)
+    if (id) {
+      const ids = id instanceof Array ? id.slice() : [id]
+      item = keys.reduce((acc, key, index) => {
+        acc[key] = ids[index]
+        return acc
+      }, {})
+    }
+
+    const index = item ? findIndex(items, keys, item) : null
+
+    return action(resolve, reject, {keys, items, item, index})
   })
 }
 
@@ -134,6 +147,20 @@ function getFirst (storeName) {
 }
 
 /**
+ * Print key value pairs to be used in error trace message
+ *
+ * @param {Array} keys
+ * @param {Object} item
+ * @returns {string}
+ * @private
+ */
+function _keyValuePairs (keys, item) {
+  return keys.join(':') + ' => ' + keys.map((key) => {
+    return item[key]
+  }).join(':')
+}
+
+/**
  * Get item from a particular store
  *
  * @param {string} storeName
@@ -141,12 +168,9 @@ function getFirst (storeName) {
  * @returns {Promise}
  */
 function getItem (storeName, id) {
-  return _initRequest(storeName, (resolve, reject, key, items) => {
-
-    const index = findIndex(items, key, id)
-
+  return _initRequest({storeName, id}, (resolve, reject, {keys, items, item, index}) => {
     if (index === -1) {
-      reject({name: 'NotFoundError', message: `No record found with ${key} ${id} in ${storeName} store`})
+      reject({name: 'NotFoundError', message: `No record found ${_keyValuePairs(keys, item)} in ${storeName} store`})
     } else {
       resolve(items[index])
     }
@@ -170,6 +194,18 @@ function filterBy (storeName, by) {
 }
 
 /**
+ * Return values for primary keys of particular item
+ *
+ * @param {Array} keys
+ * @param {Object} item
+ * @returns {*}
+ * @private
+ */
+function _return (keys, item) {
+  return keys.length === 1 ? item[keys[0]] : keys.map((key) => item[key])
+}
+
+/**
  * Add item to a particular store
  *
  * @param {string} storeName
@@ -177,16 +213,13 @@ function filterBy (storeName, by) {
  * @returns {Promise}
  */
 function addItem (storeName, item) {
-  return _initRequest(storeName, (resolve, reject, key, items) => {
-
-    const index = findIndex(items, key, item[key])
-
+  return _initRequest({storeName, item}, (resolve, reject, {keys, items, index}) => {
     if (index !== -1) {
-      reject({name: 'ConstraintError', message: `Item with ${key} ${item[key]} already exists`})
+      reject({name: 'ConstraintError', message: `Item ${_keyValuePairs(keys, item)} already exists`})
     } else {
       items.push(item)
       QuickStorage[storeName] = items
-      resolve(item[key])
+      resolve(_return(keys, item))
     }
   })
 }
@@ -200,9 +233,7 @@ function addItem (storeName, item) {
  * @returns {Promise}
  */
 function addBulk (storeName, target, overwrite) {
-  return _initRequest(storeName, (resolve, reject, key, items) => {
-
-    const keys = key instanceof Array ? key : [key]
+  return _initRequest({storeName}, (resolve, reject, {keys, items}) => {
 
     if (!target || target && !target.length) {
       return reject({name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into ${storeName} store`})
@@ -239,10 +270,7 @@ function addBulk (storeName, target, overwrite) {
  * @returns {Promise}
  */
 function updateItem (storeName, item) {
-  return _initRequest(storeName, (resolve, _, key, items) => {
-
-    const index = findIndex(items, key, item[key])
-
+  return _initRequest({storeName, item}, (resolve, _, {keys, items, index}) => {
     if (index === -1) {
       items.push(item)
     } else {
@@ -250,7 +278,7 @@ function updateItem (storeName, item) {
     }
 
     QuickStorage[storeName] = items
-    resolve(item[key])
+    resolve(_return(keys, item))
   })
 }
 
@@ -262,10 +290,7 @@ function updateItem (storeName, item) {
  * @returns {Promise}
  */
 function deleteItem (storeName, id) {
-  return _initRequest(storeName, (resolve, _, key, items) => {
-
-    const index = findIndex(items, key, id)
-
+  return _initRequest({storeName, id}, (resolve, _, {items, index}) => {
     if (index !== -1) {
       items.splice(index, 1)
       QuickStorage[storeName] = items
@@ -311,7 +336,6 @@ function _findMax (array, key, bound) {
  * @returns {Promise}
  */
 function deleteBulk (storeName, upperBound) {
-
   return getAll(storeName)
     .then(items => {
 

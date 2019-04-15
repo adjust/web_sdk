@@ -5,7 +5,7 @@ import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
 import {startActivityState, destroy as identityDestroy} from './identity'
-import {add} from './global-params'
+import {add, remove} from './global-params'
 import event from './event'
 
 /**
@@ -73,6 +73,26 @@ function addGlobalCallbackParameters (params) {
  */
 function addGlobalPartnerParameters (params) {
   return add(params, 'partner')
+}
+
+/**
+ * Remove global callback parameter by key
+ *
+ * @param {string} key
+ * @returns {Promise}
+ */
+function removeGlobalCallbackParameter (key) {
+  return remove(key, 'callback')
+}
+
+/**
+ * Remove global partner parameter by key
+ *
+ * @param {string} key
+ * @returns {Promise}
+ */
+function removePartnerCallbackParameter (key) {
+  return remove(key, 'partner')
 }
 
 /**
@@ -161,6 +181,8 @@ const Adjust = {
   trackEvent,
   addGlobalCallbackParameters,
   addGlobalPartnerParameters,
+  removeGlobalCallbackParameter,
+  removePartnerCallbackParameter,
   destroy
 }
 

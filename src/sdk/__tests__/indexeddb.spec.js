@@ -46,6 +46,7 @@ describe('IndexedDB usage', () => {
 
   it('returns rows from particular store', () => {
 
+    // prepare some rows manually
     const queueSet = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'},
@@ -102,6 +103,7 @@ describe('IndexedDB usage', () => {
 
   it('returns first row from particular store', () => {
 
+    // prepare some rows manually
     const queueSet = [
       {timestamp: 1552701608300, url: '/url1'},
       {timestamp: 1552705208300, url: '/url2'},
@@ -120,6 +122,7 @@ describe('IndexedDB usage', () => {
 
   it('gets item from the activityState store', () => {
 
+    // prepare some rows manually
     const activityStateSet = [
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
@@ -136,7 +139,32 @@ describe('IndexedDB usage', () => {
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
-        expect(error.message).toEqual('No record found with uuid 3 in activityState store')
+        expect(error.message).toEqual('No record found uuid => 3 in activityState store')
+      })
+
+  })
+
+  it('gets item from the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    const globalParamsSet = [
+      {key: 'key1', value: 'cvalue1', type: 'callback'},
+      {key: 'key2', value: 'cvalue2', type: 'callback'},
+      {key: 'key1', value: 'pvalue1', type: 'partner'}
+    ]
+
+    expect.assertions(3)
+
+    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
+      .then(() => IndexedDB.default.getItem('globalParams', ['key1', 'callback']))
+      .then(result => {
+        expect(result).toEqual({key: 'key1', value: 'cvalue1', type: 'callback'})
+
+        return IndexedDB.default.getItem('globalParams', ['key3', 'callback'])
+      })
+      .catch(error => {
+        expect(error.name).toEqual('NotFoundError')
+        expect(error.message).toEqual('No record found key:type => key3:callback in globalParams store')
       })
 
   })
@@ -181,8 +209,65 @@ describe('IndexedDB usage', () => {
 
   })
 
+  it('adds items to the globalParams store - with composite key', () => {
+
+    expect.assertions(7)
+
+    return IndexedDB.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+      .then((id) => {
+
+        expect(id).toEqual(['key1', 'callback'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'}
+        ])
+
+        return IndexedDB.default.addItem('globalParams', {key: 'key2', value: 'value2', type: 'callback'})
+      })
+      .then(id => {
+
+        expect(id).toEqual(['key2', 'callback'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'}
+        ])
+
+        return IndexedDB.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'partner'})
+      })
+      .then(id => {
+
+        expect(id).toEqual(['key1', 'partner'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'}
+        ])
+
+        return IndexedDB.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+      })
+      .catch(error => {
+        expect(error.target._error.name).toBe('ConstraintError')
+      })
+
+  })
+
   it('updates items in the activityState store', () => {
 
+    // prepare some rows manually
     const activityStateSet = [
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
@@ -251,8 +336,71 @@ describe('IndexedDB usage', () => {
 
   })
 
+  it('updates items in the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    const globalParamsSet = [
+      {key: 'key1', value: 'value1', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'callback'},
+      {key: 'key1', value: 'value1', type: 'partner'}
+    ]
+
+    expect.assertions(6)
+
+    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
+      .then(() => IndexedDB.default.updateItem('globalParams', {key: 'key1', value: 'updated value1', type: 'callback'}))
+      .then(update => {
+
+        expect(update).toEqual(['key1', 'callback'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'updated value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'}
+        ])
+
+        return IndexedDB.default.updateItem('globalParams', {key: 'key2', value: 'updated value2', type: 'callback'})
+      })
+      .then(update => {
+
+        expect(update).toEqual(['key2', 'callback'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'updated value1', type: 'callback'},
+          {key: 'key2', value: 'updated value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'}
+        ])
+
+        return IndexedDB.default.updateItem('globalParams', {key: 'key2', value: 'value2', type: 'partner'})
+      })
+      .then(update => {
+
+        expect(update).toEqual(['key2', 'partner'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {key: 'key1', value: 'updated value1', type: 'callback'},
+          {key: 'key2', value: 'updated value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+      })
+
+  })
+
   it('deletes item by item in the queue store', () => {
 
+    // prepare some rows manually
     const queueSet = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'},
@@ -316,8 +464,70 @@ describe('IndexedDB usage', () => {
 
   })
 
+  it('deletes item by item in the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    const globalParamsSet = [
+      {key: 'key1', value: 'value1', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'callback'},
+      {key: 'key1', value: 'value1', type: 'partner'},
+      {key: 'key2', value: 'value2', type: 'partner'}
+    ]
+
+    expect.assertions(6)
+
+    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
+      .then(() => IndexedDB.default.deleteItem('globalParams', ['key2', 'callback']))
+      .then(deleted => {
+
+        expect(deleted).toEqual(['key2', 'callback'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return IndexedDB.default.deleteItem('globalParams', ['key1', 'partner'])
+      })
+      .then(deleted => {
+
+        expect(deleted).toEqual(['key1', 'partner'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return IndexedDB.default.deleteItem('globalParams', ['key5', 'callback'])
+      })
+      .then(deleted => {
+
+        expect(deleted).toEqual(['key5', 'callback'])
+
+        return IndexedDB.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+      })
+
+  })
+
   it ('deletes items until certain bound from the queue store', () => {
 
+    // prepare some rows manually
     const queueSet = [
       {timestamp: 1552701608300, url: '/url1'},
       {timestamp: 1552705208300, url: '/url2'},
@@ -357,6 +567,7 @@ describe('IndexedDB usage', () => {
 
   it('clears items from the queue store', () => {
 
+    // prepare some rows manually
     const queueSet = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'}

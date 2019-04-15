@@ -156,10 +156,12 @@ function _initRequest ({storeName, target, action, mode = 'readonly'}) {
       return new Promise((resolve, reject) => {
         const {store} = _getTranStore({storeName, mode}, reject)
         const request = store[action](target)
+        const keys = store.keyPath instanceof Array ? store.keyPath.slice() : [store.keyPath]
+        const values = target instanceof Array ? target.slice() : [target]
 
         request.onsuccess = () => {
           if (action === 'get' && !request.result) {
-            reject({name: 'NotFoundError', message: `No record found with ${store.keyPath} ${target} in ${storeName} store`})
+            reject({name: 'NotFoundError', message: `No record found ${keys.join(':')} => ${values.join(':')} in ${storeName} store`})
           } else {
             resolve(request.result || target)
           }

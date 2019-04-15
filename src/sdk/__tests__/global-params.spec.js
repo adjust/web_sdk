@@ -93,4 +93,32 @@ describe('global parameters functionality', () => {
         ])
       })
   })
+
+  it('removes specified global parameters', () => {
+
+    expect.assertions(2)
+
+    return GlobalParams.add([
+      {key: 'key1', value: 'value1'},
+      {key: 'key2', value: 'value2'},
+      {key: 'key3', value: 'value3'}
+    ], 'callback')
+      .then(() => GlobalParams.add([
+        {key: 'key1', value: 'value1'},
+        {key: 'key3', value: 'value3'}
+      ], 'partner'))
+      .then(() => GlobalParams.remove('key2', 'callback'))
+      .then(() => GlobalParams.remove('key1', 'partner'))
+      .then(() => GlobalParams.get())
+      .then(({callbackParams, partnerParams}) => {
+        expect(callbackParams).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'}
+        ])
+        expect(partnerParams).toEqual([
+          {key: 'key3', value: 'value3', type: 'partner'}
+        ])
+      })
+
+  })
 })

@@ -61,6 +61,7 @@ describe('test initiated instance', () => {
     jest.spyOn(Session, 'watchSession').mockImplementation(() => {})
     jest.spyOn(event, 'default').mockImplementation(() => {})
     jest.spyOn(GlobalParams, 'add').mockImplementation(() => {})
+    jest.spyOn(GlobalParams, 'remove').mockImplementation(() => {})
     jest.spyOn(Identity, 'startActivityState')
 
     mainInstance.init({
@@ -151,6 +152,22 @@ describe('test initiated instance', () => {
     mainInstance.addGlobalPartnerParameters(params)
 
     expect(GlobalParams.add).toHaveBeenCalledWith(params, 'partner')
+
+  })
+
+  it('removes global callback parameter', () => {
+
+    mainInstance.removeGlobalCallbackParameter('some-key')
+
+    expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'callback')
+
+  })
+
+  it('removes global partner parameter', () => {
+
+    mainInstance.removePartnerCallbackParameter('some-key')
+
+    expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'partner')
 
   })
 })

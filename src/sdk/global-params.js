@@ -28,7 +28,19 @@ function add (params, type = 'callback') {
   return StorageManager.addBulk('globalParams', prepared, true)
 }
 
+/**
+ * Remove global parameter by key and type
+ *
+ * @param {string} key
+ * @param {string} type
+ * @returns {Promise}
+ */
+function remove (key, type = 'callback') {
+  return StorageManager.deleteItem('globalParams', [key, type])
+}
+
 export {
   get,
-  add
+  add,
+  remove
 }

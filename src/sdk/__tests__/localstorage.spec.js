@@ -127,7 +127,31 @@ describe('LocalStorage usage', () => {
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
-        expect(error.message).toEqual('No record found with uuid 3 in activityState store')
+        expect(error.message).toEqual('No record found uuid => 3 in activityState store')
+      })
+
+  })
+
+  it('gets item from the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    QuickStorage.default.globalParams = [
+      {key: 'key1', value: 'cvalue1', type: 'callback'},
+      {key: 'key2', value: 'cvalue2', type: 'callback'},
+      {key: 'key1', value: 'pvalue1', type: 'partner'}
+    ]
+
+    expect.assertions(3)
+
+    return LocalStorage.default.getItem('globalParams', ['key1', 'callback'])
+      .then(result => {
+        expect(result).toEqual({key: 'key1', value: 'cvalue1', type: 'callback'})
+
+        return LocalStorage.default.getItem('globalParams', ['key3', 'callback'])
+      })
+      .catch(error => {
+        expect(error.name).toEqual('NotFoundError')
+        expect(error.message).toEqual('No record found key:type => key3:callback in globalParams store')
       })
 
   })
@@ -184,7 +208,64 @@ describe('LocalStorage usage', () => {
       })
       .catch(error => {
         expect(error.name).toBe('ConstraintError')
-        expect(error.message).toBe('Item with timestamp 2 already exists')
+        expect(error.message).toBe('Item timestamp => 2 already exists')
+      })
+
+  })
+
+  it('adds items to the globalParams store - with composite key', () => {
+
+    expect.assertions(8)
+
+    return LocalStorage.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+      .then((id) => {
+
+        expect(id).toEqual(['key1', 'callback'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'}
+        ])
+
+        return LocalStorage.default.addItem('globalParams', {key: 'key2', value: 'value2', type: 'callback'})
+      })
+      .then(id => {
+
+        expect(id).toEqual(['key2', 'callback'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'}
+        ])
+
+        return LocalStorage.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'partner'})
+      })
+      .then(id => {
+
+        expect(id).toEqual(['key1', 'partner'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'}
+        ])
+
+        return LocalStorage.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+      })
+      .catch(error => {
+        expect(error.name).toBe('ConstraintError')
+        expect(error.message).toBe('Item key:type => key1:callback already exists')
       })
 
   })
@@ -259,6 +340,67 @@ describe('LocalStorage usage', () => {
 
   })
 
+  it('updates items in the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    QuickStorage.default.globalParams = [
+      {key: 'key1', value: 'value1', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'callback'},
+      {key: 'key1', value: 'value1', type: 'partner'}
+    ]
+
+    expect.assertions(6)
+
+    return LocalStorage.default.updateItem('globalParams', {key: 'key1', value: 'updated value1', type: 'callback'})
+      .then(update => {
+
+        expect(update).toEqual(['key1', 'callback'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'updated value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'}
+        ])
+
+        return LocalStorage.default.updateItem('globalParams', {key: 'key2', value: 'updated value2', type: 'callback'})
+      })
+      .then(update => {
+
+        expect(update).toEqual(['key2', 'callback'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'updated value1', type: 'callback'},
+          {key: 'key2', value: 'updated value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'}
+        ])
+
+        return LocalStorage.default.updateItem('globalParams', {key: 'key2', value: 'value2', type: 'partner'})
+      })
+      .then(update => {
+
+        expect(update).toEqual(['key2', 'partner'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {key: 'key1', value: 'updated value1', type: 'callback'},
+          {key: 'key2', value: 'updated value2', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+      })
+
+  })
+
   it('deletes item by item in the queue store', () => {
 
     // prepare some rows manually
@@ -314,6 +456,66 @@ describe('LocalStorage usage', () => {
         expect(result).toEqual([
           {timestamp: 1, url: '/url1'},
           {timestamp: 3, url: '/url3'}
+        ])
+      })
+
+  })
+
+  it('deletes item by item in the globalParams store - with composite key', () => {
+
+    // prepare some rows manually
+    QuickStorage.default.globalParams = [
+      {key: 'key1', value: 'value1', type: 'callback'},
+      {key: 'key2', value: 'value2', type: 'callback'},
+      {key: 'key1', value: 'value1', type: 'partner'},
+      {key: 'key2', value: 'value2', type: 'partner'}
+    ]
+
+    expect.assertions(6)
+
+    return LocalStorage.default.deleteItem('globalParams', ['key2', 'callback'])
+      .then(deleted => {
+
+        expect(deleted).toEqual(['key2', 'callback'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return LocalStorage.default.deleteItem('globalParams', ['key1', 'partner'])
+      })
+      .then(deleted => {
+
+        expect(deleted).toEqual(['key1', 'partner'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'partner'}
+        ])
+
+        return LocalStorage.default.deleteItem('globalParams', ['key5', 'callback'])
+      })
+      .then(deleted => {
+
+        expect(deleted).toEqual(['key5', 'callback'])
+
+        return LocalStorage.default.getAll('globalParams')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'partner'}
         ])
       })
 
