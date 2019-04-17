@@ -28,11 +28,7 @@ describe('event tracking functionality', () => {
   })
 
   afterAll(() => {
-    Object.assign(Config.default.baseParams, {
-      app_token: '',
-      environment: '',
-      os_name: ''
-    })
+    Config.clear()
 
     jest.restoreAllMocks()
     localStorage.clear()

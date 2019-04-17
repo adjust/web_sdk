@@ -32,11 +32,7 @@ describe('test attribution functionality', () => {
   })
 
   afterAll(() => {
-    Object.assign(Config.default.baseParams, {
-      app_token: '',
-      environment: '',
-      os_name: ''
-    })
+    Config.clear()
 
     jest.clearAllTimers()
     jest.restoreAllMocks()

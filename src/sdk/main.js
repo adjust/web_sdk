@@ -24,9 +24,8 @@ const _mandatory = [
  * Initiate the instance with parameters
  *
  * @param {Object} params
- * @param {Function=} cb
  */
-function init (params = {}, cb) {
+function init (params = {}) {
 
   if (_isInitiated()) {
     throw new Error('You already initiated your instance')
@@ -38,7 +37,7 @@ function init (params = {}, cb) {
     throw new Error(missingParamsMessage)
   }
 
-  _start(params, cb)
+  _start(params)
 }
 
 /**
@@ -161,7 +160,7 @@ function _isInitiated () {
 
   const params = Config.baseParams
 
-  return !!(params.app_token && params.environment && params.os_name)
+  return _mandatory.reduce((acc, key) => acc && !!params[key], true)
 }
 
 /**
@@ -172,15 +171,20 @@ function _isInitiated () {
  * - start watching the session
  *
  * @param {Object} params
- * @param {Function=} cb
+ * @param {string} params.app_token
+ * @param {string} params.environment
+ * @param {string} params.os_name
+ * @param {Function=} params.attributionCallback
  * @private
  */
-function _start (params = {}, cb) {
+function _start (params = {}) {
 
-  extend(Config.baseParams, params)
+  _mandatory.forEach(key => {
+    extend(Config.baseParams, {[key]: params[key]})
+  })
 
-  if (typeof cb === 'function') {
-    subscribe('attribution:change', cb)
+  if (typeof params.attributionCallback === 'function') {
+    subscribe('attribution:change', params.attributionCallback)
   }
 
   startActivityState()
@@ -196,11 +200,7 @@ function _start (params = {}, cb) {
  * @private
  */
 function _clear () {
-  extend(Config.baseParams, {
-    app_token: '',
-    environment: '',
-    os_name: ''
-  })
+  Config.clear()
 }
 
 const Adjust = {

@@ -1,10 +1,13 @@
 import Constants from './constants'
+import {extend} from './utilities'
 
-const ClientConfig = {
+const _initial = {
   app_token: '',
   environment: '',
   os_name: ''
 }
+
+const ClientConfig = extend({}, _initial)
 
 const Config = {
   namespace: __ADJUST__NAMESPACE,
@@ -14,7 +17,12 @@ const Config = {
   sessionTimerWindow: 60 * Constants.second,
   requestValidityWindow: 28 * Constants.day,
   ignoreSwitchToBackground: true,
-  baseParams: ClientConfig
+  baseParams: ClientConfig,
+  clear
+}
+
+function clear () {
+  extend(Config.baseParams, _initial)
 }
 
 Object.freeze(Config)

@@ -5,7 +5,8 @@ import app from './app'
 const appConfig = {
   app_token: 'src556ylophc',
   environment: 'production',
-  os_name: 'macos'
+  os_name: 'macos',
+  attributionCallback: attributionCallback
 }
 
 const someEventConfig = {
@@ -30,7 +31,7 @@ const revenueEventConfig = {
   ]
 }
 
-const attributionCallback = (e, attribution) => {
+function attributionCallback (e, attribution) {
   app.logAttribution(attribution)
 
   adjustSDK.removeGlobalCallbackParameter('key1')
@@ -38,7 +39,7 @@ const attributionCallback = (e, attribution) => {
 }
 
 // INIT: Initiate adjust sdk with specified configuration
-adjustSDK.init(appConfig, attributionCallback)
+adjustSDK.init(appConfig)
 
 adjustSDK.addGlobalCallbackParameters([
   {key: 'key1', value: 'last-value1'},

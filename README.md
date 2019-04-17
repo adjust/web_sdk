@@ -45,9 +45,10 @@ With this in mind, initialisation of Adjust JS SDK would look like this inside y
 adjustSDK.init({
   app_token: 'YourAppToken',
   environment: 'production', // or 'sandbox' in case you are testing SDK locally with your web app
-  os_name: 'android'
-}, function (newAttribution) {
-  console.log(newAttribution) // define your attribution callback function
+  os_name: 'android',
+  attributionCallback: function (newAttribution) {
+    console.log(newAttribution) // define your attribution callback function
+  }
 });
 ```
 

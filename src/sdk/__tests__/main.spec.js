@@ -69,8 +69,9 @@ describe('test initiated instance', () => {
     mainInstance.init({
       app_token: 'some-app-token',
       environment: 'production',
-      os_name: 'android'
-    }, external.attributionCb)
+      os_name: 'android',
+      attributionCallback: external.attributionCb
+    })
   })
 
   afterEach(() => {
