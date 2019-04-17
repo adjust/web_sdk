@@ -13,6 +13,7 @@ const Config = {
   sessionWindow: 30 * Constants.minute,
   sessionTimerWindow: 60 * Constants.second,
   requestValidityWindow: 28 * Constants.day,
+  ignoreSwitchToBackground: true,
   baseParams: ClientConfig
 }
 

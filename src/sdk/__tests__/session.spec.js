@@ -490,7 +490,7 @@ describe('test session functionality', () => {
         })
     })
 
-    it('does not check session if session window wasn not reached when back to foreground', () => {
+    it('does not check session if session window was not reached when back to foreground', () => {
 
       dateNowSpy.mockReturnValue(now)
 

@@ -99,7 +99,7 @@ function _handleVisibilityChange () {
   _idTimeout = setTimeout(() => {
     if (document[_adapter.hidden]) {
       _stopTimer()
-      setLastActive(true)
+      setLastActive(Config.ignoreSwitchToBackground)
     } else {
       _checkSession()
     }
