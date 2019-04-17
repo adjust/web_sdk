@@ -37,6 +37,7 @@
     'removePartnerCallbackParameter',
     'removeAllGlobalCallbackParameters',
     'removeAllGlobalPartnerParameters',
+    'setOfflineMode',
     'destroy'
   ],
   function (context, queue, methodName) {

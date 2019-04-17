@@ -114,6 +114,15 @@ function removeAllGlobalPartnerParameters () {
 }
 
 /**
+ * Set offline mode to on or off
+ *
+ * @param {boolean} state
+ */
+function setOfflineMode (state) {
+  Queue.setOfflineMode(state)
+}
+
+/**
  * Destroy the instance
  */
 function destroy () {
@@ -203,6 +212,7 @@ const Adjust = {
   removePartnerCallbackParameter,
   removeAllGlobalCallbackParameters,
   removeAllGlobalPartnerParameters,
+  setOfflineMode,
   destroy
 }
 

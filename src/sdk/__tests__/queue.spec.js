@@ -3,12 +3,51 @@ import * as Queue from '../queue'
 import * as request from '../request'
 import * as StorageManager from '../storage-manager'
 import {flushPromises} from './_helper'
+import * as ActivityState from '../activity-state'
 
 jest.mock('../request')
 jest.useFakeTimers()
 
 const now = 1552914489217
 let dateNowSpy
+
+function checkExecution ({config, times, success = true, wait = 150, flush = true}) {
+
+  const requestAction = success ? 'resolves' : 'rejects'
+  const requestActionResult = success ? {status: 'success'} : {error: 'An error'}
+
+  jest.runOnlyPendingTimers()
+
+  expect(setTimeout).toHaveBeenCalledTimes(times)
+  expect(setTimeout.mock.calls[times - 1][1]).toBe(wait)
+  expect(request.default).toHaveBeenLastCalledWith(config)
+  expect(request.default.mock.results[0].value)[requestAction].toEqual(requestActionResult)
+
+  if (flush) {
+    return flushPromises()
+  }
+}
+
+function push (configs) {
+
+  let start = 1552914489217
+  let promise = flushPromises()
+
+  dateNowSpy.mockReturnValue(configs[0].timestamp || start++)
+  Queue.default.push(configs[0])
+
+  configs.shift()
+
+  configs.forEach(config => {
+
+    promise = promise.then(() => {
+      dateNowSpy.mockReturnValue(config.timestamp || start++)
+      return Queue.default.push(config)
+    })
+
+  })
+  return promise
+}
 
 describe('test request queuing functionality', () => {
 
@@ -48,7 +87,7 @@ describe('test request queuing functionality', () => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledWith('queue', Object.assign({timestamp: now}, config))
 
-        jest.runAllTimers()
+        jest.runOnlyPendingTimers()
 
         expect(setTimeout.mock.calls[0][1]).toBe(150)
         expect(request.default).toHaveBeenCalledWith(config)
@@ -68,21 +107,9 @@ describe('test request queuing functionality', () => {
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
 
-    expect.assertions(12)
+    expect.assertions(15)
 
-    dateNowSpy.mockReturnValue(1552914489217)
-
-    Queue.default.push(config1, true)
-
-    return flushPromises()
-      .then(() => {
-        dateNowSpy.mockReturnValue(1552914489218)
-        return Queue.default.push(config2)
-      })
-      .then(() => {
-        dateNowSpy.mockReturnValue(1552914489219)
-        return Queue.default.push(config3)
-      })
+    return push([config1, config2, config3])
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(3)
@@ -92,41 +119,15 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          Object.assign({timestamp: 1552914489217}, config1),
-          Object.assign({timestamp: 1552914489218}, config2),
-          Object.assign({timestamp: 1552914489219}, config3)
+          {timestamp: 1552914489217, url: '/some-url-1'},
+          {timestamp: 1552914489218, url: '/some-url-2'},
+          {timestamp: 1552914489219, url: '/some-url-3'}
         ])
 
-        jest.advanceTimersByTime(150)
-
-        expect(setTimeout).toHaveBeenCalledTimes(1)
-        expect(setTimeout.mock.calls[0][1]).toBe(150)
-        expect(request.default).toHaveBeenLastCalledWith(config1)
-
-        return flushPromises()
+        return checkExecution({config: config1, times: 1}) // + 4 assertions
       })
-      .then(() => {
-
-        expect(setTimeout).toHaveBeenCalledTimes(2)
-        expect(setTimeout.mock.calls[1][1]).toBe(150)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config2)
-
-        return flushPromises()
-      })
-      .then(() => {
-
-        expect(setTimeout).toHaveBeenCalledTimes(3)
-        expect(setTimeout.mock.calls[2][1]).toBe(150)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config3)
-
-        return flushPromises()
-      })
+      .then(() => checkExecution({config: config2, times: 2})) // + 4 assertions
+      .then(() => checkExecution({config: config3, times: 3})) // + 4 assertions
       .then(() => StorageManager.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
@@ -140,17 +141,9 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
 
-    expect.assertions(31)
+    expect.assertions(32)
 
-    dateNowSpy.mockReturnValue(1552914489217)
-
-    Queue.default.push(config1)
-
-    return flushPromises()
-      .then(() => {
-        dateNowSpy.mockReturnValue(1552914489218)
-        return Queue.default.push(config2)
-      })
+    return push([config1, config2])
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
@@ -160,39 +153,16 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          Object.assign({timestamp: 1552914489217}, config1),
-          Object.assign({timestamp: 1552914489218}, config2),
+          {timestamp: 1552914489217, url: '/some-url-1'},
+          {timestamp: 1552914489218, url: '/some-url-2'}
         ])
 
-        jest.advanceTimersByTime(150)
-
-        expect(setTimeout.mock.calls[0][1]).toBe(150)
-        expect(request.default).toHaveBeenCalledWith(config1)
-        expect(request.default.mock.results[0].value).rejects.toEqual({error: 'An error'})
-
-        return flushPromises()
+        return checkExecution({config: config1, times: 1, success: false}) // + 4 assertions
       })
+      .then(() => checkExecution({config: config1, times: 2, success: false, wait: 100})) // + 4 assertions
       .then(() => {
 
-        expect(setTimeout).toHaveBeenCalledTimes(2)
-        expect(setTimeout.mock.calls[1][1]).toBe(100)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config1)
-        expect(request.default.mock.results[0].value).rejects.toEqual({error: 'An error'})
-
-        return flushPromises()
-      })
-      .then(() => {
-
-        expect(setTimeout).toHaveBeenCalledTimes(3)
-        expect(setTimeout.mock.calls[2][1]).toBe(200)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config1)
-        expect(request.default.mock.results[0].value).rejects.toEqual({error: 'An error'})
+        checkExecution({config: config1, times: 3, success: false, wait: 200, flush: false}) // + 4 assertions
 
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
@@ -201,41 +171,18 @@ describe('test request queuing functionality', () => {
       })
       .then(() => {
 
-        expect(setTimeout).toHaveBeenCalledTimes(4)
-        expect(setTimeout.mock.calls[3][1]).toBe(300)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config1)
-        expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
+        checkExecution({config: config1, times: 4, wait: 300, flush: false}) // + 4 assertions
 
         setTimeout.mockClear()
         request.default.mockClear()
-        request.default.mockRejectedValue({error: 'Another error'})
+        request.default.mockRejectedValue({error: 'An error'})
 
         return flushPromises()
       })
+      .then(() => checkExecution({config: config2, times: 1, success: false})) // + 4 assertions
       .then(() => {
 
-        expect(setTimeout).toHaveBeenCalledTimes(1)
-        expect(setTimeout.mock.calls[0][1]).toBe(150)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenCalledWith(config2)
-        expect(request.default.mock.results[0].value).rejects.toEqual({error: 'Another error'})
-
-        return flushPromises()
-      })
-      .then(() => {
-
-        expect(setTimeout).toHaveBeenCalledTimes(2)
-        expect(setTimeout.mock.calls[1][1]).toBe(100)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config2)
-        expect(request.default.mock.results[0].value).rejects.toEqual({error: 'Another error'})
+        checkExecution({config: config2, times: 2, success: false, wait: 100, flush: false}) // + 4 assertions
 
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
@@ -244,14 +191,9 @@ describe('test request queuing functionality', () => {
       })
       .then(() => {
 
-        expect(setTimeout).toHaveBeenCalledTimes(3)
-        expect(setTimeout.mock.calls[2][1]).toBe(200)
-
-        jest.runOnlyPendingTimers()
+        checkExecution({config: config2, times: 3, wait: 200, flush: false}) // + 4 assertions
 
         setTimeout.mockClear()
-        expect(request.default).toHaveBeenLastCalledWith(config2)
-        expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
         return flushPromises()
       })
@@ -273,19 +215,9 @@ describe('test request queuing functionality', () => {
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
 
-    dateNowSpy.mockReturnValue(1552914489217)
+    expect.assertions(24)
 
-    Queue.default.push(config1)
-
-    return flushPromises()
-      .then(() => {
-        dateNowSpy.mockReturnValue(1552914489218)
-        return Queue.default.push(config2)
-      })
-      .then(() => {
-        dateNowSpy.mockReturnValue(1552914489219)
-        return Queue.default.push(config3)
-      })
+    return push([config1, config2, config3])
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(3)
@@ -295,28 +227,16 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          Object.assign({timestamp: 1552914489217}, config1),
-          Object.assign({timestamp: 1552914489218}, config2),
-          Object.assign({timestamp: 1552914489219}, config3)
+          {timestamp: 1552914489217, url: '/some-url-1'},
+          {timestamp: 1552914489218, url: '/some-url-2'},
+          {timestamp: 1552914489219, url: '/some-url-3'}
         ])
 
-        jest.advanceTimersByTime(150)
-
-        expect(setTimeout.mock.calls[0][1]).toBe(150)
-        expect(request.default).toHaveBeenCalledWith(config1)
-        expect(request.default.mock.results[0].value).rejects.toEqual({error: 'An error'})
-
-        return flushPromises()
+        return checkExecution({config: config1, times: 1, success: false}) // + 4 assertions
       })
       .then(() => {
 
-        expect(setTimeout).toHaveBeenCalledTimes(2)
-        expect(setTimeout.mock.calls[1][1]).toBe(100)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config1)
-        expect(request.default.mock.results[0].value).rejects.toEqual({error: 'An error'})
+        checkExecution({config: config1, times: 2, success: false, wait: 100, flush: false}) // + 4 assertions
 
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
@@ -325,43 +245,153 @@ describe('test request queuing functionality', () => {
       })
       .then(() => {
 
-        expect(setTimeout).toHaveBeenCalledTimes(3)
-        expect(setTimeout.mock.calls[2][1]).toBe(200)
-
-        jest.runOnlyPendingTimers()
+        checkExecution({config: config1, times: 3, wait: 200, flush: false}) // + 4 assertions
 
         setTimeout.mockClear()
-        expect(request.default).toHaveBeenLastCalledWith(config1)
-        expect(request.default.mock.results[0].value).resolves.toEqual({status: 'success'})
 
         return flushPromises()
       })
+      .then(() => checkExecution({config: config2, times: 1})) // + 4 assertions
       .then(() => {
 
-        expect(setTimeout).toHaveBeenCalledTimes(1)
-        expect(setTimeout.mock.calls[0][1]).toBe(150)
-
-        jest.runOnlyPendingTimers()
-
-        expect(request.default).toHaveBeenLastCalledWith(config2)
-
-        return flushPromises()
-      })
-      .then(() => {
-
-        expect(setTimeout).toHaveBeenCalledTimes(2)
-        expect(setTimeout.mock.calls[1][1]).toBe(150)
-
-        jest.runOnlyPendingTimers()
+        checkExecution({config: config3, times: 2, wait: 150, flush: false}) // + 4 assertions
 
         setTimeout.mockClear()
-        expect(request.default).toHaveBeenLastCalledWith(config3)
 
         return flushPromises()
       })
       .then(() => {
         expect(setTimeout).not.toHaveBeenCalled()
       })
+      .then(() => StorageManager.default.getFirst('queue'))
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+
+  })
+
+  it('does not execute the queue in offline mode and then run the queue when set back to online mode', () => {
+
+    Queue.default.setOfflineMode(true)
+
+    const config1 = {url: '/some-url-1'}
+    const config2 = {url: '/some-url-2'}
+
+    expect.assertions(13)
+
+    return push([config1, config2])
+      .then(() => {
+
+        jest.runOnlyPendingTimers()
+
+        expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
+        expect(setTimeout).not.toHaveBeenCalled()
+        expect(request.default).not.toHaveBeenCalled()
+
+        return StorageManager.default.getAll('queue')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {timestamp: 1552914489217, url: '/some-url-1'},
+          {timestamp: 1552914489218, url: '/some-url-2'}
+        ])
+
+        Queue.default.setOfflineMode(false)
+
+        return flushPromises()
+      })
+      .then(() => checkExecution({config: config1, times: 1})) // + 4 assertions
+      .then(() => checkExecution({config: config2, times: 2})) // + 4 assertions
+      .then(() => StorageManager.default.getFirst('queue'))
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+
+  })
+
+  it('does execute first session in offline mode and ignores everything else', () => {
+
+    Queue.default.setOfflineMode(true)
+
+    ActivityState.default.current = null
+
+    const config1 = {url: '/session'}
+    const config2 = {url: '/event'}
+
+    expect.assertions(13)
+
+    return push([config1, config2])
+      .then(() => {
+
+        expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
+
+        checkExecution({config: config1, times: 1, flush: false}) // + 4 assertions
+
+        setTimeout.mockClear()
+        request.default.mockClear()
+
+        return flushPromises()
+      })
+      .then(() => {
+
+        jest.runOnlyPendingTimers()
+
+        expect(setTimeout).not.toHaveBeenCalled()
+        expect(request.default).not.toHaveBeenCalled()
+
+        return StorageManager.default.getAll('queue')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {timestamp: 1552914489218, url: '/event'}
+        ])
+
+        Queue.default.setOfflineMode(false)
+
+        return flushPromises()
+      })
+      .then(() => checkExecution({config: config2, times: 1})) // + 4 assertions
+      .then(() => StorageManager.default.getFirst('queue'))
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+
+  })
+
+  it('does not execute session when not first one in offline mode and ignores everything else as well', () => {
+
+    Queue.default.setOfflineMode(true)
+
+    ActivityState.default.current = {attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
+
+    const config1 = {url: '/session'}
+    const config2 = {url: '/event'}
+
+    expect.assertions(13)
+
+    return push([config1, config2])
+      .then(() => {
+
+        jest.runOnlyPendingTimers()
+
+        expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
+        expect(setTimeout).not.toHaveBeenCalled()
+        expect(request.default).not.toHaveBeenCalled()
+
+        return StorageManager.default.getAll('queue')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {timestamp: 1552914489217, url: '/session'},
+          {timestamp: 1552914489218, url: '/event'}
+        ])
+
+        Queue.default.setOfflineMode(false)
+
+        return flushPromises()
+      })
+      .then(() => checkExecution({config: config1, times: 1})) // + 4 assertions
+      .then(() => checkExecution({config: config2, times: 2})) // + 4 assertions
       .then(() => StorageManager.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
@@ -378,31 +408,7 @@ describe('test request queuing functionality', () => {
     const config5 = {timestamp: 1549016404100, url: '/url-5', params: {created_at: '2019-02-01T11:20:04.100Z+0100'}}
     const config6 = {timestamp: 1551438000440, url: '/url-6', params: {created_at: '2019-03-01T12:00:00.440Z+0100'}}
 
-    dateNowSpy.mockReturnValue(config1.timestamp)
-
-    Queue.default.push(config1)
-
-    return flushPromises()
-      .then(() => {
-        dateNowSpy.mockReturnValue(config2.timestamp)
-        return Queue.default.push(config2)
-      })
-      .then(() => {
-        dateNowSpy.mockReturnValue(config3.timestamp)
-        return Queue.default.push(config3)
-      })
-      .then(() => {
-        dateNowSpy.mockReturnValue(config4.timestamp)
-        return Queue.default.push(config4)
-      })
-      .then(() => {
-        dateNowSpy.mockReturnValue(config5.timestamp)
-        return Queue.default.push(config5)
-      })
-      .then(() => {
-        dateNowSpy.mockReturnValue(config6.timestamp)
-        return Queue.default.push(config6)
-      })
+    return push([config1, config2, config3, config4, config5, config6])
       .then(() => {
         dateNowSpy.mockReturnValue(new Date('2019-03-03').getTime())
 
@@ -411,8 +417,8 @@ describe('test request queuing functionality', () => {
         return flushPromises()
       })
       .then(() => StorageManager.default.getAll('queue'))
-      .then(cleaned => {
-        expect(cleaned.map(params => params.url)).toEqual(['/url-1', '/url-4', '/url-6'])
+      .then(remained => {
+        expect(remained.map(params => params.url)).toEqual(['/url-1', '/url-4', '/url-6'])
       })
 
   })

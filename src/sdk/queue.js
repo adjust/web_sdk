@@ -2,6 +2,7 @@ import Config from './config'
 import request from './request'
 import backOff from './backoff'
 import StorageManager from './storage-manager'
+import ActivityState from './activity-state'
 import {extend} from './utilities'
 
 /**
@@ -11,6 +12,14 @@ import {extend} from './utilities'
  * @private
  */
 let _timeout = {id: null, attempts: 0, wait: 150}
+
+/**
+ * Check if in offline mode
+ *
+ * @type {boolean}
+ * @private
+ */
+let _isOffline = false
 
 /**
  * Remove from the top and continue running pending requests
@@ -107,7 +116,36 @@ function run (cleanUpFirst) {
 
   return chain
     .then(() => StorageManager.getFirst('queue'))
-    .then(_delayedRequest)
+    .then(pending => {
+
+      const activityState = ActivityState.current || {}
+      const firstSession = pending && pending.url === '/session' && !activityState.attribution
+
+      if (_isOffline && !firstSession) {
+        return []
+      }
+
+      return _delayedRequest(pending)
+    })
+}
+
+/**
+ * Set offline mode to on or off
+ * - if on then all requests are queued
+ * - if off then run all pending requests
+ *
+ * @param {boolean=false} state
+ */
+function setOfflineMode (state = false) {
+
+  const wasOffline = _isOffline
+
+  _isOffline = state
+
+  if (!state && wasOffline) {
+    run()
+  }
+
 }
 
 /**
@@ -122,5 +160,6 @@ function _cleanUp () {
 
 export default {
   push,
-  run
+  run,
+  setOfflineMode
 }
