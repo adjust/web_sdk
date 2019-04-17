@@ -97,6 +97,50 @@ describe('test identity methods', () => {
           expect(StorageManager.default.addItem).not.toHaveBeenCalled()
         })
     })
+
+    it('syncs in-memory activity state with updated stored version', () => {
+
+      let compare
+
+      expect.assertions(5)
+
+      return Identity.startActivityState()
+        .then(activityState => {
+
+          expect(activityState).toEqual(ActivityState.default.current)
+
+          // update happens in another tab
+          return StorageManager.default.updateItem('activityState', Object.assign({}, activityState, {lastActive: 123}))
+        })
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
+
+          compare = Object.assign({}, activityState)
+
+          expect(compare).not.toEqual(ActivityState.default.current)
+
+          return Identity.sync()
+        })
+        .then(() => {
+          expect(compare).toEqual(ActivityState.default.current)
+
+          // update happens in another tab
+          return StorageManager.default.updateItem('activityState', Object.assign({}, compare, {lastActive: 124}))
+        })
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
+
+          compare = Object.assign({}, activityState)
+
+          expect(compare).not.toEqual(ActivityState.default.current)
+
+          return Identity.sync()
+        })
+        .then(() => {
+          expect(compare).toEqual(ActivityState.default.current)
+        })
+
+    })
   })
 
   describe('when activity state does not exist', () => {

@@ -2,7 +2,7 @@ import Config from './config'
 import Queue from './queue'
 import {on, off, getVisibilityApiAccess, extend, convertToMap} from './utilities'
 import {getTimestamp, timePassed} from './time'
-import {updateActivityState} from './identity'
+import {sync, updateActivityState} from './identity'
 import {get} from './global-params'
 import ActivityState from './activity-state'
 
@@ -101,7 +101,7 @@ function _handleVisibilityChange () {
       _stopTimer()
       setLastActive(Config.ignoreSwitchToBackground)
     } else {
-      _checkSession()
+      sync().then(_checkSession)
     }
   }, 0)
 }

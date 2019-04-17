@@ -29,6 +29,7 @@ describe('test session functionality', () => {
     jest.spyOn(Utilities, 'on')
     jest.spyOn(Utilities, 'off')
     jest.spyOn(Identity, 'updateActivityState')
+    jest.spyOn(Identity, 'sync').mockImplementation(() => Promise.resolve({}))
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
 
@@ -405,7 +406,7 @@ describe('test session functionality', () => {
 
       Session.watchSession()
 
-      expect.assertions(10)
+      expect.assertions(9)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
 
@@ -417,20 +418,12 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
+          return flushPromises()
+        })
+        .then(() => {
+
           expect(setInterval).toHaveBeenCalledTimes(2)
           expect(clearInterval).toHaveBeenCalledTimes(2)
-
-          return flushPromises()
-        })
-        .then(() => {
-
-          expect(Identity.updateActivityState).not.toHaveBeenCalled()
-
-          jest.runOnlyPendingTimers()
-
-          return flushPromises()
-        })
-        .then(() => {
 
           // update within the timer
           expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)

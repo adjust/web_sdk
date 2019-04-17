@@ -23,7 +23,7 @@ function _generateUuid () {
  * @returns {Promise}
  * @private
  */
-function _sync () {
+function _recover () {
   return StorageManager.getFirst('activityState')
     .then(stored => {
       if (stored) {
@@ -43,7 +43,7 @@ function _sync () {
  * @returns {Promise}
  */
 function startActivityState () {
-  return _sync()
+  return _recover()
     .then(stored => ActivityState.current = stored)
 }
 
@@ -54,13 +54,33 @@ function startActivityState () {
  * @returns {Promise}
  */
 function updateActivityState (params) {
-  return _sync()
+  return _recover()
     .then(stored => {
 
       const activityState = extend({}, stored, params)
 
       return StorageManager.updateItem('activityState', activityState)
         .then(() => ActivityState.current = activityState)
+    })
+}
+
+/**
+ * Sync in-memory activityState with the one from store
+ * - should be used when change from another tab is possible and critical
+ *
+ * @returns {Promise}
+ */
+function sync () {
+  return StorageManager.getFirst('activityState')
+    .then((activityState = {}) => {
+
+      const lastActive = ActivityState.current.lastActive || 0
+
+      if (lastActive < activityState.lastActive) {
+        ActivityState.current = activityState
+      }
+
+      return activityState
     })
 }
 
@@ -74,5 +94,6 @@ function destroy () {
 export {
   startActivityState,
   updateActivityState,
+  sync,
   destroy
 }
