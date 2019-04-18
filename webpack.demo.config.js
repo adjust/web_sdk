@@ -6,7 +6,8 @@ const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
 
-module.exports = {
+module.exports = (env, argv) => ({
+  mode: 'production',
   output: {
     path: path.resolve(__dirname, 'demo'),
     filename: '[name].js'
@@ -31,7 +32,7 @@ module.exports = {
     new webpack.DefinePlugin({
       __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
       __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version),
-      __ADJUST__IS_TEST: false
+      __ADJUST__ENV: JSON.stringify(argv && argv.mode || 'production')
     })
   ],
   module: {
@@ -81,4 +82,4 @@ module.exports = {
       ]
     }]
   }
-}
+})

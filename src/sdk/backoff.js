@@ -45,7 +45,7 @@ function _randomInRange (min, max) {
  */
 export default function backOff (attempts, strategy = 'long') {
 
-  let options = __ADJUST__IS_TEST ? _options.test : _options[strategy]
+  let options = __ADJUST__ENV === 'test' ? _options.test : _options[strategy]
   let delay = options.delay * Math.pow(2, attempts - 1)
 
   delay = Math.min(delay, options.maxDelay)

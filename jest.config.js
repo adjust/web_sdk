@@ -9,6 +9,6 @@ module.exports = {
   globals: {
     __ADJUST__NAMESPACE: 'adjust-sdk',
     __ADJUST__SDK_VERSION: 'TEST',
-    __ADJUST__IS_TEST: true
+    __ADJUST__ENV: 'test'
   }
 }

@@ -12,7 +12,7 @@
     "Promise": true,
     "__ADJUST__NAMESPACE": true,
     "__ADJUST__SDK_VERSION": true,
-    "__ADJUST__IS_TEST": true
+    "__ADJUST__ENV": true
   },
   "rules": {
     "semi": ["error", "never"],
