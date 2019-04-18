@@ -34,9 +34,9 @@ describe('test session functionality', () => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
 
     Object.assign(Config.default.baseParams, {
-      app_token: '123abc',
+      appToken: '123abc',
       environment: 'sandbox',
-      os_name: 'ios'
+      osName: 'ios'
     })
   })
 
@@ -225,10 +225,10 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {
-              created_at: now,
-              app_token: '123abc',
+              createdAt: now,
+              appToken: '123abc',
               environment: 'sandbox',
-              os_name: 'ios'
+              osName: 'ios'
             }
           })
 
@@ -278,12 +278,12 @@ describe('test session functionality', () => {
           url: '/session',
           method: 'POST',
           params: {
-            created_at: now,
-            app_token: '123abc',
+            createdAt: now,
+            appToken: '123abc',
             environment: 'sandbox',
-            os_name: 'ios',
-            callback_params: {key1: 'value1', key2: 'value2'},
-            partner_params: {some: 'thing', very: 'nice'}
+            osName: 'ios',
+            callbackParams: {key1: 'value1', key2: 'value2'},
+            partnerParams: {some: 'thing', very: 'nice'}
           }
         })
 

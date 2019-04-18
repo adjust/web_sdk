@@ -401,12 +401,12 @@ describe('test request queuing functionality', () => {
 
   it('cleans up pending requests that are older than 28 days', () => {
 
-    const config1 = {timestamp: 1549181400100, url: '/url-1', params: {created_at: '2019-02-03T09:10:00.100Z+0100'}}
-    const config2 = {timestamp: 1544548200020, url: '/url-2', params: {created_at: '2018-12-11T18:10:00.020Z+0100'}}
-    const config3 = {timestamp: 1546351540330, url: '/url-3', params: {created_at: '2019-01-01T15:05:40.330Z+0100'}}
-    const config4 = {timestamp: 1549768530000, url: '/url-4', params: {created_at: '2019-02-10T04:15:30.000Z+0100'}}
-    const config5 = {timestamp: 1549016404100, url: '/url-5', params: {created_at: '2019-02-01T11:20:04.100Z+0100'}}
-    const config6 = {timestamp: 1551438000440, url: '/url-6', params: {created_at: '2019-03-01T12:00:00.440Z+0100'}}
+    const config1 = {timestamp: 1549181400100, url: '/url-1', params: {createdAt: '2019-02-03T09:10:00.100Z+0100'}}
+    const config2 = {timestamp: 1544548200020, url: '/url-2', params: {createdAt: '2018-12-11T18:10:00.020Z+0100'}}
+    const config3 = {timestamp: 1546351540330, url: '/url-3', params: {createdAt: '2019-01-01T15:05:40.330Z+0100'}}
+    const config4 = {timestamp: 1549768530000, url: '/url-4', params: {createdAt: '2019-02-10T04:15:30.000Z+0100'}}
+    const config5 = {timestamp: 1549016404100, url: '/url-5', params: {createdAt: '2019-02-01T11:20:04.100Z+0100'}}
+    const config6 = {timestamp: 1551438000440, url: '/url-6', params: {createdAt: '2019-03-01T12:00:00.440Z+0100'}}
 
     return push([config1, config2, config3, config4, config5, config6])
       .then(() => {

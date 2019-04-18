@@ -24,20 +24,20 @@ describe('test uninitiated instance', () => {
 
     expect(() => {
       mainInstance.init()
-    }).toThrowError(new Error('You must define app_token, environment and os_name'))
+    }).toThrowError(new Error('You must define appToken, environment and osName'))
 
     expect(() => {
       mainInstance.init({
-        app_token: 'a-token'
+        appToken: 'a-token'
       })
-    }).toThrow(new Error('You must define environment and os_name'))
+    }).toThrow(new Error('You must define environment and osName'))
 
     expect(() => {
       mainInstance.init({
-        app_token: 'a-token',
+        appToken: 'a-token',
         environment: 'production'
       })
-    }).toThrow(new Error('You must define os_name'))
+    }).toThrow(new Error('You must define osName'))
 
   })
 
@@ -67,9 +67,9 @@ describe('test initiated instance', () => {
     jest.spyOn(Identity, 'startActivityState')
 
     mainInstance.init({
-      app_token: 'some-app-token',
+      appToken: 'some-app-token',
       environment: 'production',
-      os_name: 'android',
+      osName: 'android',
       attributionCallback: external.attributionCb
     })
   })
@@ -87,9 +87,9 @@ describe('test initiated instance', () => {
 
   it('sets basic configuration', () => {
 
-    expect(Config.default.baseParams.app_token).toEqual('some-app-token')
+    expect(Config.default.baseParams.appToken).toEqual('some-app-token')
     expect(Config.default.baseParams.environment).toEqual('production')
-    expect(Config.default.baseParams.os_name).toEqual('android')
+    expect(Config.default.baseParams.osName).toEqual('android')
     expect(PubSub.subscribe).toHaveBeenCalledWith('attribution:change', external.attributionCb)
     expect(Identity.startActivityState).toHaveBeenCalledTimes(1)
     expect(Queue.default.run).toHaveBeenCalledTimes(1)
@@ -111,24 +111,24 @@ describe('test initiated instance', () => {
 
     expect(() => {
       sameInstance.init({
-        app_token: 'some-other-app-token',
+        appToken: 'some-other-app-token',
         environment: 'production',
-        os_name: 'ios'
+        osName: 'ios'
       })
     }).toThrow(new Error('You already initiated your instance'))
 
     expect(mainInstance).toBe(sameInstance)
-    expect(Config.default.baseParams.app_token).toEqual('some-app-token')
+    expect(Config.default.baseParams.appToken).toEqual('some-app-token')
     expect(Config.default.baseParams.environment).toEqual('production')
-    expect(Config.default.baseParams.os_name).toEqual('android')
+    expect(Config.default.baseParams.osName).toEqual('android')
 
   })
 
   it('performs track event call', () => {
 
-    mainInstance.trackEvent({event_token: 'blabla'})
+    mainInstance.trackEvent({eventToken: 'blabla'})
 
-    expect(event.default).toHaveBeenCalledWith({event_token: 'blabla'})
+    expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'})
 
   })
 

@@ -2,9 +2,9 @@ import Constants from './constants'
 import {extend} from './utilities'
 
 const _initial = {
-  app_token: '',
+  appToken: '',
   environment: '',
-  os_name: ''
+  osName: ''
 }
 
 const ClientConfig = extend({}, _initial)

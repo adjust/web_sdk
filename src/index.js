@@ -3,26 +3,26 @@ import adjustSDK from './sdk/main'
 import app from './app'
 
 const appConfig = {
-  app_token: 'src556ylophc',
+  appToken: 'src556ylophc',
   environment: 'production',
-  os_name: 'macos',
+  osName: 'macos',
   attributionCallback: attributionCallback
 }
 
 const someEventConfig = {
-  event_token: 'yywcyo'
+  eventToken: 'yywcyo'
 }
 
 const revenueEventConfig = {
-  event_token: 'wmxoqe',
+  eventToken: 'wmxoqe',
   revenue: 10,
   currency: 'EUR',
-  callback_params: [
+  callbackParams: [
     {key: 'some-key-1', value: 'some-value-1'},
     {key: 'some-key-2', value: 'some-value-2'},
     {key: 'key1', value: 'new-value1'}
   ],
-  partner_params: [
+  partnerParams: [
     {key: 'key-1', value: 'new-value-1'},
     {key: 'some-partner-key-1', value: 'some-partner-value-1'},
     {key: 'key-2', value: 'new-value-2'},

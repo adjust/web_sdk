@@ -16,9 +16,9 @@ describe('test attribution functionality', () => {
   beforeAll(() => {
 
     Object.assign(Config.default.baseParams, {
-      app_token: '123abc',
+      appToken: '123abc',
       environment: 'sandbox',
-      os_name: 'ios'
+      osName: 'ios'
     })
 
     ActivityState.default.current = {}
@@ -77,11 +77,11 @@ describe('test attribution functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
-            created_at: 'some-time',
-            initiated_by: 'sdk',
-            app_token: '123abc',
+            createdAt: 'some-time',
+            initiatedBy: 'sdk',
+            appToken: '123abc',
             environment: 'sandbox',
-            os_name: 'ios'
+            osName: 'ios'
           }
         })
         expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
@@ -110,11 +110,11 @@ describe('test attribution functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
-            created_at: 'some-time',
-            initiated_by: 'backend',
-            app_token: '123abc',
+            createdAt: 'some-time',
+            initiatedBy: 'backend',
+            appToken: '123abc',
             environment: 'sandbox',
-            os_name: 'ios'
+            osName: 'ios'
           }
         })
         expect(Identity.updateActivityState).not.toHaveBeenCalled()
@@ -143,11 +143,11 @@ describe('test attribution functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
-            created_at: 'some-time',
-            initiated_by: 'backend',
-            app_token: '123abc',
+            createdAt: 'some-time',
+            initiatedBy: 'backend',
+            appToken: '123abc',
             environment: 'sandbox',
-            os_name: 'ios'
+            osName: 'ios'
           }
         })
         expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
@@ -177,11 +177,11 @@ describe('test attribution functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
-            created_at: 'some-time',
-            initiated_by: 'backend',
-            app_token: '123abc',
+            createdAt: 'some-time',
+            initiatedBy: 'backend',
+            appToken: '123abc',
             environment: 'sandbox',
-            os_name: 'ios'
+            osName: 'ios'
           }
         })
         expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
@@ -211,11 +211,11 @@ describe('test attribution functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/attribution',
           params: {
-            created_at: 'some-time',
-            initiated_by: 'backend',
-            app_token: '123abc',
+            createdAt: 'some-time',
+            initiatedBy: 'backend',
+            appToken: '123abc',
             environment: 'sandbox',
-            os_name: 'ios'
+            osName: 'ios'
           }
         })
         expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})

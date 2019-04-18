@@ -30,11 +30,11 @@ function _getRevenue (revenue, currency) {
  * Prepare parameters for the event tracking
  *
  * @param {Object} params
- * @param {string} params.event_token
+ * @param {string} params.eventToken
  * @param {number=} params.revenue
  * @param {string=} params.currency
- * @param {Array=} params.callback_params
- * @param {Array=} params.partner_params
+ * @param {Array=} params.callbackParams
+ * @param {Array=} params.partnerParams
  * @param {Array=} [globalCallbackParams=[]]
  * @param {Array} [globalPartnerParams=[]]
  * @returns {Object}
@@ -43,23 +43,23 @@ function _getRevenue (revenue, currency) {
 function _prepareParams (params, globalCallbackParams = [], globalPartnerParams = []) {
 
   const baseParams = extend({
-    created_at: getTimestamp()
+    createdAt: getTimestamp()
   }, Config.baseParams, {
-    event_token: params.event_token,
+    eventToken: params.eventToken,
   }, _getRevenue(params.revenue, params.currency))
 
   const callbackParams = extend(
     convertToMap(globalCallbackParams),
-    convertToMap(params.callback_params)
+    convertToMap(params.callbackParams)
   )
   const partnerParams = extend(
     convertToMap(globalPartnerParams),
-    convertToMap(params.partner_params)
+    convertToMap(params.partnerParams)
   )
 
   return extend(baseParams, {
-    callback_params: callbackParams,
-    partner_params: partnerParams,
+    callbackParams: callbackParams,
+    partnerParams: partnerParams,
   })
 }
 
@@ -70,7 +70,7 @@ function _prepareParams (params, globalCallbackParams = [], globalPartnerParams 
  */
 export default function event (params = {}) {
 
-  if (isEmpty(params) || !params.event_token) {
+  if (isEmpty(params) || !params.eventToken) {
     throw new Error('You must provide event token in order to track event')
   }
 

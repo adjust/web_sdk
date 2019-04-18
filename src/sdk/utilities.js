@@ -153,6 +153,7 @@ function extend (...args) {
  * Convert array with key/value item structure into key/value pairs object
  *
  * @param {Array} array
+ * @return {Array} array
  */
 function convertToMap (array = []) {
   return array.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})

@@ -8,9 +8,9 @@ import * as StorageManager from '../storage-manager'
 import * as GlobalParams from '../global-params'
 
 const appConfig = {
-  app_token: '123abc',
+  appToken: '123abc',
   environment: 'sandbox',
-  os_name: 'ios'
+  osName: 'ios'
 }
 
 describe('event tracking functionality', () => {
@@ -48,18 +48,18 @@ describe('event tracking functionality', () => {
       url: '/event',
       method: 'POST',
       params: Utilities.extend({}, appConfig, {
-        created_at: 'some-time',
-        event_token: '123abc',
-        callback_params: {'some-key': 'some-value'},
-        partner_params: {}
+        createdAt: 'some-time',
+        eventToken: '123abc',
+        callbackParams: {'some-key': 'some-value'},
+        partnerParams: {}
       })
     }
 
     expect.assertions(1)
 
     return event.default({
-      event_token: '123abc',
-      callback_params: [{key: 'some-key', value: 'some-value'}],
+      eventToken: '123abc',
+      callbackParams: [{key: 'some-key', value: 'some-value'}],
       revenue: 0
     }).then(() => {
       expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
@@ -73,17 +73,17 @@ describe('event tracking functionality', () => {
       url: '/event',
       method: 'POST',
       params: Utilities.extend({}, appConfig, {
-        created_at: 'some-time',
-        event_token: '123abc',
-        callback_params: {},
-        partner_params: {}
+        createdAt: 'some-time',
+        eventToken: '123abc',
+        callbackParams: {},
+        partnerParams: {}
       })
     }
 
     expect.assertions(1)
 
     return event.default({
-      event_token: '123abc',
+      eventToken: '123abc',
       revenue: 1000
     }).then(() => {
       expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
@@ -98,10 +98,10 @@ describe('event tracking functionality', () => {
       url: '/event',
       method: 'POST',
       params: Utilities.extend({}, appConfig, {
-        created_at: 'some-time',
-        event_token: '123abc',
-        callback_params: {'some-key': 'some-value'},
-        partner_params: {key1: 'value1', key2: 'value2'},
+        createdAt: 'some-time',
+        eventToken: '123abc',
+        callbackParams: {'some-key': 'some-value'},
+        partnerParams: {key1: 'value1', key2: 'value2'},
         revenue: "100.00000",
         currency: 'EUR'
       })
@@ -110,11 +110,11 @@ describe('event tracking functionality', () => {
     expect.assertions(1)
 
     return event.default({
-      event_token: '123abc',
-      callback_params: [
+      eventToken: '123abc',
+      callbackParams: [
         {key: 'some-key', value: 'some-value'}
       ],
-      partner_params: [
+      partnerParams: [
         {key: 'key1', value: 'value1'},
         {key: 'key2', value: 'value2'}
       ],
@@ -138,7 +138,7 @@ describe('event tracking functionality', () => {
 
     return GlobalParams.add(callbackParams, 'callback')
       .then(() => event.default({
-        event_token: 'bla',
+        eventToken: 'bla',
         revenue: 34.67,
         currency: 'EUR'
       }))
@@ -147,10 +147,10 @@ describe('event tracking functionality', () => {
           url: '/event',
           method: 'POST',
           params: Utilities.extend({}, appConfig, {
-            created_at: 'some-time',
-            event_token: 'bla',
-            callback_params: {key1: 'value1', key2: 'value2'},
-            partner_params: {},
+            createdAt: 'some-time',
+            eventToken: 'bla',
+            callbackParams: {key1: 'value1', key2: 'value2'},
+            partnerParams: {},
             revenue: "34.67000",
             currency: 'EUR'
           })
@@ -169,8 +169,8 @@ describe('event tracking functionality', () => {
 
     return GlobalParams.add(callbackParams, 'callback')
       .then(() => event.default({
-        event_token: 'bla',
-        callback_params: [
+        eventToken: 'bla',
+        callbackParams: [
           {key: 'key1', value: 'new value1'},
           {key: 'key3', value: 'value3'}
         ]
@@ -180,10 +180,10 @@ describe('event tracking functionality', () => {
           url: '/event',
           method: 'POST',
           params: Utilities.extend({}, appConfig, {
-            created_at: 'some-time',
-            event_token: 'bla',
-            callback_params: {key1: 'new value1', key2: 'value2', key3: 'value3'},
-            partner_params: {}
+            createdAt: 'some-time',
+            eventToken: 'bla',
+            callbackParams: {key1: 'new value1', key2: 'value2', key3: 'value3'},
+            partnerParams: {}
           })
         })
       })
@@ -209,11 +209,11 @@ describe('event tracking functionality', () => {
       GlobalParams.add(partnerParams, 'partner')
     ])
       .then(() => event.default({
-        event_token: 'bla',
-        callback_params: [
+        eventToken: 'bla',
+        callbackParams: [
           {key: 'key2', value: 'new value2'}
         ],
-        partner_params: [
+        partnerParams: [
           {key: 'very', value: 'bad'},
           {key: 'trt', value: 'prc'}
         ]
@@ -223,10 +223,10 @@ describe('event tracking functionality', () => {
           url: '/event',
           method: 'POST',
           params: Utilities.extend({}, appConfig, {
-            created_at: 'some-time',
-            event_token: 'bla',
-            callback_params: {key1: 'last value1', key2: 'new value2'},
-            partner_params: {some: 'thing', very: 'bad', bla: 'truc', trt: 'prc'}
+            createdAt: 'some-time',
+            eventToken: 'bla',
+            callbackParams: {key1: 'last value1', key2: 'new value2'},
+            partnerParams: {some: 'thing', very: 'bad', bla: 'truc', trt: 'prc'}
           })
         })
       })

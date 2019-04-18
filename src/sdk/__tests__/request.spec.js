@@ -132,6 +132,9 @@ describe('perform api requests', () => {
       expect(request.default({
         url: '/some-url',
         params: {
+          appToken: 'cdf123',
+          osName: 'macos',
+          eventToken: '567abc',
           some: 'thing',
           very: 'nice',
           and: {test: 'object'}
@@ -141,7 +144,7 @@ describe('perform api requests', () => {
       return flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D&web_uuid=some-uuid' + gpsAdid, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&app_token=cdf123&os_name=macos&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D&web_uuid=some-uuid' + gpsAdid, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -303,9 +306,9 @@ describe('perform api requests', () => {
       request.default({
         url: '/session',
         params: {
-          app_token: '123abc',
+          appToken: '123abc',
           environment: 'sandbox',
-          os_name: 'ios'
+          osName: 'ios'
         }
       }).then(result => {
         expect(result).toEqual({
@@ -335,9 +338,9 @@ describe('perform api requests', () => {
       request.default({
         url: '/session',
         params: {
-          app_token: '123abc',
+          appToken: '123abc',
           environment: 'sandbox',
-          os_name: 'ios'
+          osName: 'ios'
         }
       }).then(result => {
         expect(result).toEqual({
@@ -365,7 +368,7 @@ describe('perform api requests', () => {
       request.default({
         url: '/anything',
         params: {
-          app_token: '123abc'
+          appToken: '123abc'
         }
       }).then(result => {
         expect(result).toEqual({

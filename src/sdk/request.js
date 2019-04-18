@@ -68,8 +68,8 @@ function _getErrorObject (xhr, onlyResponse) {
 function _encodeParams (params) {
 
   params = extend({
-    created_at: getTimestamp(),
-    sent_at: getTimestamp()
+    createdAt: getTimestamp(),
+    sentAt: getTimestamp()
   }, params)
 
   params.web_uuid = ActivityState.current.uuid
@@ -78,13 +78,17 @@ function _encodeParams (params) {
 
   return Object
     .entries(params)
-    .filter(pair => {
-      if (isObject(pair[1])) {
-        return !isEmpty(pair[1])
+    .filter(([_, value]) => {
+      if (isObject(value)) {
+        return !isEmpty(value)
       }
-      return !!pair[1] || (pair[1] === 0)
+      return !!value || (value === 0)
     })
-    .map(pair => pair.map(value => {
+    .map(pair => pair.map((value, index) => {
+      if (index === 0) {
+        value = value.replace(/([A-Z])/g, ($1) => `_${$1.toLowerCase()}`)
+      }
+
       if (isObject(value)) {
         value = JSON.stringify(value)
       }

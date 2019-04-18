@@ -15,9 +15,9 @@ import event from './event'
  * @private
  */
 const _mandatory = [
-  'app_token',
+  'appToken',
   'environment',
-  'os_name'
+  'osName'
 ]
 
 /**
@@ -171,9 +171,9 @@ function _isInitiated () {
  * - start watching the session
  *
  * @param {Object} params
- * @param {string} params.app_token
+ * @param {string} params.appToken
  * @param {string} params.environment
- * @param {string} params.os_name
+ * @param {string} params.osName
  * @param {Function=} params.attributionCallback
  * @private
  */

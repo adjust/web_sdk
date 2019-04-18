@@ -138,15 +138,15 @@ function _stopTimer () {
 function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
 
   const baseParams = extend({
-    created_at: getTimestamp()
+    createdAt: getTimestamp()
   }, Config.baseParams)
 
   if (globalCallbackParams.length) {
-    baseParams.callback_params = convertToMap(globalCallbackParams)
+    baseParams.callbackParams = convertToMap(globalCallbackParams)
   }
 
   if (globalPartnerParams.length) {
-    baseParams.partner_params = convertToMap(globalPartnerParams)
+    baseParams.partnerParams = convertToMap(globalPartnerParams)
   }
 
   return baseParams

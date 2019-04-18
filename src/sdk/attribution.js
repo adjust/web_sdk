@@ -122,8 +122,8 @@ function _request () {
   return request({
     url: '/attribution',
     params: extend({
-      created_at: _createdAt,
-      initiated_by: _initiatedBy
+      createdAt: _createdAt,
+      initiatedBy: _initiatedBy
     }, Config.baseParams)
   }).then(_requestAttribution)
     .catch(_retry)
