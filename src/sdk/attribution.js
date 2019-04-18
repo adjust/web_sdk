@@ -24,6 +24,16 @@ let _timeout = {id: null, attempts: 0}
 let _createdAt = ''
 
 /**
+ * Initiated by flag to send to the attribution request
+ * - `sdk` - when initiated by the sdk itself after initial session without ask_in
+ * - `backend` - by default, when initiated due to ask_in parameter from session
+ *
+ * @type {string}
+ * @private
+ */
+let _initiatedBy = ''
+
+/**
  * Check if new attribution is the same as old one
  *
  * @param {string} adid
@@ -112,7 +122,8 @@ function _request () {
   return request({
     url: '/attribution',
     params: extend({
-      created_at: _createdAt
+      created_at: _createdAt,
+      initiated_by: _initiatedBy
     }, Config.baseParams)
   }).then(_requestAttribution)
     .catch(_retry)
@@ -122,34 +133,38 @@ function _request () {
  * Request the attribution if needed and when retrieved then try to preserve it
  *
  * @param {Object} result
+ * @param {number=} selfInitiatedAskIn
  * @returns {Promise}
  * @private
  */
-function _requestAttribution (result = {}) {
+function _requestAttribution (result = {}, selfInitiatedAskIn) {
 
-  if (!result.ask_in) {
+  const askIn = result.ask_in || selfInitiatedAskIn
+
+  if (!askIn) {
     return _setAttribution(result)
   }
 
   _timeout.attempts = 0
 
-  return _delayedRequest(result.ask_in)
+  return _delayedRequest(askIn)
 }
 
 /**
  * Check current attribution and perform certain actions if retrieved
  *
  * @param {Object} sessionResult
- * @param {number} sessionResult.ask_in
+ * @param {number=} sessionResult.ask_in
  */
 export function checkAttribution (sessionResult = {}) {
 
-  if (!sessionResult.ask_in) {
+  if (!sessionResult.ask_in && ActivityState.current.attribution) {
     return Promise.resolve(sessionResult)
   }
 
   _createdAt = getTimestamp()
+  _initiatedBy = !sessionResult.ask_in ? 'sdk' : 'backend'
 
-  return _requestAttribution(sessionResult)
+  return _requestAttribution(sessionResult, sessionResult.ask_in || 150)
 }
 

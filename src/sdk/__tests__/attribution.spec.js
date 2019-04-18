@@ -21,6 +21,8 @@ describe('test attribution functionality', () => {
       os_name: 'ios'
     })
 
+    ActivityState.default.current = {}
+
     jest.spyOn(request, 'default')
     jest.spyOn(Identity, 'updateActivityState')
     jest.spyOn(PubSub, 'publish')
@@ -33,12 +35,15 @@ describe('test attribution functionality', () => {
 
   afterAll(() => {
     Config.clear()
+    ActivityState.default.current = {}
 
     jest.clearAllTimers()
     jest.restoreAllMocks()
   })
 
   it('does not do anything if there is no ask_in parameter', () => {
+
+    ActivityState.default.current = {attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
     expect.assertions(2)
 
@@ -49,6 +54,40 @@ describe('test attribution functionality', () => {
       })
 
     jest.runAllTimers()
+
+  })
+
+  it('does self-initiated attribution call after initial session', () => {
+
+    const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
+    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
+
+    ActivityState.default.current = {}
+    request.default.mockResolvedValue(newAttribution)
+
+    expect.assertions(4)
+
+    Attribution.checkAttribution({some: 'thing'})
+
+    jest.runAllTimers()
+
+    return flushPromises()
+      .then(() => {
+        expect(setTimeout.mock.calls[0][1]).toBe(150)
+        expect(request.default).toHaveBeenCalledWith({
+          url: '/attribution',
+          params: {
+            created_at: 'some-time',
+            initiated_by: 'sdk',
+            app_token: '123abc',
+            environment: 'sandbox',
+            os_name: 'ios'
+          }
+        })
+        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
+      })
+
 
   })
 
@@ -72,6 +111,7 @@ describe('test attribution functionality', () => {
           url: '/attribution',
           params: {
             created_at: 'some-time',
+            initiated_by: 'backend',
             app_token: '123abc',
             environment: 'sandbox',
             os_name: 'ios'
@@ -104,6 +144,7 @@ describe('test attribution functionality', () => {
           url: '/attribution',
           params: {
             created_at: 'some-time',
+            initiated_by: 'backend',
             app_token: '123abc',
             environment: 'sandbox',
             os_name: 'ios'
@@ -137,6 +178,7 @@ describe('test attribution functionality', () => {
           url: '/attribution',
           params: {
             created_at: 'some-time',
+            initiated_by: 'backend',
             app_token: '123abc',
             environment: 'sandbox',
             os_name: 'ios'
@@ -170,6 +212,7 @@ describe('test attribution functionality', () => {
           url: '/attribution',
           params: {
             created_at: 'some-time',
+            initiated_by: 'backend',
             app_token: '123abc',
             environment: 'sandbox',
             os_name: 'ios'
