@@ -1,15 +1,16 @@
 import ActivityState from './activity-state'
 import QuickStorage from './quick-storage'
 import Scheme from './scheme'
+import Logger from './logger'
 import {findIndex, isObject} from './utilities'
 
 /**
  * Check if LocalStorage is supported in the current browser
  *
- * @param {boolean=} toThrow
+ * @param {boolean=} toLog
  * @returns {boolean}
  */
-function isSupported (toThrow) {
+function isSupported (toLog) {
 
   let uid = (new Date).toString()
   let storage
@@ -21,11 +22,10 @@ function isSupported (toThrow) {
     storage.removeItem(uid)
     return !!(result && storage)
   } catch (exception) {
-    if (toThrow) {
-      throw Error('LocalStorage is not supported in this browser')
-    } else {
-      return false
+    if (toLog) {
+      Logger.error('LocalStorage is not supported in this browser')
     }
+    return false
   }
 
 }
@@ -37,7 +37,9 @@ function isSupported (toThrow) {
  */
 function _open () {
 
-  isSupported(true)
+  if (!isSupported(true)) {
+    return
+  }
 
   const stores = Object.keys(Scheme)
 

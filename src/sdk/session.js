@@ -1,10 +1,11 @@
 import Config from './config'
 import Queue from './queue'
+import ActivityState from './activity-state'
+import Logger from './logger'
 import {on, off, getVisibilityApiAccess, extend, convertToMap} from './utilities'
 import {getTimestamp, timePassed} from './time'
 import {sync, updateActivityState} from './identity'
 import {get} from './global-params'
-import ActivityState from './activity-state'
 
 /**
  * Flag to mark if session watch is already on
@@ -47,7 +48,8 @@ const _adapter = getVisibilityApiAccess()
 function watchSession () {
 
   if (_started) {
-    throw new Error('Session watch already initiated')
+    Logger.error('Session watch already initiated')
+    return
   }
 
   _started = true

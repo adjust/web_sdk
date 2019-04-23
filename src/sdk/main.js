@@ -1,6 +1,7 @@
 import Config from './config'
 import Queue from './queue'
 import StorageManager from './storage-manager'
+import Logger from './logger'
 import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
@@ -26,14 +27,18 @@ const _mandatory = [
  */
 function init (params = {}) {
 
+  Logger.setLogLevel(params.logLevel)
+
   if (_isInitiated()) {
-    throw new Error('You already initiated your instance')
+    Logger.error('You already initiated your instance')
+    return
   }
 
   const missingParamsMessage = _getMissingParams(params)
 
   if (missingParamsMessage) {
-    throw new Error(missingParamsMessage)
+    Logger.error(missingParamsMessage)
+    return
   }
 
   _start(params)
@@ -47,7 +52,8 @@ function init (params = {}) {
 function trackEvent (params = {}) {
 
   if (!_isInitiated()) {
-    throw new Error('You must init your instance')
+    Logger.error('You must init your instance')
+    return
   }
 
   event(params)

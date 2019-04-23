@@ -1,6 +1,7 @@
 import {extend, isEmpty, convertToMap} from './utilities'
 import Config from './config'
 import Queue from './queue'
+import Logger from './logger'
 import {getTimestamp} from './time'
 import {get} from './global-params'
 
@@ -71,7 +72,8 @@ function _prepareParams (params, globalCallbackParams = [], globalPartnerParams 
 export default function event (params = {}) {
 
   if (isEmpty(params) || !params.eventToken) {
-    throw new Error('You must provide event token in order to track event')
+    Logger.error('You must provide event token in order to track event')
+    return
   }
 
   return get()

@@ -3,8 +3,13 @@ import * as LocalStorage from '../localstorage'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as QuickStorage from '../quick-storage'
+import * as Logger from '../logger'
 
 describe('LocalStorage usage', () => {
+
+  beforeAll(() => {
+    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
+  })
 
   afterEach(() => {
     localStorage.clear()
@@ -12,6 +17,7 @@ describe('LocalStorage usage', () => {
 
   afterAll(() => {
     LocalStorage.default.destroy()
+    jest.restoreAllMocks()
   })
 
   it('checks if localStorage is supported', () => {
@@ -20,18 +26,21 @@ describe('LocalStorage usage', () => {
     let supported = LocalStorage.default.isSupported()
 
     expect(supported).toBeTruthy()
-    expect(() => {
-      LocalStorage.default.isSupported(true)
-    }).not.toThrow()
+    expect(Logger.default.error).not.toHaveBeenCalled()
+
+    LocalStorage.default.isSupported(true)
+    expect(Logger.default.error).not.toHaveBeenCalled()
 
     delete window.localStorage
 
     supported = LocalStorage.default.isSupported()
+    expect(supported).toBeFalsy()
+    expect(Logger.default.error).not.toHaveBeenCalled()
+
+    supported = LocalStorage.default.isSupported(true)
 
     expect(supported).toBeFalsy()
-    expect(() => {
-      LocalStorage.default.isSupported(true)
-    }).toThrow(new Error('LocalStorage is not supported in this browser'))
+    expect(Logger.default.error).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
 
     window.localStorage = original
   })
@@ -768,7 +777,7 @@ describe('LocalStorage usage', () => {
         })
     })
 
-    it('adds rows into globalParams store and throw error when adding existing key', () => {
+    it('adds rows into globalParams store and catches error when adding existing key', () => {
 
       const globalParamsSet1 = [
         {key: 'bla', value: 'truc', type: 'callback'},

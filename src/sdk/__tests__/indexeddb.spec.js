@@ -5,11 +5,16 @@ import * as IndexedDB from '../indexeddb'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as QuickStorage from '../quick-storage'
+import * as Logger from '../logger'
 
 describe('IndexedDB usage', () => {
 
   window.indexedDB = fakeIDB
   window.IDBKeyRange = IDBKeyRange
+
+  beforeAll(() => {
+    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
+  })
 
   afterEach(() => {
     IndexedDB.default.clear('queue')
@@ -20,25 +25,26 @@ describe('IndexedDB usage', () => {
   afterAll(() => {
     IndexedDB.default.destroy()
     localStorage.clear()
+    jest.restoreAllMocks()
   })
 
   it('checks if indexedDB is supported', () => {
 
-    let supported = IndexedDB.default.isSupported()
+    let supported = IndexedDB.default.isSupported(true)
 
     expect(supported).toBeTruthy()
-    expect(() => {
-      IndexedDB.default.isSupported(true)
-    }).not.toThrow()
+    expect(Logger.default.error).not.toHaveBeenCalled()
 
     delete window.indexedDB
 
     supported = IndexedDB.default.isSupported()
 
     expect(supported).toBeFalsy()
-    expect(() => {
-      IndexedDB.default.isSupported(true)
-    }).toThrow(new Error('IndexedDB is not supported in this browser'))
+    expect(Logger.default.error).not.toHaveBeenCalled()
+
+    supported = IndexedDB.default.isSupported(true)
+    expect(supported).toBeFalsy()
+    expect(Logger.default.error).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
 
     window.indexedDB = fakeIDB
 
@@ -775,7 +781,7 @@ describe('IndexedDB usage', () => {
         })
     })
 
-    it('adds rows into globalParams store and throw error when adding existing key', () => {
+    it('adds rows into globalParams store and catches an error when adding existing key', () => {
 
       const globalParamsSet1 = [
         {key: 'bla', value: 'truc', type: 'callback'},

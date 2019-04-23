@@ -6,6 +6,7 @@ import * as Time from '../time'
 import * as Utilities from '../utilities'
 import * as StorageManager from '../storage-manager'
 import * as GlobalParams from '../global-params'
+import * as Logger from '../logger'
 
 const appConfig = {
   appToken: '123abc',
@@ -18,6 +19,7 @@ describe('event tracking functionality', () => {
   beforeAll(() => {
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
 
     Object.assign(Config.default.baseParams, appConfig)
   })
@@ -34,11 +36,10 @@ describe('event tracking functionality', () => {
     localStorage.clear()
   })
 
-  it('throws an error event token is not provided', () => {
+  it('logs an error and return when event token is not provided', () => {
+    event.default({})
 
-    expect(() => {
-      event.default({})
-    }).toThrow(new Error('You must provide event token in order to track event'))
+    expect(Logger.default.error).toHaveBeenCalledWith('You must provide event token in order to track event')
 
   })
 

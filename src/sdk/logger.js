@@ -82,6 +82,4 @@ _methods.forEach(method => {
   }
 })
 
-Object.freeze(Logger)
-
 export default Logger

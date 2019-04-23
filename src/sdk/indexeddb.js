@@ -2,6 +2,7 @@ import Config from './config'
 import Scheme from './scheme'
 import ActivityState from './activity-state'
 import QuickStorage from './quick-storage'
+import Logger from './logger'
 import {isEmpty, isObject} from './utilities'
 
 const _dbName = Config.namespace
@@ -11,19 +12,19 @@ let _db
 /**
  * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
  *
- * @param {boolean=} toThrow
+ * @param {boolean=} toLog
  * @returns {boolean}
  */
-function isSupported (toThrow) {
+function isSupported (toLog) {
   const indexedDB = _getIDB()
   const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
   const supported = !!indexedDB && !iOS
 
-  if (toThrow && !supported) {
-    throw Error('IndexedDB is not supported in this browser')
-  } else {
-    return supported
+  if (toLog && !supported) {
+    Logger.error('IndexedDB is not supported in this browser')
   }
+
+  return supported
 }
 
 /**
@@ -98,7 +99,9 @@ function _open () {
 
   const indexedDB = _getIDB()
 
-  isSupported(true)
+  if (!isSupported(true)) {
+    return Promise.reject({})
+  }
 
   return new Promise((resolve, reject) => {
 

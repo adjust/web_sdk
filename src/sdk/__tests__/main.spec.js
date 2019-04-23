@@ -7,6 +7,7 @@ import * as event from '../event'
 import * as Config from '../config'
 import * as Identity from '../identity'
 import * as GlobalParams from '../global-params'
+import * as Logger from '../logger'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 import {removeAll} from '../global-params'
@@ -18,30 +19,27 @@ const external = {
 }
 
 describe('test uninitiated instance', () => {
-  it('throws an error when not all parameters provided', () => {
 
-    expect.assertions(2)
-
-    expect(() => {
-      mainInstance.init()
-    }).toThrowError(new Error('You must define appToken and environment'))
-
-    expect(() => {
-      mainInstance.init({
-        appToken: 'a-token'
-      })
-    }).toThrow(new Error('You must define environment'))
-
+  beforeAll(() => {
+    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
   })
 
-  it('throws an error when trying to skip init', () => {
+  it('logs an error and return when not all parameters provided', () => {
 
-    expect.assertions(1)
+    mainInstance.init()
 
-    expect(() => {
-      mainInstance.trackEvent()
-    }).toThrow(new Error('You must init your instance'))
+    expect(Logger.default.error).toHaveBeenLastCalledWith('You must define appToken and environment')
 
+    mainInstance.init({appToken: 'a-token'})
+
+    expect(Logger.default.error).toHaveBeenLastCalledWith('You must define environment')
+  })
+
+  it('logs an error and return when trying to skip init', () => {
+
+    mainInstance.trackEvent()
+
+    expect(Logger.default.error).toHaveBeenLastCalledWith('You must init your instance')
   })
 })
 
@@ -58,6 +56,7 @@ describe('test initiated instance', () => {
     jest.spyOn(GlobalParams, 'remove').mockImplementation(() => {})
     jest.spyOn(GlobalParams, 'removeAll').mockImplementation(() => {})
     jest.spyOn(Identity, 'startActivityState')
+    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
 
     mainInstance.init({
       appToken: 'some-app-token',
@@ -101,13 +100,12 @@ describe('test initiated instance', () => {
 
   it('tests if single instance is returned', () => {
 
-    expect(() => {
-      sameInstance.init({
-        appToken: 'some-other-app-token',
-        environment: 'production'
-      })
-    }).toThrow(new Error('You already initiated your instance'))
+    sameInstance.init({
+      appToken: 'some-other-app-token',
+      environment: 'production'
+    })
 
+    expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
     expect(mainInstance).toBe(sameInstance)
     expect(Config.default.baseParams.appToken).toEqual('some-app-token')
     expect(Config.default.baseParams.environment).toEqual('production')

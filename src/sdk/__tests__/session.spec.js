@@ -7,8 +7,9 @@ import * as Time from '../time'
 import * as Queue from '../queue'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
-import {flushPromises} from './_helper'
 import * as GlobalParams from '../global-params'
+import * as Logger from '../logger'
+import {flushPromises} from './_helper'
 
 jest.useFakeTimers()
 
@@ -32,6 +33,7 @@ describe('test session functionality', () => {
     jest.spyOn(Identity, 'sync').mockImplementation(() => Promise.resolve({}))
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
+    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
 
     Object.assign(Config.default.baseParams, {
       appToken: '123abc',
@@ -58,32 +60,33 @@ describe('test session functionality', () => {
 
   describe('general functionality', () => {
 
-    it('starts the session watch and throws error if calling watch multiple times', () => {
-      expect(() => {
-        Session.watchSession()
-      }).not.toThrow()
+    it('starts the session watch and logs error and returns if calling watch multiple times', () => {
+      Session.watchSession()
 
-      expect(() => {
-        Session.watchSession()
-      }).toThrow(new Error('Session watch already initiated'))
+      expect(Logger.default.error).not.toHaveBeenCalled()
+
+      Session.watchSession()
+
+      expect(Logger.default.error).toHaveBeenCalledWith('Session watch already initiated')
     })
 
     it('destroys session watch', () => {
 
-      Session.watchSession()
+      Session.watchSession() // 1st attempt
 
-      expect(() => {
-        Session.watchSession()
-      }).toThrow(new Error('Session watch already initiated'))
+      Session.watchSession() // 2nd attempt
+
+      expect(Logger.default.error).toHaveBeenCalledWith('Session watch already initiated')
+      Logger.default.error.mockClear()
 
       Session.destroy()
 
       expect(Utilities.off).toHaveBeenCalled()
       expect(clearInterval).toHaveBeenCalled()
 
-      expect(() => {
-        Session.watchSession()
-      }).not.toThrow()
+      Session.watchSession()
+
+      expect(Logger.default.error).not.toHaveBeenCalled()
     })
 
     it('sets last active timestamp when activity state exists and when not ignored', () => {
