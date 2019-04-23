@@ -159,6 +159,35 @@ function convertToMap (array = []) {
   return array.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
 }
 
+/**
+ * Detect which platform is used and send it over with each api request as `os_name`
+ *
+ * @returns {string}
+ */
+function detectPlatform () {
+
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera
+  const rules = [
+    {regexp: /windows phone/i, platform: 'windows-phone'},
+    {regexp: /Android/i, platform: 'android'},
+    {regexp: /iPad|iPhone|iPod/, platform: 'ios'},
+    {regexp: /Win/, platform: 'windows'},
+    {regexp: /Mac/, platform: 'macos'},
+    {regexp: /webOS/, platform: 'webos'},
+    {regexp: /SymbianOS|Symbian/, platform: 'symbian'},
+    {regexp: /PlayBook|BlackBerry/, platform: 'blackberry'},
+    {regexp: /Linux/, platform: 'linux'}
+  ]
+
+  for (let i = 0; i < rules.length; i += 1) {
+    if (rules[i].regexp.test(userAgent)) {
+      return rules[i].platform
+    }
+  }
+
+  return 'unknown'
+}
+
 export {
   buildList,
   isEmpty,
@@ -169,5 +198,6 @@ export {
   off,
   findIndex,
   extend,
-  convertToMap
+  convertToMap,
+  detectPlatform
 }

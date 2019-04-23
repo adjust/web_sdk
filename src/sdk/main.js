@@ -16,8 +16,7 @@ import event from './event'
  */
 const _mandatory = [
   'appToken',
-  'environment',
-  'osName'
+  'environment'
 ]
 
 /**
@@ -173,7 +172,6 @@ function _isInitiated () {
  * @param {Object} params
  * @param {string} params.appToken
  * @param {string} params.environment
- * @param {string} params.osName
  * @param {Function=} params.attributionCallback
  * @private
  */

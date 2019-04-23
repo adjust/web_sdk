@@ -78,7 +78,7 @@ function _encodeParams (params) {
 
   return Object
     .entries(params)
-    .filter(([_, value]) => {
+    .filter(([, value]) => {
       if (isObject(value)) {
         return !isEmpty(value)
       }

@@ -20,24 +20,17 @@ const external = {
 describe('test uninitiated instance', () => {
   it('throws an error when not all parameters provided', () => {
 
-    expect.assertions(3)
+    expect.assertions(2)
 
     expect(() => {
       mainInstance.init()
-    }).toThrowError(new Error('You must define appToken, environment and osName'))
+    }).toThrowError(new Error('You must define appToken and environment'))
 
     expect(() => {
       mainInstance.init({
         appToken: 'a-token'
       })
-    }).toThrow(new Error('You must define environment and osName'))
-
-    expect(() => {
-      mainInstance.init({
-        appToken: 'a-token',
-        environment: 'production'
-      })
-    }).toThrow(new Error('You must define osName'))
+    }).toThrow(new Error('You must define environment'))
 
   })
 
@@ -69,7 +62,6 @@ describe('test initiated instance', () => {
     mainInstance.init({
       appToken: 'some-app-token',
       environment: 'production',
-      osName: 'android',
       attributionCallback: external.attributionCb
     })
   })
@@ -89,7 +81,7 @@ describe('test initiated instance', () => {
 
     expect(Config.default.baseParams.appToken).toEqual('some-app-token')
     expect(Config.default.baseParams.environment).toEqual('production')
-    expect(Config.default.baseParams.osName).toEqual('android')
+    expect(Config.default.baseParams.osName).toEqual('unknown')
     expect(PubSub.subscribe).toHaveBeenCalledWith('attribution:change', external.attributionCb)
     expect(Identity.startActivityState).toHaveBeenCalledTimes(1)
     expect(Queue.default.run).toHaveBeenCalledTimes(1)
@@ -112,15 +104,14 @@ describe('test initiated instance', () => {
     expect(() => {
       sameInstance.init({
         appToken: 'some-other-app-token',
-        environment: 'production',
-        osName: 'ios'
+        environment: 'production'
       })
     }).toThrow(new Error('You already initiated your instance'))
 
     expect(mainInstance).toBe(sameInstance)
     expect(Config.default.baseParams.appToken).toEqual('some-app-token')
     expect(Config.default.baseParams.environment).toEqual('production')
-    expect(Config.default.baseParams.osName).toEqual('android')
+    expect(Config.default.baseParams.osName).toEqual('unknown')
 
   })
 

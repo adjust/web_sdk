@@ -5,7 +5,6 @@ import app from './app'
 const appConfig = {
   appToken: 'src556ylophc',
   environment: 'production',
-  osName: 'macos',
   attributionCallback: attributionCallback
 }
 

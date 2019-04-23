@@ -1,10 +1,10 @@
 import Constants from './constants'
-import {extend} from './utilities'
+import {extend, detectPlatform} from './utilities'
 
 const _initial = {
   appToken: '',
   environment: '',
-  osName: ''
+  osName: detectPlatform()
 }
 
 const ClientConfig = extend({}, _initial)
