@@ -1,3 +1,5 @@
+import Config from './config'
+
 const LEVEL_VERBOSE = 'verbose'
 const LEVEL_INFO = 'info'
 const LEVEL_ERROR = 'error'
@@ -75,11 +77,14 @@ const Logger = {
 }
 
 _methods.forEach(method => {
-  Logger[method.name] = message => {
-    if (_levels[_current] >= _levels[method.level]) {
-      console[method.name](`${method.name.toUpperCase()}:`, message) // eslint-disable-line
+  Object.defineProperty(Logger, method.name, {
+    writable: false,
+    value: (...message) => {
+      if (_levels[_current] >= _levels[method.level]) {
+        console[method.name](`[${Config.namespace}]`, `${method.name.toUpperCase()}:`, ...message) // eslint-disable-line
+      }
     }
-  }
+  })
 })
 
 export default Logger

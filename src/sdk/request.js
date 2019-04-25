@@ -4,6 +4,7 @@ import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
 import {setLastActive} from './session'
 import ActivityState from './activity-state'
+import Logger from './logger'
 
 /**
  * Check if attribution requst
@@ -28,6 +29,8 @@ function _getSuccessObject (xhr, url) {
 
   const response = xhr.response ? JSON.parse(xhr.response) : {}
   const append = _isAttributionRequest(url) ? ['attribution', 'message'] : []
+
+  Logger.info(`Request ${url} has been successful`)
 
   return ['adid', 'timestamp', 'ask_in', ...append]
     .filter(key => response[key])
@@ -136,17 +139,17 @@ function _buildXhr ({url, method = 'GET', params = {}}) {
 
   const encodedParams = _encodeParams(params)
 
-  url = Config.baseUrl + url
+  let fullUrl = Config.baseUrl + url
 
   if (method === 'GET') {
-    url += `?${encodedParams}`
+    fullUrl += `?${encodedParams}`
   }
 
   return new Promise((resolve, reject) => {
 
     let xhr = new XMLHttpRequest()
 
-    xhr.open(method, url, true)
+    xhr.open(method, fullUrl, true)
     xhr.setRequestHeader('Client-SDK', Config.version)
     if (method === 'POST') {
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')

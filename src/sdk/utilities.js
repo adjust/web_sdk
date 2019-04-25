@@ -188,6 +188,17 @@ function detectPlatform () {
   return 'unknown'
 }
 
+/**
+ * Find intersecting values of provided array against given values
+ *
+ * @param {Array} array
+ * @param {Array} values
+ * @returns {Array}
+ */
+function intersection (array = [], values = []) {
+  return array.filter(item => values.indexOf(item) !== -1)
+}
+
 export {
   buildList,
   isEmpty,
@@ -199,5 +210,6 @@ export {
   findIndex,
   extend,
   convertToMap,
-  detectPlatform
+  detectPlatform,
+  intersection
 }

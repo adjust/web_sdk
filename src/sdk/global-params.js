@@ -1,5 +1,6 @@
-import {convertToMap} from './utilities'
+import {convertToMap, intersection} from './utilities'
 import StorageManager from './storage-manager'
+import Logger from './logger'
 
 /**
  * Get callback and partner global parameters
@@ -12,6 +13,7 @@ function get () {
     StorageManager.filterBy('globalParams', 'partner')
   ]).then(([callbackParams = [], partnerParams = []]) => ({callbackParams, partnerParams}))
 }
+
 /**
  * Add global parameters, either callback or partner params
  *
@@ -25,7 +27,25 @@ function add (params, type = 'callback') {
     .keys(map)
     .map(key => ({key, value: map[key], type}))
 
-  return StorageManager.addBulk('globalParams', prepared, true)
+  return Promise.all([
+    StorageManager.filterBy('globalParams', type),
+    StorageManager.addBulk('globalParams', prepared, true)
+  ]).then(([oldParams, newParams]) => {
+
+    const intersecting = intersection(
+      oldParams.map(param => param.key),
+      newParams.map(param => param[0])
+    )
+
+    Logger.log(`Following ${type} parameters have been saved: ${prepared.map(p => `${p.key}:${p.value}`).join(', ')}`)
+
+    if (intersecting.length) {
+      Logger.log(`Keys: ${intersecting.join(', ')} already existed so their values have been updated`)
+    }
+
+    return newParams
+  })
+
 }
 
 /**
@@ -37,6 +57,10 @@ function add (params, type = 'callback') {
  */
 function remove (key, type = 'callback') {
   return StorageManager.deleteItem('globalParams', [key, type])
+    .then(result => {
+      Logger.log(`${key} ${type} parameter has been deleted`)
+      return result
+    })
 }
 
 /**
@@ -46,6 +70,10 @@ function remove (key, type = 'callback') {
  */
 function removeAll (type = 'callback') {
   return StorageManager.deleteBulk('globalParams', type)
+    .then(result => {
+      Logger.log(`All ${type} parameters have been deleted`)
+      return result
+    })
 }
 
 export {

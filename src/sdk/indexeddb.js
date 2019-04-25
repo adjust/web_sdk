@@ -65,8 +65,10 @@ function _handleUpgradeNeeded (e, reject) {
 
     if (storeName === 'activityState' && inMemoryAvailable) {
       objectStore.add(ActivityState.current)
+      Logger.info('Activity state has been recovered')
     } else if (QuickStorage[storeName]) {
       QuickStorage[storeName].forEach(record => objectStore.add(record))
+      Logger.info(`Migration from localStorage done for ${storeName} store`)
     }
   })
 

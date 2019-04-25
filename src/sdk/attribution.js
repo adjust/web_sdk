@@ -6,6 +6,7 @@ import {getTimestamp} from './time'
 import {extend} from './utilities'
 import {updateActivityState} from './identity'
 import ActivityState from './activity-state'
+import Logger from './logger'
 
 /**
  * Timeout id and wait when delayed attribution check is about to happen
@@ -77,6 +78,8 @@ function _setAttribution (result = {}) {
   return updateActivityState({attribution})
     .then(() => {
       publish('attribution:change', attribution)
+      Logger.info('Attribution has been updated')
+      Logger.log('Updated attribution:', attribution)
       return attribution
     })
 }
@@ -93,6 +96,7 @@ function _delayedRequest (wait) {
   clearTimeout(_timeout.id)
 
   return new Promise(() => {
+    Logger.info(`Trying request /attribution in ${wait}ms`)
     _timeout.id = setTimeout(() => {
       return _request()
     }, wait)

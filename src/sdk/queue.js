@@ -1,8 +1,9 @@
 import Config from './config'
-import request from './request'
-import backOff from './backoff'
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
+import Logger from './logger'
+import request from './request'
+import backOff from './backoff'
 import {extend} from './utilities'
 
 /**
@@ -95,6 +96,7 @@ function _delayedRequest (pending) {
   }
 
   return new Promise(() => {
+    Logger.info(`Trying request ${pending.url} in ${_timeout.wait}ms`)
     _timeout.id = setTimeout(() => {
       return _request(pending)
     }, _timeout.wait)
@@ -146,6 +148,7 @@ function setOfflineMode (state = false) {
     run()
   }
 
+  Logger.info(`The app is now in ${(state ? 'offline' : 'online')} mode`)
 }
 
 /**

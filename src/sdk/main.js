@@ -135,6 +135,7 @@ function destroy () {
   identityDestroy()
   StorageManager.destroy()
   _clear()
+  Logger.info('adjustSDK instance has been destroyed')
 }
 
 /**

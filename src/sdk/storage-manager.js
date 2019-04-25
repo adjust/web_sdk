@@ -1,5 +1,6 @@
 import IndexedDB from './indexeddb'
 import LocalStorage from './localstorage'
+import Logger from './logger'
 
 let StorageManager = {}
 
@@ -9,8 +10,12 @@ if (IndexedDB.isSupported()) {
 } else if (LocalStorage.isSupported()) {
   StorageManager = LocalStorage
   StorageManager.type = 'localStorage'
+}
+
+if (StorageManager.type) {
+  Logger.info(`Storage set to ${StorageManager.type}`)
 } else {
-  StorageManager.type = 'no-storage-available'
+  Logger.error('There is no storage available, app will run with minimum set of features')
 }
 
 export default StorageManager
