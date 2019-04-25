@@ -153,4 +153,13 @@ describe('test for utility methods', () => {
       })
     })
   })
+
+  describe('test for intersect', () => {
+    it('returns an array of intersecting elements', () => {
+      expect(Utilities.intersection([1,2,3], [1,3,5,6])).toEqual([1,3])
+      expect(Utilities.intersection([1,2,3], [4,5,6])).toEqual([])
+      expect(Utilities.intersection([1,2,3], [2])).toEqual([2])
+      expect(Utilities.intersection([], [4,5,6])).toEqual([])
+    })
+  })
 })

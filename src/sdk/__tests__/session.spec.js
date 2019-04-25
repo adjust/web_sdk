@@ -11,6 +11,7 @@ import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import {flushPromises} from './_helper'
 
+jest.mock('../logger')
 jest.useFakeTimers()
 
 const now = 1551916800000
@@ -33,7 +34,7 @@ describe('test session functionality', () => {
     jest.spyOn(Identity, 'sync').mockImplementation(() => Promise.resolve({}))
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
-    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
+    jest.spyOn(Logger.default, 'error')
 
     Object.assign(Config.default.baseParams, {
       appToken: '123abc',

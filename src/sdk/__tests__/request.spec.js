@@ -5,6 +5,8 @@ import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import {flushPromises, createMockXHR} from './_helper'
 
+jest.mock('../logger')
+
 describe('perform api requests', () => {
 
   const gpsAdid = '&gps_adid=some-uuid'

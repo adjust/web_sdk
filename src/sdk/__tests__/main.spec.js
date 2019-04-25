@@ -12,6 +12,7 @@ import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 import {removeAll} from '../global-params'
 
+jest.mock('../logger')
 jest.useFakeTimers()
 
 const external = {
@@ -21,7 +22,7 @@ const external = {
 describe('test uninitiated instance', () => {
 
   beforeAll(() => {
-    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
+    jest.spyOn(Logger.default, 'error')
   })
 
   it('logs an error and return when not all parameters provided', () => {
@@ -56,7 +57,7 @@ describe('test initiated instance', () => {
     jest.spyOn(GlobalParams, 'remove').mockImplementation(() => {})
     jest.spyOn(GlobalParams, 'removeAll').mockImplementation(() => {})
     jest.spyOn(Identity, 'startActivityState')
-    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
+    jest.spyOn(Logger.default, 'error')
 
     mainInstance.init({
       appToken: 'some-app-token',

@@ -8,6 +8,8 @@ import * as StorageManager from '../storage-manager'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 
+jest.mock('../logger')
+
 const appConfig = {
   appToken: '123abc',
   environment: 'sandbox',
@@ -19,7 +21,7 @@ describe('event tracking functionality', () => {
   beforeAll(() => {
     jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
-    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
+    jest.spyOn(Logger.default, 'error')
 
     Object.assign(Config.default.baseParams, appConfig)
   })

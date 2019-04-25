@@ -5,10 +5,12 @@ import * as ActivityState from '../activity-state'
 import * as QuickStorage from '../quick-storage'
 import * as Logger from '../logger'
 
+jest.mock('../logger')
+
 describe('LocalStorage usage', () => {
 
   beforeAll(() => {
-    jest.spyOn(Logger.default, 'error').mockImplementation(() => {})
+    jest.spyOn(Logger.default, 'error')
   })
 
   afterEach(() => {

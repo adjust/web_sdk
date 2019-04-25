@@ -2,10 +2,12 @@
 import * as Queue from '../queue'
 import * as request from '../request'
 import * as StorageManager from '../storage-manager'
-import {flushPromises} from './_helper'
 import * as ActivityState from '../activity-state'
+import * as Logger from '../logger'
+import {flushPromises} from './_helper'
 
 jest.mock('../request')
+jest.mock('../logger')
 jest.useFakeTimers()
 
 const now = 1552914489217
@@ -58,6 +60,7 @@ describe('test request queuing functionality', () => {
     jest.spyOn(Queue.default, 'run')
     jest.spyOn(request, 'default')
     jest.spyOn(StorageManager.default, 'addItem')
+    jest.spyOn(Logger.default, 'info')
   })
 
   afterEach(() => {
@@ -277,7 +280,9 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
 
-    expect.assertions(13)
+    expect.assertions(15)
+
+    expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
     return push([config1, config2])
       .then(() => {
@@ -297,6 +302,8 @@ describe('test request queuing functionality', () => {
         ])
 
         Queue.default.setOfflineMode(false)
+
+        expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
         return flushPromises()
       })
@@ -318,7 +325,9 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/session'}
     const config2 = {url: '/event'}
 
-    expect.assertions(13)
+    expect.assertions(15)
+
+    expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
     return push([config1, config2])
       .then(() => {
@@ -348,6 +357,8 @@ describe('test request queuing functionality', () => {
 
         Queue.default.setOfflineMode(false)
 
+        expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
+
         return flushPromises()
       })
       .then(() => checkExecution({config: config2, times: 1})) // + 4 assertions
@@ -367,7 +378,9 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/session'}
     const config2 = {url: '/event'}
 
-    expect.assertions(13)
+    expect.assertions(15)
+
+    expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
     return push([config1, config2])
       .then(() => {
@@ -387,6 +400,8 @@ describe('test request queuing functionality', () => {
         ])
 
         Queue.default.setOfflineMode(false)
+
+        expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
         return flushPromises()
       })

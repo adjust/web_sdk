@@ -3,6 +3,8 @@ import * as Identity from '../identity'
 import * as StorageManager from '../storage-manager'
 import * as ActivityState from '../activity-state'
 
+jest.mock('../logger')
+
 describe('test identity methods', () => {
 
   beforeAll(() => {

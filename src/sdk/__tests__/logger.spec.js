@@ -15,24 +15,38 @@ describe('test Logger functionality', () => {
 
   afterAll(() => {
     global.__ADJUST__ENV = 'test'
+    Logger.default.setLogLevel()
+  })
+
+  it('prints multiple messages passed to each method', () => {
+
+    Logger.default.log('Some', 'message')
+    expect(console.log).toHaveBeenCalledWith('[adjust-sdk]', 'LOG:', 'Some', 'message')
+
+    Logger.default.info('Some', 'info')
+    expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', 'INFO:', 'Some', 'info')
+
+    Logger.default.error('Some', 'error', 'message')
+    expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some', 'error', 'message')
+
   })
 
   describe('verbose log level by default in test environment', () => {
 
     it('prints verbose messages', () => {
       Logger.default.log('Some message with looooong explanation')
-      expect(console.log).toHaveBeenCalledWith('LOG:', 'Some message with looooong explanation')
+      expect(console.log).toHaveBeenCalledWith('[adjust-sdk]', 'LOG:', 'Some message with looooong explanation')
 
     })
 
     it('prints info messages', () => {
       Logger.default.info('Some message')
-      expect(console.info).toHaveBeenCalledWith('INFO:', 'Some message')
+      expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', 'INFO:', 'Some message')
     })
 
     it('prints error messages', () => {
       Logger.default.error('Some error message')
-      expect(console.error).toHaveBeenCalledWith('ERROR:', 'Some error message')
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
     })
 
   })
@@ -50,18 +64,18 @@ describe('test Logger functionality', () => {
 
     it('prints verbose messages', () => {
       Logger.default.log('Some message with looooong explanation')
-      expect(console.log).toHaveBeenCalledWith('LOG:', 'Some message with looooong explanation')
+      expect(console.log).toHaveBeenCalledWith('[adjust-sdk]', 'LOG:', 'Some message with looooong explanation')
 
     })
 
     it('prints info messages', () => {
       Logger.default.info('Some message')
-      expect(console.info).toHaveBeenCalledWith('INFO:', 'Some message')
+      expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', 'INFO:', 'Some message')
     })
 
     it('prints error messages', () => {
       Logger.default.error('Some error message')
-      expect(console.error).toHaveBeenCalledWith('ERROR:', 'Some error message')
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
     })
 
   })
@@ -90,7 +104,7 @@ describe('test Logger functionality', () => {
 
     it('prints error messages', () => {
       Logger.default.error('Some error message')
-      expect(console.error).toHaveBeenCalledWith('ERROR:', 'Some error message')
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
     })
 
   })
@@ -103,18 +117,18 @@ describe('test Logger functionality', () => {
 
     it('prints verbose messages', () => {
       Logger.default.log('Some message with looooong explanation')
-      expect(console.log).toHaveBeenCalledWith('LOG:', 'Some message with looooong explanation')
+      expect(console.log).toHaveBeenCalledWith('[adjust-sdk]', 'LOG:', 'Some message with looooong explanation')
 
     })
 
     it('prints info messages', () => {
       Logger.default.info('Some message')
-      expect(console.info).toHaveBeenCalledWith('INFO:', 'Some message')
+      expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', 'INFO:', 'Some message')
     })
 
     it('prints error messages', () => {
       Logger.default.error('Some error message')
-      expect(console.error).toHaveBeenCalledWith('ERROR:', 'Some error message')
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
     })
 
   })
@@ -133,12 +147,12 @@ describe('test Logger functionality', () => {
 
     it('prints info messages', () => {
       Logger.default.info('Some message')
-      expect(console.info).toHaveBeenCalledWith('INFO:', 'Some message')
+      expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', 'INFO:', 'Some message')
     })
 
     it('prints error messages', () => {
       Logger.default.error('Some error message')
-      expect(console.error).toHaveBeenCalledWith('ERROR:', 'Some error message')
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
     })
 
   })
@@ -162,7 +176,7 @@ describe('test Logger functionality', () => {
 
     it('prints error messages', () => {
       Logger.default.error('Some error message')
-      expect(console.error).toHaveBeenCalledWith('ERROR:', 'Some error message')
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
     })
 
   })

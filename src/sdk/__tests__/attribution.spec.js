@@ -9,6 +9,7 @@ import * as ActivityState from '../activity-state'
 import {flushPromises} from './_helper'
 
 jest.mock('../request')
+jest.mock('../logger')
 jest.useFakeTimers()
 
 describe('test attribution functionality', () => {
