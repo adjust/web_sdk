@@ -32,7 +32,7 @@ describe('IndexedDB usage', () => {
 
   it('checks if indexedDB is supported', () => {
 
-    let supported = IndexedDB.default.isSupported(true)
+    let supported = IndexedDB.default.isSupported()
 
     expect(supported).toBeTruthy()
     expect(Logger.default.error).not.toHaveBeenCalled()
@@ -41,10 +41,6 @@ describe('IndexedDB usage', () => {
 
     supported = IndexedDB.default.isSupported()
 
-    expect(supported).toBeFalsy()
-    expect(Logger.default.error).not.toHaveBeenCalled()
-
-    supported = IndexedDB.default.isSupported(true)
     expect(supported).toBeFalsy()
     expect(Logger.default.error).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
 

@@ -30,17 +30,9 @@ describe('LocalStorage usage', () => {
     expect(supported).toBeTruthy()
     expect(Logger.default.error).not.toHaveBeenCalled()
 
-    LocalStorage.default.isSupported(true)
-    expect(Logger.default.error).not.toHaveBeenCalled()
-
     delete window.localStorage
 
     supported = LocalStorage.default.isSupported()
-    expect(supported).toBeFalsy()
-    expect(Logger.default.error).not.toHaveBeenCalled()
-
-    supported = LocalStorage.default.isSupported(true)
-
     expect(supported).toBeFalsy()
     expect(Logger.default.error).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
 

@@ -7,10 +7,9 @@ import {findIndex, isObject} from './utilities'
 /**
  * Check if LocalStorage is supported in the current browser
  *
- * @param {boolean=} toLog
  * @returns {boolean}
  */
-function isSupported (toLog) {
+function isSupported () {
 
   let uid = (new Date).toString()
   let storage
@@ -22,9 +21,7 @@ function isSupported (toLog) {
     storage.removeItem(uid)
     return !!(result && storage)
   } catch (exception) {
-    if (toLog) {
-      Logger.error('LocalStorage is not supported in this browser')
-    }
+    Logger.error('LocalStorage is not supported in this browser')
     return false
   }
 
@@ -37,7 +34,7 @@ function isSupported (toLog) {
  */
 function _open () {
 
-  if (!isSupported(true)) {
+  if (!isSupported()) {
     return
   }
 

@@ -12,15 +12,14 @@ let _db
 /**
  * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
  *
- * @param {boolean=} toLog
  * @returns {boolean}
  */
-function isSupported (toLog) {
+function isSupported () {
   const indexedDB = _getIDB()
   const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
   const supported = !!indexedDB && !iOS
 
-  if (toLog && !supported) {
+  if (!supported) {
     Logger.error('IndexedDB is not supported in this browser')
   }
 
@@ -101,7 +100,7 @@ function _open () {
 
   const indexedDB = _getIDB()
 
-  if (!isSupported(true)) {
+  if (!isSupported()) {
     return Promise.reject({})
   }
 
