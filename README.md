@@ -13,6 +13,7 @@ This is the guide to the Javascript SDK of Adjust™ for web apps. You can read 
       * [Revenue tracking](#revenue-tracking)
       * [Callback parameters](#callback-parameters)
       * [Partner parameters](#partner-parameters)
+* [Logging](#logging)      
 * [License](#license)
 
 ## <a id="example-app"></a>Example apps
@@ -136,6 +137,23 @@ adjustSDK.trackEvent(eventConfig)
 ```
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].
+
+### <a id="logging"></a>Logging
+
+By default sdk will log only errors in production if no explicit log level is provided. 
+Here is the list of log levels which can be passed to init config through `logLevel` parameters:
+- `verbose` - will print detailed messages in case of certain actions
+- `info` - will print only basic info messages
+- `error` - will print only error message
+- `none` - won't print anything
+
+```js
+adjustSDK.init({
+  // other stuff like appToken and environment
+  logLevel: 'LogLevel' // where LogLevel is "verbose", "info", "error" or "none"
+});
+```
+
 
 ## <a id="license"></a>License
 

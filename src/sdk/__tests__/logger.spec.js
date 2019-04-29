@@ -18,6 +18,20 @@ describe('test Logger functionality', () => {
     Logger.default.setLogLevel()
   })
 
+  it('prints info/error message when changing log level', () => {
+
+    Logger.default.setLogLevel()
+    expect(console.info).toHaveBeenLastCalledWith('[adjust-sdk]', 'INFO:', 'Log level set to verbose')
+
+    Logger.default.setLogLevel('error')
+    expect(console.info).toHaveBeenLastCalledWith('[adjust-sdk]', 'INFO:', 'Log level set to error')
+
+    Logger.default.setLogLevel('not-existing-level')
+    expect(console.error).toHaveBeenLastCalledWith('[adjust-sdk]', 'ERROR:', 'You must set one of the available log levels: verbose, info, error or none')
+
+    Logger.default.setLogLevel()
+  })
+
   it('prints multiple messages passed to each method', () => {
 
     Logger.default.log('Some', 'message')

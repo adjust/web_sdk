@@ -10,6 +10,7 @@ Here you can find changes for this project. When updating to a new version be su
 - use of **indexedDB** with **localStorage** as a fallback
 - settings global callback and partner parameters, along with removal of previously set ones
 - offline mode
+- possibility to set the log level on init
 
 ### Changed
 - using exposed single instance instead of initiating it manually with the `new` (`adjustSDK.init(YOUR_CONFIG)`)

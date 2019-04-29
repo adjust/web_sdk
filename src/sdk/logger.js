@@ -1,9 +1,9 @@
 import Config from './config'
 
-const LEVEL_VERBOSE = 'verbose'
-const LEVEL_INFO = 'info'
-const LEVEL_ERROR = 'error'
 const LEVEL_NONE = 'none'
+const LEVEL_ERROR = 'error'
+const LEVEL_INFO = 'info'
+const LEVEL_VERBOSE = 'verbose'
 
 /**
  * Logger levels
@@ -67,9 +67,28 @@ function _getDefaultLogLevel () {
  * @param {string=} logLevel
  */
 function setLogLevel (logLevel) {
-  _current = Object.keys(_levels).indexOf(logLevel) !== -1
-    ? logLevel
-    : _getDefaultLogLevel()
+
+  const exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1
+
+  if (!exists) {
+    _log('error', 'You must set one of the available log levels: verbose, info, error or none')
+    return
+  }
+
+  _current = logLevel || _getDefaultLogLevel()
+
+  _log('info', `Log level set to ${_current}`)
+}
+
+/**
+ * Output the message to the console
+ *
+ * @param {string} methodName
+ * @param {string} message
+ * @private
+ */
+function _log (methodName, ...message) {
+  console[methodName](`[${Config.namespace}]`, `${methodName.toUpperCase()}:`, ...message) // eslint-disable-line
 }
 
 const Logger = {
@@ -81,7 +100,7 @@ _methods.forEach(method => {
     writable: false,
     value: (...message) => {
       if (_levels[_current] >= _levels[method.level]) {
-        console[method.name](`[${Config.namespace}]`, `${method.name.toUpperCase()}:`, ...message) // eslint-disable-line
+        _log(method.name, ...message)
       }
     }
   })

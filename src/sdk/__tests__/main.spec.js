@@ -36,7 +36,7 @@ describe('test uninitiated instance', () => {
     expect(Logger.default.error).toHaveBeenLastCalledWith('You must define environment')
   })
 
-  it('logs an error and return when trying to skip init', () => {
+  it('logs an error and return when trying to track event before init', () => {
 
     mainInstance.trackEvent()
 
