@@ -7,6 +7,9 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
 
 module.exports = (env, argv) => ({
+  devServer: {
+    host: '0.0.0.0'
+  },
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'demo'),
