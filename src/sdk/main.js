@@ -27,7 +27,7 @@ const _mandatory = [
  */
 function init (params = {}) {
 
-  Logger.setLogLevel(params.logLevel)
+  Logger.setLogLevel(params.logLevel, params.logOutput)
 
   if (_isInitiated()) {
     Logger.error('You already initiated your instance')

@@ -49,7 +49,15 @@ const _methods = [
 /**
  * Current logger level
  */
-let _current = _getDefaultLogLevel()
+let _level = _getDefaultLogLevel()
+
+/**
+ * Optional output container to display logs for easier debugging
+ *
+ * @type {string}
+ * @private
+ */
+let _output = ''
 
 /**
  * Get default logger error per environment and fallback to error level when unknown env
@@ -65,8 +73,9 @@ function _getDefaultLogLevel () {
  * Set logger level, fallback to default log level
  *
  * @param {string=} logLevel
+ * @param {string=} logOutput
  */
-function setLogLevel (logLevel) {
+function setLogLevel (logLevel, logOutput) {
 
   const exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1
 
@@ -75,9 +84,10 @@ function setLogLevel (logLevel) {
     return
   }
 
-  _current = logLevel || _getDefaultLogLevel()
+  _level = logLevel || _getDefaultLogLevel()
+  _output = logOutput
 
-  _log('info', `Log level set to ${_current}`)
+  _log('info', `Log level set to ${_level}`)
 }
 
 /**
@@ -88,7 +98,16 @@ function setLogLevel (logLevel) {
  * @private
  */
 function _log (methodName, ...message) {
+
   console[methodName](`[${Config.namespace}]`, `${methodName.toUpperCase()}:`, ...message) // eslint-disable-line
+
+  const outputContainer = _output ? document.querySelector(_output) : null
+
+  if (outputContainer) {
+    outputContainer.textContent += [`[${Config.namespace}]`, `${methodName.toUpperCase()}:`, ...message].join(' ') + '\n'
+    outputContainer.scrollTop = outputContainer.scrollHeight
+  }
+
 }
 
 const Logger = {
@@ -99,7 +118,7 @@ _methods.forEach(method => {
   Object.defineProperty(Logger, method.name, {
     writable: false,
     value: (...message) => {
-      if (_levels[_current] >= _levels[method.level]) {
+      if (_levels[_level] >= _levels[method.level]) {
         _log(method.name, ...message)
       }
     }
