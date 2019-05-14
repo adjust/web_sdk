@@ -1,9 +1,9 @@
 import Config from './config'
 import Scheme from './scheme'
 
-const _storageFields = Object.keys(Scheme)
+const _schemeKeys = Object.keys(Scheme)
+const _storageFields = ['state', ..._schemeKeys]
 const _storageName = Config.namespace
-const _storage = window.localStorage
 
 /**
  * Get the value for specified key
@@ -13,7 +13,7 @@ const _storage = window.localStorage
  * @private
  */
 function _get (key) {
-  return JSON.parse(_storage.getItem(`${_storageName}.${key}`))
+  return JSON.parse(localStorage.getItem(`${_storageName}.${key}`))
 }
 
 /**
@@ -24,20 +24,20 @@ function _get (key) {
  * @private
  */
 function _set (key, value) {
-  _storage.setItem(`${_storageName}.${key}`, JSON.stringify(value))
+  localStorage.setItem(`${_storageName}.${key}`, JSON.stringify(value))
 }
 
 /**
  * Clear all data related to the sdk
  */
 function clear () {
-  _storageFields.forEach(key => {
-    _storage.removeItem(`${_storageName}.${key}`)
+  _schemeKeys.forEach(key => {
+    localStorage.removeItem(`${_storageName}.${key}`)
   })
 }
 
 const QuickStorage = {
-  clear: clear
+  clear
 }
 
 _storageFields.forEach(key => {

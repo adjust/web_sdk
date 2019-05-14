@@ -1,6 +1,10 @@
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
 import {extend} from './utilities'
+import QuickStorage from './quick-storage'
+
+const REASON_GENERAL = 'general'
+const REASON_GDPR = 'gdpr'
 
 /**
  * Generate random  uuid v4
@@ -76,12 +80,79 @@ function sync () {
 
       const lastActive = ActivityState.current.lastActive || 0
 
-      if (lastActive < activityState.lastActive) {
+      if (!isDisabled() && lastActive < activityState.lastActive) {
         ActivityState.current = activityState
       }
 
       return activityState
     })
+}
+
+/**
+ * Check if sdk is disabled
+ *
+ * @returns {boolean}
+ */
+function isDisabled () {
+
+  const state = _getState()
+
+  return state.disabled || false
+}
+
+/**
+ * Set disabled flag
+ *
+ * @param {boolean} disabled
+ * @param {string=} reason
+ */
+function setDisabled (disabled, reason) {
+  QuickStorage.state = {
+    disabled,
+    reason: reason || REASON_GENERAL
+  }
+}
+
+/**
+ * Get disabled flag
+ *
+ * @returns {Object}
+ * @private
+ */
+function _getState () {
+
+  const state = QuickStorage.state || {}
+
+  return {
+    disabled: state.disabled || false,
+    reason: state.reason || REASON_GENERAL
+  }
+}
+
+/**
+ * Check if user has been disabled by issuing GDPR-Forgot-Me request
+ *
+ * @returns {boolean}
+ */
+function isGdprForgotten () {
+
+  const state = _getState()
+
+  return state.disabled && state.reason === REASON_GDPR
+}
+
+/**
+ * Clear activity state store - set uuid to be unknown
+ */
+function clear () {
+
+  const newActivityState = {uuid: 'unknown'}
+
+  ActivityState.current = newActivityState
+
+  return StorageManager.getFirst('activityState')
+    .then(current => current ? StorageManager.deleteItem('activityState', current.uuid) : null)
+    .then(() => StorageManager.addItem('activityState', newActivityState))
 }
 
 /**
@@ -95,5 +166,9 @@ export {
   startActivityState,
   updateActivityState,
   sync,
+  setDisabled,
+  isDisabled,
+  isGdprForgotten,
+  clear,
   destroy
 }

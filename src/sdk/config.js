@@ -18,10 +18,10 @@ const Config = {
   requestValidityWindow: 28 * Constants.day,
   ignoreSwitchToBackground: __ADJUST__ENV === 'development',
   baseParams: ClientConfig,
-  clear
+  destroy
 }
 
-function clear () {
+function destroy () {
   extend(Config.baseParams, _initial)
 }
 

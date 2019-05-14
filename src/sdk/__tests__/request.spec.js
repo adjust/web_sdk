@@ -3,6 +3,7 @@ import * as request from '../request'
 import * as Attribution from '../attribution'
 import * as Time from '../time'
 import * as ActivityState from '../activity-state'
+import * as PubSub from '../pub-sub'
 import {flushPromises, createMockXHR} from './_helper'
 
 jest.mock('../logger')
@@ -275,7 +276,7 @@ describe('perform api requests', () => {
     })
   })
 
-  describe('check attribution response', () => {
+  describe('response interception', () => {
 
     const prepare = (response) => {
       mockXHR = createMockXHR(response)
@@ -284,6 +285,7 @@ describe('perform api requests', () => {
 
     beforeAll(() => {
       jest.spyOn(Attribution, 'checkAttribution')
+      jest.spyOn(PubSub, 'publish')
     })
 
     afterEach(() => {
@@ -292,6 +294,42 @@ describe('perform api requests', () => {
 
     afterAll(() => {
       jest.restoreAllMocks()
+    })
+
+    it('broadcasts sdk:gdpr-forget-me when opted_out and ignores ask_in', () => {
+
+      prepare({
+        adid: '123123',
+        message: 'bla',
+        timestamp: '2019-02-02',
+        ask_in: 2500,
+        tracking_state: 'opted_out'
+      })
+
+      expect.assertions(3)
+
+      request.default({
+        url: '/session',
+        params: {
+          appToken: '123abc',
+          environment: 'sandbox',
+          osName: 'ios'
+        }
+      }).then(result => {
+        expect(result).toEqual({
+          adid: '123123',
+          timestamp: '2019-02-02',
+          ask_in: 2500,
+          tracking_state: 'opted_out'
+        })
+        expect(Attribution.checkAttribution).not.toHaveBeenCalled()
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+      })
+
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
     })
 
     it('checks attribution info on session request with ask_in', () => {
@@ -377,6 +415,36 @@ describe('perform api requests', () => {
           ask_in: 2500
         })
         expect(Attribution.checkAttribution).toHaveBeenCalledWith(result)
+      })
+
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
+    })
+
+    it('checks GDPR-Forget-Me state on any request', () => {
+
+      prepare({
+        message: 'bla',
+        ask_in: 2500,
+        tracking_state: 'opted_out'
+      })
+
+      expect.assertions(3)
+
+      request.default({
+        url: '/anything',
+        params: {
+          appToken: '123abc'
+        }
+      }).then(result => {
+        expect(result).toEqual({
+          ask_in: 2500,
+          tracking_state: 'opted_out'
+        })
+        expect(Attribution.checkAttribution).not.toHaveBeenCalled()
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
       return flushPromises()

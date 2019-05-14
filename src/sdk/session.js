@@ -54,11 +54,11 @@ function watchSession () {
 
   _started = true
 
-  _checkSession()
-
   if (_adapter) {
     on(document, _adapter.visibilityChange, _handleVisibilityChange)
   }
+
+  _checkSession()
 }
 
 /**

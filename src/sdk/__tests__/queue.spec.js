@@ -13,8 +13,9 @@ jest.useFakeTimers()
 const now = 1552914489217
 let dateNowSpy
 
-function checkExecution ({config, times, success = true, wait = 150, flush = true}) {
+function checkExecution ({config, times, success = true, wait = 150, flush = true, reset = false}) {
 
+  const logMessage = (times === 1 ? 'Trying' : 'Re-trying') + ` request ${config.url} in ${wait}ms`
   const requestAction = success ? 'resolves' : 'rejects'
   const requestActionResult = success ? {status: 'success'} : {error: 'An error'}
 
@@ -24,6 +25,11 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
   expect(setTimeout.mock.calls[times - 1][1]).toBe(wait)
   expect(request.default).toHaveBeenLastCalledWith(config)
   expect(request.default.mock.results[0].value)[requestAction].toEqual(requestActionResult)
+  expect(Logger.default.log).toHaveBeenLastCalledWith(logMessage)
+
+  if (reset) {
+    setTimeout.mockClear()
+  }
 
   if (flush) {
     return flushPromises()
@@ -61,6 +67,7 @@ describe('test request queuing functionality', () => {
     jest.spyOn(request, 'default')
     jest.spyOn(StorageManager.default, 'addItem')
     jest.spyOn(Logger.default, 'info')
+    jest.spyOn(Logger.default, 'log')
   })
 
   afterEach(() => {
@@ -81,7 +88,7 @@ describe('test request queuing functionality', () => {
 
     const config = {url: '/some-url'}
 
-    expect.assertions(4)
+    expect.assertions(6)
 
     Queue.default.push(config)
 
@@ -92,13 +99,15 @@ describe('test request queuing functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(setTimeout.mock.calls[0][1]).toBe(150)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
         expect(request.default).toHaveBeenCalledWith(config)
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /some-url in 150ms')
 
         return flushPromises()
       })
       .then(() => StorageManager.default.getFirst('queue'))
       .then(pending => {
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Request /some-url has been finished')
         expect(pending).toBeUndefined()
       })
 
@@ -110,7 +119,7 @@ describe('test request queuing functionality', () => {
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
 
-    expect.assertions(15)
+    expect.assertions(21)
 
     return push([config1, config2, config3])
       .then(() => {
@@ -127,11 +136,23 @@ describe('test request queuing functionality', () => {
           {timestamp: 1552914489219, url: '/some-url-3'}
         ])
 
-        return checkExecution({config: config1, times: 1}) // + 4 assertions
+        return checkExecution({config: config1, times: 1, reset: true}) // + 5 assertions
       })
-      .then(() => checkExecution({config: config2, times: 2})) // + 4 assertions
-      .then(() => checkExecution({config: config3, times: 3})) // + 4 assertions
-      .then(() => StorageManager.default.getFirst('queue'))
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
+
+        return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
+
+        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
+
+        return StorageManager.default.getFirst('queue')
+      })
       .then(pending => {
         expect(pending).toBeUndefined()
       })
@@ -144,7 +165,7 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
 
-    expect.assertions(32)
+    expect.assertions(41)
 
     return push([config1, config2])
       .then(() => {
@@ -160,12 +181,11 @@ describe('test request queuing functionality', () => {
           {timestamp: 1552914489218, url: '/some-url-2'}
         ])
 
-        return checkExecution({config: config1, times: 1, success: false}) // + 4 assertions
+        return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
       })
-      .then(() => checkExecution({config: config1, times: 2, success: false, wait: 100})) // + 4 assertions
+      .then(() => checkExecution({config: config1, times: 2, success: false, wait: 100})) // + 5 assertions
       .then(() => {
-
-        checkExecution({config: config1, times: 3, success: false, wait: 200, flush: false}) // + 4 assertions
+        checkExecution({config: config1, times: 3, success: false, wait: 200, flush: false}) // + 5 assertions
 
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
@@ -173,34 +193,29 @@ describe('test request queuing functionality', () => {
         return flushPromises()
       })
       .then(() => {
+        checkExecution({config: config1, times: 4, wait: 300, flush: false, reset: true}) // + 5 assertions
 
-        checkExecution({config: config1, times: 4, wait: 300, flush: false}) // + 4 assertions
-
-        setTimeout.mockClear()
         request.default.mockClear()
         request.default.mockRejectedValue({error: 'An error'})
 
         return flushPromises()
       })
-      .then(() => checkExecution({config: config2, times: 1, success: false})) // + 4 assertions
       .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
-        checkExecution({config: config2, times: 2, success: false, wait: 100, flush: false}) // + 4 assertions
+        return checkExecution({config: config2, times: 1, success: false}) // + 5 assertions
+      })
+      .then(() => {
+        checkExecution({config: config2, times: 2, success: false, wait: 100, flush: false}) // + 5 assertions
 
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
 
         return flushPromises()
       })
+      .then(() => checkExecution({config: config2, times: 3, wait: 200, reset: true})) // + 5 assertions
       .then(() => {
-
-        checkExecution({config: config2, times: 3, wait: 200, flush: false}) // + 4 assertions
-
-        setTimeout.mockClear()
-
-        return flushPromises()
-      })
-      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
         expect(setTimeout).not.toHaveBeenCalled()
       })
       .then(() => StorageManager.default.getFirst('queue'))
@@ -210,6 +225,7 @@ describe('test request queuing functionality', () => {
 
   })
 
+
   it('pushes requests to the queue and retries in fifo order if not connected and executes the rest when connected', () => {
 
     request.default.mockRejectedValue({error: 'An error'})
@@ -218,7 +234,7 @@ describe('test request queuing functionality', () => {
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
 
-    expect.assertions(24)
+    expect.assertions(29)
 
     return push([config1, config2, config3])
       .then(() => {
@@ -235,34 +251,19 @@ describe('test request queuing functionality', () => {
           {timestamp: 1552914489219, url: '/some-url-3'}
         ])
 
-        return checkExecution({config: config1, times: 1, success: false}) // + 4 assertions
+        return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
       })
       .then(() => {
-
-        checkExecution({config: config1, times: 2, success: false, wait: 100, flush: false}) // + 4 assertions
+        checkExecution({config: config1, times: 2, success: false, wait: 100, flush: false}) // + 5 assertions
 
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
 
         return flushPromises()
       })
-      .then(() => {
-
-        checkExecution({config: config1, times: 3, wait: 200, flush: false}) // + 4 assertions
-
-        setTimeout.mockClear()
-
-        return flushPromises()
-      })
-      .then(() => checkExecution({config: config2, times: 1})) // + 4 assertions
-      .then(() => {
-
-        checkExecution({config: config3, times: 2, wait: 150, flush: false}) // + 4 assertions
-
-        setTimeout.mockClear()
-
-        return flushPromises()
-      })
+      .then(() => checkExecution({config: config1, times: 3, wait: 200, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config3, times: 1, wait: 150, reset: true})) // + 5 assertions
       .then(() => {
         expect(setTimeout).not.toHaveBeenCalled()
       })
@@ -273,6 +274,7 @@ describe('test request queuing functionality', () => {
 
   })
 
+
   it('does not execute the queue in offline mode and then run the queue when set back to online mode', () => {
 
     Queue.default.setOfflineMode(true)
@@ -280,7 +282,7 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
 
-    expect.assertions(15)
+    expect.assertions(17)
 
     expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
@@ -307,8 +309,8 @@ describe('test request queuing functionality', () => {
 
         return flushPromises()
       })
-      .then(() => checkExecution({config: config1, times: 1})) // + 4 assertions
-      .then(() => checkExecution({config: config2, times: 2})) // + 4 assertions
+      .then(() => checkExecution({config: config1, times: 1, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
       .then(() => StorageManager.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
@@ -325,7 +327,7 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/session'}
     const config2 = {url: '/event'}
 
-    expect.assertions(15)
+    expect.assertions(17)
 
     expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
@@ -334,9 +336,8 @@ describe('test request queuing functionality', () => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
 
-        checkExecution({config: config1, times: 1, flush: false}) // + 4 assertions
+        checkExecution({config: config1, times: 1, reset: true, flush: false}) // + 5 assertions
 
-        setTimeout.mockClear()
         request.default.mockClear()
 
         return flushPromises()
@@ -361,13 +362,14 @@ describe('test request queuing functionality', () => {
 
         return flushPromises()
       })
-      .then(() => checkExecution({config: config2, times: 1})) // + 4 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
       .then(() => StorageManager.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
       })
 
   })
+
 
   it('does not execute session when not first one in offline mode and ignores everything else as well', () => {
 
@@ -378,7 +380,7 @@ describe('test request queuing functionality', () => {
     const config1 = {url: '/session'}
     const config2 = {url: '/event'}
 
-    expect.assertions(15)
+    expect.assertions(17)
 
     expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
@@ -405,14 +407,15 @@ describe('test request queuing functionality', () => {
 
         return flushPromises()
       })
-      .then(() => checkExecution({config: config1, times: 1})) // + 4 assertions
-      .then(() => checkExecution({config: config2, times: 2})) // + 4 assertions
+      .then(() => checkExecution({config: config1, times: 1, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
       .then(() => StorageManager.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
       })
 
   })
+
 
   it('cleans up pending requests that are older than 28 days', () => {
 
@@ -427,13 +430,48 @@ describe('test request queuing functionality', () => {
       .then(() => {
         dateNowSpy.mockReturnValue(new Date('2019-03-03').getTime())
 
-        Queue.default.run(true)
+        Queue.default.run({cleanUp: true})
 
         return flushPromises()
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(remained => {
         expect(remained.map(params => params.url)).toEqual(['/url-1', '/url-4', '/url-6'])
+
+        Queue.default.clear()
+        Queue.default.destroy()
+      })
+
+  })
+
+  it('clears entire queue store', () => {
+
+    const config1 = {url: '/url-1'}
+    const config2 = {url: '/url-2'}
+    const config3 = {url: '/url-3'}
+
+    expect.assertions(6)
+
+    return push([config1, config2, config3])
+      .then(() => StorageManager.default.getAll('queue'))
+      .then(pending => {
+        expect(pending.map(params => params.url)).toEqual(['/url-1', '/url-2', '/url-3'])
+
+        jest.runOnlyPendingTimers()
+
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
+        expect(request.default).toHaveBeenCalledWith(config1)
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /url-1 in 150ms')
+
+        Queue.default.destroy()
+
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Previous request /url-1 attempt canceled')
+
+        return Queue.default.clear()
+      })
+      .then(() => StorageManager.default.getAll('queue'))
+      .then(pending => {
+        expect(pending.length).toEqual(0)
       })
 
   })

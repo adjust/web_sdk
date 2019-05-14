@@ -2,6 +2,8 @@
 import * as Identity from '../identity'
 import * as StorageManager from '../storage-manager'
 import * as ActivityState from '../activity-state'
+import * as Logger from '../logger'
+import {flushPromises} from './_helper'
 
 jest.mock('../logger')
 
@@ -10,6 +12,8 @@ describe('test identity methods', () => {
   beforeAll(() => {
     jest.spyOn(StorageManager.default, 'getFirst')
     jest.spyOn(StorageManager.default, 'addItem')
+    jest.spyOn(ActivityState.default, 'destroy')
+    jest.spyOn(Logger.default, 'log')
   })
 
   afterEach(() => {
@@ -20,6 +24,86 @@ describe('test identity methods', () => {
 
   afterAll(() => {
     jest.restoreAllMocks()
+  })
+
+  it('destroys identity by destroying activity  state', () => {
+
+    Identity.destroy()
+
+    expect(ActivityState.default.destroy).toHaveBeenCalled()
+
+  })
+
+  describe('test toggle disable depending on initialization state', () => {
+
+    afterEach(() => {
+      StorageManager.default.clear('activityState')
+      StorageManager.default.getFirst.mockClear()
+      Identity.destroy()
+    })
+
+    it('checks disabled state before initiation', () => {
+
+      expect(Identity.isDisabled()).toBeFalsy()
+
+      Identity.setDisabled(true)
+
+      expect(Identity.isDisabled()).toBeTruthy()
+
+      Identity.setDisabled(false)
+
+      expect(Identity.isDisabled()).toBeFalsy()
+
+    })
+
+    it('checks disabled state after initiation', () => {
+
+      expect.assertions(2)
+
+      return Identity.startActivityState()
+        .then(() => {
+          expect(Identity.isDisabled()).toBeFalsy()
+
+          Identity.setDisabled(true)
+
+          expect(Identity.isDisabled()).toBeTruthy()
+        })
+    })
+
+    it('checks disabled state after initiation when initially disabled', () => {
+
+      expect.assertions(2)
+
+      Identity.setDisabled(true)
+
+      return Identity.startActivityState()
+        .then(() => {
+          expect(Identity.isDisabled()).toBeTruthy()
+
+          Identity.setDisabled(false)
+
+          expect(Identity.isDisabled()).toBeFalsy()
+        })
+    })
+
+    it('checks if disabled due to GDPR-Forget-Me request', () => {
+
+      Identity.setDisabled(true, 'gdpr')
+
+      expect(Identity.isDisabled()).toBeTruthy()
+      expect(Identity.isGdprForgotten()).toBeTruthy()
+
+      Identity.setDisabled(false)
+
+      expect(Identity.isDisabled()).toBeFalsy()
+
+      Identity.setDisabled(true)
+
+      expect(Identity.isDisabled()).toBeTruthy()
+      expect(Identity.isGdprForgotten()).toBeFalsy()
+
+    })
+
   })
 
   describe('when activity state exists', () => {
@@ -143,6 +227,24 @@ describe('test identity methods', () => {
         })
 
     })
+
+    it('clears activity state', () => {
+
+      expect.assertions(3)
+
+      Identity.clear()
+
+      return flushPromises()
+        .then(() => {
+          expect(ActivityState.default.current).toEqual({uuid: 'unknown'})
+
+          return StorageManager.default.getFirst('activityState')
+        })
+        .then(activityState => {
+          expect(activityState).toEqual({uuid: 'unknown'})
+          expect(ActivityState.default.current).toEqual(activityState)
+        })
+    })
   })
 
   describe('when activity state does not exist', () => {
@@ -151,7 +253,7 @@ describe('test identity methods', () => {
       expect(ActivityState.default.current).toBeNull()
     })
 
-    it('checks activity state and creates new one', () => {
+    it('starts activity state - checks activity state and creates new one', () => {
 
       expect.assertions(3)
 

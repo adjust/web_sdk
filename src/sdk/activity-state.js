@@ -28,6 +28,15 @@ export default {
   },
 
   /**
+   * Check if uuid is unknown due to GDPR-Forget-Me request
+   *
+   * @returns {boolean}
+   */
+  isUnknown () {
+    return  _activityState && _activityState.uuid === 'unknown'
+  },
+
+  /**
    * Destroy current activity state
    */
   destroy () {

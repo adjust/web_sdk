@@ -3,14 +3,22 @@ import StorageManager from './storage-manager'
 import Logger from './logger'
 
 /**
+ * Name of the store used by global params
+ *
+ * @type {string}
+ * @private
+ */
+const _storeName = 'globalParams'
+
+/**
  * Get callback and partner global parameters
  *
  * @returns {Promise<{callbackParams: Array, partnerParams: Array}>}
  */
 function get () {
   return Promise.all([
-    StorageManager.filterBy('globalParams', 'callback'),
-    StorageManager.filterBy('globalParams', 'partner')
+    StorageManager.filterBy(_storeName, 'callback'),
+    StorageManager.filterBy(_storeName, 'partner')
   ]).then(([callbackParams = [], partnerParams = []]) => ({callbackParams, partnerParams}))
 }
 
@@ -28,8 +36,8 @@ function add (params, type = 'callback') {
     .map(key => ({key, value: map[key], type}))
 
   return Promise.all([
-    StorageManager.filterBy('globalParams', type),
-    StorageManager.addBulk('globalParams', prepared, true)
+    StorageManager.filterBy(_storeName, type),
+    StorageManager.addBulk(_storeName, prepared, true)
   ]).then(([oldParams, newParams]) => {
 
     const intersecting = intersection(
@@ -56,7 +64,7 @@ function add (params, type = 'callback') {
  * @returns {Promise}
  */
 function remove (key, type = 'callback') {
-  return StorageManager.deleteItem('globalParams', [key, type])
+  return StorageManager.deleteItem(_storeName, [key, type])
     .then(result => {
       Logger.log(`${key} ${type} parameter has been deleted`)
       return result
@@ -69,16 +77,24 @@ function remove (key, type = 'callback') {
  * @returns {Promise}
  */
 function removeAll (type = 'callback') {
-  return StorageManager.deleteBulk('globalParams', type)
+  return StorageManager.deleteBulk(_storeName, type)
     .then(result => {
       Logger.log(`All ${type} parameters have been deleted`)
       return result
     })
 }
 
+/**
+ * Clear globalParams store
+ */
+function clear () {
+  return StorageManager.clear(_storeName)
+}
+
 export {
   get,
   add,
   remove,
-  removeAll
+  removeAll,
+  clear
 }

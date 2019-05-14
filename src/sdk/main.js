@@ -5,8 +5,10 @@ import Logger from './logger'
 import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watchSession, destroy as sessionDestroy} from './session'
-import {startActivityState, destroy as identityDestroy} from './identity'
-import {add, remove, removeAll} from './global-params'
+import {startActivityState, isDisabled, isGdprForgotten, setDisabled, clear as identityClear, destroy as identityDestroy} from './identity'
+import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
+import {destroy as attributionDestroy} from './attribution'
+import {getTimestamp} from './time'
 import event from './event'
 
 /**
@@ -19,6 +21,22 @@ const _mandatory = [
   'appToken',
   'environment'
 ]
+
+/**
+ * Flags for the pending/requested GDPR-Forget-Me request
+ *
+ * @type {Object}
+ * @private
+ */
+const _gdpr = {pending: false, requested: false}
+
+/**
+ * In-memory parameters to be used if restarting
+ *
+ * @type {Object}
+ * @private
+ */
+let _params = null
 
 /**
  * Initiate the instance with parameters
@@ -41,6 +59,8 @@ function init (params = {}) {
     return
   }
 
+  _params = extend({}, params)
+
   _start(params)
 }
 
@@ -52,69 +72,61 @@ function init (params = {}) {
 function trackEvent (params = {}) {
 
   if (!_isInitiated()) {
-    Logger.error('You must init your instance')
+    Logger.error('adjustSDK is not initiated, can not track event')
     return
   }
 
-  event(params)
+  _run('track event', event, params)
 }
 
 /**
  * Add global callback parameters
  *
  * @param {Array} params
- * @returns {Promise}
  */
 function addGlobalCallbackParameters (params) {
-  return add(params, 'callback')
+  _run('add global callback parameters', add, params, 'callback')
 }
 
 /**
  * Add global partner parameters
  *
  * @param {Array} params
- * @returns {Promise}
  */
 function addGlobalPartnerParameters (params) {
-  return add(params, 'partner')
+  _run('add global partner parameters', add, params, 'partner')
 }
 
 /**
  * Remove global callback parameter by key
  *
  * @param {string} key
- * @returns {Promise}
  */
 function removeGlobalCallbackParameter (key) {
-  return remove(key, 'callback')
+  _run('remove global callback parameter', remove, key, 'callback')
 }
 
 /**
  * Remove global partner parameter by key
  *
  * @param {string} key
- * @returns {Promise}
  */
 function removePartnerCallbackParameter (key) {
-  return remove(key, 'partner')
+  _run('remove global partner parameter', remove, key, 'partner')
 }
 
 /**
  * Remove all global callback parameters
- *
- * @returns {Promise}
  */
 function removeAllGlobalCallbackParameters () {
-  return removeAll('callback')
+  _run('remove all global callback parameters', removeAll, 'callback')
 }
 
 /**
  * Remove all global partner parameters
- *
- * @returns {Promise}
  */
 function removeAllGlobalPartnerParameters () {
-  return removeAll('partner')
+  _run('remove all global partner parameters', removeAll, 'partner')
 }
 
 /**
@@ -123,19 +135,143 @@ function removeAllGlobalPartnerParameters () {
  * @param {boolean} state
  */
 function setOfflineMode (state) {
-  Queue.setOfflineMode(state)
+  _run('set offline mode', Queue.setOfflineMode, state)
+}
+
+/**
+ * Disable sdk due to a particular reason
+ *
+ * @param {string} [reason='general']
+ * @private
+ */
+function disable (reason = 'general') {
+
+  if (isDisabled()) {
+    Logger.log('adjustSDK is already disabled')
+    return
+  }
+
+  const logMessage = reason === 'gdpr'
+    ? 'adjustSDK has been disabled due to GDPR-Forget-Me request'
+    : 'adjustSDK has been disabled'
+
+  Logger.log(logMessage)
+
+  setDisabled(true, reason)
+
+  if (_isInitiated()) {
+    shutdown()
+  }
+
+}
+
+/**
+ * Enable sdk if not GDPR forgotten
+ */
+function enable () {
+
+  if (isGdprForgotten()) {
+    Logger.log('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+    return
+  }
+
+  if (!isDisabled()) {
+    Logger.log('adjustSDK is already enabled')
+    return
+  }
+
+  Logger.log('adjustSDK has been enabled')
+
+  setDisabled(false)
+
+  if (_params) {
+    _start(_params)
+  }
+
+}
+
+/**
+ * Request GDPR-Forget-Me in order to disable sdk
+ */
+function gdprForgetMe () {
+
+  if (isGdprForgotten()) {
+    Logger.log('adjustSDK is already GDPR forgotten')
+    return
+  }
+
+  if (isDisabled()) {
+    Logger.log('adjustSDK is already disabled')
+    return
+  }
+
+  if (_gdpr.requested) {
+    Logger.log('adjustSDK already sent GDPR Forget Me request')
+    return
+  }
+
+  _gdpr.requested = true
+
+  if (!_isInitiated()) {
+    _gdpr.pending = true
+    return
+  }
+
+  _gdpr.pending = false
+
+  Queue.push({
+    url: '/gdpr-forget-me',
+    method: 'POST',
+    params: extend({
+      createdAt: getTimestamp()
+    }, Config.baseParams)
+  })
+}
+
+/**
+ * Handle GDPR-Forget-Me response
+ *
+ * @private
+ */
+function _handleGdprForgetMe () {
+
+  if (!_gdpr.requested) {
+    return
+  }
+
+  disable('gdpr')
+  identityClear()
+  globalParamsClear()
+  Queue.clear()
+}
+
+/**
+ * Shutdown all dependencies
+ */
+function shutdown () {
+
+  Queue.destroy()
+  pubSubDestroy()
+  sessionDestroy()
+  attributionDestroy()
+  identityDestroy()
+  StorageManager.destroy()
+  Config.destroy()
+
 }
 
 /**
  * Destroy the instance
  */
 function destroy () {
-  pubSubDestroy()
-  sessionDestroy()
-  identityDestroy()
-  StorageManager.destroy()
-  _clear()
-  Logger.info('adjustSDK instance has been destroyed')
+
+  shutdown()
+
+  _params = null
+  _gdpr.requested = false
+  _gdpr.pending = false
+
+  Logger.log('adjustSDK instance has been destroyed')
 }
 
 /**
@@ -171,8 +307,11 @@ function _isInitiated () {
 
 /**
  * Start the execution by preparing the environment for the current usage
- * - subscribe to the attribution change
+ * - prepares mandatory parameters
+ * - subscribe to a GDPR-Forget-Me request event
+ * - subscribe to the attribution change event
  * - register activity state if doesn't exist
+ * - run pending GDPR-Forget-Me if pending
  * - run the package queue if not empty
  * - start watching the session
  *
@@ -184,28 +323,54 @@ function _isInitiated () {
  */
 function _start (params = {}) {
 
+  if (isDisabled()) {
+    Logger.log('adjustSDK is disabled, can not start the sdk')
+    return
+  }
+
   _mandatory.forEach(key => {
     extend(Config.baseParams, {[key]: params[key]})
   })
+
+  subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
 
   if (typeof params.attributionCallback === 'function') {
     subscribe('attribution:change', params.attributionCallback)
   }
 
+
   startActivityState()
     .then(() => {
-      Queue.run(true)
+
+      if (_gdpr.pending) {
+        _gdpr.requested = false
+        gdprForgetMe()
+      }
+
+      Queue.run({cleanUp: true})
       watchSession()
     })
+
 }
 
 /**
- * Clear the instance
+ * Run provided method only if sdk is enabled
  *
+ * @param {string} description
+ * @param {Function} method
+ * @param {...Object} args
  * @private
  */
-function _clear () {
-  Config.clear()
+function _run (description, method, ...args) {
+
+  if (isDisabled()) {
+    Logger.log(`adjustSDK is disabled, can not ${description}`)
+    return
+  }
+
+  if (typeof method === 'function') {
+    method.call(null, ...args)
+  }
 }
 
 const Adjust = {
@@ -218,9 +383,10 @@ const Adjust = {
   removeAllGlobalCallbackParameters,
   removeAllGlobalPartnerParameters,
   setOfflineMode,
+  disable,
+  enable,
+  gdprForgetMe,
   destroy
 }
-
-Object.freeze(Adjust)
 
 export default Adjust

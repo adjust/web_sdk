@@ -52,7 +52,8 @@ function _handleUpgradeNeeded (e, reject) {
   e.target.transaction.onerror = reject
   e.target.transaction.onabort = reject
 
-  const inMemoryAvailable = ActivityState.current && !isEmpty(ActivityState.current)
+  const activityState = ActivityState.current
+  const inMemoryAvailable = !ActivityState.isUnknown() && activityState && !isEmpty(activityState)
   const keys = Object.keys(Scheme)
 
   keys.forEach(storeName => {

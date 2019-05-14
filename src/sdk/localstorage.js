@@ -39,10 +39,11 @@ function _open () {
   }
 
   const stores = Object.keys(Scheme)
+  const activityState = ActivityState.current
 
   stores.forEach(storeName => {
     if (storeName === 'activityState' && !QuickStorage.activityState) {
-      QuickStorage.activityState = ActivityState.current ? [ActivityState.current] : []
+      QuickStorage.activityState = activityState && !ActivityState.isUnknown() ? [activityState] : []
     } else if (!QuickStorage[storeName]) {
       QuickStorage[storeName] = []
     }

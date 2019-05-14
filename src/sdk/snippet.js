@@ -26,7 +26,7 @@
   window,
   document,
   'script',
-  'http://sdk.adjust.local/sdk.min.js',
+  'http://somewhere/sdk.min.js',
   'adjustSDK',
   [
     'init',
@@ -38,6 +38,9 @@
     'removeAllGlobalCallbackParameters',
     'removeAllGlobalPartnerParameters',
     'setOfflineMode',
+    'disable',
+    'enable',
+    'gdprForgetMe',
     'destroy'
   ],
   function (context, queue, methodName) {

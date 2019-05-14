@@ -177,8 +177,44 @@ describe('global parameters functionality', () => {
           {key: 'key1', value: 'value1', type: 'partner'},
           {key: 'key3', value: 'value3', type: 'partner'}
         ])
+
+        return GlobalParams.removeAll('partner')
       })
-      .then(() => GlobalParams.removeAll('partner'))
+      .then(() => GlobalParams.get())
+      .then(({callbackParams, partnerParams}) => {
+        expect(callbackParams).toEqual([])
+        expect(partnerParams).toEqual([])
+      })
+
+  })
+
+  it('clears globalParams store', () => {
+
+    expect.assertions(4)
+
+    return GlobalParams.add([
+      {key: 'key1', value: 'value1'},
+      {key: 'key2', value: 'value2'},
+      {key: 'key3', value: 'value3'}
+    ], 'callback')
+      .then(() => GlobalParams.add([
+        {key: 'key1', value: 'value1'},
+        {key: 'key3', value: 'value3'}
+      ], 'partner'))
+      .then(() => GlobalParams.get())
+      .then(({callbackParams, partnerParams}) => {
+        expect(callbackParams).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'},
+          {key: 'key2', value: 'value2', type: 'callback'},
+          {key: 'key3', value: 'value3', type: 'callback'}
+        ])
+        expect(partnerParams).toEqual([
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key3', value: 'value3', type: 'partner'}
+        ])
+
+        return GlobalParams.clear()
+      })
       .then(() => GlobalParams.get())
       .then(({callbackParams, partnerParams}) => {
         expect(callbackParams).toEqual([])

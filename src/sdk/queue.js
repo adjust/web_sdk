@@ -6,13 +6,22 @@ import request from './request'
 import backOff from './backoff'
 import {extend} from './utilities'
 
+const DEFAULT_ATTEMPTS = 0
+const DEFAULT_WAIT = 150
+const DEFAULT_URL = null
+
 /**
  * Timeout id and wait when pending request is about to happen
  *
  * @type {Object}
  * @private
  */
-let _timeout = {id: null, attempts: 0, wait: 150}
+let _timeout = {
+  id: null,
+  attempts: DEFAULT_ATTEMPTS,
+  wait: DEFAULT_WAIT,
+  url: DEFAULT_URL
+}
 
 /**
  * Check if in offline mode
@@ -23,16 +32,29 @@ let _timeout = {id: null, attempts: 0, wait: 150}
 let _isOffline = false
 
 /**
+ * Name of the store used by queue
+ *
+ * @type {string}
+ * @private
+ */
+const _storeName = 'queue'
+
+/**
  * Remove from the top and continue running pending requests
  *
  * @private
  */
 function _continue (timestamp) {
-  return StorageManager.deleteItem('queue', timestamp)
+  return StorageManager.deleteItem(_storeName, timestamp)
     .then(() => {
 
-      _timeout.attempts = 0
-      _timeout.wait = 150
+      Logger.log(`Request ${_timeout.url} has been finished`)
+
+      _timeout.attempts = DEFAULT_ATTEMPTS
+      _timeout.wait = DEFAULT_WAIT
+      _timeout.url = DEFAULT_URL
+
+      _clearTimeout()
 
       return run()
     })
@@ -47,8 +69,11 @@ function _retry () {
 
   _timeout.attempts += 1
   _timeout.wait = backOff(_timeout.attempts)
+  _timeout.url = null
 
-  return run()
+  _clearTimeout()
+
+  return run({retrying: true})
 }
 
 /**
@@ -59,7 +84,7 @@ function _retry () {
  * @param {Object} params
  */
 function push ({url, method, params}) {
-  return StorageManager.addItem('queue', extend({timestamp: Date.now()}, {url, method, params}))
+  return StorageManager.addItem(_storeName, extend({timestamp: Date.now()}, {url, method, params}))
     .then(() => _timeout.id ? {} : run())
 }
 
@@ -67,7 +92,7 @@ function push ({url, method, params}) {
  * Make the request and retry if necessary
  *
  * @param {Object} pending
- * @returns {Promise<any>}
+ * @returns {Promise}
  * @private
  */
 function _request (pending) {
@@ -83,20 +108,25 @@ function _request (pending) {
  * Make delayed request after some time
  *
  * @param {Object} pending
+ * @param {boolean=false} retrying
  * @returns {Promise}
  * @private
  */
-function _delayedRequest (pending) {
-
-  clearTimeout(_timeout.id)
-  _timeout.id = null
+function _delayedRequest (pending, retrying) {
 
   if (!pending) {
     return Promise.resolve({})
   }
 
+  _timeout.url = pending.url
+
+  if (_timeout.id) {
+    _clearTimeout()
+  }
+
+  Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${pending.url} in ${_timeout.wait}ms`)
+
   return new Promise(() => {
-    Logger.info(`Trying request ${pending.url} in ${_timeout.wait}ms`)
     _timeout.id = setTimeout(() => {
       return _request(pending)
     }, _timeout.wait)
@@ -106,18 +136,20 @@ function _delayedRequest (pending) {
 /**
  * Run all pending requests
  *
- * @param {boolean=} cleanUpFirst
+ * @param {Object=} options
+ * @param {boolean=} options.cleanUp
+ * @param {boolean=false} options.retrying
  */
-function run (cleanUpFirst) {
+function run ({cleanUp, retrying} = {}) {
 
   let chain = Promise.resolve([])
 
-  if (cleanUpFirst) {
+  if (cleanUp) {
     chain = chain.then(_cleanUp)
   }
 
   return chain
-    .then(() => StorageManager.getFirst('queue'))
+    .then(() => StorageManager.getFirst(_storeName))
     .then(pending => {
 
       const activityState = ActivityState.current || {}
@@ -127,7 +159,7 @@ function run (cleanUpFirst) {
         return []
       }
 
-      return _delayedRequest(pending)
+      return _delayedRequest(pending, retrying)
     })
 }
 
@@ -158,11 +190,46 @@ function setOfflineMode (state = false) {
  * @returns {Promise}
  */
 function _cleanUp () {
-  return StorageManager.deleteBulk('queue', {upperBound: Date.now() - Config.requestValidityWindow})
+  return StorageManager.deleteBulk(_storeName, {upperBound: Date.now() - Config.requestValidityWindow})
+}
+
+/**
+ * Clear previous pending request
+ *
+ * @private
+ */
+function _clearTimeout () {
+
+  const url = _timeout.url
+
+  clearTimeout(_timeout.id)
+  _timeout.id = null
+  _timeout.url = null
+
+  if (url) {
+    Logger.log(`Previous request ${url} attempt canceled`)
+  }
+
+}
+
+/**
+ * Clear queue store
+ */
+function clear () {
+  return StorageManager.clear(_storeName)
+}
+
+/**
+ * Destroy queue by clearing current timeout
+ */
+function destroy () {
+  _clearTimeout()
 }
 
 export default {
   push,
   run,
-  setOfflineMode
+  setOfflineMode,
+  clear,
+  destroy
 }

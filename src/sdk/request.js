@@ -3,8 +3,8 @@ import {extend, isEmpty, isObject, isValidJson} from './utilities'
 import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
 import {setLastActive} from './session'
+import {publish} from './pub-sub'
 import ActivityState from './activity-state'
-import Logger from './logger'
 
 /**
  * Check if attribution requst
@@ -28,12 +28,18 @@ function _isAttributionRequest (url) {
 function _getSuccessObject (xhr, url) {
 
   const response = xhr.response ? JSON.parse(xhr.response) : {}
-  const append = _isAttributionRequest(url) ? ['attribution', 'message'] : []
+  const append = _isAttributionRequest(url) ? [
+    'attribution',
+    'message'
+  ] : []
 
-  Logger.info(`Request ${url} has been successful`)
-
-  return ['adid', 'timestamp', 'ask_in', ...append]
-    .filter(key => response[key])
+  return [
+    'adid',
+    'timestamp',
+    'ask_in',
+    'tracking_state',
+    ...append
+  ].filter(key => response[key])
     .reduce((acc, key) => extend(acc, {[key]: response[key]}), {})
 }
 
@@ -164,18 +170,28 @@ function _buildXhr ({url, method = 'GET', params = {}}) {
 }
 
 /**
- * Check attribution asynchronously and pass the previous result immediately
+ * Intercept response from backend and:
+ * - always check if tracking_state is set to `opted_out` and if yes disable sdk
+ * - check if ask_in parameter is present in order to check if attribution have been changed
  *
  * @param {Object} result
+ * @param {string} result.tracking_state
+ * @param {number} result.ask_in
  * @param {Object} options
  * @returns {Object}
  * @private
  */
-function _checkAttribution (result, options) {
+function _interceptResponse (result = {}, options) {
+
+  if (result.tracking_state === 'opted_out') {
+    publish('sdk:gdpr-forget-me', true)
+    return result
+  }
 
   if (!_isAttributionRequest(options.url) && result.ask_in) {
     checkAttribution(result)
   }
+
   return result
 }
 
@@ -187,9 +203,9 @@ function _checkAttribution (result, options) {
  */
 export default function request (options) {
   return _buildXhr(options)
+    .then(result => _interceptResponse(result, options))
     .then(result => {
       setLastActive()
       return result
     })
-    .then(result => _checkAttribution(result, options))
 }
