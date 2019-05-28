@@ -25,7 +25,7 @@ const external = {
 }
 
 function expectShutDown () {
-  expect(Queue.default.destroy).toHaveBeenCalled()
+  expect(Queue.destroy).toHaveBeenCalled()
   expect(PubSub.destroy).toHaveBeenCalled()
   expect(Session.destroy).toHaveBeenCalled()
   expect(Attribution.destroy).toHaveBeenCalled()
@@ -37,7 +37,7 @@ function expectShutDown () {
 }
 
 function expectNotShutDown () {
-  expect(Queue.default.destroy).not.toHaveBeenCalled()
+  expect(Queue.destroy).not.toHaveBeenCalled()
   expect(PubSub.destroy).not.toHaveBeenCalled()
   expect(Session.destroy).not.toHaveBeenCalled()
   expect(Attribution.destroy).not.toHaveBeenCalled()
@@ -49,7 +49,7 @@ function expectShutDownAndClear () {
 
   expect(Identity.clear).toHaveBeenCalled()
   expect(GlobalParams.clear).toHaveBeenCalled()
-  expect(Queue.default.clear).toHaveBeenCalled()
+  expect(Queue.clear).toHaveBeenCalled()
 }
 
 function expectNotShutDownAndClear () {
@@ -57,7 +57,7 @@ function expectNotShutDownAndClear () {
 
   expect(Identity.clear).not.toHaveBeenCalled()
   expect(GlobalParams.clear).not.toHaveBeenCalled()
-  expect(Queue.default.clear).not.toHaveBeenCalled()
+  expect(Queue.clear).not.toHaveBeenCalled()
 }
 
 function expectStart (withAttributionCb) {
@@ -77,8 +77,8 @@ function expectStart (withAttributionCb) {
 
   return flushPromises()
     .then(() => {
-      expect(Queue.default.run).toHaveBeenCalledTimes(1)
-      expect(Session.watchSession).toHaveBeenCalledTimes(1)
+      expect(Queue.run).toHaveBeenCalledTimes(1)
+      expect(Session.watch).toHaveBeenCalledTimes(1)
     })
 
 }
@@ -93,8 +93,8 @@ function expectNotStart (restart) {
 
   expect(PubSub.subscribe).not.toHaveBeenCalled()
   expect(Identity.startActivityState).not.toHaveBeenCalled()
-  expect(Queue.default.run).not.toHaveBeenCalled()
-  expect(Session.watchSession).not.toHaveBeenCalled()
+  expect(Queue.run).not.toHaveBeenCalled()
+  expect(Session.watch).not.toHaveBeenCalled()
 
 }
 
@@ -141,7 +141,7 @@ function expectRunningStatic () {
   expect(GlobalParams.removeAll).toHaveBeenCalledWith('partner')
 
   mainInstance.setOfflineMode(true)
-  expect(Queue.default.setOfflineMode).toHaveBeenCalledWith(true)
+  expect(Queue.setOffline).toHaveBeenCalledWith(true)
 }
 
 function expectNotRunningStatic () {
@@ -179,7 +179,7 @@ function expectNotRunningStatic () {
   mainInstance.setOfflineMode(true)
 
   expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not set offline mode')
-  expect(Queue.default.setOfflineMode).not.toHaveBeenCalled()
+  expect(Queue.setOffline).not.toHaveBeenCalled()
 }
 
 function teardown () {
@@ -202,17 +202,17 @@ describe('main entry point functionality', () => {
     jest.spyOn(Logger.default, 'error')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'info')
-    jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
-    jest.spyOn(Queue.default, 'run').mockImplementation(() => {})
-    jest.spyOn(Queue.default, 'setOfflineMode').mockImplementation(() => {})
-    jest.spyOn(Queue.default, 'destroy').mockImplementation(() => {})
-    jest.spyOn(Queue.default, 'clear').mockImplementation(() => {})
-    jest.spyOn(Session, 'watchSession').mockImplementation(() => {})
+    jest.spyOn(Queue, 'push').mockImplementation(() => {})
+    jest.spyOn(Queue, 'run').mockImplementation(() => {})
+    jest.spyOn(Queue, 'setOffline').mockImplementation(() => {})
+    jest.spyOn(Queue, 'destroy').mockImplementation(() => {})
+    jest.spyOn(Queue, 'clear').mockImplementation(() => {})
+    jest.spyOn(Session, 'watch').mockImplementation(() => {})
     jest.spyOn(Identity, 'startActivityState')
     jest.spyOn(Identity, 'setDisabled')
     jest.spyOn(Identity, 'clear').mockImplementation(() => {})
     jest.spyOn(Identity, 'destroy')
-    jest.spyOn(Session, 'watchSession').mockImplementation(() => {})
+    jest.spyOn(Session, 'watch').mockImplementation(() => {})
     jest.spyOn(Session, 'destroy').mockImplementation(() => {})
     jest.spyOn(GlobalParams, 'add').mockImplementation(() => {})
     jest.spyOn(GlobalParams, 'remove').mockImplementation(() => {})
@@ -971,7 +971,7 @@ describe('main entry point functionality', () => {
 
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).toHaveBeenCalledWith(gdprRequst)
+          expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
         })
 
         it('keeps running all static methods and track event', () => {
@@ -1035,13 +1035,13 @@ describe('main entry point functionality', () => {
 
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).toHaveBeenCalledWith(gdprRequst)
+          expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
         })
 
         it('fails to push forget-me request to queue again', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK already sent GDPR Forget Me request')
         })
 
@@ -1053,14 +1053,14 @@ describe('main entry point functionality', () => {
         it('does not push forget-me request to queue yet', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).not.toHaveBeenCalled()
         })
 
         it('fails again to push forget-me request to queue', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK already sent GDPR Forget Me request')
         })
 
@@ -1077,7 +1077,7 @@ describe('main entry point functionality', () => {
           expectRunningTrackEvent() // +1 assertions
           return expectStart() // +7 assertions
             .then(() => {
-              expect(Queue.default.push).toHaveBeenCalledWith(gdprRequst)
+              expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
             })
         })
 
@@ -1101,7 +1101,7 @@ describe('main entry point functionality', () => {
         it('does not push forget-me request to queue yet', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
         })
 
         it('flush forget-me event but ignores it', () => {
@@ -1129,7 +1129,7 @@ describe('main entry point functionality', () => {
           expectRunningTrackEvent() // +1 assertions
           return expectStart() // +7 assertions
             .then(() => {
-              expect(Queue.default.push).toHaveBeenCalledWith(gdprRequst)
+              expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
             })
         })
       })
@@ -1162,7 +1162,7 @@ describe('main entry point functionality', () => {
 
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
         })
 
@@ -1221,7 +1221,7 @@ describe('main entry point functionality', () => {
 
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
         })
       })
@@ -1232,7 +1232,7 @@ describe('main entry point functionality', () => {
         it('does not push forget-me request to queue yet', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
         })
 
@@ -1249,7 +1249,7 @@ describe('main entry point functionality', () => {
           expectNotStart()
           expectNotRunningStatic()
           expectNotRunningTrackEvent()
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
         })
 
         it('flush forget-me event but ignores it', () => {
@@ -1272,7 +1272,7 @@ describe('main entry point functionality', () => {
         it('does not push forget-me request to queue yet', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
         })
 
@@ -1301,7 +1301,7 @@ describe('main entry point functionality', () => {
           expectNotStart()
           expectNotRunningStatic()
           expectNotRunningTrackEvent()
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
         })
       })
 
@@ -1334,7 +1334,7 @@ describe('main entry point functionality', () => {
 
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
         })
 
@@ -1400,7 +1400,7 @@ describe('main entry point functionality', () => {
 
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
         })
       })
@@ -1411,7 +1411,7 @@ describe('main entry point functionality', () => {
         it('does not push forget-me request to queue yet', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
         })
 
@@ -1428,7 +1428,7 @@ describe('main entry point functionality', () => {
           expectNotStart()
           expectNotRunningStatic()
           expectNotRunningTrackEvent()
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
         })
 
         it('flush forget-me event but ignores it', () => {
@@ -1451,7 +1451,7 @@ describe('main entry point functionality', () => {
         it('does not push forget-me request to queue yet', () => {
           mainInstance.gdprForgetMe()
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
         })
 
@@ -1480,7 +1480,7 @@ describe('main entry point functionality', () => {
           expectNotStart()
           expectNotRunningStatic()
           expectNotRunningTrackEvent()
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
         })
       })
 

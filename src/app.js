@@ -95,6 +95,4 @@ const App = {
   logAttribution
 }
 
-Object.freeze(App)
-
 export default App

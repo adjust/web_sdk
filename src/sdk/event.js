@@ -1,6 +1,6 @@
 import {extend, isEmpty, convertToMap} from './utilities'
 import Config from './config'
-import Queue from './queue'
+import {push} from './queue'
 import Logger from './logger'
 import {getTimestamp} from './time'
 import {get} from './global-params'
@@ -78,7 +78,7 @@ export default function event (params = {}) {
 
   return get()
     .then(({callbackParams, partnerParams}) => {
-      Queue.push({
+      push({
         url: '/event',
         method: 'POST',
         params: _prepareParams(params, callbackParams, partnerParams)

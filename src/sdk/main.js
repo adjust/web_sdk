@@ -1,10 +1,10 @@
 import Config from './config'
-import Queue from './queue'
 import StorageManager from './storage-manager'
 import Logger from './logger'
+import {run as queueRun, push, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
 import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
-import {watchSession, destroy as sessionDestroy} from './session'
+import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {startActivityState, isDisabled, isGdprForgotten, setDisabled, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {destroy as attributionDestroy} from './attribution'
@@ -136,7 +136,7 @@ function removeAllGlobalPartnerParameters () {
  * @param {boolean} state
  */
 function setOfflineMode (state) {
-  _run('set offline mode', Queue.setOfflineMode, state)
+  _run('set offline mode', setOffline, state)
 }
 
 /**
@@ -220,7 +220,7 @@ function gdprForgetMe () {
 
   _gdpr.pending = false
 
-  Queue.push({
+  push({
     url: '/gdpr-forget-me',
     method: 'POST',
     params: extend({
@@ -243,7 +243,7 @@ function _handleGdprForgetMe () {
   disable(REASON_GDPR)
   identityClear()
   globalParamsClear()
-  Queue.clear()
+  queueClear()
 }
 
 /**
@@ -251,7 +251,7 @@ function _handleGdprForgetMe () {
  */
 function shutdown () {
 
-  Queue.destroy()
+  queueDestroy()
   pubSubDestroy()
   sessionDestroy()
   attributionDestroy()
@@ -348,8 +348,8 @@ function _start (params = {}) {
         gdprForgetMe()
       }
 
-      Queue.run({cleanUp: true})
-      watchSession()
+      queueRun({cleanUp: true})
+      sessionWatch()
     })
 
 }

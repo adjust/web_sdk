@@ -19,7 +19,7 @@ const appConfig = {
 describe('event tracking functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
+    jest.spyOn(Queue, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'error')
 
@@ -65,7 +65,7 @@ describe('event tracking functionality', () => {
       callbackParams: [{key: 'some-key', value: 'some-value'}],
       revenue: 0
     }).then(() => {
-      expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
     })
 
   })
@@ -89,7 +89,7 @@ describe('event tracking functionality', () => {
       eventToken: '123abc',
       revenue: 1000
     }).then(() => {
-      expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
     })
 
 
@@ -124,7 +124,7 @@ describe('event tracking functionality', () => {
       revenue: 100,
       currency: 'EUR'
     }).then(() => {
-      expect(Queue.default.push).toHaveBeenCalledWith(requestConfig)
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
     })
 
 
@@ -146,7 +146,7 @@ describe('event tracking functionality', () => {
         currency: 'EUR'
       }))
       .then(() => {
-        expect(Queue.default.push).toHaveBeenCalledWith({
+        expect(Queue.push).toHaveBeenCalledWith({
           url: '/event',
           method: 'POST',
           params: Utilities.extend({}, appConfig, {
@@ -179,7 +179,7 @@ describe('event tracking functionality', () => {
         ]
       }))
       .then(() => {
-        expect(Queue.default.push).toHaveBeenCalledWith({
+        expect(Queue.push).toHaveBeenCalledWith({
           url: '/event',
           method: 'POST',
           params: Utilities.extend({}, appConfig, {
@@ -222,7 +222,7 @@ describe('event tracking functionality', () => {
         ]
       }))
       .then(() => {
-        expect(Queue.default.push).toHaveBeenCalledWith({
+        expect(Queue.push).toHaveBeenCalledWith({
           url: '/event',
           method: 'POST',
           params: Utilities.extend({}, appConfig, {

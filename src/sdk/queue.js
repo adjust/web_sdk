@@ -170,7 +170,7 @@ function run ({cleanUp, retrying} = {}) {
  *
  * @param {boolean=false} state
  */
-function setOfflineMode (state = false) {
+function setOffline (state = false) {
 
   const wasOffline = _isOffline
 
@@ -226,10 +226,10 @@ function destroy () {
   _clearTimeout()
 }
 
-export default {
+export {
   push,
   run,
-  setOfflineMode,
+  setOffline,
   clear,
   destroy
 }

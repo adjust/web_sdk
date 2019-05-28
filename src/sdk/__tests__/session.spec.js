@@ -32,7 +32,7 @@ describe('test session functionality', () => {
     jest.spyOn(Utilities, 'off')
     jest.spyOn(Identity, 'updateActivityState')
     jest.spyOn(Identity, 'sync').mockImplementation(() => Promise.resolve({}))
-    jest.spyOn(Queue.default, 'push').mockImplementation(() => {})
+    jest.spyOn(Queue, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
     jest.spyOn(Logger.default, 'error')
 
@@ -62,20 +62,20 @@ describe('test session functionality', () => {
   describe('general functionality', () => {
 
     it('starts the session watch and logs error and returns if calling watch multiple times', () => {
-      Session.watchSession()
+      Session.watch()
 
       expect(Logger.default.error).not.toHaveBeenCalled()
 
-      Session.watchSession()
+      Session.watch()
 
       expect(Logger.default.error).toHaveBeenCalledWith('Session watch already initiated')
     })
 
     it('destroys session watch', () => {
 
-      Session.watchSession() // 1st attempt
+      Session.watch() // 1st attempt
 
-      Session.watchSession() // 2nd attempt
+      Session.watch() // 2nd attempt
 
       expect(Logger.default.error).toHaveBeenCalledWith('Session watch already initiated')
       Logger.default.error.mockClear()
@@ -85,7 +85,7 @@ describe('test session functionality', () => {
       expect(Utilities.off).toHaveBeenCalled()
       expect(clearInterval).toHaveBeenCalled()
 
-      Session.watchSession()
+      Session.watch()
 
       expect(Logger.default.error).not.toHaveBeenCalled()
     })
@@ -139,7 +139,7 @@ describe('test session functionality', () => {
 
     it('sets interval for last active timestamp to be updated every n seconds', () => {
 
-      Session.watchSession()
+      Session.watch()
 
       expect.assertions(9)
 
@@ -216,7 +216,7 @@ describe('test session functionality', () => {
 
       Identity.startActivityState()
 
-      Session.watchSession()
+      Session.watch()
 
       expect.assertions(4)
 
@@ -225,7 +225,7 @@ describe('test session functionality', () => {
 
       return flushPromises()
         .then(() => {
-          expect(Queue.default.push).toHaveBeenCalledWith({
+          expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
             params: {
@@ -269,7 +269,7 @@ describe('test session functionality', () => {
 
         Identity.startActivityState()
 
-        Session.watchSession()
+        Session.watch()
 
         expect(Utilities.on).toHaveBeenCalled()
         expect(ActivityState.default.current).toBeNull()
@@ -278,7 +278,7 @@ describe('test session functionality', () => {
       })
       .then(() => {
 
-        expect(Queue.default.push).toHaveBeenCalledWith({
+        expect(Queue.push).toHaveBeenCalledWith({
           url: '/session',
           method: 'POST',
           params: {
@@ -309,7 +309,7 @@ describe('test session functionality', () => {
 
       return Session.setLastActive()
         .then(() => {
-          Session.watchSession()
+          Session.watch()
 
           expect(Utilities.on).toHaveBeenCalled()
           expect(ActivityState.default.current.lastActive).toBe(now)
@@ -318,7 +318,7 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
 
           dateNowSpy.mockReturnValue(1551916800002)
 
@@ -353,7 +353,7 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(1551916800001)
 
-      Session.watchSession()
+      Session.watch()
 
       expect.assertions(11)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
@@ -408,7 +408,7 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(1551916800001)
 
-      Session.watchSession()
+      Session.watch()
 
       expect.assertions(9)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
@@ -458,7 +458,7 @@ describe('test session functionality', () => {
 
           global.document.testHidden = false
 
-          Session.watchSession()
+          Session.watch()
 
           jest.runOnlyPendingTimers()
 
@@ -466,7 +466,7 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
 
           return Identity.updateActivityState(Object.assign({}, ActivityState.default.current, {lastActive: now + Config.default.sessionWindow}))
         })
@@ -479,7 +479,7 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => {
-          expect(Queue.default.push).toHaveBeenCalledTimes(1)
+          expect(Queue.push).toHaveBeenCalledTimes(1)
         })
     })
 
@@ -494,7 +494,7 @@ describe('test session functionality', () => {
 
           global.document.testHidden = false
 
-          Session.watchSession()
+          Session.watch()
 
           jest.runOnlyPendingTimers()
 
@@ -502,7 +502,7 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
 
           return Identity.updateActivityState(Object.assign({}, ActivityState.default.current, {lastActive: now + Config.default.sessionWindow - 1}))
         })
@@ -515,7 +515,7 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => {
-          expect(Queue.default.push).not.toHaveBeenCalled()
+          expect(Queue.push).not.toHaveBeenCalled()
         })
     })
   })

@@ -25,6 +25,4 @@ function destroy () {
   extend(Config.baseParams, _initial)
 }
 
-Object.freeze(Config)
-
 export default Config

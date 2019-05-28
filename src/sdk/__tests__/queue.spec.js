@@ -42,7 +42,7 @@ function push (configs) {
   let promise = flushPromises()
 
   dateNowSpy.mockReturnValue(configs[0].timestamp || start++)
-  Queue.default.push(configs[0])
+  Queue.push(configs[0])
 
   configs.shift()
 
@@ -50,7 +50,7 @@ function push (configs) {
 
     promise = promise.then(() => {
       dateNowSpy.mockReturnValue(config.timestamp || start++)
-      return Queue.default.push(config)
+      return Queue.push(config)
     })
 
   })
@@ -62,8 +62,8 @@ describe('test request queuing functionality', () => {
   beforeAll(() => {
     dateNowSpy = jest.spyOn(Date, 'now')
 
-    jest.spyOn(Queue.default, 'push')
-    jest.spyOn(Queue.default, 'run')
+    jest.spyOn(Queue, 'push')
+    jest.spyOn(Queue, 'run')
     jest.spyOn(request, 'default')
     jest.spyOn(StorageManager.default, 'addItem')
     jest.spyOn(Logger.default, 'info')
@@ -90,7 +90,7 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(6)
 
-    Queue.default.push(config)
+    Queue.push(config)
 
     return flushPromises()
       .then(() => {
@@ -277,7 +277,7 @@ describe('test request queuing functionality', () => {
 
   it('does not execute the queue in offline mode and then run the queue when set back to online mode', () => {
 
-    Queue.default.setOfflineMode(true)
+    Queue.setOffline(true)
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
@@ -303,7 +303,7 @@ describe('test request queuing functionality', () => {
           {timestamp: 1552914489218, url: '/some-url-2'}
         ])
 
-        Queue.default.setOfflineMode(false)
+        Queue.setOffline(false)
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
@@ -320,7 +320,7 @@ describe('test request queuing functionality', () => {
 
   it('does execute first session in offline mode and ignores everything else', () => {
 
-    Queue.default.setOfflineMode(true)
+    Queue.setOffline(true)
 
     ActivityState.default.current = null
 
@@ -356,7 +356,7 @@ describe('test request queuing functionality', () => {
           {timestamp: 1552914489218, url: '/event'}
         ])
 
-        Queue.default.setOfflineMode(false)
+        Queue.setOffline(false)
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
@@ -373,7 +373,7 @@ describe('test request queuing functionality', () => {
 
   it('does not execute session when not first one in offline mode and ignores everything else as well', () => {
 
-    Queue.default.setOfflineMode(true)
+    Queue.setOffline(true)
 
     ActivityState.default.current = {attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
@@ -401,7 +401,7 @@ describe('test request queuing functionality', () => {
           {timestamp: 1552914489218, url: '/event'}
         ])
 
-        Queue.default.setOfflineMode(false)
+        Queue.setOffline(false)
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
@@ -430,7 +430,7 @@ describe('test request queuing functionality', () => {
       .then(() => {
         dateNowSpy.mockReturnValue(new Date('2019-03-03').getTime())
 
-        Queue.default.run({cleanUp: true})
+        Queue.run({cleanUp: true})
 
         return flushPromises()
       })
@@ -438,8 +438,8 @@ describe('test request queuing functionality', () => {
       .then(remained => {
         expect(remained.map(params => params.url)).toEqual(['/url-1', '/url-4', '/url-6'])
 
-        Queue.default.clear()
-        Queue.default.destroy()
+        Queue.clear()
+        Queue.destroy()
       })
 
   })
@@ -463,11 +463,11 @@ describe('test request queuing functionality', () => {
         expect(request.default).toHaveBeenCalledWith(config1)
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /url-1 in 150ms')
 
-        Queue.default.destroy()
+        Queue.destroy()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('Previous request /url-1 attempt canceled')
 
-        return Queue.default.clear()
+        return Queue.clear()
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(pending => {

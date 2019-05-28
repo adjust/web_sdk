@@ -1,7 +1,7 @@
 import Config from './config'
-import Queue from './queue'
 import ActivityState from './activity-state'
 import Logger from './logger'
+import {push} from './queue'
 import {on, off, getVisibilityApiAccess, extend, convertToMap} from './utilities'
 import {getTimestamp, timePassed} from './time'
 import {sync, updateActivityState} from './identity'
@@ -45,7 +45,7 @@ const _adapter = getVisibilityApiAccess()
  * - set the timer to update last active timestamp
  * - bind to visibility change event to track window state (if out of focus or closed)
  */
-function watchSession () {
+function watch () {
 
   if (_started) {
     Logger.error('Session watch already initiated')
@@ -162,7 +162,7 @@ function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
 function _trackSession () {
   return get()
     .then(({callbackParams, partnerParams}) => {
-      Queue.push({
+      push({
         url: '/session',
         method: 'POST',
         params: _prepareParams(callbackParams, partnerParams)
@@ -189,7 +189,7 @@ function _checkSession () {
 }
 
 export {
-  watchSession,
+  watch,
   setLastActive,
   destroy
 }
