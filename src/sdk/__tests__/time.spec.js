@@ -73,7 +73,7 @@ describe('test for time methods', () => {
     let date1 = new Date('2019-01-01T09:00:01.111+0100').getTime()
     let date2 = new Date('2019-02-15T15:10:12.100+0100').getTime()
 
-    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.day)).toEqual(45)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.DAY)).toEqual(45)
     expect(Math.round(Time.timePassed(date1))).toEqual(0)
 
   })
@@ -83,12 +83,12 @@ describe('test for time methods', () => {
     let date1 = new Date('2019-01-01T09:00:00.000+0100').getTime()
     let date2 = new Date('2019-01-01T15:10:00.000+0100').getTime()
 
-    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.hour)).toEqual(6)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.HOUR)).toEqual(6)
 
     date1 = new Date('2019-01-05T11:10:00.000+0100').getTime()
     date2 = new Date('2019-01-06T08:55:00.000+0100').getTime()
 
-    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.hour)).toEqual(22)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.HOUR)).toEqual(22)
 
   })
 
@@ -97,12 +97,12 @@ describe('test for time methods', () => {
     let date1 = new Date('2019-01-01T09:05:30.000+0100').getTime()
     let date2 = new Date('2019-01-01T09:40:45.000+0100').getTime()
 
-    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.minute)).toEqual(35)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.MINUTE)).toEqual(35)
 
     date1 = new Date('2019-01-01T16:17:00.000+0100').getTime()
     date2 = new Date('2019-01-01T18:42:00.000+0100').getTime()
 
-    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.minute)).toEqual(145)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.MINUTE)).toEqual(145)
 
   })
 
@@ -111,12 +111,12 @@ describe('test for time methods', () => {
     let date1 = new Date('2019-01-01T09:05:30.300+0100').getTime()
     let date2 = new Date('2019-01-01T09:05:45.555+0100').getTime()
 
-    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.second)).toEqual(15)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.SECOND)).toEqual(15)
 
     date1 = new Date('2019-01-01T09:05:20.200+0100').getTime()
     date2 = new Date('2019-01-01T09:07:04.300+0100').getTime()
 
-    expect(Math.round(Time.timePassed(date1, date2)/Constants.default.second)).toEqual(104)
+    expect(Math.round(Time.timePassed(date1, date2)/Constants.SECOND)).toEqual(104)
 
   })
 

@@ -1,4 +1,4 @@
-import Constants from './constants'
+import {MINUTE, HOUR, DAY} from './constants'
 
 /**
  * Options for the back-off strategy for different environments
@@ -7,14 +7,14 @@ import Constants from './constants'
  */
 const _options = {
   long: {
-    delay: 2 * Constants.minute,
-    maxDelay: Constants.day,
+    delay: 2 * MINUTE,
+    maxDelay: DAY,
     minRange: 0.5,
     maxRange: 1.0,
   },
   short: {
     delay: 200,
-    maxDelay: Constants.hour,
+    maxDelay: HOUR,
     minRange: 0.5,
     maxRange: 1.0,
   },

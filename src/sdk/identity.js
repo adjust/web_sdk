@@ -1,10 +1,8 @@
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
-import {extend} from './utilities'
 import QuickStorage from './quick-storage'
-
-const REASON_GENERAL = 'general'
-const REASON_GDPR = 'gdpr'
+import {REASON_GDPR, REASON_GENERAL} from './constants'
+import {extend} from './utilities'
 
 /**
  * Generate random  uuid v4

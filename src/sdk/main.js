@@ -9,6 +9,7 @@ import {startActivityState, isDisabled, isGdprForgotten, setDisabled, clear as i
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {destroy as attributionDestroy} from './attribution'
 import {getTimestamp} from './time'
+import {REASON_GDPR, REASON_GENERAL} from './constants'
 import event from './event'
 
 /**
@@ -141,23 +142,23 @@ function setOfflineMode (state) {
 /**
  * Disable sdk due to a particular reason
  *
- * @param {string} [reason='general']
+ * @param {string=} reason
  * @private
  */
-function disable (reason = 'general') {
+function disable (reason) {
 
   if (isDisabled()) {
     Logger.log('adjustSDK is already disabled')
     return
   }
 
-  const logMessage = reason === 'gdpr'
+  const logMessage = reason === REASON_GDPR
     ? 'adjustSDK has been disabled due to GDPR-Forget-Me request'
     : 'adjustSDK has been disabled'
 
   Logger.log(logMessage)
 
-  setDisabled(true, reason)
+  setDisabled(true, reason || REASON_GENERAL)
 
   if (_isInitiated()) {
     shutdown()
@@ -239,7 +240,7 @@ function _handleGdprForgetMe () {
     return
   }
 
-  disable('gdpr')
+  disable(REASON_GDPR)
   identityClear()
   globalParamsClear()
   Queue.clear()

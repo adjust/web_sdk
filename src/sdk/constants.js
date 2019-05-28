@@ -1,14 +1,6 @@
-export default {
-  get second () {
-    return 1000
-  },
-  get minute () {
-    return 60 * this.second
-  },
-  get hour () {
-    return 60 * this.minute
-  },
-  get day () {
-    return 24 * this.hour
-  }
-}
+export const SECOND = 1000
+export const MINUTE = SECOND * 60
+export const HOUR = MINUTE * 60
+export const DAY = HOUR * 24
+export const REASON_GENERAL = 'general'
+export const REASON_GDPR = 'gdpr'
