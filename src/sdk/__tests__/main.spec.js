@@ -106,11 +106,16 @@ function expectRunningTrackEvent () {
 
 }
 
-function expectNotRunningTrackEvent () {
+function expectNotRunningTrackEvent (noInstance) {
 
   mainInstance.trackEvent({eventToken: 'blabla'})
 
-  expect(Logger.default.error).toHaveBeenLastCalledWith('adjustSDK is not initiated, can not track event')
+  if (noInstance) {
+    expect(Logger.default.error).toHaveBeenLastCalledWith('adjustSDK is not initiated, can not track event')
+  } else {
+    expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not track event')
+  }
+
   expect(event.default).not.toHaveBeenCalled()
 
 }
@@ -332,7 +337,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectShutDown()
       })
@@ -401,7 +406,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectShutDown()
       })
@@ -422,7 +427,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectNotShutDown()
       })
@@ -480,7 +485,7 @@ describe('main entry point functionality', () => {
       })
 
       it('prevents running track event', () => {
-        expectNotRunningTrackEvent()
+        expectNotRunningTrackEvent(true)
       })
 
       it('fails to enable already enabled sdk', () => {
@@ -524,7 +529,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectShutDown()
       })
@@ -540,7 +545,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectNotShutDown()
       })
@@ -592,7 +597,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectNotShutDown()
       })
@@ -719,7 +724,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectShutDown()
       })
@@ -807,7 +812,7 @@ describe('main entry point functionality', () => {
       })
 
       it('prevents running track event', () => {
-        expectNotRunningTrackEvent()
+        expectNotRunningTrackEvent(true)
       })
 
       it('initiates and runs all static methods and track event', () => {
@@ -841,7 +846,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectShutDown()
       })
@@ -909,7 +914,7 @@ describe('main entry point functionality', () => {
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'general')
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectNotShutDown()
       })
@@ -934,7 +939,7 @@ describe('main entry point functionality', () => {
   describe('test GDPR-Forget-Me request', () => {
 
     const gdprRequst = {
-      url: '/gdpr-forget-me',
+      url: '/gdpr_forget_device',
       method: 'POST',
       params: {
         createdAt: 'some-time',

@@ -47,4 +47,6 @@ _storageFields.forEach(key => {
   })
 })
 
+Object.freeze(QuickStorage)
+
 export default QuickStorage

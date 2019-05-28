@@ -204,9 +204,12 @@ function _clearTimeout () {
 
   clearTimeout(_timeout.id)
   _timeout.id = null
-  _timeout.url = null
+  _timeout.url = DEFAULT_URL
 
   if (url) {
+    _timeout.wait = DEFAULT_WAIT
+    _timeout.attempts = DEFAULT_ATTEMPTS
+
     Logger.log(`Previous request ${url} attempt canceled`)
   }
 

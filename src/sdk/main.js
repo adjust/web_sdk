@@ -9,7 +9,7 @@ import {startActivityState, isDisabled, isGdprForgotten, setDisabled, clear as i
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {destroy as attributionDestroy} from './attribution'
 import {getTimestamp} from './time'
-import {REASON_GDPR, REASON_GENERAL} from './constants'
+import {REASON_GDPR} from './constants'
 import event from './event'
 
 /**
@@ -72,12 +72,17 @@ function init (params = {}) {
  */
 function trackEvent (params = {}) {
 
+  if (isDisabled()) {
+    Logger.log('adjustSDK is disabled, can not track event')
+    return
+  }
+
   if (!_isInitiated()) {
     Logger.error('adjustSDK is not initiated, can not track event')
     return
   }
 
-  _run('track event', event, params)
+  event(params)
 }
 
 /**
@@ -145,7 +150,7 @@ function setOfflineMode (state) {
  * @param {string=} reason
  * @private
  */
-function disable (reason) {
+function _disable (reason) {
 
   if (isDisabled()) {
     Logger.log('adjustSDK is already disabled')
@@ -158,12 +163,28 @@ function disable (reason) {
 
   Logger.log(logMessage)
 
-  setDisabled(true, reason || REASON_GENERAL)
+  setDisabled(true, reason)
 
   if (_isInitiated()) {
     shutdown()
   }
 
+}
+
+/**
+ * General disable
+ */
+function disable () {
+  _disable()
+}
+
+/**
+ * Disable initiated through GDPR-Forget-Me request
+ *
+ * @private
+ */
+function _gdprDisable () {
+  _disable(REASON_GDPR)
 }
 
 /**
@@ -221,7 +242,7 @@ function gdprForgetMe () {
   _gdpr.pending = false
 
   push({
-    url: '/gdpr-forget-me',
+    url: '/gdpr_forget_device',
     method: 'POST',
     params: extend({
       createdAt: getTimestamp()
@@ -240,7 +261,8 @@ function _handleGdprForgetMe () {
     return
   }
 
-  disable(REASON_GDPR)
+  _gdprDisable()
+
   identityClear()
   globalParamsClear()
   queueClear()
@@ -339,9 +361,14 @@ function _start (params = {}) {
     subscribe('attribution:change', params.attributionCallback)
   }
 
-
   startActivityState()
     .then(() => {
+
+      // TODO handle this more gracefully
+      if (isDisabled()) {
+        shutdown()
+        return
+      }
 
       if (_gdpr.pending) {
         _gdpr.requested = false

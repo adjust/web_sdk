@@ -92,7 +92,6 @@ function sync () {
  * @returns {boolean}
  */
 function isDisabled () {
-
   const state = _getState()
 
   return state.disabled || false
@@ -105,10 +104,13 @@ function isDisabled () {
  * @param {string=} reason
  */
 function setDisabled (disabled, reason) {
-  QuickStorage.state = {
-    disabled,
-    reason: reason || REASON_GENERAL
+  const state = {disabled}
+
+  if (reason) {
+    state.reason = reason
   }
+
+  QuickStorage.state = state
 }
 
 /**
