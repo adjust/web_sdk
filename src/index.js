@@ -52,7 +52,13 @@ adjustSDK.addGlobalPartnerParameters([
 ])
 
 // NOTE: this is custom demo app implementation
-app.start(trackEvent, trackRevenueEvent)
+app.start({
+  eventCb: trackEvent,
+  revenueEventCb: trackRevenueEvent,
+  disableCb: adjustSDK.disable,
+  enableCb: adjustSDK.enable,
+  gdprForgetMeCb: adjustSDK.gdprForgetMe
+})
 
 function trackEvent () {
   adjustSDK.trackEvent(someEventConfig)

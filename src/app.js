@@ -5,7 +5,10 @@ const _elements = {
   revenueEventInput: document.querySelector('#revenue-event-input'),
   revenueEventLog: document.querySelector('#log-revenue-event'),
   attributionLog: document.querySelector('#log-attribution'),
-  attributionStatus: document.querySelector('#attribution-status')
+  attributionStatus: document.querySelector('#attribution-status'),
+  disableBtn: document.querySelector('#disable-btn'),
+  enableBtn: document.querySelector('#enable-btn'),
+  gdprBtn: document.querySelector('#gdpr-btn'),
 }
 
 const _loading = {
@@ -66,10 +69,14 @@ function _log (what) {
 
 }
 
-function start (eventCb, revenueEventCb) {
+function start ({eventCb, revenueEventCb, disableCb, enableCb, gdprForgetMeCb}) {
 
   _elements.eventBtn.addEventListener('click', () => _handleClick('event', eventCb))
   _elements.revenueEventBtn.addEventListener('click', () => _handleClick('revenueEvent', () => revenueEventCb(_elements.revenueEventInput.value)))
+
+  _elements.disableBtn.addEventListener('click', disableCb)
+  _elements.enableBtn.addEventListener('click', enableCb)
+  _elements.gdprBtn.addEventListener('click', gdprForgetMeCb)
 
 }
 
