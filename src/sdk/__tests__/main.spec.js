@@ -11,17 +11,24 @@ import * as Logger from '../logger'
 import * as StorageManager from '../storage-manager'
 import * as QuickStorage from '../quick-storage'
 import * as Attribution from '../attribution'
+import * as ActivityState from '../activity-state'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
-import {flushPromises} from './_helper'
+import {flushPromises, randomInRange} from './_helper'
 import {setDisabled} from '../identity'
 
 jest.mock('../request')
 jest.mock('../logger')
 jest.useFakeTimers()
 
-const external = {
-  attributionCb () {}
+const mainParams = {
+  appToken: 'some-app-token',
+  environment: 'production',
+  attributionCallback: jest.fn()
+}
+
+function init () {
+  mainInstance.init(mainParams)
 }
 
 function expectShutDown () {
@@ -60,18 +67,32 @@ function expectNotShutDownAndClear () {
   expect(Queue.clear).not.toHaveBeenCalled()
 }
 
-function expectStart (withAttributionCb) {
+function expectGdprForgetMeCallback () {
+  PubSub.publish('sdk:gdpr-forget-me', true)
 
+  jest.runOnlyPendingTimers()
+
+  expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled due to GDPR-Forget-Me request')
+  expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'gdpr')
+}
+
+function expectNotGdprForgetMeCallback () {
+  PubSub.publish('sdk:gdpr-forget-me', true)
+
+  jest.runOnlyPendingTimers()
+
+  expect(Logger.default.log).not.toHaveBeenCalled()
+  expect(Identity.setDisabled).not.toHaveBeenCalledWith()
+}
+
+function expectStart () {
   expect(Config.default.baseParams.appToken).toEqual('some-app-token')
   expect(Config.default.baseParams.environment).toEqual('production')
   expect(Config.default.baseParams.osName).toEqual('unknown')
 
   expect(PubSub.subscribe.mock.calls[0][0]).toEqual('sdk:gdpr-forget-me')
-
-  if (withAttributionCb) {
-    expect(PubSub.subscribe.mock.calls[1][0]).toEqual('attribution:change')
-    expect(PubSub.subscribe.mock.calls[1][1]).toEqual(external.attributionCb)
-  }
+  expect(PubSub.subscribe.mock.calls[1][0]).toEqual('attribution:change')
+  expect(PubSub.subscribe.mock.calls[1][1]).toEqual(mainParams.attributionCallback)
 
   expect(Identity.startActivityState).toHaveBeenCalledTimes(1)
 
@@ -80,7 +101,6 @@ function expectStart (withAttributionCb) {
       expect(Queue.run).toHaveBeenCalledTimes(1)
       expect(Session.watch).toHaveBeenCalledTimes(1)
     })
-
 }
 
 function expectNotStart (restart) {
@@ -96,6 +116,34 @@ function expectNotStart (restart) {
   expect(Queue.run).not.toHaveBeenCalled()
   expect(Session.watch).not.toHaveBeenCalled()
 
+}
+
+function expectAllUp () {
+  expect(Config.default.baseParams.appToken).toEqual('some-app-token')
+  expect(Config.default.baseParams.environment).toEqual('production')
+  expect(Config.default.baseParams.osName).toEqual('unknown')
+
+  expect(ActivityState.default.current).not.toBeNull()
+  expect(Queue.isRunning()).toBeTruthy()
+  expect(Session.isRunning()).toBeTruthy()
+
+  expectAttributionCallback()
+
+  mainInstance.gdprForgetMe()
+  expectGdprForgetMeCallback()
+}
+
+function expectAllDown () {
+  expect(Config.default.baseParams.appToken).toEqual('')
+  expect(Config.default.baseParams.environment).toEqual('')
+  expect(Config.default.baseParams.osName).toEqual('unknown')
+
+  expectNotGdprForgetMeCallback()
+  expectNotAttributionCallback()
+
+  expect(ActivityState.default.current).toBeNull()
+  expect(Queue.isRunning()).toBeFalsy()
+  expect(Session.isRunning()).toBeFalsy()
 }
 
 function expectRunningTrackEvent () {
@@ -187,6 +235,24 @@ function expectNotRunningStatic () {
   expect(Queue.setOffline).not.toHaveBeenCalled()
 }
 
+function expectAttributionCallback () {
+
+  PubSub.publish('attribution:change', {tracker_token: 'some-token'})
+
+  jest.runOnlyPendingTimers()
+
+  expect(mainParams.attributionCallback).toHaveBeenCalledWith('attribution:change', {tracker_token: 'some-token'})
+}
+
+function expectNotAttributionCallback () {
+
+  PubSub.publish('attribution:change', {tracker_token: 'some-token'})
+
+  jest.runOnlyPendingTimers()
+
+  expect(mainParams.attributionCallback).not.toHaveBeenCalled()
+}
+
 function teardown () {
   mainInstance.destroy()
   localStorage.clear()
@@ -201,28 +267,27 @@ function teardownAndDisable (reason = 'general') {
 describe('main entry point functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(external, 'attributionCb')
+    jest.spyOn(Date, 'now').mockImplementation(() => 155912080000 + randomInRange(1000, 9999))
     jest.spyOn(event, 'default').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Queue, 'push')
+    jest.spyOn(Queue, 'run')
+    jest.spyOn(Queue, 'setOffline')
+    jest.spyOn(Queue, 'destroy')
+    jest.spyOn(Queue, 'clear')
+    jest.spyOn(Session, 'watch')
+    jest.spyOn(Session, 'destroy')
+    jest.spyOn(GlobalParams, 'add')
+    jest.spyOn(GlobalParams, 'remove')
+    jest.spyOn(GlobalParams, 'removeAll')
+    jest.spyOn(GlobalParams, 'clear')
     jest.spyOn(Logger.default, 'error')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'info')
-    jest.spyOn(Queue, 'push').mockImplementation(() => {})
-    jest.spyOn(Queue, 'run').mockImplementation(() => {})
-    jest.spyOn(Queue, 'setOffline').mockImplementation(() => {})
-    jest.spyOn(Queue, 'destroy').mockImplementation(() => {})
-    jest.spyOn(Queue, 'clear').mockImplementation(() => {})
-    jest.spyOn(Session, 'watch').mockImplementation(() => {})
     jest.spyOn(Identity, 'startActivityState')
     jest.spyOn(Identity, 'setDisabled')
-    jest.spyOn(Identity, 'clear').mockImplementation(() => {})
+    jest.spyOn(Identity, 'clear')
     jest.spyOn(Identity, 'destroy')
-    jest.spyOn(Session, 'watch').mockImplementation(() => {})
-    jest.spyOn(Session, 'destroy').mockImplementation(() => {})
-    jest.spyOn(GlobalParams, 'add').mockImplementation(() => {})
-    jest.spyOn(GlobalParams, 'remove').mockImplementation(() => {})
-    jest.spyOn(GlobalParams, 'removeAll').mockImplementation(() => {})
-    jest.spyOn(GlobalParams, 'clear').mockImplementation(() => {})
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(Attribution, 'destroy')
@@ -261,11 +326,7 @@ describe('main entry point functionality', () => {
 
   describe('test initiated instance', () => {
     beforeAll(() => {
-      mainInstance.init({
-        appToken: 'some-app-token',
-        environment: 'production',
-        attributionCallback: external.attributionCb
-      })
+      init()
     })
 
     afterAll(teardown)
@@ -274,17 +335,11 @@ describe('main entry point functionality', () => {
 
       expect.assertions(9)
 
-      return expectStart(true) // +9 assertions
+      return expectStart() // +9 assertions
     })
 
     it('calls client-defined attribution callback when attribution is changed', () => {
-
-      PubSub.publish('attribution:change', {tracker_token: 'some-token'})
-
-      jest.runAllTimers()
-
-      expect(external.attributionCb).toHaveBeenCalledWith('attribution:change', {tracker_token: 'some-token'})
-
+      expectAttributionCallback()
     })
 
     it('tests if single instance is returned', () => {
@@ -318,24 +373,22 @@ describe('main entry point functionality', () => {
 
       it('initiates and runs all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
-        expect.assertions(15)
+        expect.assertions(17)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
 
       it('disables sdk with shutdown', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenCalledTimes(2)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -361,14 +414,37 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(10)
+        expect.assertions(12)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
+      })
+    })
+
+    describe('sdk: init and disable and enable', () => {
+      afterAll(teardown)
+
+      it('initiates, disables and enables one after another', () => {
+
+        init()
+        mainInstance.disable()
+        mainInstance.enable()
+
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
+
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+
+        return flushPromises()
+      })
+
+      it('ensures that everything is up', () => {
+        expectAllUp()
       })
     })
 
@@ -377,16 +453,13 @@ describe('main entry point functionality', () => {
 
       it('initiates and runs all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
-        expect.assertions(15)
+        expect.assertions(17)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
 
       it('fails to enable already enabled sdk', () => {
@@ -403,8 +476,9 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenCalledTimes(2)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -439,10 +513,7 @@ describe('main entry point functionality', () => {
 
       it('initiates and still prevents running all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        }, true)
+        init()
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
 
@@ -465,14 +536,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(10)
+        expect.assertions(12)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
     })
 
@@ -500,16 +571,13 @@ describe('main entry point functionality', () => {
 
       it('initiates and runs all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
-        expect.assertions(15)
+        expect.assertions(17)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertion
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
 
       it('fails again to enable already enabled sdk', () => {
@@ -526,12 +594,36 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenCalledTimes(2)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectShutDown()
+      })
+    })
+
+    describe('sdk: enable and init and disable', () => {
+      afterAll(teardown)
+
+      it('enables, initiates and disable one after another', () => {
+
+        mainInstance.enable()
+        init()
+        mainInstance.disable()
+
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is already enabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+
+        expect(Identity.setDisabled).not.toHaveBeenCalledWith(false)
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+
+        return flushPromises()
+      })
+
+      it('ensures that everything is shutdown', () => {
+        expectAllDown()
       })
     })
 
@@ -564,16 +656,13 @@ describe('main entry point functionality', () => {
 
       it('initiates and runs all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
-        expect.assertions(15)
+        expect.assertions(17)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
     })
 
@@ -604,10 +693,7 @@ describe('main entry point functionality', () => {
 
       it('initiates and prevents running all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
 
@@ -635,10 +721,7 @@ describe('main entry point functionality', () => {
 
       it('initiates and still prevents running all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
         expectNotStart()
         expectNotRunningStatic()
@@ -659,14 +742,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(10)
+        expect.assertions(12)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
     })
 
@@ -675,10 +758,7 @@ describe('main entry point functionality', () => {
 
       it('initiates and prevents running all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
 
@@ -691,14 +771,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(10)
+        expect.assertions(12)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
 
       })
 
@@ -721,8 +801,9 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenCalledTimes(2)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -732,6 +813,34 @@ describe('main entry point functionality', () => {
       it('prevents running all static methods and track event', () => {
         expectNotRunningStatic()
         expectNotRunningTrackEvent()
+      })
+
+      it('ensures that everything is shutdown', () => {
+        expectAllDown()
+      })
+    })
+
+    describe('sdk: init and enable and disable', () => {
+      afterAll(teardownAndDisable)
+
+      it('initiates, enables and disables one after another', () => {
+
+        init()
+        mainInstance.enable()
+        mainInstance.disable()
+
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+
+        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expectShutDown()
+
+        return flushPromises()
+      })
+
+      it('ensures that everything is shutdown', () => {
+        expectAllDown()
       })
     })
 
@@ -755,10 +864,7 @@ describe('main entry point functionality', () => {
 
       it('initiates and still prevents running all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
 
@@ -781,14 +887,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(10)
+        expect.assertions(12)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
     })
 
@@ -817,16 +923,13 @@ describe('main entry point functionality', () => {
 
       it('initiates and runs all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
-        expect.assertions(15)
+        expect.assertions(17)
 
         expectRunningStatic()  // +7 assertions
         expectRunningTrackEvent() // +1 assertion
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
 
       it('fails to enable already enabled sdk', () => {
@@ -843,12 +946,37 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenCalledTimes(2)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
         expectShutDown()
+      })
+    })
+
+    describe('sdk: enable and init and disable', () => {
+      afterAll(teardownAndDisable)
+
+      it('enables, initiates and disables one after another', () => {
+
+        mainInstance.enable()
+        init()
+        mainInstance.disable()
+
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
+        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+
+        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expectShutDown()
+
+        return flushPromises()
+      })
+
+      it('ensures that everything is shutdown', () => {
+        expectAllDown()
       })
     })
 
@@ -879,16 +1007,13 @@ describe('main entry point functionality', () => {
 
       it('initiates and runs all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
-        expect.assertions(15)
+        expect.assertions(17)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +7 assertions
+        return expectStart() // +9 assertions
       })
     })
 
@@ -921,10 +1046,7 @@ describe('main entry point functionality', () => {
 
       it('initiates and prevents running all static methods and track event', () => {
 
-        mainInstance.init({
-          appToken: 'some-app-token',
-          environment: 'production'
-        })
+        init()
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
 
@@ -960,16 +1082,13 @@ describe('main entry point functionality', () => {
 
         it('initiates and runs all static methods and track event', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
-          expect.assertions(15)
+          expect.assertions(17)
 
           expectRunningStatic() // +7 assertions
           expectRunningTrackEvent() // +1 assertions
-          return expectStart() // +7 assertions
+          return expectStart() // +9 assertions
         })
 
         it('pushes forget-me request to queue', () => {
@@ -985,15 +1104,7 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event and disables with shutdown', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).toHaveBeenCalledTimes(1)
-          expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled due to GDPR-Forget-Me request')
-          expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'gdpr')
-
+          expectGdprForgetMeCallback()
           expectShutDownAndClear()
         })
 
@@ -1014,20 +1125,9 @@ describe('main entry point functionality', () => {
       describe('sdk: init -> flush -> forget', () => {
         afterAll(teardown)
 
-        it('initiates and fails to flush forget-me event', () => {
-
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalledWith()
-
+        it('initiates and flush forget-me event but ignores it', () => {
+          init()
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
@@ -1071,31 +1171,20 @@ describe('main entry point functionality', () => {
 
         it('initiates and runs all static methods and track event and pushes forget-me to queue', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
-          expect.assertions(16)
+          expect.assertions(18)
 
           expectRunningStatic() // +7 assertions
           expectRunningTrackEvent() // +1 assertions
-          return expectStart() // +7 assertions
+          return expectStart() // +9 assertions
             .then(() => {
               expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
             })
         })
 
         it('flush forget-me event and disables with shutdown', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).toHaveBeenCalledTimes(1)
-          expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled due to GDPR-Forget-Me request')
-          expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'gdpr')
-
+          expectGdprForgetMeCallback()
           expectShutDownAndClear()
         })
       })
@@ -1110,29 +1199,19 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event but ignores it', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalled()
-
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
         it('initiates and runs all static methods and track event and pushes forget-me to queue', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
-          expect.assertions(16)
+          expect.assertions(18)
 
           expectRunningStatic() // +7 assertions
           expectRunningTrackEvent() // +1 assertions
-          return expectStart() // +7 assertions
+          return expectStart() // +9 assertions
             .then(() => {
               expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
             })
@@ -1151,10 +1230,7 @@ describe('main entry point functionality', () => {
 
         it('initiates and prevents running all static methods and track event', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not start the sdk')
 
@@ -1177,14 +1253,7 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event but ignores it', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalled()
-
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
@@ -1200,20 +1269,15 @@ describe('main entry point functionality', () => {
       describe('sdk: init -> flush -> forget', () => {
         afterAll(() => teardownAndDisable('gdpr'))
 
-        it('initiates and fails to flush forget-me event', () => {
+        it('initiates and flush forget-me event but ignores it', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
+          init()
 
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not start the sdk')
-          expect(Identity.setDisabled).not.toHaveBeenCalledWith()
 
+          Logger.default.log.mockClear()
+
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
@@ -1243,10 +1307,7 @@ describe('main entry point functionality', () => {
 
         it('initiates but prevents all static methods and track event and fails to push forget-me request to queue', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
           expect(Logger.default.log).toHaveBeenCalledTimes(1)
           expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
@@ -1258,14 +1319,7 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event but ignores it', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalled()
-
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
@@ -1282,23 +1336,13 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event but ignores it', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalled()
-
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
         it('initiates but prevents all static methods and track event and fails to push forget-me request to queue', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
           expect(Logger.default.log).toHaveBeenCalledTimes(1)
           expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
@@ -1323,10 +1367,7 @@ describe('main entry point functionality', () => {
 
         it('initiates and prevents running all static methods and track event', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not start the sdk')
 
@@ -1349,14 +1390,7 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event but ignores it', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalled()
-
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
@@ -1364,14 +1398,14 @@ describe('main entry point functionality', () => {
 
           mainInstance.enable()
 
-          expect.assertions(10)
+          expect.assertions(12)
 
           expect(Logger.default.log).toHaveBeenCalledTimes(1)
           expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
           expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-          return expectStart() // +7 assertions
+          return expectStart() // +9 assertions
 
         })
       })
@@ -1379,20 +1413,15 @@ describe('main entry point functionality', () => {
       describe('sdk: init -> flush -> forget', () => {
         afterAll(() => teardownAndDisable())
 
-        it('initiates and fails to flush forget-me event', () => {
+        it('initiates and flush forget-me event but ignores it', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
+          init()
 
           expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not start the sdk')
-          expect(Identity.setDisabled).not.toHaveBeenCalledWith()
 
+          Logger.default.log.mockClear()
+
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
@@ -1422,10 +1451,7 @@ describe('main entry point functionality', () => {
 
         it('initiates but prevents all static methods and track event and fails to push forget-me request to queue', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
           expect(Logger.default.log).toHaveBeenCalledTimes(1)
           expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
@@ -1437,14 +1463,7 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event but ignores it', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalled()
-
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
@@ -1461,23 +1480,13 @@ describe('main entry point functionality', () => {
         })
 
         it('flush forget-me event but ignores it', () => {
-
-          PubSub.publish('sdk:gdpr-forget-me', true)
-
-          jest.runOnlyPendingTimers()
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
-          expect(Identity.setDisabled).not.toHaveBeenCalled()
-
+          expectNotGdprForgetMeCallback()
           expectNotShutDownAndClear()
         })
 
         it('initiates but prevents all static methods and track event and fails to push forget-me request to queue', () => {
 
-          mainInstance.init({
-            appToken: 'some-app-token',
-            environment: 'production'
-          })
+          init()
 
           expect(Logger.default.log).toHaveBeenCalledTimes(1)
           expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')

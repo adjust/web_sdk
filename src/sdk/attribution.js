@@ -206,7 +206,7 @@ function _clearTimeout () {
   _timeout.running = false
 
   if (running) {
-    Logger.log('Previous request /attribution attempt canceled')
+    Logger.log('Previous /attribution request attempt canceled')
   }
 }
 

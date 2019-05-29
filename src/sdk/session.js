@@ -13,7 +13,7 @@ import {get} from './global-params'
  * @type {boolean}
  * @private
  */
-let _started = false
+let _running = false
 
 /**
  * Reference to interval id to be used for clearing
@@ -47,12 +47,12 @@ const _adapter = getVisibilityApiAccess()
  */
 function watch () {
 
-  if (_started) {
+  if (_running) {
     Logger.error('Session watch already initiated')
     return
   }
 
-  _started = true
+  _running = true
 
   if (_adapter) {
     on(document, _adapter.visibilityChange, _handleVisibilityChange)
@@ -73,11 +73,20 @@ function setLastActive (ignore) {
 }
 
 /**
+ * Check if session watch is running
+ *
+ * @returns {boolean}
+ */
+function isRunning () {
+  return _running
+}
+
+/**
  * Destroy session watch
  */
 function destroy () {
 
-  _started = false
+  _running = false
 
   _stopTimer()
 
@@ -191,5 +200,6 @@ function _checkSession () {
 export {
   watch,
   setLastActive,
+  isRunning,
   destroy
 }

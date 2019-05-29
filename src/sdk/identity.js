@@ -92,9 +92,7 @@ function sync () {
  * @returns {boolean}
  */
 function isDisabled () {
-  const state = _getState()
-
-  return state.disabled || false
+  return _getState().disabled || false
 }
 
 /**
@@ -135,7 +133,6 @@ function _getState () {
  * @returns {boolean}
  */
 function isGdprForgotten () {
-
   const state = _getState()
 
   return state.disabled && state.reason === REASON_GDPR

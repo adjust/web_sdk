@@ -412,7 +412,7 @@ describe('test attribution functionality', () => {
 
     return flushPromises()
       .then(() => {
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Previous request /attribution attempt canceled')
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Previous /attribution request attempt canceled')
         expect(Identity.updateActivityState).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
@@ -439,7 +439,7 @@ describe('test attribution functionality', () => {
     // initiate another attribution call
     Attribution.checkAttribution({ask_in: 2000})
 
-    expect(Logger.default.log.mock.calls[0][0]).toBe('Previous request /attribution attempt canceled')
+    expect(Logger.default.log.mock.calls[0][0]).toBe('Previous /attribution request attempt canceled')
     expect(Logger.default.log.mock.calls[1][0]).toBe('Trying request /attribution in 2000ms')
 
     jest.runOnlyPendingTimers()

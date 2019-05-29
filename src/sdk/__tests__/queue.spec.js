@@ -465,7 +465,7 @@ describe('test request queuing functionality', () => {
 
         Queue.destroy()
 
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Previous request /url-1 attempt canceled')
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Previous /url-1 request attempt canceled')
 
         return Queue.clear()
       })

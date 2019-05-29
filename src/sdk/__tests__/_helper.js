@@ -17,7 +17,12 @@ function createMockXHR (response, status = 200, statusText = 'OK') {
   }
 }
 
+function randomInRange (min, max) {
+  return Math.random() * (max - min) + min
+}
+
 export {
   flushPromises,
-  createMockXHR
+  createMockXHR,
+  randomInRange
 }

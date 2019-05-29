@@ -40,6 +40,14 @@ const _gdpr = {pending: false, requested: false}
 let _params = null
 
 /**
+ * Flag to mark if sdk is started
+ *
+ * @type {boolean}
+ * @private
+ */
+let _isStarted = false
+
+/**
  * Initiate the instance with parameters
  *
  * @param {Object} params
@@ -166,7 +174,7 @@ function _disable (reason) {
   setDisabled(true, reason)
 
   if (_isInitiated()) {
-    shutdown()
+    _shutdown()
   }
 
 }
@@ -270,8 +278,11 @@ function _handleGdprForgetMe () {
 
 /**
  * Shutdown all dependencies
+ * @private
  */
-function shutdown () {
+function _shutdown () {
+
+  _isStarted = false
 
   queueDestroy()
   pubSubDestroy()
@@ -288,7 +299,7 @@ function shutdown () {
  */
 function destroy () {
 
-  shutdown()
+  _shutdown()
 
   _params = null
   _gdpr.requested = false
@@ -363,10 +374,12 @@ function _start (params = {}) {
 
   startActivityState()
     .then(() => {
-
-      // TODO handle this more gracefully
       if (isDisabled()) {
-        shutdown()
+        _shutdown()
+        return
+      }
+
+      if (_isStarted) {
         return
       }
 
@@ -377,8 +390,9 @@ function _start (params = {}) {
 
       queueRun({cleanUp: true})
       sessionWatch()
-    })
 
+      _isStarted = true
+    })
 }
 
 /**

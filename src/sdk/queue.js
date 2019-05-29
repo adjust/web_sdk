@@ -210,9 +210,19 @@ function _clearTimeout () {
     _timeout.wait = DEFAULT_WAIT
     _timeout.attempts = DEFAULT_ATTEMPTS
 
-    Logger.log(`Previous request ${url} attempt canceled`)
+    Logger.log(`Previous ${url} request attempt canceled`)
   }
 
+}
+
+/**
+ * Check if there is pending timeout to be flushed
+ * i.e. if queue is running
+ *
+ * @returns {boolean}
+ */
+function isRunning () {
+  return !!_timeout.id
 }
 
 /**
@@ -233,6 +243,7 @@ export {
   push,
   run,
   setOffline,
+  isRunning,
   clear,
   destroy
 }
