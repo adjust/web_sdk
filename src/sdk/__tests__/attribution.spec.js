@@ -26,7 +26,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
 
     jest.spyOn(request, 'default')
-    jest.spyOn(Identity, 'updateActivityState')
+    jest.spyOn(Identity, 'updateAttribution')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'log')
@@ -91,7 +91,7 @@ describe('test attribution functionality', () => {
     return flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
+        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -127,7 +127,7 @@ describe('test attribution functionality', () => {
     return flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(Identity.updateActivityState).not.toHaveBeenCalled()
+        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
@@ -164,7 +164,7 @@ describe('test attribution functionality', () => {
     return flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
+        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -202,7 +202,7 @@ describe('test attribution functionality', () => {
     return flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
+        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -240,7 +240,7 @@ describe('test attribution functionality', () => {
     return flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
+        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -269,7 +269,7 @@ describe('test attribution functionality', () => {
 
     return flushPromises()
       .then(() => {
-        expect(Identity.updateActivityState).not.toHaveBeenCalled()
+        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
 
         jest.runOnlyPendingTimers()
@@ -282,7 +282,7 @@ describe('test attribution functionality', () => {
         return flushPromises()
       }).then(() => {
 
-        expect(Identity.updateActivityState).not.toHaveBeenCalled()
+        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
 
         request.default.mockClear()
@@ -303,7 +303,7 @@ describe('test attribution functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
+        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
         expect(setTimeout).not.toHaveBeenCalled()
       })
@@ -413,7 +413,7 @@ describe('test attribution functionality', () => {
     return flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Previous /attribution request attempt canceled')
-        expect(Identity.updateActivityState).not.toHaveBeenCalled()
+        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
@@ -450,7 +450,7 @@ describe('test attribution functionality', () => {
       .then(() => {
         expect(request.default).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(Identity.updateActivityState).toHaveBeenCalledWith({attribution: formatted})
+        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 

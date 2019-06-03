@@ -663,7 +663,7 @@ describe('IndexedDB usage', () => {
 
     let activityState = null
 
-    return Identity.startActivityState()
+    return Identity.start()
       .then(() => {
 
         IndexedDB.default.destroy()
@@ -898,7 +898,7 @@ describe('IndexedDB usage', () => {
 
       let inMemoryActivityState = null
 
-      return Identity.startActivityState()
+      return Identity.start()
         .then(() => {
 
           inMemoryActivityState = ActivityState.default.current

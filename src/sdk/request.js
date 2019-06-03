@@ -2,7 +2,7 @@ import Config from './config'
 import {extend, isEmpty, isObject, isValidJson} from './utilities'
 import {getTimestamp} from './time'
 import {checkAttribution} from './attribution'
-import {setLastActive} from './session'
+import {updateLastActive} from './identity'
 import {publish} from './pub-sub'
 import ActivityState from './activity-state'
 
@@ -205,7 +205,7 @@ export default function request (options) {
   return _buildXhr(options)
     .then(result => _interceptResponse(result, options))
     .then(result => {
-      setLastActive()
+      updateLastActive()
       return result
     })
 }

@@ -30,7 +30,7 @@ describe('test session functionality', () => {
 
     jest.spyOn(Utilities, 'on')
     jest.spyOn(Utilities, 'off')
-    jest.spyOn(Identity, 'updateActivityState')
+    jest.spyOn(Identity, 'updateLastActive')
     jest.spyOn(Identity, 'sync').mockImplementation(() => Promise.resolve({}))
     jest.spyOn(Queue, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
@@ -44,7 +44,7 @@ describe('test session functionality', () => {
   })
 
   beforeEach(() => {
-    StorageManager.default.addItem('activityState', {uuid: '123'}).then(Identity.startActivityState)
+    StorageManager.default.addItem('activityState', {uuid: '123'}).then(Identity.start)
   })
 
   afterEach(() => {
@@ -90,58 +90,11 @@ describe('test session functionality', () => {
       expect(Logger.default.error).not.toHaveBeenCalled()
     })
 
-    it('sets last active timestamp when activity state exists and when not ignored', () => {
-
-      expect.assertions(1)
-
-      Session.setLastActive()
-
-      return flushPromises()
-        .then(() => {
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: now})
-        })
-
-    })
-
-    it('does not set last active timestamp when activity state does not exist and when ignored', () => {
-
-      _reset()
-
-      Identity.startActivityState()
-
-      expect.assertions(1)
-
-      Session.setLastActive(true)
-
-      return flushPromises()
-        .then(() => {
-          expect(Identity.updateActivityState).not.toHaveBeenCalled()
-        })
-    })
-
-    it('sets last active timestamp when activity state does not exist and when not ignored', () => {
-
-      jest.spyOn(Identity, 'updateActivityState').mockImplementationOnce(() => {})
-
-      _reset()
-
-      Identity.startActivityState()
-
-      expect.assertions(1)
-
-      Session.setLastActive()
-
-      return flushPromises()
-        .then(() => {
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: now})
-        })
-    })
-
     it('sets interval for last active timestamp to be updated every n seconds', () => {
 
       Session.watch()
 
-      expect.assertions(9)
+      expect.assertions(13)
 
       expect(setInterval).toHaveBeenCalledTimes(1)
 
@@ -153,10 +106,12 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
 
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(1)
+          expect(activityState.lastActive).toEqual(1551916800001)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800001)
 
           return flushPromises()
         })
@@ -168,10 +123,12 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
 
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(2)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800002})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(2)
+          expect(activityState.lastActive).toEqual(1551916800002)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800002)
 
           return flushPromises()
         })
@@ -183,10 +140,12 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
 
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(3)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800003})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(3)
+          expect(activityState.lastActive).toEqual(1551916800003)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800003)
 
           Session.destroy()
 
@@ -201,10 +160,12 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
 
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(3)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800003})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(3)
+          expect(activityState.lastActive).toEqual(1551916800003)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800003)
 
           return flushPromises()
         })
@@ -214,7 +175,7 @@ describe('test session functionality', () => {
 
       _reset()
 
-      Identity.startActivityState()
+      Identity.start()
 
       Session.watch()
 
@@ -267,7 +228,7 @@ describe('test session functionality', () => {
       ])
       .then(() => {
 
-        Identity.startActivityState()
+        Identity.start()
 
         Session.watch()
 
@@ -307,7 +268,7 @@ describe('test session functionality', () => {
 
       expect.assertions(4)
 
-      return Session.setLastActive()
+      return Identity.updateLastActive()
         .then(() => {
           Session.watch()
 
@@ -355,13 +316,13 @@ describe('test session functionality', () => {
 
       Session.watch()
 
-      expect.assertions(11)
+      expect.assertions(14)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
 
       return flushPromises()
         .then(() => {
-          expect(Identity.updateActivityState).not.toHaveBeenCalled()
+          expect(Identity.updateLastActive).not.toHaveBeenCalled()
 
           global.document.dispatchEvent(new Event('visibilitychange'))
 
@@ -372,20 +333,24 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
 
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(1)
+          expect(activityState.lastActive).toEqual(1551916800001)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800001)
 
           jest.runOnlyPendingTimers()
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
 
           // nothing changed because timer is not running
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(1)
+          expect(activityState.lastActive).toEqual(1551916800001)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800001)
 
           dateNowSpy.mockReturnValueOnce(1551916800002)
 
@@ -393,10 +358,12 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
           // again nothing changed because timer is not running
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(1)
+          expect(activityState.lastActive).toEqual(1551916800001)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800001)
         })
 
 
@@ -410,13 +377,13 @@ describe('test session functionality', () => {
 
       Session.watch()
 
-      expect.assertions(9)
+      expect.assertions(11)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
 
       return flushPromises()
         .then(() => {
-          expect(Identity.updateActivityState).not.toHaveBeenCalled()
+          expect(Identity.updateLastActive).not.toHaveBeenCalled()
 
           global.document.dispatchEvent(new Event('visibilitychange'))
 
@@ -424,14 +391,16 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
 
           expect(setInterval).toHaveBeenCalledTimes(2)
           expect(clearInterval).toHaveBeenCalledTimes(2)
 
           // update within the timer
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(1)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800001})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(1)
+          expect(activityState.lastActive).toEqual(1551916800001)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800001)
 
           dateNowSpy.mockReturnValueOnce(1551916800002)
 
@@ -439,10 +408,12 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => {
+        .then(() => StorageManager.default.getFirst('activityState'))
+        .then(activityState => {
           // update within the timer (second run)
-          expect(Identity.updateActivityState).toHaveBeenCalledTimes(2)
-          expect(Identity.updateActivityState).toHaveBeenCalledWith({lastActive: 1551916800002})
+          expect(Identity.updateLastActive).toHaveBeenCalledTimes(2)
+          expect(activityState.lastActive).toEqual(1551916800002)
+          expect(ActivityState.default.current.lastActive).toEqual(1551916800002)
         })
 
     })
@@ -451,9 +422,9 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(now)
 
-      expect.assertions(2)
+      expect.assertions(3)
 
-      return Session.setLastActive()
+      return Identity.updateLastActive()
         .then(() => {
 
           global.document.testHidden = false
@@ -466,11 +437,9 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Queue.push).not.toHaveBeenCalled()
+          dateNowSpy.mockReturnValue(now + Config.default.sessionWindow)
 
-          return Identity.updateActivityState(Object.assign({}, ActivityState.default.current, {lastActive: now + Config.default.sessionWindow}))
-        })
-        .then(() => {
+          expect(Queue.push).not.toHaveBeenCalled()
 
           global.document.dispatchEvent(new Event('visibilitychange'))
 
@@ -480,6 +449,16 @@ describe('test session functionality', () => {
         })
         .then(() => {
           expect(Queue.push).toHaveBeenCalledTimes(1)
+          expect(Queue.push).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {
+              createdAt: now,
+              appToken: '123abc',
+              environment: 'sandbox',
+              osName: 'ios'
+            }
+          })
         })
     })
 
@@ -489,7 +468,7 @@ describe('test session functionality', () => {
 
       expect.assertions(2)
 
-      return Session.setLastActive()
+      return Identity.updateLastActive()
         .then(() => {
 
           global.document.testHidden = false
@@ -502,11 +481,9 @@ describe('test session functionality', () => {
         })
         .then(() => {
 
-          expect(Queue.push).not.toHaveBeenCalled()
+          dateNowSpy.mockReturnValue(now + Config.default.sessionWindow - 1)
 
-          return Identity.updateActivityState(Object.assign({}, ActivityState.default.current, {lastActive: now + Config.default.sessionWindow - 1}))
-        })
-        .then(() => {
+          expect(Queue.push).not.toHaveBeenCalled()
 
           global.document.dispatchEvent(new Event('visibilitychange'))
 

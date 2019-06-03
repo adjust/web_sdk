@@ -4,7 +4,7 @@ import backOff from './backoff'
 import {publish} from './pub-sub'
 import {getTimestamp} from './time'
 import {extend} from './utilities'
-import {updateActivityState} from './identity'
+import {updateAttribution} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
 
@@ -85,7 +85,7 @@ function _setAttribution (result = {}) {
 
   const attribution = extend({adid: result.adid}, result.attribution)
 
-  return updateActivityState({attribution})
+  return updateAttribution(attribution)
     .then(() => {
       publish('attribution:change', attribution)
       Logger.info('Attribution has been updated')

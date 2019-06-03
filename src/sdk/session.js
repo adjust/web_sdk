@@ -4,7 +4,7 @@ import Logger from './logger'
 import {push} from './queue'
 import {on, off, getVisibilityApiAccess, extend, convertToMap} from './utilities'
 import {getTimestamp, timePassed} from './time'
-import {sync, updateActivityState} from './identity'
+import {sync, updateLastActive} from './identity'
 import {get} from './global-params'
 
 /**
@@ -62,17 +62,6 @@ function watch () {
 }
 
 /**
- * Set last active timestamp
- *
- * @param {boolean=} ignore
- */
-function setLastActive (ignore) {
-  if (!ignore || ActivityState.current) {
-    return updateActivityState({lastActive: Date.now()})
-  }
-}
-
-/**
  * Check if session watch is running
  *
  * @returns {boolean}
@@ -110,7 +99,7 @@ function _handleVisibilityChange () {
   _idTimeout = setTimeout(() => {
     if (document[_adapter.hidden]) {
       _stopTimer()
-      setLastActive(Config.ignoreSwitchToBackground)
+      updateLastActive(Config.ignoreSwitchToBackground)
     } else {
       sync().then(_checkSession)
     }
@@ -126,7 +115,7 @@ function _startTimer () {
 
   _stopTimer()
 
-  _idInterval = setInterval(setLastActive, Config.sessionTimerWindow)
+  _idInterval = setInterval(updateLastActive, Config.sessionTimerWindow)
 }
 
 /**
@@ -199,7 +188,6 @@ function _checkSession () {
 
 export {
   watch,
-  setLastActive,
   isRunning,
   destroy
 }

@@ -5,7 +5,7 @@ import {run as queueRun, push, setOffline, clear as queueClear, destroy as queue
 import {buildList, extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
-import {startActivityState, isDisabled, isGdprForgotten, setDisabled, clear as identityClear, destroy as identityDestroy} from './identity'
+import {start, isDisabled, isGdprForgotten, setDisabled, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {destroy as attributionDestroy} from './attribution'
 import {getTimestamp} from './time'
@@ -29,7 +29,10 @@ const _mandatory = [
  * @type {Object}
  * @private
  */
-const _gdpr = {pending: false, requested: false}
+const _gdpr = {
+  pending: false,
+  requested: false
+}
 
 /**
  * In-memory parameters to be used if restarting
@@ -372,7 +375,7 @@ function _start (params = {}) {
     subscribe('attribution:change', params.attributionCallback)
   }
 
-  startActivityState()
+  start()
     .then(() => {
       if (isDisabled()) {
         _shutdown()

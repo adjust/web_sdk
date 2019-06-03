@@ -60,7 +60,7 @@ describe('test identity methods', () => {
 
       expect.assertions(2)
 
-      return Identity.startActivityState()
+      return Identity.start()
         .then(() => {
           expect(Identity.isDisabled()).toBeFalsy()
 
@@ -76,7 +76,7 @@ describe('test identity methods', () => {
 
       Identity.setDisabled(true)
 
-      return Identity.startActivityState()
+      return Identity.start()
         .then(() => {
           expect(Identity.isDisabled()).toBeTruthy()
 
@@ -109,7 +109,7 @@ describe('test identity methods', () => {
   describe('when activity state exists', () => {
 
     beforeEach(() => {
-      StorageManager.default.addItem('activityState', {uuid: '123'}).then(Identity.startActivityState)
+      StorageManager.default.addItem('activityState', {uuid: '123'}).then(Identity.start)
       StorageManager.default.addItem.mockClear()
     })
 
@@ -121,7 +121,7 @@ describe('test identity methods', () => {
 
       expect.assertions(3)
 
-      return Identity.startActivityState()
+      return Identity.start()
         .then(activityState => {
 
           const cachedActivityState = ActivityState.default.current
@@ -137,7 +137,7 @@ describe('test identity methods', () => {
       expect.assertions(4)
 
       return StorageManager.default.deleteItem('activityState', '123')
-        .then(Identity.startActivityState)
+        .then(Identity.start)
         .then(activityState => {
 
           const cachedActivityState = ActivityState.default.current
@@ -156,7 +156,7 @@ describe('test identity methods', () => {
       Identity.destroy()
 
       return StorageManager.default.deleteItem('activityState', '123')
-        .then(Identity.startActivityState)
+        .then(Identity.start)
         .then(activityState => {
 
           const cachedActivityState = ActivityState.default.current
@@ -168,20 +168,46 @@ describe('test identity methods', () => {
         })
     })
 
-    it('updates activity state', () => {
+    it('updates last active or ignores it when necessary', () => {
 
-      expect.assertions(4)
+      let cachedActivityState = {}
 
-      return Identity.updateActivityState({lastActive: 456})
+      expect.assertions(5)
+
+      jest.spyOn(Date, 'now').mockReturnValueOnce(456)
+
+      return Identity.updateLastActive()
         .then(activityState => {
 
-          const cachedActivityState = ActivityState.default.current
+          cachedActivityState = ActivityState.default.current
 
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toEqual({uuid: '123', lastActive: 456})
           expect(ActivityState.default.current).toEqual({uuid: '123', lastActive: 456})
           expect(StorageManager.default.addItem).not.toHaveBeenCalled()
+
+          return Identity.updateLastActive(true)
         })
+        .then(activityState => {
+          expect(activityState).toEqual(cachedActivityState)
+        })
+    })
+
+    it('updates attribution', () => {
+
+      expect.assertions(4)
+
+      return Identity.updateAttribution({adid: '456'})
+        .then(activityState => {
+
+          const cachedActivityState = ActivityState.default.current
+
+          expect(activityState).toEqual(cachedActivityState)
+          expect(activityState).toEqual({uuid: '123', attribution: {adid: '456'}})
+          expect(ActivityState.default.current).toEqual({uuid: '123', attribution: {adid: '456'}})
+          expect(StorageManager.default.addItem).not.toHaveBeenCalled()
+        })
+
     })
 
     it('syncs in-memory activity state with updated stored version', () => {
@@ -190,7 +216,7 @@ describe('test identity methods', () => {
 
       expect.assertions(5)
 
-      return Identity.startActivityState()
+      return Identity.start()
         .then(activityState => {
 
           expect(activityState).toEqual(ActivityState.default.current)
@@ -257,7 +283,7 @@ describe('test identity methods', () => {
 
       expect.assertions(3)
 
-      return Identity.startActivityState()
+      return Identity.start()
         .then(activityState => {
 
           const cachedActivityState = ActivityState.default.current
@@ -272,7 +298,9 @@ describe('test identity methods', () => {
 
       expect.assertions(3)
 
-      return Identity.updateActivityState({lastActive: 456})
+      jest.spyOn(Date, 'now').mockReturnValue(456)
+
+      return Identity.updateLastActive()
         .then(activityState => {
 
           const cachedActivityState = ActivityState.default.current

@@ -94,7 +94,7 @@ function expectStart () {
   expect(PubSub.subscribe.mock.calls[1][0]).toEqual('attribution:change')
   expect(PubSub.subscribe.mock.calls[1][1]).toEqual(mainParams.attributionCallback)
 
-  expect(Identity.startActivityState).toHaveBeenCalledTimes(1)
+  expect(Identity.start).toHaveBeenCalledTimes(1)
 
   return flushPromises()
     .then(() => {
@@ -112,7 +112,7 @@ function expectNotStart (restart) {
   }
 
   expect(PubSub.subscribe).not.toHaveBeenCalled()
-  expect(Identity.startActivityState).not.toHaveBeenCalled()
+  expect(Identity.start).not.toHaveBeenCalled()
   expect(Queue.run).not.toHaveBeenCalled()
   expect(Session.watch).not.toHaveBeenCalled()
 
@@ -284,7 +284,7 @@ describe('main entry point functionality', () => {
     jest.spyOn(Logger.default, 'error')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'info')
-    jest.spyOn(Identity, 'startActivityState')
+    jest.spyOn(Identity, 'start')
     jest.spyOn(Identity, 'setDisabled')
     jest.spyOn(Identity, 'clear')
     jest.spyOn(Identity, 'destroy')

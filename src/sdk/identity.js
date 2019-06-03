@@ -44,7 +44,7 @@ function _recover () {
  *
  * @returns {Promise}
  */
-function startActivityState () {
+function start () {
   return _recover()
     .then(stored => ActivityState.current = stored)
 }
@@ -54,8 +54,9 @@ function startActivityState () {
  *
  * @param {Object} params
  * @returns {Promise}
+ * @private
  */
-function updateActivityState (params) {
+function _updateActivityState (params) {
   return _recover()
     .then(stored => {
 
@@ -64,6 +65,30 @@ function updateActivityState (params) {
       return StorageManager.updateItem('activityState', activityState)
         .then(() => ActivityState.current = activityState)
     })
+}
+
+/**
+ * Update attribution information
+ *
+ * @param {Object} attribution
+ * @returns {Promise}
+ */
+function updateAttribution (attribution) {
+  return _updateActivityState({attribution})
+}
+
+/**
+ * Update last active flag
+ *
+ * @param {boolean=false} ignore
+ * @returns {Promise}
+ */
+function updateLastActive (ignore) {
+  if (ignore) {
+    return Promise.resolve(ActivityState.current)
+  }
+
+  return _updateActivityState({lastActive: Date.now()})
 }
 
 /**
@@ -160,8 +185,9 @@ function destroy () {
 }
 
 export {
-  startActivityState,
-  updateActivityState,
+  start,
+  updateAttribution,
+  updateLastActive,
   sync,
   setDisabled,
   isDisabled,

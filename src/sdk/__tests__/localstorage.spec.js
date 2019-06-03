@@ -653,7 +653,7 @@ describe('LocalStorage usage', () => {
 
     let activityState = null
 
-    return Identity.startActivityState()
+    return Identity.start()
       .then(() => {
 
         LocalStorage.default.destroy()
