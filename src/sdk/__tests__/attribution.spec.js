@@ -1,5 +1,4 @@
 /* eslint-disable */
-import * as Config from '../config'
 import * as Attribution from '../attribution'
 import * as request from '../request'
 import * as PubSub from '../pub-sub'
@@ -16,13 +15,6 @@ jest.useFakeTimers()
 describe('test attribution functionality', () => {
 
   beforeAll(() => {
-
-    Object.assign(Config.default.baseParams, {
-      appToken: '123abc',
-      environment: 'sandbox',
-      osName: 'ios'
-    })
-
     ActivityState.default.current = {}
 
     jest.spyOn(request, 'default')
@@ -37,26 +29,29 @@ describe('test attribution functionality', () => {
   })
 
   afterAll(() => {
-    Config.clear()
     ActivityState.default.current = {}
 
     jest.clearAllTimers()
     jest.restoreAllMocks()
   })
 
-  it('does not do anything if there is no ask_in parameter', () => {
+  it('does nothing if there is no ask_in parameter and attribution already stored', () => {
 
     ActivityState.default.current = {attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
+    const sessionResult = {some: 'thing'}
+    const attributionPromise = Attribution.check(sessionResult)
+
+    jest.runOnlyPendingTimers()
+
     expect.assertions(2)
 
-    Attribution.checkAttribution({some: 'thing'})
-      .then(result => {
-        expect(result).toEqual({some: 'thing'})
-        expect(setTimeout).not.toHaveBeenCalled()
-      })
+    expect(request.default).not.toHaveBeenCalled()
 
-    jest.runAllTimers()
+    attributionPromise
+      .then(result => {
+        expect(result).toEqual(sessionResult)
+      })
 
   })
 
@@ -68,72 +63,54 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(6)
+    expect.assertions(4)
 
-    Attribution.checkAttribution({some: 'thing'})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 150ms')
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
+    Attribution.check({some: 'thing'})
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledWith({
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default.mock.calls[0][0]).toMatchObject({
       url: '/attribution',
-      params: {
-        createdAt: 'some-time',
-        initiatedBy: 'sdk',
-        appToken: '123abc',
-        environment: 'sandbox',
-        osName: 'ios'
-      }
+      params: {initiatedBy: 'sdk'}
     })
 
     return flushPromises()
       .then(() => {
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
         expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
   })
 
-  it('sets timeout for attribution endpoint to be called which returns same attribution as before', () => {
+  it('requests timed-out attribution which returns the same as existing one', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
 
     ActivityState.default.current = {attribution: Object.assign({adid: '123'}, currentAttribution.attribution)}
     request.default.mockResolvedValue(currentAttribution)
 
-    expect.assertions(6)
+    expect.assertions(4)
 
-    Attribution.checkAttribution({ask_in: 3000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 3000ms')
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
+    Attribution.check({ask_in: 3000})
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledWith({
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default.mock.calls[0][0]).toMatchObject({
       url: '/attribution',
-      params: {
-        createdAt: 'some-time',
-        initiatedBy: 'backend',
-        appToken: '123abc',
-        environment: 'sandbox',
-        osName: 'ios'
-      }
+      params: {initiatedBy: 'backend'}
     })
 
     return flushPromises()
       .then(() => {
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
         expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
   })
 
-  it('sets timeout for attribution endpoint to be called if no attribution found', () => {
+  it('requests timed-out attribution which returns new attribution', () => {
 
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
@@ -141,36 +118,23 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(6)
+    expect.assertions(3)
 
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 2000ms')
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
+    Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledWith({
-      url: '/attribution',
-      params: {
-        createdAt: 'some-time',
-        initiatedBy: 'backend',
-        appToken: '123abc',
-        environment: 'sandbox',
-        osName: 'ios'
-      }
-    })
+    expect(request.default).toHaveBeenCalledTimes(1)
 
     return flushPromises()
       .then(() => {
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
         expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
   })
 
-  it('sets timeout for attribution endpoint to be called which returns different attribution (network is different)', () => {
+  it('requests timed-out attribution which returns different than existing one (network is different)', () => {
 
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
@@ -179,36 +143,23 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(6)
+    expect.assertions(3)
 
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 2000ms')
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
+    Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledWith({
-      url: '/attribution',
-      params: {
-        createdAt: 'some-time',
-        initiatedBy: 'backend',
-        appToken: '123abc',
-        environment: 'sandbox',
-        osName: 'ios'
-      }
-    })
+    expect(request.default).toHaveBeenCalledTimes(1)
 
     return flushPromises()
       .then(() => {
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
         expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
   })
 
-  it('sets timeout for attribution endpoint to be called which returns different attribution (tracker_name is different)', () => {
+  it('requests timed-out attribution which returns different than existing one (tracker_name is different)', () => {
 
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
@@ -217,36 +168,23 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(6)
+    expect.assertions(3)
 
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 2000ms')
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
+    Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledWith({
-      url: '/attribution',
-      params: {
-        createdAt: 'some-time',
-        initiatedBy: 'backend',
-        appToken: '123abc',
-        environment: 'sandbox',
-        osName: 'ios'
-      }
-    })
+    expect(request.default).toHaveBeenCalledTimes(1)
 
     return flushPromises()
       .then(() => {
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
         expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
   })
 
-  it('sets timeout for attribution endpoint to be called which returns ask_in', () => {
+  it('requests timed-out attribution which requires yet another call', () => {
 
     const oldAttribution = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'old'}
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
@@ -255,13 +193,9 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue({ask_in: 3000})
 
-    expect.assertions(20)
+    expect.assertions(9)
 
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 2000ms')
-    expect(setTimeout).toHaveBeenCalledTimes(1)
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
+    Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
@@ -274,9 +208,6 @@ describe('test attribution functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 3000ms')
-        expect(setTimeout).toHaveBeenCalledTimes(2)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
         expect(request.default).toHaveBeenCalledTimes(2)
 
         return flushPromises()
@@ -290,38 +221,29 @@ describe('test attribution functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 3000ms')
-        expect(setTimeout).toHaveBeenCalledTimes(3)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
         expect(request.default).toHaveBeenCalledTimes(1)
-
-        setTimeout.mockClear()
 
         return flushPromises()
       }).then(() => {
 
         jest.runOnlyPendingTimers()
 
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
         expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
-        expect(setTimeout).not.toHaveBeenCalled()
       })
   })
 
   it('retires attribution request when failed request', () => {
 
-    const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
+    const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
+    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}
 
+    ActivityState.default.current = {}
     request.default.mockRejectedValue({error: 'An error'})
 
-    expect.assertions(26)
+    expect.assertions(12)
 
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 2000ms')
-    expect(setTimeout).toHaveBeenCalledTimes(1)
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
+    Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
@@ -329,64 +251,41 @@ describe('test attribution functionality', () => {
 
     return flushPromises()
       .then(() => {
+
+        expect(Identity.updateAttribution).not.toHaveBeenCalled()
+        expect(PubSub.publish).not.toHaveBeenCalled()
+
         jest.runOnlyPendingTimers()
 
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /attribution in 100ms')
         expect(request.default).toHaveBeenCalledTimes(2)
-        expect(setTimeout).toHaveBeenCalledTimes(2)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 100)
 
         return flushPromises()
       }).then(() => {
+
+        expect(Identity.updateAttribution).not.toHaveBeenCalled()
+        expect(PubSub.publish).not.toHaveBeenCalled()
+
         jest.runOnlyPendingTimers()
 
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /attribution in 200ms')
         expect(request.default).toHaveBeenCalledTimes(3)
-        expect(setTimeout).toHaveBeenCalledTimes(3)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 200)
 
         return flushPromises()
       }).then(() => {
 
-        jest.runOnlyPendingTimers()
-
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /attribution in 300ms')
-        expect(request.default).toHaveBeenCalledTimes(4)
-        expect(setTimeout).toHaveBeenCalledTimes(4)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
-
-        return flushPromises()
-      }).then(() => {
-
-        jest.runOnlyPendingTimers()
-
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /attribution in 300ms')
-        expect(request.default).toHaveBeenCalledTimes(5)
-        expect(setTimeout).toHaveBeenCalledTimes(5)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
-
-        return flushPromises()
-      }).then(() => {
+        expect(Identity.updateAttribution).not.toHaveBeenCalled()
+        expect(PubSub.publish).not.toHaveBeenCalled()
 
         request.default.mockClear()
-        request.default.mockResolvedValue(currentAttribution)
+        request.default.mockResolvedValue(newAttribution)
 
         jest.runOnlyPendingTimers()
 
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /attribution in 300ms')
         expect(request.default).toHaveBeenCalledTimes(1)
-        expect(setTimeout).toHaveBeenCalledTimes(6)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
-
-        setTimeout.mockClear()
 
         return flushPromises()
       }).then(() => {
-
-        jest.runOnlyPendingTimers()
-
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
-        expect(setTimeout).not.toHaveBeenCalled()
+        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
   })
 
@@ -397,13 +296,9 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(6)
+    expect.assertions(3)
 
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 2000ms')
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
-
+    Attribution.check({ask_in: 2000})
     Attribution.destroy()
 
     jest.runOnlyPendingTimers()
@@ -412,7 +307,6 @@ describe('test attribution functionality', () => {
 
     return flushPromises()
       .then(() => {
-        expect(Logger.default.log).toHaveBeenLastCalledWith('Previous /attribution request attempt canceled')
         expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
@@ -427,20 +321,11 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(9)
+    expect.assertions(6)
 
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /attribution in 2000ms')
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
-
-    Logger.default.log.mockClear()
-
+    Attribution.check({ask_in: 2000})
     // initiate another attribution call
-    Attribution.checkAttribution({ask_in: 2000})
-
-    expect(Logger.default.log.mock.calls[0][0]).toBe('Previous /attribution request attempt canceled')
-    expect(Logger.default.log.mock.calls[1][0]).toBe('Trying request /attribution in 2000ms')
+    Attribution.check({ask_in: 3000})
 
     jest.runOnlyPendingTimers()
 
@@ -449,8 +334,9 @@ describe('test attribution functionality', () => {
     return flushPromises()
       .then(() => {
         expect(request.default).toHaveBeenCalledTimes(1)
-        expect(Logger.default.log).toHaveBeenCalledWith('Request /attribution has been finished')
+        expect(Identity.updateAttribution).toHaveBeenCalledTimes(1)
         expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+        expect(PubSub.publish).toHaveBeenCalledTimes(1)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 

@@ -1,45 +1,21 @@
-import Config from './config'
-import request from './request'
-import backOff from './backoff'
 import {publish} from './pub-sub'
-import {getTimestamp} from './time'
 import {extend} from './utilities'
 import {updateAttribution} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
-
-const DEFAULT_ATTEMPTS = 0
-const DEFAULT_WAIT = 150
+import Package from './package'
 
 /**
- * Timeout id and wait when delayed attribution check is about to happen
+ * Package request instance
  *
  * @type {Object}
  * @private
  */
-let _timeout = {
-  id: null,
-  attempts: DEFAULT_ATTEMPTS,
-  running: false
-}
-
-/**
- * Cache create_at date when trying to check attribution
- *
- * @type {string}
- * @private
- */
-let _createdAt = ''
-
-/**
- * Initiated by flag to send to the attribution request
- * - `sdk` - when initiated by the sdk itself after initial session without ask_in
- * - `backend` - by default, when initiated due to ask_in parameter from session
- *
- * @type {string}
- * @private
- */
-let _initiatedBy = ''
+const _request = Package({
+  url: '/attribution',
+  strategy: 'short',
+  continueCb: _continue
+})
 
 /**
  * Check if new attribution is the same as old one
@@ -77,8 +53,6 @@ function _isSame ({adid = '', attribution = {}}) {
  */
 function _setAttribution (result = {}) {
 
-  Logger.log('Request /attribution has been finished')
-
   if (_isSame(result)) {
     return Promise.resolve(result)
   }
@@ -95,130 +69,52 @@ function _setAttribution (result = {}) {
 }
 
 /**
- * Make delayed request after provided time
- *
- * @param {number} wait
- * @param {boolean=false} retrying
- * @returns {Promise}
- * @private
- */
-function _delayedRequest (wait, retrying) {
-
-  _timeout.running = true
-
-  if (_timeout.id) {
-    _clearTimeout()
-  }
-
-  Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request /attribution in ${wait}ms`)
-
-  return new Promise(() => {
-    _timeout.id = setTimeout(() => {
-      return _request()
-    }, wait)
-  })
-}
-
-/**
- * Retry request after some pre-calculated time
- *
- * @returns {Promise}
- * @private
- */
-function _retry () {
-
-  _timeout.attempts += 1
-  _timeout.running = false
-
-  _clearTimeout()
-
-  return _delayedRequest(backOff(_timeout.attempts, 'short'), true)
-}
-
-/**
- * Make the request and retry if necessary
- *
- * @returns {Promise}
- * @private
- */
-function _request () {
-  return request({
-    url: '/attribution',
-    params: extend({
-      createdAt: _createdAt,
-      initiatedBy: _initiatedBy
-    }, Config.baseParams)
-  }).then(_requestAttribution)
-    .catch(_retry)
-}
-
-/**
- * Request the attribution if needed and when retrieved then try to preserve it
+ * Store attribution or make another request if attribution not yet available
  *
  * @param {Object} result
- * @param {number=} selfInitiatedAskIn
  * @returns {Promise}
  * @private
  */
-function _requestAttribution (result = {}, selfInitiatedAskIn) {
+function _continue (result = {}) {
 
-  const askIn = result.ask_in || selfInitiatedAskIn
-
-  if (!askIn) {
-    _timeout.attempts = DEFAULT_ATTEMPTS
-    _timeout.running = false
-
-    _clearTimeout()
+  if (!result.ask_in) {
+    _request.finish()
 
     return _setAttribution(result)
   }
 
-  return _delayedRequest(askIn)
+  return _request.retry({wait: result.ask_in})
 }
 
 /**
- * Check current attribution and perform certain actions if retrieved
+ * Request attribution if session asked for it
  *
  * @param {Object} sessionResult
  * @param {number=} sessionResult.ask_in
  */
-function checkAttribution (sessionResult = {}) {
+function check (sessionResult = {}) {
 
   if (!sessionResult.ask_in && ActivityState.current.attribution) {
     return Promise.resolve(sessionResult)
   }
 
-  _createdAt = getTimestamp()
-  _initiatedBy = !sessionResult.ask_in ? 'sdk' : 'backend'
-
-  return _requestAttribution(sessionResult, sessionResult.ask_in || DEFAULT_WAIT)
-}
-
-/**
- * Clear pending attribution request
- */
-function _clearTimeout () {
-
-  const running = _timeout.running
-
-  clearTimeout(_timeout.id)
-  _timeout.id = null
-  _timeout.running = false
-
-  if (running) {
-    Logger.log('Previous /attribution request attempt canceled')
-  }
+  _request.send({
+    params: {
+      initiatedBy: !sessionResult.ask_in ? 'sdk' : 'backend'
+    },
+    wait: sessionResult.ask_in
+  })
 }
 
 /**
  * Destroy attribution by clearing current timeout
  */
 function destroy () {
-  _clearTimeout()
+  _request.clear()
 }
 
 export {
-  checkAttribution,
+  check,
   destroy
 }
 

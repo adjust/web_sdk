@@ -199,6 +199,18 @@ function intersection (array = [], values = []) {
   return array.filter(item => values.indexOf(item) !== -1)
 }
 
+/**
+ * Check if particular url is a certain request
+ *
+ * @param {string} url
+ * @param {string} requestName
+ * @returns {boolean}
+ */
+function isRequest (url, requestName) {
+  const regex = new RegExp(`\\/${requestName}(\\/.*|\\?.*){0,1}$`)
+  return regex.test(url)
+}
+
 export {
   buildList,
   isEmpty,
@@ -211,5 +223,6 @@ export {
   extend,
   convertToMap,
   detectPlatform,
-  intersection
+  intersection,
+  isRequest
 }

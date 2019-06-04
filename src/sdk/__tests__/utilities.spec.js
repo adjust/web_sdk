@@ -162,4 +162,18 @@ describe('test for utility methods', () => {
       expect(Utilities.intersection([], [4,5,6])).toEqual([])
     })
   })
+
+  describe('test for isRequest', () => {
+    it('returns true', () => {
+      expect(Utilities.isRequest('https://app.adjust.com/session', 'session')).toBeTruthy()
+      expect(Utilities.isRequest('https://app.adjust.com/session?some=params', 'session')).toBeTruthy()
+      expect(Utilities.isRequest('https://app.adjust.com/event/?some=params', 'event')).toBeTruthy()
+      expect(Utilities.isRequest('https://app.adjust.com/event/', 'event')).toBeTruthy()
+    })
+
+    it('returns false', () => {
+      expect(Utilities.isRequest('https://app.adjust.com/sessionnnn', 'session')).toBeFalsy()
+      expect(Utilities.isRequest('https://app.adjust.com/ssession', 'session')).toBeFalsy()
+    })
+  })
 })

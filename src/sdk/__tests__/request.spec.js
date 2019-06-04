@@ -284,7 +284,7 @@ describe('perform api requests', () => {
     }
 
     beforeAll(() => {
-      jest.spyOn(Attribution, 'checkAttribution')
+      jest.spyOn(Attribution, 'check')
       jest.spyOn(PubSub, 'publish')
     })
 
@@ -322,7 +322,7 @@ describe('perform api requests', () => {
           ask_in: 2500,
           tracking_state: 'opted_out'
         })
-        expect(Attribution.checkAttribution).not.toHaveBeenCalled()
+        expect(Attribution.check).not.toHaveBeenCalled()
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
@@ -356,7 +356,7 @@ describe('perform api requests', () => {
           timestamp: '2019-02-02',
           ask_in: 2500
         })
-        expect(Attribution.checkAttribution).toHaveBeenCalledWith(result)
+        expect(Attribution.check).toHaveBeenCalledWith(result)
       })
 
       return flushPromises()
@@ -365,12 +365,12 @@ describe('perform api requests', () => {
         })
     })
 
-    it('does not check attribution info on session request without ask_in', () => {
+    it('checks attribution info on session request without ask_in and no stored attribution', () => {
 
       prepare({
         adid: '123123',
         message: 'bla',
-        timestamp: '2019-02-02'
+        timestamp: '2019-02-02',
       })
 
       expect.assertions(2)
@@ -387,7 +387,38 @@ describe('perform api requests', () => {
           adid: '123123',
           timestamp: '2019-02-02'
         })
-        expect(Attribution.checkAttribution).not.toHaveBeenCalled()
+        expect(Attribution.check).toHaveBeenCalledWith(result)
+      })
+
+      return flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
+    })
+
+    it('does not check attribution info on request other than session without ask_in', () => {
+
+      prepare({
+        adid: '123123',
+        message: 'bla',
+        timestamp: '2019-02-02'
+      })
+
+      expect.assertions(2)
+
+      request.default({
+        url: '/event',
+        params: {
+          appToken: '123abc',
+          environment: 'sandbox',
+          osName: 'ios'
+        }
+      }).then(result => {
+        expect(result).toEqual({
+          adid: '123123',
+          timestamp: '2019-02-02'
+        })
+        expect(Attribution.check).not.toHaveBeenCalled()
       })
 
       return flushPromises()
@@ -414,7 +445,7 @@ describe('perform api requests', () => {
         expect(result).toEqual({
           ask_in: 2500
         })
-        expect(Attribution.checkAttribution).toHaveBeenCalledWith(result)
+        expect(Attribution.check).toHaveBeenCalledWith(result)
       })
 
       return flushPromises()
@@ -443,7 +474,7 @@ describe('perform api requests', () => {
           ask_in: 2500,
           tracking_state: 'opted_out'
         })
-        expect(Attribution.checkAttribution).not.toHaveBeenCalled()
+        expect(Attribution.check).not.toHaveBeenCalled()
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 

@@ -1,21 +1,10 @@
 import Config from './config'
-import {extend, isEmpty, isObject, isValidJson} from './utilities'
+import {extend, isEmpty, isObject, isValidJson, isRequest} from './utilities'
 import {getTimestamp} from './time'
-import {checkAttribution} from './attribution'
+import {check as attributionCheck} from './attribution'
 import {updateLastActive} from './identity'
 import {publish} from './pub-sub'
 import ActivityState from './activity-state'
-
-/**
- * Check if attribution requst
- *
- * @param {string} url
- * @returns {boolean}
- * @private
- */
-function _isAttributionRequest (url) {
-  return /\/attribution/.test(url)
-}
 
 /**
  * Get filtered response from successful request
@@ -28,7 +17,7 @@ function _isAttributionRequest (url) {
 function _getSuccessObject (xhr, url) {
 
   const response = xhr.response ? JSON.parse(xhr.response) : {}
-  const append = _isAttributionRequest(url) ? [
+  const append = isRequest(url, 'attribution') ? [
     'attribution',
     'message'
   ] : []
@@ -183,14 +172,20 @@ function _buildXhr ({url, method = 'GET', params = {}}) {
  */
 function _interceptResponse (result = {}, options) {
 
+  const isAttributionRequest = isRequest(options.url, 'attribution')
+  const isSessionRequest = isRequest(options.url, 'session')
+  const isAttributionPresent = !!ActivityState.current.attribution
+
   if (result.tracking_state === 'opted_out') {
     publish('sdk:gdpr-forget-me', true)
     return result
   }
 
-  if (!_isAttributionRequest(options.url) && result.ask_in) {
-    checkAttribution(result)
+  if (!isAttributionRequest && (result.ask_in || isSessionRequest && !isAttributionPresent)) {
+    attributionCheck(result)
   }
+
+  updateLastActive()
 
   return result
 }
@@ -204,8 +199,4 @@ function _interceptResponse (result = {}, options) {
 export default function request (options) {
   return _buildXhr(options)
     .then(result => _interceptResponse(result, options))
-    .then(result => {
-      updateLastActive()
-      return result
-    })
 }
