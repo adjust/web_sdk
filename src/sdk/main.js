@@ -9,6 +9,7 @@ import {start, isDisabled, isGdprForgotten, setDisabled, clear as identityClear,
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {destroy as attributionDestroy} from './attribution'
 import {getTimestamp} from './time'
+import {check as sdkClickCheck, destroy as sdkClickDestroy} from './sdk-click'
 import {REASON_GDPR} from './constants'
 import event from './event'
 
@@ -291,6 +292,7 @@ function _shutdown () {
   pubSubDestroy()
   sessionDestroy()
   attributionDestroy()
+  sdkClickDestroy()
   identityDestroy()
   StorageManager.destroy()
   Config.destroy()
@@ -374,6 +376,8 @@ function _start (params = {}) {
   if (typeof params.attributionCallback === 'function') {
     subscribe('attribution:change', params.attributionCallback)
   }
+
+  sdkClickCheck()
 
   start()
     .then(() => {

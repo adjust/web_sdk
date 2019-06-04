@@ -107,7 +107,7 @@ function check (sessionResult = {}) {
 }
 
 /**
- * Destroy attribution by clearing current timeout
+ * Destroy attribution by clearing running request
  */
 function destroy () {
   _request.clear()
