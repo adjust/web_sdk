@@ -39,7 +39,7 @@ describe('test package functionality', () => {
   })
 
   afterAll(() => {
-    Config.clear()
+    Config.default.destroy()
 
     jest.clearAllTimers()
     jest.restoreAllMocks()

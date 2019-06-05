@@ -91,8 +91,9 @@ function expectStart () {
   expect(Config.default.baseParams.osName).toEqual('unknown')
 
   expect(PubSub.subscribe.mock.calls[0][0]).toEqual('sdk:gdpr-forget-me')
-  expect(PubSub.subscribe.mock.calls[1][0]).toEqual('attribution:change')
-  expect(PubSub.subscribe.mock.calls[1][1]).toEqual(mainParams.attributionCallback)
+  expect(PubSub.subscribe.mock.calls[1][0]).toEqual('attribution:check')
+  expect(PubSub.subscribe.mock.calls[2][0]).toEqual('attribution:change')
+  expect(PubSub.subscribe.mock.calls[2][1]).toEqual(mainParams.attributionCallback)
 
   expect(Identity.start).toHaveBeenCalledTimes(1)
 
@@ -128,6 +129,7 @@ function expectAllUp () {
   expect(Session.isRunning()).toBeTruthy()
 
   expectAttributionCallback()
+  expectAttributionCheck()
 
   mainInstance.gdprForgetMe()
   expectGdprForgetMeCallback()
@@ -244,6 +246,16 @@ function expectAttributionCallback () {
   expect(mainParams.attributionCallback).toHaveBeenCalledWith('attribution:change', {tracker_token: 'some-token'})
 }
 
+function expectAttributionCheck () {
+
+  PubSub.publish('attribution:check', {some: 'result'})
+
+  jest.runOnlyPendingTimers()
+
+  expect(Attribution.check).toHaveBeenCalledWith({some: 'result'})
+
+}
+
 function expectNotAttributionCallback () {
 
   PubSub.publish('attribution:change', {tracker_token: 'some-token'})
@@ -290,6 +302,7 @@ describe('main entry point functionality', () => {
     jest.spyOn(Identity, 'destroy')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(PubSub, 'destroy')
+    jest.spyOn(Attribution, 'check')
     jest.spyOn(Attribution, 'destroy')
     jest.spyOn(StorageManager.default, 'destroy')
   })
@@ -333,9 +346,9 @@ describe('main entry point functionality', () => {
 
     it('sets basic configuration', () => {
 
-      expect.assertions(9)
+      expect.assertions(10)
 
-      return expectStart() // +9 assertions
+      return expectStart() // +10 assertions
     })
 
     it('calls client-defined attribution callback when attribution is changed', () => {
@@ -375,11 +388,11 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(17)
+        expect.assertions(18)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
 
       it('disables sdk with shutdown', () => {
@@ -414,14 +427,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(12)
+        expect.assertions(13)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
     })
 
@@ -455,11 +468,11 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(17)
+        expect.assertions(18)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
 
       it('fails to enable already enabled sdk', () => {
@@ -536,14 +549,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(12)
+        expect.assertions(13)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
     })
 
@@ -573,11 +586,11 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(17)
+        expect.assertions(18)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertion
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
 
       it('fails again to enable already enabled sdk', () => {
@@ -658,11 +671,11 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(17)
+        expect.assertions(18)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
     })
 
@@ -742,14 +755,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(12)
+        expect.assertions(13)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
     })
 
@@ -771,14 +784,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(12)
+        expect.assertions(13)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
 
       })
 
@@ -887,14 +900,14 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(12)
+        expect.assertions(13)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
     })
 
@@ -925,11 +938,11 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(17)
+        expect.assertions(18)
 
         expectRunningStatic()  // +7 assertions
         expectRunningTrackEvent() // +1 assertion
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
 
       it('fails to enable already enabled sdk', () => {
@@ -1009,11 +1022,11 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(17)
+        expect.assertions(18)
 
         expectRunningStatic() // +7 assertions
         expectRunningTrackEvent() // +1 assertions
-        return expectStart() // +9 assertions
+        return expectStart() // +10 assertions
       })
     })
 
@@ -1084,11 +1097,11 @@ describe('main entry point functionality', () => {
 
           init()
 
-          expect.assertions(17)
+          expect.assertions(18)
 
           expectRunningStatic() // +7 assertions
           expectRunningTrackEvent() // +1 assertions
-          return expectStart() // +9 assertions
+          return expectStart() // +10 assertions
         })
 
         it('pushes forget-me request to queue', () => {
@@ -1173,11 +1186,11 @@ describe('main entry point functionality', () => {
 
           init()
 
-          expect.assertions(18)
+          expect.assertions(19)
 
           expectRunningStatic() // +7 assertions
           expectRunningTrackEvent() // +1 assertions
-          return expectStart() // +9 assertions
+          return expectStart() // +10 assertions
             .then(() => {
               expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
             })
@@ -1207,11 +1220,11 @@ describe('main entry point functionality', () => {
 
           init()
 
-          expect.assertions(18)
+          expect.assertions(19)
 
           expectRunningStatic() // +7 assertions
           expectRunningTrackEvent() // +1 assertions
-          return expectStart() // +9 assertions
+          return expectStart() // +10 assertions
             .then(() => {
               expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
             })
@@ -1398,14 +1411,14 @@ describe('main entry point functionality', () => {
 
           mainInstance.enable()
 
-          expect.assertions(12)
+          expect.assertions(13)
 
           expect(Logger.default.log).toHaveBeenCalledTimes(1)
           expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
           expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
-          return expectStart() // +9 assertions
+          return expectStart() // +10 assertions
 
         })
       })

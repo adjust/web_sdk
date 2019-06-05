@@ -53,7 +53,7 @@ describe('test session functionality', () => {
   })
 
   afterAll(() => {
-    Config.clear()
+    Config.default.destroy()
 
     jest.restoreAllMocks()
     jest.clearAllTimers()

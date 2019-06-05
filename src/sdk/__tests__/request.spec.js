@@ -1,6 +1,5 @@
 /* eslint-disable */
 import * as request from '../request'
-import * as Attribution from '../attribution'
 import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
@@ -284,7 +283,6 @@ describe('perform api requests', () => {
     }
 
     beforeAll(() => {
-      jest.spyOn(Attribution, 'check')
       jest.spyOn(PubSub, 'publish')
     })
 
@@ -322,7 +320,7 @@ describe('perform api requests', () => {
           ask_in: 2500,
           tracking_state: 'opted_out'
         })
-        expect(Attribution.check).not.toHaveBeenCalled()
+        expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
@@ -356,7 +354,7 @@ describe('perform api requests', () => {
           timestamp: '2019-02-02',
           ask_in: 2500
         })
-        expect(Attribution.check).toHaveBeenCalledWith(result)
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
       })
 
       return flushPromises()
@@ -387,7 +385,7 @@ describe('perform api requests', () => {
           adid: '123123',
           timestamp: '2019-02-02'
         })
-        expect(Attribution.check).toHaveBeenCalledWith(result)
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
       })
 
       return flushPromises()
@@ -418,7 +416,7 @@ describe('perform api requests', () => {
           adid: '123123',
           timestamp: '2019-02-02'
         })
-        expect(Attribution.check).not.toHaveBeenCalled()
+        expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
       })
 
       return flushPromises()
@@ -445,7 +443,7 @@ describe('perform api requests', () => {
         expect(result).toEqual({
           ask_in: 2500
         })
-        expect(Attribution.check).toHaveBeenCalledWith(result)
+        expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
       })
 
       return flushPromises()
@@ -474,7 +472,7 @@ describe('perform api requests', () => {
           ask_in: 2500,
           tracking_state: 'opted_out'
         })
-        expect(Attribution.check).not.toHaveBeenCalled()
+        expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 

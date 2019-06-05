@@ -32,7 +32,7 @@ describe('event tracking functionality', () => {
   })
 
   afterAll(() => {
-    Config.clear()
+    Config.default.destroy()
 
     jest.restoreAllMocks()
     localStorage.clear()

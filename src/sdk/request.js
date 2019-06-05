@@ -1,7 +1,6 @@
 import Config from './config'
 import {extend, isEmpty, isObject, isValidJson, isRequest} from './utilities'
 import {getTimestamp} from './time'
-import {check as attributionCheck} from './attribution'
 import {updateLastActive} from './identity'
 import {publish} from './pub-sub'
 import ActivityState from './activity-state'
@@ -182,7 +181,7 @@ function _interceptResponse (result = {}, options) {
   }
 
   if (!isAttributionRequest && (result.ask_in || isSessionRequest && !isAttributionPresent)) {
-    attributionCheck(result)
+    publish('attribution:check', result)
   }
 
   updateLastActive()

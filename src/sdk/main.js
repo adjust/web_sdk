@@ -7,7 +7,7 @@ import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {start, isDisabled, isGdprForgotten, setDisabled, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
-import {destroy as attributionDestroy} from './attribution'
+import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {getTimestamp} from './time'
 import {check as sdkClickCheck, destroy as sdkClickDestroy} from './sdk-click'
 import {REASON_GDPR} from './constants'
@@ -372,6 +372,7 @@ function _start (params = {}) {
   })
 
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
+  subscribe('attribution:check', (e, result) => attributionCheck(result))
 
   if (typeof params.attributionCallback === 'function') {
     subscribe('attribution:change', params.attributionCallback)

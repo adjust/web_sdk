@@ -184,12 +184,14 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @param {Object=} result
    * @private
    */
-  function _continue (result) {
+  function _continue (result, resolve) {
     if (typeof _continueCb.current === 'function') {
       _continueCb.current(result)
     } else {
       finish()
     }
+
+    resolve(result)
   }
 
   /**
@@ -214,7 +216,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
     Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url.current} in ${_wait}ms`)
 
-    return new Promise(() => {
+    return new Promise((resolve) => {
       _timeoutId = setTimeout(() => {
         return request({
           url: _url.current,
@@ -222,7 +224,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
           params: extend({
             createdAt: getTimestamp()
           }, _params.current, Config.baseParams)
-        }).then(_continue)
+        }).then((result) => _continue(result, resolve))
           .catch(retry)
       }, _wait)
     })
