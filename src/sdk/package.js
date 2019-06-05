@@ -8,32 +8,47 @@ import backOff from './backoff'
 const DEFAULT_ATTEMPTS = 0
 const DEFAULT_WAIT = 150
 
-const Package = ({url, method = 'GET', params = {}, strategy, continueCb}) => {
+const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
   /**
-   * Url param per instance
+   * Url param per instance or per request
+   *
+   * @type {{current: string, global: string}}
+   * @private
    */
-  let _url = url
+  let _url = {current: url, global: url}
 
   /**
-   * Method param per instance, defaults to `GET`
+   * Method param per instance or per request, defaults to `GET`
+   *
+   * @type {{current: string, global: string}}
+   * @private
    */
-  let _method = method
+  let _method = {current: method, global: method}
 
   /**
    * Request params per instance or per request
+   *
+   * @type {{current: Object, global: Object}}
+   * @private
    */
-  let _params = params
-
-  /**
-   * Back-off strategy
-   */
-  const _strategy = strategy
+  let _params = {current: extend({}, params), global: extend({}, params)}
 
   /**
    * Optional continue callback per instance or per request
+   *
+   * @type {{current: Function, global: Function}}
+   * @private
    */
-  let _continueCb = continueCb
+  let _continueCb = {current: continueCb, global: continueCb}
+
+  /**
+   * Back-off strategy
+   *
+   * @type {string|null}
+   * @private
+   */
+  const _strategy = strategy
 
   /**
    * Timeout id to be used for clearing
@@ -68,55 +83,80 @@ const Package = ({url, method = 'GET', params = {}, strategy, continueCb}) => {
   let _running = false
 
   /**
-   * Send the request after specified or default waiting period
+   * Override current parameters if available
    *
+   * @param {string=} url
+   * @param {string=} method
    * @param {Object=} params
-   * @param {number=} wait
-   * @param {boolean=false} retrying
    * @param {Function=} continueCb
-   * @returns {Promise}
+   * @private
    */
-  function send ({params = {}, wait, retrying, continueCb} = {}) {
+  function _prepare ({url, method, params = {}, continueCb}) {
+    if (url) {
+      _url.current = url
+    }
 
-    _running = true
-
-    if (_timeoutId) {
-      clear()
+    if (method) {
+      _method.current = method
     }
 
     if (!isEmpty(params)) {
-      _params = params
-    }
-
-    if (wait) {
-      _wait = wait
+      _params.current = extend({}, params)
     }
 
     if (typeof continueCb === 'function') {
-      _continueCb = continueCb
+      _continueCb.current = continueCb
     }
-
-    _params = extend({
-      createdAt: getTimestamp(),
-    }, _params, Config.baseParams)
-
-    Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url} in ${_wait}ms`)
-
-    return new Promise(() => {
-      _timeoutId = setTimeout(_request, _wait)
-    })
   }
 
   /**
-   * Finish the request and clear
+   * Restore to global parameters
+   *
+   * @private
+   */
+  function _restore () {
+
+    _url.current = _url.global
+    _method.current = _method.global
+    _params.current = extend({}, _params.global)
+    _continueCb.current = _continueCb.global
+  }
+
+  /**
+   * Send the request after specified or default waiting period
+   *
+   * @param {string=} url
+   * @param {string=} method
+   * @param {Object=} params
+   * @param {Function=} continueCb
+   * @param {number=} wait
+   * @param {boolean=false} retrying
+   * @returns {Promise}
+   */
+  function send ({url, method, params = {}, continueCb, wait, retrying} = {}) {
+
+    if (!_url.current && !url) {
+      Logger.error('You must define url for the request to be sent')
+      return Promise.reject({error: 'No url specified'})
+    }
+
+    _prepare({url, method, params, continueCb})
+
+    return _request({wait, retrying})
+  }
+
+  /**
+   * Finish the request by restoring and clearing
    */
   function finish () {
 
-    Logger.log(`Request ${_url} has been finished`)
+    Logger.log(`Request ${_url.current} has been finished`)
 
     _attempts = DEFAULT_ATTEMPTS
     _wait = DEFAULT_WAIT
     _running = false
+
+    _restore()
 
     clear()
   }
@@ -135,37 +175,57 @@ const Package = ({url, method = 'GET', params = {}, strategy, continueCb}) => {
 
     clear()
 
-    return send({wait, retrying: true})
-
+    return _request({wait, retrying: true})
   }
 
   /**
-   * Calls custom success callback or finish request if callback not provided
+   * Calls custom success callback or finish request when callback not provided
    *
-   * @param result
+   * @param {Object=} result
    * @private
    */
   function _continue (result) {
-    if (typeof _continueCb === 'function') {
-      _continueCb(result)
+    if (typeof _continueCb.current === 'function') {
+      _continueCb.current(result)
     } else {
       finish()
     }
   }
 
   /**
-   * Do the request with retry mechanism
+   * Do the timed-out request with retry mechanism
    *
+   * @param {number=} wait
+   * @param {boolean=false} retrying
    * @returns {Promise}
    * @private
    */
-  function _request () {
-    return request({
-      url: _url,
-      method: _method,
-      params: _params
-    }).then(_continue)
-      .catch(retry)
+  function _request ({wait, retrying}) {
+
+    _running = true
+
+    if (_timeoutId) {
+      clear()
+    }
+
+    if (wait) {
+      _wait = wait
+    }
+
+    Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url.current} in ${_wait}ms`)
+
+    return new Promise(() => {
+      _timeoutId = setTimeout(() => {
+        return request({
+          url: _url.current,
+          method: _method.current,
+          params: extend({
+            createdAt: getTimestamp()
+          }, _params.current, Config.baseParams)
+        }).then(_continue)
+          .catch(retry)
+      }, _wait)
+    })
   }
 
   /**
@@ -183,7 +243,9 @@ const Package = ({url, method = 'GET', params = {}, strategy, continueCb}) => {
       _wait = DEFAULT_WAIT
       _attempts = DEFAULT_ATTEMPTS
 
-      Logger.log(`Previous ${_url} request attempt canceled`)
+      Logger.log(`Previous ${_url.current} request attempt canceled`)
+
+      _restore()
     }
   }
 
