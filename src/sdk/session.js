@@ -5,7 +5,7 @@ import {push} from './queue'
 import {on, off, getVisibilityApiAccess, extend, convertToMap} from './utilities'
 import {getTimestamp, timePassed} from './time'
 import {sync, updateLastActive} from './identity'
-import {get} from './global-params'
+import {get as getGlobalParams} from './global-params'
 
 /**
  * Flag to mark if session watch is already on
@@ -158,7 +158,7 @@ function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
  * @private
  */
 function _trackSession () {
-  return get()
+  return getGlobalParams()
     .then(({callbackParams, partnerParams}) => {
       push({
         url: '/session',

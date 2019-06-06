@@ -396,7 +396,7 @@ function _start (params = {}) {
         gdprForgetMe()
       }
 
-      queueRun({cleanUp: true})
+      queueRun(true)
       sessionWatch()
 
       _isStarted = true

@@ -2,26 +2,19 @@ import Config from './config'
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
 import Logger from './logger'
-import request from './request'
-import backOff from './backoff'
+import Package from './package'
 import {extend} from './utilities'
 
-const DEFAULT_ATTEMPTS = 0
-const DEFAULT_WAIT = 150
-const DEFAULT_URL = null
-
 /**
- * Timeout id and wait when pending request is about to happen
+ * Package request instance
  *
  * @type {Object}
  * @private
  */
-let _timeout = {
-  id: null,
-  attempts: DEFAULT_ATTEMPTS,
-  wait: DEFAULT_WAIT,
-  url: DEFAULT_URL
-}
+const _request = Package({
+  strategy: 'long',
+  continueCb: _continue
+})
 
 /**
  * Check if in offline mode
@@ -42,38 +35,16 @@ const _storeName = 'queue'
 /**
  * Remove from the top and continue running pending requests
  *
+ * @returns {Promise}
  * @private
  */
-function _continue (timestamp) {
-  return StorageManager.deleteItem(_storeName, timestamp)
+function _continue () {
+  return StorageManager.getFirst(_storeName)
+    .then(pending => pending ? StorageManager.deleteItem(_storeName, pending.timestamp) : null)
     .then(() => {
-
-      Logger.log(`Request ${_timeout.url} has been finished`)
-
-      _timeout.attempts = DEFAULT_ATTEMPTS
-      _timeout.wait = DEFAULT_WAIT
-      _timeout.url = DEFAULT_URL
-
-      _clearTimeout()
-
+      _request.finish()
       return run()
     })
-}
-
-/**
- * Retry pending request after some time
- *
- * @private
- */
-function _retry () {
-
-  _timeout.attempts += 1
-  _timeout.wait = backOff(_timeout.attempts)
-  _timeout.url = null
-
-  _clearTimeout()
-
-  return run({retrying: true})
 }
 
 /**
@@ -82,67 +53,44 @@ function _retry () {
  * @param {string} url
  * @param {string} method
  * @param {Object} params
+ * @returns {Promise}
  */
 function push ({url, method, params}) {
-  return StorageManager.addItem(_storeName, extend({timestamp: Date.now()}, {url, method, params}))
-    .then(() => _timeout.id ? {} : run())
+  const pending = extend({timestamp: Date.now()}, {url, method, params})
+
+  return StorageManager.addItem(_storeName, pending)
+    .then(() => _request.isRunning() ? {} : run())
 }
 
 /**
- * Make the request and retry if necessary
+ * Prepare to send pending request if available
  *
- * @param {Object} pending
+ * @param {string=} url
+ * @param {string=} method
+ * @param {Object=} params
  * @returns {Promise}
  * @private
  */
-function _request (pending) {
-  return request({
-    url: pending.url,
-    method: pending.method,
-    params: pending.params
-  }).then(() => _continue(pending.timestamp))
-    .catch(_retry)
-}
+function _prepareToSend ({url, method, params} = {}) {
+  const activityState = ActivityState.current || {}
+  const firstSession = url === '/session' && !activityState.attribution
+  const noPending = !url && !method && !params
 
-/**
- * Make delayed request after some time
- *
- * @param {Object} pending
- * @param {boolean=false} retrying
- * @returns {Promise}
- * @private
- */
-function _delayedRequest (pending, retrying) {
-
-  if (!pending) {
+  if (_isOffline && !firstSession || noPending) {
     return Promise.resolve({})
   }
 
-  _timeout.url = pending.url
-
-  if (_timeout.id) {
-    _clearTimeout()
-  }
-
-  Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${pending.url} in ${_timeout.wait}ms`)
-
-  return new Promise(() => {
-    _timeout.id = setTimeout(() => {
-      return _request(pending)
-    }, _timeout.wait)
-  })
+  return _request.send({url, method, params})
 }
 
 /**
  * Run all pending requests
  *
- * @param {Object=} options
- * @param {boolean=} options.cleanUp
- * @param {boolean=false} options.retrying
+ * @param {boolean=false} cleanUp
+ * @returns {Promise}
  */
-function run ({cleanUp, retrying} = {}) {
-
-  let chain = Promise.resolve([])
+function run (cleanUp) {
+  let chain = Promise.resolve({})
 
   if (cleanUp) {
     chain = chain.then(_cleanUp)
@@ -150,17 +98,7 @@ function run ({cleanUp, retrying} = {}) {
 
   return chain
     .then(() => StorageManager.getFirst(_storeName))
-    .then(pending => {
-
-      const activityState = ActivityState.current || {}
-      const firstSession = pending && pending.url === '/session' && !activityState.attribution
-
-      if (_isOffline && !firstSession) {
-        return []
-      }
-
-      return _delayedRequest(pending, retrying)
-    })
+    .then(_prepareToSend)
 }
 
 /**
@@ -190,29 +128,8 @@ function setOffline (state = false) {
  * @returns {Promise}
  */
 function _cleanUp () {
-  return StorageManager.deleteBulk(_storeName, {upperBound: Date.now() - Config.requestValidityWindow})
-}
-
-/**
- * Clear previous pending request
- *
- * @private
- */
-function _clearTimeout () {
-
-  const url = _timeout.url
-
-  clearTimeout(_timeout.id)
-  _timeout.id = null
-  _timeout.url = DEFAULT_URL
-
-  if (url) {
-    _timeout.wait = DEFAULT_WAIT
-    _timeout.attempts = DEFAULT_ATTEMPTS
-
-    Logger.log(`Previous ${url} request attempt canceled`)
-  }
-
+  const upperBound = Date.now() - Config.requestValidityWindow
+  return StorageManager.deleteBulk(_storeName, {upperBound})
 }
 
 /**
@@ -222,7 +139,7 @@ function _clearTimeout () {
  * @returns {boolean}
  */
 function isRunning () {
-  return !!_timeout.id
+  return _request.isRunning()
 }
 
 /**
@@ -236,7 +153,7 @@ function clear () {
  * Destroy queue by clearing current timeout
  */
 function destroy () {
-  _clearTimeout()
+  _request.clear()
 }
 
 export {

@@ -181,7 +181,8 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   /**
    * Calls custom success callback or finish request when callback not provided
    *
-   * @param {Object=} result
+   * @param {Object} result
+   * @param {Function} resolve
    * @private
    */
   function _continue (result, resolve) {
@@ -231,6 +232,15 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   }
 
   /**
+   * Check if request is running
+   *
+   * @returns {boolean}
+   */
+  function isRunning () {
+    return _running && !!_timeoutId
+  }
+
+  /**
    * Clear the current request
    */
   function clear () {
@@ -255,6 +265,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
     send,
     finish,
     retry,
+    isRunning,
     clear
   }
 }

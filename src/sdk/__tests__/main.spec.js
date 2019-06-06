@@ -133,6 +133,8 @@ function expectAllUp () {
 
   mainInstance.gdprForgetMe()
   expectGdprForgetMeCallback()
+
+  return flushPromises()
 }
 
 function expectAllDown () {
@@ -244,6 +246,8 @@ function expectAttributionCallback () {
   jest.runOnlyPendingTimers()
 
   expect(mainParams.attributionCallback).toHaveBeenCalledWith('attribution:change', {tracker_token: 'some-token'})
+
+  return flushPromises()
 }
 
 function expectAttributionCheck () {
@@ -254,6 +258,7 @@ function expectAttributionCheck () {
 
   expect(Attribution.check).toHaveBeenCalledWith({some: 'result'})
 
+  return flushPromises()
 }
 
 function expectNotAttributionCallback () {
@@ -352,7 +357,7 @@ describe('main entry point functionality', () => {
     })
 
     it('calls client-defined attribution callback when attribution is changed', () => {
-      expectAttributionCallback()
+      return expectAttributionCallback()
     })
 
     it('tests if single instance is returned', () => {
@@ -457,7 +462,7 @@ describe('main entry point functionality', () => {
       })
 
       it('ensures that everything is up', () => {
-        expectAllUp()
+        return expectAllUp()
       })
     })
 

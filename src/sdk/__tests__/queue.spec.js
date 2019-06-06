@@ -21,9 +21,14 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
 
   jest.runOnlyPendingTimers()
 
+  const lastRequest = request.default.mock.calls.length - 1
+
   expect(setTimeout).toHaveBeenCalledTimes(times)
   expect(setTimeout.mock.calls[times - 1][1]).toBe(wait)
-  expect(request.default).toHaveBeenLastCalledWith(config)
+  expect(request.default.mock.calls[lastRequest][0]).toMatchObject({
+    url: config.url,
+    method: 'GET'
+  })
   expect(request.default.mock.results[0].value)[requestAction].toEqual(requestActionResult)
   expect(Logger.default.log).toHaveBeenLastCalledWith(logMessage)
 
@@ -100,7 +105,10 @@ describe('test request queuing functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
-        expect(request.default).toHaveBeenCalledWith(config)
+        expect(request.default.mock.calls[0][0]).toMatchObject({
+          url: config.url,
+          method: 'GET'
+        })
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /some-url in 150ms')
 
         return flushPromises()
@@ -430,7 +438,7 @@ describe('test request queuing functionality', () => {
       .then(() => {
         dateNowSpy.mockReturnValue(new Date('2019-03-03').getTime())
 
-        Queue.run({cleanUp: true})
+        Queue.run(true)
 
         return flushPromises()
       })
@@ -460,7 +468,10 @@ describe('test request queuing functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
-        expect(request.default).toHaveBeenCalledWith(config1)
+        expect(request.default.mock.calls[0][0]).toMatchObject({
+          url: config1.url,
+          method: 'GET'
+        })
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /url-1 in 150ms')
 
         Queue.destroy()
