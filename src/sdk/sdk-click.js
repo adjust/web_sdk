@@ -1,5 +1,5 @@
 import Package from './package'
-import {extend} from './utilities'
+import {extend, getHostName} from './utilities'
 
 /**
  * Package request instance
@@ -12,6 +12,19 @@ const _request = Package({
   method: 'POST',
   strategy: 'short'
 })
+
+/**
+ * Check if user got redirected from another domain
+ *
+ * @returns {boolean}
+ * @private
+ */
+function _wasRedirected () {
+  const currentUrl = getHostName(window.location.href)
+  const referrerUrl = getHostName(document.referrer)
+
+  return document.referrer && currentUrl !== referrerUrl
+}
 
 /**
  * Read query string and return it as array of [key, value] pairs
@@ -33,7 +46,7 @@ function _read () {
  * @private
  */
 function _hasParams () {
-  return _read()
+  return _wasRedirected() && _read()
     .some(([key]) => /^(adjust|adj)_/.test(key))
 }
 

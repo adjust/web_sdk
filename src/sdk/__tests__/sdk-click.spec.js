@@ -2,13 +2,15 @@
 import * as SdkClick from '../sdk-click'
 import * as request from '../request'
 import * as Time from '../time'
-import {flushPromises} from './_helper'
+import {flushPromises, setDocumentProp} from './_helper'
 
 jest.mock('../request')
 jest.mock('../logger')
 jest.useFakeTimers()
 
 describe('test sdk-click functionality', () => {
+
+  setDocumentProp('referrer', 'http://some-site.com')
 
   beforeAll(() => {
     jest.spyOn(request, 'default')
@@ -33,6 +35,38 @@ describe('test sdk-click functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).not.toHaveBeenCalled()
+
+  })
+
+  it('does nothing if there are adjust params in the url but no referrer', () => {
+
+    setDocumentProp('referrer', '')
+
+    window.history.pushState({}, '', '?adjust_param=value1&param2=value2')
+
+    SdkClick.check()
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).not.toHaveBeenCalled()
+
+    setDocumentProp('referrer', 'http://some-site.com')
+
+  })
+
+  it('does nothing if there are adjust params in the url but same referrer as current url', () => {
+
+    setDocumentProp('referrer', 'http://localhost/test')
+
+    window.history.pushState({}, '', '?adjust_param=value1&param2=value2')
+
+    SdkClick.check()
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).not.toHaveBeenCalled()
+
+    setDocumentProp('referrer', 'http://some-site.com')
 
   })
 

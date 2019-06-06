@@ -176,4 +176,17 @@ describe('test for utility methods', () => {
       expect(Utilities.isRequest('https://app.adjust.com/ssession', 'session')).toBeFalsy()
     })
   })
+
+  describe('test for getHostName', () => {
+    it('returns host name', () => {
+      expect(Utilities.getHostName('www.test.com?bla=truc')).toBe('test.com')
+      expect(Utilities.getHostName('test.com/bla')).toBe('test.com')
+      expect(Utilities.getHostName('www.test.com/bla')).toBe('test.com')
+      expect(Utilities.getHostName('http://test.com/bla?truc')).toBe('test.com')
+      expect(Utilities.getHostName('https://www.test.com/bla')).toBe('test.com')
+      expect(Utilities.getHostName('http://www.test.com:8080/bla/truc')).toBe('test.com:8080')
+      expect(Utilities.getHostName('https://test.com:8080/bla/truc?some=thing')).toBe('test.com:8080')
+      expect(Utilities.getHostName()).toBe('')
+    })
+  })
 })

@@ -211,6 +211,16 @@ function isRequest (url, requestName) {
   return regex.test(url)
 }
 
+/**
+ * Extract the host name for the url
+ *
+ * @param url
+ * @returns {string}
+ */
+function getHostName (url = '') {
+  return url.replace(/^(http(s)*:\/\/)*(www\.)*/, '').split('/')[0].split('?')[0]
+}
+
 export {
   buildList,
   isEmpty,
@@ -224,5 +234,6 @@ export {
   convertToMap,
   detectPlatform,
   intersection,
-  isRequest
+  isRequest,
+  getHostName
 }
