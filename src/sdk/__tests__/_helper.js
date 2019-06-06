@@ -21,8 +21,16 @@ function randomInRange (min, max) {
   return Math.random() * (max - min) + min
 }
 
+function setDocumentProp (prop, value) {
+  Object.defineProperty(global.document, prop, {
+    writable: true,
+    value
+  })
+}
+
 export {
   flushPromises,
   createMockXHR,
-  randomInRange
+  randomInRange,
+  setDocumentProp
 }

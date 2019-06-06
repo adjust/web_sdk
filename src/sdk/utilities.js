@@ -95,7 +95,7 @@ function getVisibilityApiAccess () {
 
   if (typeof document.hidden !== 'undefined') {
     return {
-      hidden: __ADJUST__ENV === 'test' ? 'testHidden' : 'hidden',
+      hidden: 'hidden',
       visibilityChange: 'visibilitychange'
     }
   }

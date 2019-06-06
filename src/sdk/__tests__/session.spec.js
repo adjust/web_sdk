@@ -9,7 +9,7 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import {flushPromises} from './_helper'
+import {flushPromises, setDocumentProp} from './_helper'
 
 jest.mock('../logger')
 jest.useFakeTimers()
@@ -310,7 +310,7 @@ describe('test session functionality', () => {
 
     it('stops timer and stores last active state if went to background', () => {
 
-      global.document.testHidden = true
+      setDocumentProp('hidden', true)
 
       dateNowSpy.mockReturnValue(1551916800001)
 
@@ -371,7 +371,7 @@ describe('test session functionality', () => {
 
     it('restarts timer and stores last active state every n seconds when back to foreground', () => {
 
-      global.document.testHidden = false
+      setDocumentProp('hidden', false)
 
       dateNowSpy.mockReturnValue(1551916800001)
 
@@ -427,7 +427,7 @@ describe('test session functionality', () => {
       return Identity.updateLastActive()
         .then(() => {
 
-          global.document.testHidden = false
+          setDocumentProp('hidden', false)
 
           Session.watch()
 
@@ -471,7 +471,7 @@ describe('test session functionality', () => {
       return Identity.updateLastActive()
         .then(() => {
 
-          global.document.testHidden = false
+          setDocumentProp('hidden', false)
 
           Session.watch()
 
