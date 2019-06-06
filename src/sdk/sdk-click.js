@@ -1,5 +1,5 @@
 import Package from './package'
-import {extend, getHostName} from './utilities'
+import {getHostName} from './utilities'
 
 /**
  * Package request instance
@@ -27,49 +27,30 @@ function _wasRedirected () {
 }
 
 /**
- * Read query string and return it as array of [key, value] pairs
- *
- * @returns {Array}
- * @private
- */
-function _read () {
-  return window.location.search
-    .substring(1)
-    .split('&')
-    .map(pair => pair.split('='))
-}
-
-/**
- * Check if there are query params which are prefixed with `adj_` or `adjust_`
+ * Check the following:
+ * - redirected from somewhere other then client's website
+ * - there are query params which are prefixed with `adj_` or `adjust_`
  *
  * @returns {boolean}
  * @private
  */
-function _hasParams () {
-  return _wasRedirected() && _read()
+function _shouldSendClick () {
+  return _wasRedirected() && window.location.search
+    .substring(1)
+    .split('&')
+    .map(pair => pair.split('='))
     .some(([key]) => /^(adjust|adj)_/.test(key))
-}
-
-/**
- * Get query params as key:value pairs
- *
- * @returns {Object}
- * @private
- */
-function _getParams () {
-  return _read()
-    .reduce((acc, [key, value]) => extend(acc, {[key]: value}), {})
 }
 
 /**
  * Check if there are parameters to send through sdk_click request
  */
 function check () {
-  if (_hasParams()) {
+  if (_shouldSendClick()) {
     _request.send({
       params: {
         source: 'referrer',
-        referrer: encodeURIComponent(JSON.stringify(_getParams()))
+        referrer: window.location.search.substring(1)
       }
     })
   }

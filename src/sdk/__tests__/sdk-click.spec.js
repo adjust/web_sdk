@@ -85,7 +85,7 @@ describe('test sdk-click functionality', () => {
       params: {
         createdAt: 'some-time',
         source: 'referrer',
-        referrer: '%7B%22adjust_param%22%3A%22value%22%2C%22something%22%3A%22else%22%7D'
+        referrer: 'adjust_param=value&something=else'
       }
     })
 
@@ -107,7 +107,7 @@ describe('test sdk-click functionality', () => {
       params: {
         createdAt: 'some-time',
         source: 'referrer',
-        referrer: '%7B%22adj_param1%22%3A%22value%22%2C%22bla%22%3A%22truc%22%2C%22adj_param2%22%3A%22bla%22%7D'
+        referrer: 'adj_param1=value&bla=truc&adj_param2=bla'
       }
     })
 
@@ -129,7 +129,7 @@ describe('test sdk-click functionality', () => {
       params: {
         createdAt: 'some-time',
         source: 'referrer',
-        referrer: '%7B%22adj_param1%22%3A%22value%22%2C%22bla%22%3A%22truc%22%2C%22adj_param2%22%3A%22bla%22%2C%22adjust_param%22%3A%22tada%22%7D'
+        referrer: 'adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada'
       }
     })
 
