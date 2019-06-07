@@ -52,7 +52,7 @@ function _continue () {
  *
  * @param {string} url
  * @param {string} method
- * @param {Object} params
+ * @param {Object=} params
  * @returns {Promise}
  */
 function push ({url, method, params}) {

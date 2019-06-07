@@ -1,39 +1,17 @@
 import Config from './config'
 import StorageManager from './storage-manager'
 import Logger from './logger'
-import {run as queueRun, push, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
-import {buildList, extend} from './utilities'
+import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
+import {extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {start, isDisabled, isGdprForgotten, setDisabled, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
-import {getTimestamp} from './time'
 import {check as sdkClickCheck, destroy as sdkClickDestroy} from './sdk-click'
+import {check as gdprForgetCheck, forget as gdprForgetDevice, requested as gdprForgetRequested, destroy as gdprForgetDestroy} from './gdpr-forget-device'
 import {REASON_GDPR} from './constants'
 import event from './event'
-
-/**
- * Definition of mandatory fields
- *
- * @type {string[]}
- * @private
- */
-const _mandatory = [
-  'appToken',
-  'environment'
-]
-
-/**
- * Flags for the pending/requested GDPR-Forget-Me request
- *
- * @type {Object}
- * @private
- */
-const _gdpr = {
-  pending: false,
-  requested: false
-}
 
 /**
  * In-memory parameters to be used if restarting
@@ -60,15 +38,12 @@ function init (params = {}) {
 
   Logger.setLogLevel(params.logLevel, params.logOutput)
 
-  if (_isInitiated()) {
+  if (Config.isInitialised()) {
     Logger.error('You already initiated your instance')
     return
   }
 
-  const missingParamsMessage = _getMissingParams(params)
-
-  if (missingParamsMessage) {
-    Logger.error(missingParamsMessage)
+  if (Config.hasMissing(params)) {
     return
   }
 
@@ -89,7 +64,7 @@ function trackEvent (params = {}) {
     return
   }
 
-  if (!_isInitiated()) {
+  if (!Config.isInitialised()) {
     Logger.error('adjustSDK is not initiated, can not track event')
     return
   }
@@ -177,7 +152,7 @@ function _disable (reason) {
 
   setDisabled(true, reason)
 
-  if (_isInitiated()) {
+  if (Config.isInitialised()) {
     _shutdown()
   }
 
@@ -187,6 +162,16 @@ function _disable (reason) {
  * General disable
  */
 function disable () {
+  if (gdprForgetRequested()) {
+
+    const logMessage = isGdprForgotten()
+      ? 'adjustSDK is already disabled due to GDPR-Forget-me request'
+      : 'There is pending GDPR Forget Me request, can not disable at this moment'
+
+    Logger.log(logMessage)
+    return
+  }
+
   _disable()
 }
 
@@ -228,38 +213,7 @@ function enable () {
  * Request GDPR-Forget-Me in order to disable sdk
  */
 function gdprForgetMe () {
-
-  if (isGdprForgotten()) {
-    Logger.log('adjustSDK is already GDPR forgotten')
-    return
-  }
-
-  if (isDisabled()) {
-    Logger.log('adjustSDK is already disabled')
-    return
-  }
-
-  if (_gdpr.requested) {
-    Logger.log('adjustSDK already sent GDPR Forget Me request')
-    return
-  }
-
-  _gdpr.requested = true
-
-  if (!_isInitiated()) {
-    _gdpr.pending = true
-    return
-  }
-
-  _gdpr.pending = false
-
-  push({
-    url: '/gdpr_forget_device',
-    method: 'POST',
-    params: extend({
-      createdAt: getTimestamp()
-    }, Config.baseParams)
-  })
+  gdprForgetDevice()
 }
 
 /**
@@ -268,16 +222,12 @@ function gdprForgetMe () {
  * @private
  */
 function _handleGdprForgetMe () {
-
-  if (!_gdpr.requested) {
-    return
-  }
-
-  _gdprDisable()
-
-  identityClear()
-  globalParamsClear()
-  queueClear()
+  setTimeout(() => {
+    _gdprDisable()
+    identityClear()
+    globalParamsClear()
+    queueClear()
+  })
 }
 
 /**
@@ -305,43 +255,11 @@ function _shutdown () {
 function destroy () {
 
   _shutdown()
+  gdprForgetDestroy()
 
   _params = null
-  _gdpr.requested = false
-  _gdpr.pending = false
 
   Logger.log('adjustSDK instance has been destroyed')
-}
-
-/**
- * Get missing parameters that are defined as mandatory
- *
- * @param {Object} params
- * @returns {string}
- * @private
- */
-function _getMissingParams (params) {
-
-  const missing = _mandatory.filter(value => !params[value])
-
-  if (missing.length) {
-    return `You must define ${buildList(missing)}`
-  }
-
-  return ''
-}
-
-/**
- * Check if instance is initiated
- *
- * @returns {boolean}
- * @private
- */
-function _isInitiated () {
-
-  const params = Config.baseParams
-
-  return _mandatory.reduce((acc, key) => acc && !!params[key], true)
 }
 
 /**
@@ -367,9 +285,7 @@ function _start (params = {}) {
     return
   }
 
-  _mandatory.forEach(key => {
-    extend(Config.baseParams, {[key]: params[key]})
-  })
+  Config.setParams(params)
 
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
   subscribe('attribution:check', (e, result) => attributionCheck(result))
@@ -391,11 +307,7 @@ function _start (params = {}) {
         return
       }
 
-      if (_gdpr.pending) {
-        _gdpr.requested = false
-        gdprForgetMe()
-      }
-
+      gdprForgetCheck()
       queueRun(true)
       sessionWatch()
 

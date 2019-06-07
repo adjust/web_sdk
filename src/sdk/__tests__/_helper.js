@@ -28,9 +28,14 @@ function setDocumentProp (prop, value) {
   })
 }
 
+function errorResponse () {
+  return {response: {message: 'An error', code: 'RETRY'}}
+}
+
 export {
   flushPromises,
   createMockXHR,
   randomInRange,
-  setDocumentProp
+  setDocumentProp,
+  errorResponse
 }

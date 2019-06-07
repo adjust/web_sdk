@@ -70,7 +70,7 @@ function expectNotShutDownAndClear () {
 function expectGdprForgetMeCallback () {
   PubSub.publish('sdk:gdpr-forget-me', true)
 
-  jest.runOnlyPendingTimers()
+  jest.runAllTimers()
 
   expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled due to GDPR-Forget-Me request')
   expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'gdpr')
@@ -1080,13 +1080,7 @@ describe('main entry point functionality', () => {
 
     const gdprRequst = {
       url: '/gdpr_forget_device',
-      method: 'POST',
-      params: {
-        createdAt: 'some-time',
-        appToken: 'some-app-token',
-        environment: 'production',
-        osName: 'unknown'
-      }
+      method: 'POST'
     }
 
     describe('initially enabled', () => {
@@ -1116,6 +1110,13 @@ describe('main entry point functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
         })
 
+        it('fails to push forget-me request to queue again', () => {
+          mainInstance.gdprForgetMe()
+
+          expect(Queue.push).not.toHaveBeenCalled()
+          expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK already sent GDPR Forget Me request')
+        })
+
         it('keeps running all static methods and track event', () => {
           expectRunningStatic()
           expectRunningTrackEvent()
@@ -1143,31 +1144,26 @@ describe('main entry point functionality', () => {
       describe('sdk: init -> flush -> forget', () => {
         afterAll(teardown)
 
-        it('initiates and flush forget-me event but ignores it', () => {
+        beforeAll(() => {
           init()
-          expectNotGdprForgetMeCallback()
-          expectNotShutDownAndClear()
         })
 
-        it('keeps running all static methods and track event', () => {
-          expectRunningStatic()
-          expectRunningTrackEvent()
+        it('flush forget-me event and disables with shutdown', () => {
+          expectGdprForgetMeCallback()
+          expectShutDownAndClear()
         })
 
-        it('pushes forget-me request to queue', () => {
-
-          mainInstance.gdprForgetMe()
-
-          expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
+        it('prevents running all static methods and track event', () => {
+          expectNotRunningStatic()
+          expectNotRunningTrackEvent()
         })
 
-        it('fails to push forget-me request to queue again', () => {
+        it('fails to push forget-me request to queue because already forgotten', () => {
           mainInstance.gdprForgetMe()
 
           expect(Queue.push).not.toHaveBeenCalled()
-          expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK already sent GDPR Forget Me request')
+          expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
         })
-
       })
 
       describe('sdk: forget -> init -> flush', () => {
