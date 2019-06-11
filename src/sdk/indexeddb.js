@@ -52,8 +52,8 @@ function _handleUpgradeNeeded (e, reject) {
   e.target.transaction.onerror = reject
   e.target.transaction.onabort = reject
 
-  const activityState = ActivityState.current
-  const inMemoryAvailable = !ActivityState.isUnknown() && activityState && !isEmpty(activityState)
+  const activityState = ActivityState.current || {}
+  const inMemoryAvailable = activityState && !isEmpty(activityState)
   const keys = Object.keys(Scheme)
 
   keys.forEach(storeName => {
@@ -64,13 +64,17 @@ function _handleUpgradeNeeded (e, reject) {
     }
 
     if (storeName === 'activityState' && inMemoryAvailable) {
-      objectStore.add(ActivityState.current)
+      objectStore.add(activityState)
       Logger.info('Activity state has been recovered')
     } else if (QuickStorage[storeName]) {
       QuickStorage[storeName].forEach(record => objectStore.add(record))
       Logger.info(`Migration from localStorage done for ${storeName} store`)
     }
   })
+
+  if (!QuickStorage.state) {
+    QuickStorage.state = ActivityState.state
+  }
 
   QuickStorage.clear()
 }

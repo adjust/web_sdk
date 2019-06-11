@@ -1,43 +1,58 @@
 /* eslint-disable */
 import * as ActivityState from '../activity-state'
+import * as QuickStorage from '../quick-storage'
 
 describe('activity state functionality', () => {
 
+  afterEach(() => {
+    ActivityState.default.destroy()
+    ActivityState.default.state = null
+
+  })
+
   it('ensures that only copy is returned', () => {
 
-    const current = {uuid: '123'}
+    const currentActivityState = {uuid: '123'}
+    const currentDisabledState = {disabled: false}
 
-    ActivityState.default.current = current
+    ActivityState.default.current = currentActivityState
+    ActivityState.default.state = currentDisabledState
 
-    expect(ActivityState.default.current).not.toBe(current)
-    expect(ActivityState.default.current).toEqual(current)
+    expect(ActivityState.default.current).not.toBe(currentActivityState)
+    expect(ActivityState.default.current).toEqual(currentActivityState)
+    expect(ActivityState.default.state).not.toBe(currentDisabledState)
+    expect(ActivityState.default.state).toEqual(currentDisabledState)
 
-    current.bla = 'truc'
+    currentActivityState.bla = 'truc'
+    currentDisabledState.reason = 'bla'
 
-    expect(current).toEqual({uuid: '123', bla: 'truc'})
+    expect(currentActivityState).toEqual({uuid: '123', bla: 'truc'})
+    expect(currentDisabledState).toEqual({disabled: false, reason: 'bla'})
     expect(ActivityState.default.current).toEqual({uuid: '123'})
+    expect(ActivityState.default.state).toEqual({disabled: false})
 
   })
 
-  it('checks if activity state is unknown', () => {
+  it('caches disabled state from localStorage', () => {
 
-    expect(ActivityState.default.isUnknown()).toBeFalsy()
+    QuickStorage.default.state = {disabled: true, reason: 'gdpr'}
 
-    ActivityState.default.current = {uuid: 'unknown'}
-
-    expect(ActivityState.default.isUnknown()).toBeTruthy()
+    expect(ActivityState.default.state).toEqual({disabled: true, reason: 'gdpr'})
 
   })
 
-  it('destroys activity state', () => {
+  it('destroys activity state but ignores disabled state', () => {
 
     ActivityState.default.current = {uuid: '123'}
+    ActivityState.default.state = {disabled: true, reason: 'general'}
 
     expect(ActivityState.default.current).toEqual({uuid: '123'})
+    expect(ActivityState.default.state).toEqual({disabled: true, reason: 'general'})
 
     ActivityState.default.destroy()
 
     expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.state).toEqual({disabled: true, reason: 'general'})
 
   })
 

@@ -322,9 +322,6 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
-
-        jest.runOnlyPendingTimers()
-
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
@@ -477,9 +474,6 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
-
-        jest.runOnlyPendingTimers()
-
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 

@@ -2,7 +2,7 @@ import ActivityState from './activity-state'
 import QuickStorage from './quick-storage'
 import Scheme from './scheme'
 import Logger from './logger'
-import {findIndex, isObject} from './utilities'
+import {findIndex, isEmpty, isObject} from './utilities'
 
 /**
  * Check if LocalStorage is supported in the current browser
@@ -39,15 +39,20 @@ function _open () {
   }
 
   const stores = Object.keys(Scheme)
-  const activityState = ActivityState.current
+  const activityState = ActivityState.current || {}
+  const inMemoryAvailable = activityState && !isEmpty(activityState)
 
   stores.forEach(storeName => {
     if (storeName === 'activityState' && !QuickStorage.activityState) {
-      QuickStorage.activityState = activityState && !ActivityState.isUnknown() ? [activityState] : []
+      QuickStorage.activityState = inMemoryAvailable ? [activityState] : []
     } else if (!QuickStorage[storeName]) {
       QuickStorage[storeName] = []
     }
   })
+
+  if (!QuickStorage.state) {
+    QuickStorage.state = ActivityState.state
+  }
 }
 
 /**

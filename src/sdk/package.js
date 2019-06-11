@@ -80,7 +80,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {boolean}
    * @private
    */
-  let _running = false
+  let _pending = false
 
   /**
    * Override current parameters if available
@@ -203,7 +203,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    */
   function _request ({wait, retrying}) {
 
-    _running = true
+    _pending = true
 
     if (_timeoutId) {
       clear()
@@ -217,7 +217,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
     return new Promise((resolve) => {
       _timeoutId = setTimeout(() => {
-        _running = false
+        _pending = false
 
         return request({
           url: _url.current,
@@ -238,7 +238,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @returns {boolean}
    */
   function isRunning () {
-    return _running && !!_timeoutId
+    return !!_timeoutId
   }
 
   /**
@@ -246,13 +246,13 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    */
   function clear () {
 
-    const wasRunning = isRunning()
+    const wasPending = _pending
 
     clearTimeout(_timeoutId)
     _timeoutId = null
-    _running = false
+    _pending = false
 
-    if (wasRunning) {
+    if (wasPending) {
       _wait = DEFAULT_WAIT
       _attempts = DEFAULT_ATTEMPTS
 

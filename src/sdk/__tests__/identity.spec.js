@@ -3,6 +3,8 @@ import * as Identity from '../identity'
 import * as StorageManager from '../storage-manager'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
+import * as QuickStorage from '../quick-storage'
+import * as PubSub from '../pub-sub'
 import {flushPromises} from './_helper'
 
 jest.mock('../logger')
@@ -10,6 +12,7 @@ jest.mock('../logger')
 describe('test identity methods', () => {
 
   beforeAll(() => {
+    jest.spyOn(PubSub, 'publish')
     jest.spyOn(StorageManager.default, 'getFirst')
     jest.spyOn(StorageManager.default, 'addItem')
     jest.spyOn(ActivityState.default, 'destroy')
@@ -20,6 +23,7 @@ describe('test identity methods', () => {
     jest.clearAllMocks()
     localStorage.clear()
     Identity.destroy()
+    Identity.setDisabled(false)
   })
 
   afterAll(() => {
@@ -86,6 +90,20 @@ describe('test identity methods', () => {
         })
     })
 
+    it('checks disabled state after storage has been lost', () => {
+
+      expect(Identity.isDisabled()).toBeFalsy()
+
+      Identity.setDisabled(true)
+
+      expect(Identity.isDisabled()).toBeTruthy()
+
+      localStorage.clear()
+
+      expect(Identity.isDisabled()).toBeTruthy()
+
+    })
+
     it('checks if disabled due to GDPR-Forget-Me request', () => {
 
       Identity.setDisabled(true, 'gdpr')
@@ -146,6 +164,21 @@ describe('test identity methods', () => {
           expect(activityState).toEqual({uuid: '123'})
           expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
           expect(StorageManager.default.addItem).toHaveBeenCalledWith('activityState', {uuid: '123'})
+        })
+    })
+
+    it('checks activity state and restores disabled state from memory if storage got lost in the meantime', () => {
+
+      expect.assertions(2)
+
+      Identity.setDisabled(true)
+
+      QuickStorage.default.state = null
+
+      return Identity.start()
+        .then(() => {
+          expect(ActivityState.default.state).toEqual({disabled: true, reason: 'general'})
+          expect(QuickStorage.default.state).toEqual(ActivityState.default.state)
         })
     })
 
@@ -212,9 +245,10 @@ describe('test identity methods', () => {
 
     it('syncs in-memory activity state with updated stored version', () => {
 
-      let compare
+      let compareActivityState
+      let compareDisabledState
 
-      expect.assertions(5)
+      expect.assertions(11)
 
       return Identity.start()
         .then(activityState => {
@@ -227,29 +261,38 @@ describe('test identity methods', () => {
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
-          compare = Object.assign({}, activityState)
+          compareActivityState = Object.assign({}, activityState)
+          compareDisabledState = Object.assign({}, QuickStorage.default.state)
 
-          expect(compare).not.toEqual(ActivityState.default.current)
+          expect(compareActivityState).not.toEqual(ActivityState.default.current)
+          expect(compareDisabledState).toEqual(ActivityState.default.state)
 
           return Identity.sync()
         })
         .then(() => {
-          expect(compare).toEqual(ActivityState.default.current)
+          expect(PubSub.publish).not.toHaveBeenCalled()
+          expect(compareActivityState).toEqual(ActivityState.default.current)
+          expect(compareDisabledState).toEqual(ActivityState.default.state)
 
           // update happens in another tab
-          return StorageManager.default.updateItem('activityState', Object.assign({}, compare, {lastActive: 124}))
+          QuickStorage.default.state = {disabled: true}
+          return StorageManager.default.updateItem('activityState', Object.assign({}, compareActivityState, {lastActive: 124}))
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
-          compare = Object.assign({}, activityState)
+          compareActivityState = Object.assign({}, activityState)
+          compareDisabledState = Object.assign({}, QuickStorage.default.state)
 
-          expect(compare).not.toEqual(ActivityState.default.current)
+          expect(compareActivityState).not.toEqual(ActivityState.default.current)
+          expect(compareDisabledState).not.toEqual(ActivityState.default.state)
 
           return Identity.sync()
         })
         .then(() => {
-          expect(compare).toEqual(ActivityState.default.current)
+          expect(PubSub.publish).toHaveBeenCalledWith('sdk:shutdown', true)
+          expect(compareActivityState).toEqual(ActivityState.default.current)
+          expect(compareDisabledState).toEqual(ActivityState.default.state)
         })
 
     })

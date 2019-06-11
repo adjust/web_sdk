@@ -1,6 +1,5 @@
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
-import QuickStorage from './quick-storage'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
 import {extend} from './utilities'
 
@@ -33,9 +32,13 @@ function _recover () {
       }
 
       const activityState = ActivityState.current || {uuid: _generateUuid()}
+      const disabledState = ActivityState.state
 
       return StorageManager.addItem('activityState', activityState)
-        .then(() => ActivityState.current = activityState)
+        .then(() => {
+          ActivityState.state = disabledState
+          return ActivityState.current = activityState
+        })
     })
 }
 
@@ -105,6 +108,7 @@ function sync () {
 
       if (!isDisabled() && lastActive < activityState.lastActive) {
         ActivityState.current = activityState
+        ActivityState.reloadState()
       }
 
       return activityState
@@ -117,7 +121,7 @@ function sync () {
  * @returns {boolean}
  */
 function isDisabled () {
-  return _getState().disabled || false
+  return ActivityState.state.disabled
 }
 
 /**
@@ -129,27 +133,11 @@ function isDisabled () {
 function setDisabled (disabled, reason) {
   const state = {disabled}
 
-  if (reason) {
-    state.reason = reason
+  if (disabled) {
+    state.reason = reason || REASON_GENERAL
   }
 
-  QuickStorage.state = state
-}
-
-/**
- * Get disabled flag
- *
- * @returns {Object}
- * @private
- */
-function _getState () {
-
-  const state = QuickStorage.state || {}
-
-  return {
-    disabled: state.disabled || false,
-    reason: state.reason || REASON_GENERAL
-  }
+  ActivityState.state = state
 }
 
 /**
@@ -158,7 +146,7 @@ function _getState () {
  * @returns {boolean}
  */
 function isGdprForgotten () {
-  const state = _getState()
+  const state = ActivityState.state
 
   return state.disabled && state.reason === REASON_GDPR
 }

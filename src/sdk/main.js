@@ -222,19 +222,21 @@ function gdprForgetMe () {
  * @private
  */
 function _handleGdprForgetMe () {
-  setTimeout(() => {
-    _gdprDisable()
-    identityClear()
-    globalParamsClear()
-    queueClear()
-  })
+  _gdprDisable()
+  identityClear()
+  globalParamsClear()
+  queueClear()
 }
 
 /**
  * Shutdown all dependencies
  * @private
  */
-function _shutdown () {
+function _shutdown (async) {
+
+  if (async) {
+    Logger.log('adjustSDK has been shutdown due to asynchronous disable')
+  }
 
   _isStarted = false
 
@@ -287,6 +289,7 @@ function _start (params = {}) {
 
   Config.setParams(params)
 
+  subscribe('sdk:shutdown', () => _shutdown(true))
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
   subscribe('attribution:check', (e, result) => attributionCheck(result))
 
