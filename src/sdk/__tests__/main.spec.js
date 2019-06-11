@@ -1176,7 +1176,7 @@ describe('main entry point functionality', () => {
           mainInstance.gdprForgetMe()
 
           expect(Queue.push).not.toHaveBeenCalled()
-          expect(Logger.default.log).not.toHaveBeenCalled()
+          expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK will run GDPR Forget Me request after initialisation')
         })
 
         it('fails again to push forget-me request to queue', () => {

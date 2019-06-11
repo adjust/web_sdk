@@ -43,6 +43,7 @@ function forget () {
 
   if (!Config.isInitialised()) {
     _pending = true
+    Logger.log('adjustSDK will run GDPR Forget Me request after initialisation')
     return
   }
 
@@ -69,6 +70,7 @@ function requested () {
 function check () {
   if (_pending) {
     _requested = false
+    Logger.log('adjustSDK is running pending GDPR Forget Me request')
     forget()
   }
 }
