@@ -35,12 +35,6 @@ describe('test session functionality', () => {
     jest.spyOn(Queue, 'push').mockImplementation(() => {})
     jest.spyOn(Time, 'getTimestamp').mockReturnValue(now)
     jest.spyOn(Logger.default, 'error')
-
-    Object.assign(Config.default.baseParams, {
-      appToken: '123abc',
-      environment: 'sandbox',
-      osName: 'ios'
-    })
   })
 
   beforeEach(() => {
@@ -53,8 +47,6 @@ describe('test session functionality', () => {
   })
 
   afterAll(() => {
-    Config.default.destroy()
-
     jest.restoreAllMocks()
     jest.clearAllTimers()
   })
@@ -189,12 +181,7 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {
-              createdAt: now,
-              appToken: '123abc',
-              environment: 'sandbox',
-              osName: 'ios'
-            }
+            params: {}
           })
 
           jest.runOnlyPendingTimers()
@@ -243,10 +230,6 @@ describe('test session functionality', () => {
           url: '/session',
           method: 'POST',
           params: {
-            createdAt: now,
-            appToken: '123abc',
-            environment: 'sandbox',
-            osName: 'ios',
             callbackParams: {key1: 'value1', key2: 'value2'},
             partnerParams: {some: 'thing', very: 'nice'}
           }
@@ -452,12 +435,7 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {
-              createdAt: now,
-              appToken: '123abc',
-              environment: 'sandbox',
-              osName: 'ios'
-            }
+            params: {}
           })
         })
     })

@@ -6,7 +6,7 @@ import * as Time from '../time'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
-import {flushPromises} from './_helper'
+import {errorResponse, flushPromises} from './_helper'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -239,7 +239,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}
 
     ActivityState.default.current = {}
-    request.default.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue(errorResponse())
 
     expect.assertions(12)
 

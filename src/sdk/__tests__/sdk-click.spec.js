@@ -2,7 +2,7 @@
 import * as SdkClick from '../sdk-click'
 import * as request from '../request'
 import * as Time from '../time'
-import {flushPromises, setDocumentProp} from './_helper'
+import {errorResponse, flushPromises, setDocumentProp} from './_helper'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -140,7 +140,7 @@ describe('test sdk-click functionality', () => {
 
     window.history.pushState({}, '', '?adjust_param=value&something=else')
 
-    request.default.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue(errorResponse())
 
     SdkClick.check()
 

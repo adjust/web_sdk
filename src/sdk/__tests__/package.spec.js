@@ -4,7 +4,7 @@ import * as Config from '../config'
 import * as request from '../request'
 import * as Time from '../time'
 import * as Logger from '../logger'
-import {flushPromises} from './_helper'
+import {errorResponse, flushPromises} from './_helper'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -113,7 +113,7 @@ describe('test package functionality', () => {
     someRequest.send({
       continueCb (result) {
         if (result.wait) {
-          return someRequest.retry({wait: result.wait})
+          return someRequest.retry(result.wait)
         }
 
         someRequest.finish()
@@ -169,7 +169,7 @@ describe('test package functionality', () => {
 
     const continueCb = jest.fn((result) => {
       if (result.wait) {
-        return someRequest.retry({wait: result.wait})
+        return someRequest.retry(result.wait)
       }
 
       someRequest.finish()
@@ -274,7 +274,7 @@ describe('test package functionality', () => {
 
   it('retires unsuccessful request', () => {
 
-    request.default.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue(errorResponse())
 
     expect.assertions(26)
 
@@ -355,7 +355,7 @@ describe('test package functionality', () => {
 
   it('retires unsuccessful request with custom url and restores', () => {
 
-    request.default.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue(errorResponse())
 
     expect.assertions(27)
 
@@ -510,7 +510,7 @@ describe('test package functionality', () => {
 
   it('retires unsuccessful request and then cancels', () => {
 
-    request.default.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue(errorResponse())
 
     expect.assertions(16)
 

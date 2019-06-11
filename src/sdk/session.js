@@ -2,8 +2,8 @@ import Config from './config'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import {push} from './queue'
-import {on, off, getVisibilityApiAccess, extend, convertToMap} from './utilities'
-import {getTimestamp, timePassed} from './time'
+import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
+import {timePassed} from './time'
 import {sync, updateLastActive} from './identity'
 import {get as getGlobalParams} from './global-params'
 
@@ -137,9 +137,7 @@ function _stopTimer () {
  */
 function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
 
-  const baseParams = extend({
-    createdAt: getTimestamp()
-  }, Config.baseParams)
+  const baseParams = {}
 
   if (globalCallbackParams.length) {
     baseParams.callbackParams = convertToMap(globalCallbackParams)

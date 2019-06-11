@@ -6,6 +6,7 @@ import * as PubSub from '../pub-sub'
 import {flushPromises, createMockXHR} from './_helper'
 
 jest.mock('../logger')
+jest.useFakeTimers()
 
 describe('perform api requests', () => {
 
@@ -37,8 +38,8 @@ describe('perform api requests', () => {
     })).rejects.toEqual({
       status: 500,
       statusText: 'Connection failed',
-      response: {error: 'Unknown error, retry will follow'},
-      responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
+      response: {message: 'Unknown error, retry will follow', code: 'RETRY'},
+      responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
     })
 
     return flushPromises()
@@ -60,8 +61,8 @@ describe('perform api requests', () => {
     })).rejects.toEqual({
       status: 0,
       statusText: 'Network issue',
-      response: {error: 'Unknown error, retry will follow'},
-      responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
+      response: {message: 'Unknown error, retry will follow', code: 'RETRY'},
+      responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
     })
 
     return flushPromises()
@@ -101,8 +102,8 @@ describe('perform api requests', () => {
     })).rejects.toEqual({
       status: 200,
       statusText: 'OK',
-      response: {error: 'Unknown error, retry will follow'},
-      responseText: JSON.stringify({error: 'Unknown error, retry will follow'})
+      response: {message: 'Unknown error, retry will follow', code: 'RETRY'},
+      responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
     })
 
     return flushPromises()
@@ -321,6 +322,9 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
+
+        jest.runOnlyPendingTimers()
+
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
@@ -473,6 +477,9 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
+
+        jest.runOnlyPendingTimers()
+
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 

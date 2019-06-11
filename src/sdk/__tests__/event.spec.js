@@ -3,12 +3,15 @@ import * as Config from '../config'
 import * as event from '../event'
 import * as Queue from '../queue'
 import * as Time from '../time'
-import * as Utilities from '../utilities'
 import * as StorageManager from '../storage-manager'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
+import * as request from '../request'
+import {flushPromises} from './_helper'
 
+jest.mock('../request')
 jest.mock('../logger')
+jest.useFakeTimers()
 
 const appConfig = {
   appToken: '123abc',
@@ -16,10 +19,31 @@ const appConfig = {
   osName: 'ios'
 }
 
+function expectRequest (requestConfig) {
+
+  const fullConfig = Object.assign({}, requestConfig, {
+    params: Object.assign({
+      createdAt: 'some-time'
+    }, requestConfig.params, appConfig)
+  })
+
+  return flushPromises()
+    .then(() => {
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
+
+      jest.runOnlyPendingTimers()
+
+      expect(request.default).toHaveBeenCalledWith(fullConfig)
+
+      return flushPromises()
+    })
+}
+
 describe('event tracking functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(Queue, 'push').mockImplementation(() => {})
+    jest.spyOn(request, 'default')
+    jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'error')
 
@@ -34,6 +58,7 @@ describe('event tracking functionality', () => {
   afterAll(() => {
     Config.default.destroy()
 
+    jest.clearAllTimers()
     jest.restoreAllMocks()
     localStorage.clear()
   })
@@ -47,72 +72,50 @@ describe('event tracking functionality', () => {
 
   it('resolves event request successfully without revenue and some map params', () => {
 
-    const requestConfig = {
-      url: '/event',
-      method: 'POST',
-      params: Utilities.extend({}, appConfig, {
-        createdAt: 'some-time',
-        eventToken: '123abc',
-        callbackParams: {'some-key': 'some-value'},
-        partnerParams: {}
-      })
-    }
+    expect.assertions(2)
 
-    expect.assertions(1)
-
-    return event.default({
+    event.default({
       eventToken: '123abc',
       callbackParams: [{key: 'some-key', value: 'some-value'}],
       revenue: 0
-    }).then(() => {
-      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
     })
 
+    return expectRequest({
+      url: '/event',
+      method: 'POST',
+      params: {
+        eventToken: '123abc',
+        callbackParams: {'some-key': 'some-value'},
+        partnerParams: {}
+      }
+    })
   })
 
   it('resolves event request successfully with revenue but no currency', () => {
 
-    const requestConfig = {
+    expect.assertions(2)
+
+    event.default({
+      eventToken: '123abc',
+      revenue: 1000
+    })
+
+    return expectRequest({
       url: '/event',
       method: 'POST',
-      params: Utilities.extend({}, appConfig, {
-        createdAt: 'some-time',
+      params: {
         eventToken: '123abc',
         callbackParams: {},
         partnerParams: {}
-      })
-    }
-
-    expect.assertions(1)
-
-    return event.default({
-      eventToken: '123abc',
-      revenue: 1000
-    }).then(() => {
-      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
+      }
     })
-
-
   })
 
   it('resolves event request successfully with revenue and some map params', () => {
 
-    const requestConfig = {
-      url: '/event',
-      method: 'POST',
-      params: Utilities.extend({}, appConfig, {
-        createdAt: 'some-time',
-        eventToken: '123abc',
-        callbackParams: {'some-key': 'some-value'},
-        partnerParams: {key1: 'value1', key2: 'value2'},
-        revenue: "100.00000",
-        currency: 'EUR'
-      })
-    }
+    expect.assertions(2)
 
-    expect.assertions(1)
-
-    return event.default({
+    event.default({
       eventToken: '123abc',
       callbackParams: [
         {key: 'some-key', value: 'some-value'}
@@ -123,11 +126,19 @@ describe('event tracking functionality', () => {
       ],
       revenue: 100,
       currency: 'EUR'
-    }).then(() => {
-      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
     })
 
-
+    return expectRequest({
+      url: '/event',
+      method: 'POST',
+      params: {
+        eventToken: '123abc',
+        callbackParams: {'some-key': 'some-value'},
+        partnerParams: {key1: 'value1', key2: 'value2'},
+        revenue: "100.00000",
+        currency: 'EUR'
+      }
+    })
   })
 
   it('sets default callback parameters to be appended to each track event request', () => {
@@ -137,26 +148,26 @@ describe('event tracking functionality', () => {
       {key: 'key2', value: 'value2'}
     ]
 
-    expect.assertions(1)
+    expect.assertions(2)
 
     return GlobalParams.add(callbackParams, 'callback')
-      .then(() => event.default({
-        eventToken: 'bla',
-        revenue: 34.67,
-        currency: 'EUR'
-      }))
       .then(() => {
-        expect(Queue.push).toHaveBeenCalledWith({
+        event.default({
+          eventToken: 'bla',
+          revenue: 34.67,
+          currency: 'EUR'
+        })
+
+        return expectRequest({
           url: '/event',
           method: 'POST',
-          params: Utilities.extend({}, appConfig, {
-            createdAt: 'some-time',
+          params: {
             eventToken: 'bla',
             callbackParams: {key1: 'value1', key2: 'value2'},
             partnerParams: {},
             revenue: "34.67000",
             currency: 'EUR'
-          })
+          }
         })
       })
   })
@@ -168,26 +179,26 @@ describe('event tracking functionality', () => {
       {key: 'key2', value: 'value2'}
     ]
 
-    expect.assertions(1)
+    expect.assertions(2)
 
     return GlobalParams.add(callbackParams, 'callback')
-      .then(() => event.default({
-        eventToken: 'bla',
-        callbackParams: [
-          {key: 'key1', value: 'new value1'},
-          {key: 'key3', value: 'value3'}
-        ]
-      }))
       .then(() => {
-        expect(Queue.push).toHaveBeenCalledWith({
+        event.default({
+          eventToken: 'bla',
+          callbackParams: [
+            {key: 'key1', value: 'new value1'},
+            {key: 'key3', value: 'value3'}
+          ]
+        })
+
+        return expectRequest({
           url: '/event',
           method: 'POST',
-          params: Utilities.extend({}, appConfig, {
-            createdAt: 'some-time',
+          params: {
             eventToken: 'bla',
             callbackParams: {key1: 'new value1', key2: 'value2', key3: 'value3'},
             partnerParams: {}
-          })
+          }
         })
       })
   })
@@ -204,33 +215,32 @@ describe('event tracking functionality', () => {
       {key: 'very', value: 'nice'},
       {key: 'bla', value: 'truc'}
     ]
-
-    expect.assertions(1)
+    expect.assertions(2)
 
     return Promise.all([
       GlobalParams.add(callbackParams, 'callback'),
       GlobalParams.add(partnerParams, 'partner')
     ])
-      .then(() => event.default({
-        eventToken: 'bla',
-        callbackParams: [
-          {key: 'key2', value: 'new value2'}
-        ],
-        partnerParams: [
-          {key: 'very', value: 'bad'},
-          {key: 'trt', value: 'prc'}
-        ]
-      }))
       .then(() => {
-        expect(Queue.push).toHaveBeenCalledWith({
+        event.default({
+          eventToken: 'bla',
+          callbackParams: [
+            {key: 'key2', value: 'new value2'}
+          ],
+          partnerParams: [
+            {key: 'very', value: 'bad'},
+            {key: 'trt', value: 'prc'}
+          ]
+        })
+
+        return expectRequest({
           url: '/event',
           method: 'POST',
-          params: Utilities.extend({}, appConfig, {
-            createdAt: 'some-time',
+          params: {
             eventToken: 'bla',
             callbackParams: {key1: 'last value1', key2: 'new value2'},
             partnerParams: {some: 'thing', very: 'bad', bla: 'truc', trt: 'prc'}
-          })
+          }
         })
       })
   })

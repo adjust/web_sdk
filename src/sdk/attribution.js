@@ -83,7 +83,7 @@ function _continue (result = {}) {
     return _setAttribution(result)
   }
 
-  return _request.retry({wait: result.ask_in})
+  return _request.retry(result.ask_in)
 }
 
 /**

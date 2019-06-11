@@ -4,7 +4,7 @@ import * as request from '../request'
 import * as StorageManager from '../storage-manager'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
-import {flushPromises} from './_helper'
+import {errorResponse, flushPromises} from './_helper'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -17,7 +17,7 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
 
   const logMessage = (times === 1 ? 'Trying' : 'Re-trying') + ` request ${config.url} in ${wait}ms`
   const requestAction = success ? 'resolves' : 'rejects'
-  const requestActionResult = success ? {status: 'success'} : {error: 'An error'}
+  const requestActionResult = success ? {status: 'success'} : errorResponse()
 
   jest.runOnlyPendingTimers()
 
@@ -168,7 +168,7 @@ describe('test request queuing functionality', () => {
 
   it('pushes requests to the queue and retries in fifo order if not connected', () => {
 
-    request.default.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue(errorResponse())
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
@@ -204,7 +204,7 @@ describe('test request queuing functionality', () => {
         checkExecution({config: config1, times: 4, wait: 300, flush: false, reset: true}) // + 5 assertions
 
         request.default.mockClear()
-        request.default.mockRejectedValue({error: 'An error'})
+        request.default.mockRejectedValue(errorResponse())
 
         return flushPromises()
       })
@@ -236,7 +236,7 @@ describe('test request queuing functionality', () => {
 
   it('pushes requests to the queue and retries in fifo order if not connected and executes the rest when connected', () => {
 
-    request.default.mockRejectedValue({error: 'An error'})
+    request.default.mockRejectedValue(errorResponse())
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
@@ -465,16 +465,12 @@ describe('test request queuing functionality', () => {
       .then(pending => {
         expect(pending.map(params => params.url)).toEqual(['/url-1', '/url-2', '/url-3'])
 
-        jest.runOnlyPendingTimers()
-
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
-        expect(request.default.mock.calls[0][0]).toMatchObject({
-          url: config1.url,
-          method: 'GET'
-        })
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /url-1 in 150ms')
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
 
-        Queue.destroy()
+        Queue.destroy(true)
+
+        jest.runOnlyPendingTimers()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('Previous /url-1 request attempt canceled')
 
@@ -483,6 +479,7 @@ describe('test request queuing functionality', () => {
       .then(() => StorageManager.default.getAll('queue'))
       .then(pending => {
         expect(pending.length).toEqual(0)
+        expect(setTimeout).toHaveBeenCalledTimes(1)
       })
 
   })

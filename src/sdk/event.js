@@ -1,8 +1,6 @@
 import {extend, isEmpty, convertToMap} from './utilities'
-import Config from './config'
 import {push} from './queue'
 import Logger from './logger'
-import {getTimestamp} from './time'
 import {get} from './global-params'
 
 /**
@@ -44,8 +42,6 @@ function _getRevenue (revenue, currency) {
 function _prepareParams (params, globalCallbackParams = [], globalPartnerParams = []) {
 
   const baseParams = extend({
-    createdAt: getTimestamp()
-  }, Config.baseParams, {
     eventToken: params.eventToken,
   }, _getRevenue(params.revenue, params.currency))
 

@@ -45,7 +45,7 @@ function _getErrorObject (xhr, onlyResponse) {
     return JSON.parse(xhr.response)
   }
 
-  const error = {error: 'Unknown error, retry will follow'}
+  const error = {message: 'Unknown error, retry will follow', code: 'RETRY'}
 
   return {
     status: xhr.status,
@@ -122,6 +122,26 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
 }
 
 /**
+ * Prepare url and params depending on the resource type
+ *
+ * @param {string} url
+ * @param {string} method
+ * @param {Object} params
+ * @returns {{encodedParams: string, fullUrl: string}}
+ * @private
+ */
+function _prepareUrlAndParams (url, method = 'GET', params = {}) {
+  const encodedParams = _encodeParams(params)
+  const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
+  const baseUrl = __ADJUST__ENV === 'test' ? '' : Config.baseUrl[base]
+
+  return {
+    fullUrl: baseUrl + url + (method === 'GET' ? `?${encodedParams}` : ''),
+    encodedParams
+  }
+}
+
+/**
  * Build xhr to perform all kind of api requests
  *
  * @param {string} url
@@ -130,14 +150,7 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
  * @returns {Promise}
  */
 function _buildXhr ({url, method = 'GET', params = {}}) {
-
-  const encodedParams = _encodeParams(params)
-
-  let fullUrl = Config.baseUrl + url
-
-  if (method === 'GET') {
-    fullUrl += `?${encodedParams}`
-  }
+  const {fullUrl, encodedParams} = _prepareUrlAndParams(url, method, params)
 
   return new Promise((resolve, reject) => {
 
@@ -171,9 +184,10 @@ function _buildXhr ({url, method = 'GET', params = {}}) {
  */
 function _interceptResponse (result = {}, options) {
 
+  const activityState = ActivityState.current || {}
   const isAttributionRequest = isRequest(options.url, 'attribution')
   const isSessionRequest = isRequest(options.url, 'session')
-  const isAttributionPresent = !!ActivityState.current.attribution
+  const isAttributionPresent = !!activityState.attribution
 
   if (result.tracking_state === 'opted_out') {
     publish('sdk:gdpr-forget-me', true)

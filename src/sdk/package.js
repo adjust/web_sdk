@@ -154,7 +154,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
     _attempts = DEFAULT_ATTEMPTS
     _wait = DEFAULT_WAIT
-    _running = false
 
     _restore()
 
@@ -167,11 +166,10 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @param {number=} wait
    * @returns {Promise}
    */
-  function retry ({wait}) {
+  function retry (wait) {
 
     _attempts += 1
     _wait = backOff(_attempts, _strategy)
-    _running = false
 
     clear()
 
@@ -219,14 +217,17 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
     return new Promise((resolve) => {
       _timeoutId = setTimeout(() => {
+        _running = false
+
         return request({
           url: _url.current,
           method: _method.current,
           params: extend({
             createdAt: getTimestamp()
           }, _params.current, Config.baseParams)
-        }).then((result) => _continue(result, resolve))
-          .catch(retry)
+        })
+          .then(result => _continue(result, resolve))
+          .catch(({response = {}} = {}) => response.code === 'RETRY' ? retry() : clear())
       }, _wait)
     })
   }
@@ -245,7 +246,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    */
   function clear () {
 
-    const wasRunning = _running
+    const wasRunning = isRunning()
 
     clearTimeout(_timeoutId)
     _timeoutId = null
