@@ -156,6 +156,7 @@ function expectRunningTrackEvent () {
   mainInstance.trackEvent({eventToken: 'blabla'})
 
   expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'})
+  expect(GlobalParams.get).toHaveBeenCalled()
 
 }
 
@@ -169,7 +170,7 @@ function expectNotRunningTrackEvent (noInstance) {
     expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not track event')
   }
 
-  expect(event.default).not.toHaveBeenCalled()
+  expect(GlobalParams.get).not.toHaveBeenCalled()
 
 }
 
@@ -288,7 +289,7 @@ describe('main entry point functionality', () => {
 
   beforeAll(() => {
     jest.spyOn(Date, 'now').mockImplementation(() => 155912080000 + randomInRange(1000, 9999))
-    jest.spyOn(event, 'default').mockImplementation(() => {})
+    jest.spyOn(event, 'default')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Queue, 'push')
     jest.spyOn(Queue, 'run')
@@ -297,6 +298,7 @@ describe('main entry point functionality', () => {
     jest.spyOn(Queue, 'clear')
     jest.spyOn(Session, 'watch')
     jest.spyOn(Session, 'destroy')
+    jest.spyOn(GlobalParams, 'get')
     jest.spyOn(GlobalParams, 'add')
     jest.spyOn(GlobalParams, 'remove')
     jest.spyOn(GlobalParams, 'removeAll')
@@ -396,10 +398,10 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(19)
+        expect.assertions(20)
 
         expectRunningStatic() // +7 assertions
-        expectRunningTrackEvent() // +1 assertions
+        expectRunningTrackEvent() // +2 assertions
         return expectStart() // +11 assertions
       })
 
@@ -407,9 +409,8 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(2)
+        expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -476,10 +477,10 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(19)
+        expect.assertions(20)
 
         expectRunningStatic() // +7 assertions
-        expectRunningTrackEvent() // +1 assertions
+        expectRunningTrackEvent() // +2 assertions
         return expectStart() // +11 assertions
       })
 
@@ -497,9 +498,8 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(2)
+        expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -594,10 +594,10 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(19)
+        expect.assertions(20)
 
         expectRunningStatic() // +7 assertions
-        expectRunningTrackEvent() // +1 assertion
+        expectRunningTrackEvent() // +2 assertion
         return expectStart() // +11 assertions
       })
 
@@ -615,9 +615,8 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(2)
+        expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -679,10 +678,10 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(19)
+        expect.assertions(20)
 
         expectRunningStatic() // +7 assertions
-        expectRunningTrackEvent() // +1 assertions
+        expectRunningTrackEvent() // +2 assertions
         return expectStart() // +11 assertions
       })
     })
@@ -792,20 +791,17 @@ describe('main entry point functionality', () => {
 
         mainInstance.enable()
 
-        expect.assertions(14)
+        expect.assertions(23)
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(false)
 
+        expectRunningStatic() // +7 asserts
+        expectRunningTrackEvent() // +2 asserts
         return expectStart() // +11 assertions
 
-      })
-
-      it('runs all static methods and track event', () => {
-        expectRunningStatic()
-        expectRunningTrackEvent()
       })
 
       it('fails to enable already enabled sdk', () => {
@@ -822,9 +818,8 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(2)
+        expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -946,10 +941,10 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(19)
+        expect.assertions(20)
 
         expectRunningStatic()  // +7 assertions
-        expectRunningTrackEvent() // +1 assertion
+        expectRunningTrackEvent() // +2 assertion
         return expectStart() // +11 assertions
       })
 
@@ -967,9 +962,8 @@ describe('main entry point functionality', () => {
 
         mainInstance.disable()
 
-        expect(Logger.default.log).toHaveBeenCalledTimes(2)
+        expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-        expect(Logger.default.log).toHaveBeenCalledWith('Previous /session request attempt canceled')
 
         expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
 
@@ -1030,10 +1024,10 @@ describe('main entry point functionality', () => {
 
         init()
 
-        expect.assertions(19)
+        expect.assertions(20)
 
         expectRunningStatic() // +7 assertions
-        expectRunningTrackEvent() // +1 assertions
+        expectRunningTrackEvent() // +2 assertions
         return expectStart() // +11 assertions
       })
     })
@@ -1099,10 +1093,10 @@ describe('main entry point functionality', () => {
 
           init()
 
-          expect.assertions(19)
+          expect.assertions(20)
 
           expectRunningStatic() // +7 assertions
-          expectRunningTrackEvent() // +1 assertions
+          expectRunningTrackEvent() // +2 assertions
           return expectStart() // +11 assertions
         })
 
@@ -1190,10 +1184,10 @@ describe('main entry point functionality', () => {
 
           init()
 
-          expect.assertions(20)
+          expect.assertions(21)
 
           expectRunningStatic() // +7 assertions
-          expectRunningTrackEvent() // +1 assertions
+          expectRunningTrackEvent() // +2 assertions
           return expectStart() // +11 assertions
             .then(() => {
               expect(Queue.push).toHaveBeenCalledWith(gdprRequst)
@@ -1224,10 +1218,10 @@ describe('main entry point functionality', () => {
 
           init()
 
-          expect.assertions(20)
+          expect.assertions(21)
 
           expectRunningStatic() // +7 assertions
-          expectRunningTrackEvent() // +1 assertions
+          expectRunningTrackEvent() // +2 assertions
           return expectStart() // +11 assertions
             .then(() => {
               expect(Queue.push).toHaveBeenCalledWith(gdprRequst)

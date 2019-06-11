@@ -46,8 +46,6 @@ describe('event tracking functionality', () => {
     jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'error')
-
-    Object.assign(Config.default.baseParams, appConfig)
   })
 
   afterEach(() => {
@@ -63,186 +61,209 @@ describe('event tracking functionality', () => {
     localStorage.clear()
   })
 
-  it('logs an error and return when event token is not provided', () => {
+  it('prevents running event request before initialisation', () => {
+
     event.default({})
 
-    expect(Logger.default.error).toHaveBeenCalledWith('You must provide event token in order to track event')
+    expect(Logger.default.error).toHaveBeenLastCalledWith('adjustSDK is not initiated, can not track event')
 
+    return flushPromises()
+      .then(() => {
+        expect(Queue.push).not.toHaveBeenCalled()
+
+        jest.runOnlyPendingTimers()
+
+        expect(request.default).not.toHaveBeenCalled()
+      })
   })
 
-  it('resolves event request successfully without revenue and some map params', () => {
+  describe('after initialisation', () => {
 
-    expect.assertions(2)
-
-    event.default({
-      eventToken: '123abc',
-      callbackParams: [{key: 'some-key', value: 'some-value'}],
-      revenue: 0
+    beforeAll(() => {
+      Object.assign(Config.default.baseParams, appConfig)
     })
 
-    return expectRequest({
-      url: '/event',
-      method: 'POST',
-      params: {
+    it('logs an error and return when event token is not provided', () => {
+      event.default({})
+
+      expect(Logger.default.error).toHaveBeenCalledWith('You must provide event token in order to track event')
+
+    })
+
+    it('resolves event request successfully without revenue and some map params', () => {
+
+      expect.assertions(2)
+
+      event.default({
         eventToken: '123abc',
-        callbackParams: {'some-key': 'some-value'},
-        partnerParams: {}
-      }
+        callbackParams: [{key: 'some-key', value: 'some-value'}],
+        revenue: 0
+      })
+
+      return expectRequest({
+        url: '/event',
+        method: 'POST',
+        params: {
+          eventToken: '123abc',
+          callbackParams: {'some-key': 'some-value'},
+          partnerParams: {}
+        }
+      })
     })
-  })
 
-  it('resolves event request successfully with revenue but no currency', () => {
+    it('resolves event request successfully with revenue but no currency', () => {
 
-    expect.assertions(2)
+      expect.assertions(2)
 
-    event.default({
-      eventToken: '123abc',
-      revenue: 1000
-    })
-
-    return expectRequest({
-      url: '/event',
-      method: 'POST',
-      params: {
+      event.default({
         eventToken: '123abc',
-        callbackParams: {},
-        partnerParams: {}
-      }
+        revenue: 1000
+      })
+
+      return expectRequest({
+        url: '/event',
+        method: 'POST',
+        params: {
+          eventToken: '123abc',
+          callbackParams: {},
+          partnerParams: {}
+        }
+      })
     })
-  })
 
-  it('resolves event request successfully with revenue and some map params', () => {
+    it('resolves event request successfully with revenue and some map params', () => {
 
-    expect.assertions(2)
+      expect.assertions(2)
 
-    event.default({
-      eventToken: '123abc',
-      callbackParams: [
-        {key: 'some-key', value: 'some-value'}
-      ],
-      partnerParams: [
+      event.default({
+        eventToken: '123abc',
+        callbackParams: [
+          {key: 'some-key', value: 'some-value'}
+        ],
+        partnerParams: [
+          {key: 'key1', value: 'value1'},
+          {key: 'key2', value: 'value2'}
+        ],
+        revenue: 100,
+        currency: 'EUR'
+      })
+
+      return expectRequest({
+        url: '/event',
+        method: 'POST',
+        params: {
+          eventToken: '123abc',
+          callbackParams: {'some-key': 'some-value'},
+          partnerParams: {key1: 'value1', key2: 'value2'},
+          revenue: "100.00000",
+          currency: 'EUR'
+        }
+      })
+    })
+
+    it('sets default callback parameters to be appended to each track event request', () => {
+
+      const callbackParams = [
         {key: 'key1', value: 'value1'},
         {key: 'key2', value: 'value2'}
-      ],
-      revenue: 100,
-      currency: 'EUR'
-    })
+      ]
 
-    return expectRequest({
-      url: '/event',
-      method: 'POST',
-      params: {
-        eventToken: '123abc',
-        callbackParams: {'some-key': 'some-value'},
-        partnerParams: {key1: 'value1', key2: 'value2'},
-        revenue: "100.00000",
-        currency: 'EUR'
-      }
-    })
-  })
+      expect.assertions(2)
 
-  it('sets default callback parameters to be appended to each track event request', () => {
-
-    const callbackParams = [
-      {key: 'key1', value: 'value1'},
-      {key: 'key2', value: 'value2'}
-    ]
-
-    expect.assertions(2)
-
-    return GlobalParams.add(callbackParams, 'callback')
-      .then(() => {
-        event.default({
-          eventToken: 'bla',
-          revenue: 34.67,
-          currency: 'EUR'
-        })
-
-        return expectRequest({
-          url: '/event',
-          method: 'POST',
-          params: {
+      return GlobalParams.add(callbackParams, 'callback')
+        .then(() => {
+          event.default({
             eventToken: 'bla',
-            callbackParams: {key1: 'value1', key2: 'value2'},
-            partnerParams: {},
-            revenue: "34.67000",
+            revenue: 34.67,
             currency: 'EUR'
-          }
+          })
+
+          return expectRequest({
+            url: '/event',
+            method: 'POST',
+            params: {
+              eventToken: 'bla',
+              callbackParams: {key1: 'value1', key2: 'value2'},
+              partnerParams: {},
+              revenue: "34.67000",
+              currency: 'EUR'
+            }
+          })
         })
-      })
-  })
+    })
 
-  it('overrides some default callback parameters with callback parameters passed directly', () => {
+    it('overrides some default callback parameters with callback parameters passed directly', () => {
 
-    const callbackParams = [
-      {key: 'key1', value: 'value1'},
-      {key: 'key2', value: 'value2'}
-    ]
+      const callbackParams = [
+        {key: 'key1', value: 'value1'},
+        {key: 'key2', value: 'value2'}
+      ]
 
-    expect.assertions(2)
+      expect.assertions(2)
 
-    return GlobalParams.add(callbackParams, 'callback')
-      .then(() => {
-        event.default({
-          eventToken: 'bla',
-          callbackParams: [
-            {key: 'key1', value: 'new value1'},
-            {key: 'key3', value: 'value3'}
-          ]
-        })
-
-        return expectRequest({
-          url: '/event',
-          method: 'POST',
-          params: {
+      return GlobalParams.add(callbackParams, 'callback')
+        .then(() => {
+          event.default({
             eventToken: 'bla',
-            callbackParams: {key1: 'new value1', key2: 'value2', key3: 'value3'},
-            partnerParams: {}
-          }
+            callbackParams: [
+              {key: 'key1', value: 'new value1'},
+              {key: 'key3', value: 'value3'}
+            ]
+          })
+
+          return expectRequest({
+            url: '/event',
+            method: 'POST',
+            params: {
+              eventToken: 'bla',
+              callbackParams: {key1: 'new value1', key2: 'value2', key3: 'value3'},
+              partnerParams: {}
+            }
+          })
         })
-      })
-  })
+    })
 
-  it('sets default callback and partner parameters and override both with some parameters passed directly', () => {
+    it('sets default callback and partner parameters and override both with some parameters passed directly', () => {
 
-    const callbackParams = [
-      {key: 'key1', value: 'value1'},
-      {key: 'key2', value: 'value2'},
-      {key: 'key1', value: 'last value1'}
-    ]
-    const partnerParams = [
-      {key: 'some', value: 'thing'},
-      {key: 'very', value: 'nice'},
-      {key: 'bla', value: 'truc'}
-    ]
-    expect.assertions(2)
+      const callbackParams = [
+        {key: 'key1', value: 'value1'},
+        {key: 'key2', value: 'value2'},
+        {key: 'key1', value: 'last value1'}
+      ]
+      const partnerParams = [
+        {key: 'some', value: 'thing'},
+        {key: 'very', value: 'nice'},
+        {key: 'bla', value: 'truc'}
+      ]
+      expect.assertions(2)
 
-    return Promise.all([
-      GlobalParams.add(callbackParams, 'callback'),
-      GlobalParams.add(partnerParams, 'partner')
-    ])
-      .then(() => {
-        event.default({
-          eventToken: 'bla',
-          callbackParams: [
-            {key: 'key2', value: 'new value2'}
-          ],
-          partnerParams: [
-            {key: 'very', value: 'bad'},
-            {key: 'trt', value: 'prc'}
-          ]
-        })
-
-        return expectRequest({
-          url: '/event',
-          method: 'POST',
-          params: {
+      return Promise.all([
+        GlobalParams.add(callbackParams, 'callback'),
+        GlobalParams.add(partnerParams, 'partner')
+      ])
+        .then(() => {
+          event.default({
             eventToken: 'bla',
-            callbackParams: {key1: 'last value1', key2: 'new value2'},
-            partnerParams: {some: 'thing', very: 'bad', bla: 'truc', trt: 'prc'}
-          }
-        })
-      })
-  })
+            callbackParams: [
+              {key: 'key2', value: 'new value2'}
+            ],
+            partnerParams: [
+              {key: 'very', value: 'bad'},
+              {key: 'trt', value: 'prc'}
+            ]
+          })
 
+          return expectRequest({
+            url: '/event',
+            method: 'POST',
+            params: {
+              eventToken: 'bla',
+              callbackParams: {key1: 'last value1', key2: 'new value2'},
+              partnerParams: {some: 'thing', very: 'bad', bla: 'truc', trt: 'prc'}
+            }
+          })
+        })
+    })
+
+  })
 })

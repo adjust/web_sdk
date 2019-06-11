@@ -58,18 +58,7 @@ function init (params = {}) {
  * @param {Object} params
  */
 function trackEvent (params = {}) {
-
-  if (isDisabled()) {
-    Logger.log('adjustSDK is disabled, can not track event')
-    return
-  }
-
-  if (!Config.isInitialised()) {
-    Logger.error('adjustSDK is not initiated, can not track event')
-    return
-  }
-
-  event(params)
+  _run('track event', event, params)
 }
 
 /**

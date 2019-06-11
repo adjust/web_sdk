@@ -1,7 +1,8 @@
 import {extend, isEmpty, convertToMap} from './utilities'
 import {push} from './queue'
-import Logger from './logger'
 import {get} from './global-params'
+import Logger from './logger'
+import Config from './config'
 
 /**
  * Get revenue value if positive and limit to 5 decimal places
@@ -66,6 +67,11 @@ function _prepareParams (params, globalCallbackParams = [], globalPartnerParams 
  * @param {Object} params
  */
 export default function event (params = {}) {
+
+  if (!Config.isInitialised()) {
+    Logger.error('adjustSDK is not initiated, can not track event')
+    return
+  }
 
   if (isEmpty(params) || !params.eventToken) {
     Logger.error('You must provide event token in order to track event')

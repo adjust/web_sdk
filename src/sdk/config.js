@@ -2,17 +2,43 @@ import {MINUTE, SECOND, DAY} from './constants'
 import {extend, detectPlatform, buildList} from './utilities'
 import Logger from './logger'
 
+/**
+ * Client's config before initialisation
+ *
+ * @type {{environment: string, appToken: string, osName: string}}
+ * @private
+ */
 const _initial = {
   appToken: '',
   environment: '',
   osName: detectPlatform()
 }
 
+/**
+ * Mandatory fields to set for sdk initialization
+ *
+ * @type {string[]}
+ * @private
+ */
 const _mandatory = [
   'appToken',
   'environment'
 ]
 
+/**
+ * Global configuration object used across the sdk
+ *
+ * @type {{
+ * namespace: string,
+ * version: string,
+ * baseUrl: {app: string, gdpr: string},
+ * sessionWindow: number,
+ * sessionTimerWindow: number,
+ * requestValidityWindow: number,
+ * ignoreSwitchToBackground: boolean,
+ * baseParams: Object
+ * }}
+ */
 const baseConfig = {
   namespace: __ADJUST__NAMESPACE,
   version: `js${__ADJUST__SDK_VERSION}`,
