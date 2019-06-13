@@ -10,7 +10,12 @@ jest.useFakeTimers()
 
 describe('perform api requests', () => {
 
-  const gpsAdid = '&gps_adid=some-uuid'
+  const defaultParams = [
+    'created_at=some-time',
+    'sent_at=some-time',
+    'web_uuid=some-uuid',
+    'gps_adid=some-uuid'
+  ].join('&')
   const oldXMLHttpRequest = window.XMLHttpRequest
   let mockXHR = null
 
@@ -147,7 +152,7 @@ describe('perform api requests', () => {
       return flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&app_token=cdf123&os_name=macos&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D&web_uuid=some-uuid' + gpsAdid, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&app_token=cdf123&os_name=macos&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -176,7 +181,7 @@ describe('perform api requests', () => {
       return flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', '/some-url?created_at=some-time&sent_at=some-time&some=thing&very=nice&zero=0&bla=ble&web_uuid=some-uuid' + gpsAdid, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&some=thing&very=nice&zero=0&bla=ble`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -203,7 +208,7 @@ describe('perform api requests', () => {
           expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
-          expect(mockXHR.send).toHaveBeenCalledWith('created_at=some-time&sent_at=some-time&some=thing&very=nice&web_uuid=some-uuid' + gpsAdid)
+          expect(mockXHR.send).toHaveBeenCalledWith(`${defaultParams}&some=thing&very=nice`)
 
           mockXHR.onreadystatechange()
         })

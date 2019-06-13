@@ -1,8 +1,8 @@
 import Config from './config'
 import {extend, isEmpty, isObject, isValidJson, isRequest} from './utilities'
-import {getTimestamp} from './time'
 import {updateLastActive} from './identity'
 import {publish} from './pub-sub'
+import defaultParams from './default-params'
 import ActivityState from './activity-state'
 
 /**
@@ -63,15 +63,7 @@ function _getErrorObject (xhr, onlyResponse) {
  * @private
  */
 function _encodeParams (params) {
-
-  params = extend({
-    createdAt: getTimestamp(),
-    sentAt: getTimestamp()
-  }, params)
-
-  params.web_uuid = ActivityState.current.uuid
-  // TODO this will be remove once backend fully supports web_sdk
-  params.gps_adid = params.web_uuid
+  params = extend(defaultParams(), params)
 
   return Object
     .entries(params)
