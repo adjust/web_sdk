@@ -9,13 +9,11 @@ import * as Identity from '../identity'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as StorageManager from '../storage-manager'
-import * as QuickStorage from '../quick-storage'
 import * as Attribution from '../attribution'
 import * as ActivityState from '../activity-state'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 import {flushPromises, randomInRange} from './_helper'
-import {setDisabled} from '../identity'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -73,7 +71,7 @@ function expectGdprForgetMeCallback () {
   jest.runOnlyPendingTimers()
 
   expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled due to GDPR-Forget-Me request')
-  expect(Identity.setDisabled).toHaveBeenCalledWith(true, 'gdpr')
+  expect(Identity.disable).toHaveBeenCalledWith('gdpr')
 }
 
 function expectNotGdprForgetMeCallback () {
@@ -82,7 +80,7 @@ function expectNotGdprForgetMeCallback () {
   jest.runOnlyPendingTimers()
 
   expect(Logger.default.log).not.toHaveBeenCalled()
-  expect(Identity.setDisabled).not.toHaveBeenCalledWith()
+  expect(Identity.disable).not.toHaveBeenCalled()
 }
 
 function expectStart () {
@@ -273,16 +271,15 @@ function expectNotAttributionCallback () {
 }
 
 function teardown () {
-  Identity.setDisabled(false)
   mainInstance.destroy()
   localStorage.clear()
   jest.clearAllMocks()
+  ActivityState.default.state = {disabled: false}
 }
 
 function teardownAndDisable (reason = 'general') {
   teardown()
-  Identity.setDisabled(true, reason)
-  Identity.setDisabled.mockClear()
+  ActivityState.default.state = {disabled: true, reason}
 }
 
 describe('main entry point functionality', () => {
@@ -307,7 +304,8 @@ describe('main entry point functionality', () => {
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'info')
     jest.spyOn(Identity, 'start')
-    jest.spyOn(Identity, 'setDisabled')
+    jest.spyOn(Identity, 'disable')
+    jest.spyOn(Identity, 'enable')
     jest.spyOn(Identity, 'clear')
     jest.spyOn(Identity, 'destroy')
     jest.spyOn(PubSub, 'subscribe')
@@ -411,8 +409,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectShutDown()
       })
@@ -427,7 +424,6 @@ describe('main entry point functionality', () => {
         mainInstance.disable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotShutDown()
       })
@@ -440,8 +436,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         return expectStart() // +11 assertions
       })
@@ -458,9 +453,8 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
+        expect(Identity.enable).toHaveBeenCalled()
 
         return flushPromises()
       })
@@ -489,7 +483,6 @@ describe('main entry point functionality', () => {
         mainInstance.enable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotStart(true)
       })
@@ -500,8 +493,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectShutDown()
       })
@@ -521,8 +513,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectNotShutDown()
       })
@@ -548,7 +539,6 @@ describe('main entry point functionality', () => {
         mainInstance.disable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotShutDown()
       })
@@ -561,8 +551,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         return expectStart() // +11 assertions
       })
@@ -585,7 +574,6 @@ describe('main entry point functionality', () => {
         mainInstance.enable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotStart(true)
       })
@@ -606,7 +594,6 @@ describe('main entry point functionality', () => {
         mainInstance.enable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotStart(true)
       })
@@ -617,8 +604,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectShutDown()
       })
@@ -635,9 +621,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is already enabled')
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).not.toHaveBeenCalledWith(false)
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         return flushPromises()
       })
@@ -656,8 +640,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectNotShutDown()
       })
@@ -668,8 +651,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         expectNotStart()
       })
@@ -694,7 +676,6 @@ describe('main entry point functionality', () => {
         mainInstance.enable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotStart(true)
       })
@@ -705,8 +686,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectNotShutDown()
       })
@@ -727,7 +707,7 @@ describe('main entry point functionality', () => {
   describe('initially disabled', () => {
 
     beforeAll(() => {
-      Identity.setDisabled(true)
+      ActivityState.default.state = {disabled: true}
     })
 
     describe('sdk: init -> disable -> enable', () => {
@@ -753,7 +733,6 @@ describe('main entry point functionality', () => {
         mainInstance.disable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotShutDown()
       })
@@ -766,8 +745,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         return expectStart() // +11 assertions
       })
@@ -795,8 +773,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         expectRunningStatic() // +7 asserts
         expectRunningTrackEvent() // +2 asserts
@@ -809,7 +786,6 @@ describe('main entry point functionality', () => {
         mainInstance.enable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotStart(true)
       })
@@ -820,8 +796,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectShutDown()
       })
@@ -847,9 +822,9 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Identity.enable).toHaveBeenCalled()
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
         expectShutDown()
 
         return flushPromises()
@@ -873,7 +848,6 @@ describe('main entry point functionality', () => {
         mainInstance.disable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotShutDown()
       })
@@ -894,7 +868,6 @@ describe('main entry point functionality', () => {
         mainInstance.disable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotShutDown()
       })
@@ -907,8 +880,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         return expectStart() // +11 assertions
       })
@@ -923,8 +895,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         expectNotStart()
       })
@@ -953,7 +924,6 @@ describe('main entry point functionality', () => {
         mainInstance.enable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotStart(true)
       })
@@ -964,8 +934,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectShutDown()
       })
@@ -982,9 +951,9 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
+        expect(Identity.enable).toHaveBeenCalled()
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
         expectShutDown()
 
         return flushPromises()
@@ -1003,7 +972,6 @@ describe('main entry point functionality', () => {
         mainInstance.disable()
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
-        expect(Identity.setDisabled).not.toHaveBeenCalled()
 
         expectNotShutDown()
       })
@@ -1014,8 +982,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         expectNotStart()
       })
@@ -1041,8 +1008,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+        expect(Identity.enable).toHaveBeenCalled()
 
         expectNotStart()
       })
@@ -1053,8 +1019,7 @@ describe('main entry point functionality', () => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled')
-
-        expect(Identity.setDisabled).toHaveBeenCalledWith(true, undefined)
+        expect(Identity.disable).toHaveBeenCalledWith(undefined)
 
         expectNotShutDown()
       })
@@ -1083,7 +1048,7 @@ describe('main entry point functionality', () => {
     describe('initially enabled', () => {
 
       beforeAll(() => {
-        Identity.setDisabled(false)
+        ActivityState.default.state = {disabled: false}
       })
 
       describe('sdk: init -> forget -> flush', () => {
@@ -1233,7 +1198,7 @@ describe('main entry point functionality', () => {
     describe('initially GDPR disabled', () => {
 
       beforeAll(() => {
-        Identity.setDisabled(true, 'gdpr')
+        ActivityState.default.state = {disabled: true, reason: 'gdpr'}
       })
 
       describe('sdk: init -> forget -> flush', () => {
@@ -1370,7 +1335,7 @@ describe('main entry point functionality', () => {
     describe('initially disabled in general', () => {
 
       beforeAll(() => {
-        Identity.setDisabled(true)
+        ActivityState.default.state = {disabled: true}
       })
 
       describe('sdk: init -> forget -> flush', () => {
@@ -1413,8 +1378,7 @@ describe('main entry point functionality', () => {
 
           expect(Logger.default.log).toHaveBeenCalledTimes(1)
           expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been enabled')
-
-          expect(Identity.setDisabled).toHaveBeenCalledWith(false)
+          expect(Identity.enable).toHaveBeenCalled()
 
           return expectStart() // +11 assertions
 

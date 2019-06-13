@@ -1,6 +1,7 @@
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
+import Logger from './logger'
 import {extend} from './utilities'
 
 /**
@@ -129,8 +130,9 @@ function isDisabled () {
  *
  * @param {boolean} disabled
  * @param {string=} reason
+ * @private
  */
-function setDisabled (disabled, reason) {
+function _setDisabled (disabled, reason) {
   const state = {disabled}
 
   if (disabled) {
@@ -149,6 +151,50 @@ function isGdprForgotten () {
   const state = ActivityState.state
 
   return state.disabled && state.reason === REASON_GDPR
+}
+
+/**
+ * Disable sdk due to a particular reason
+ *
+ * @param {string=} reason
+ * @private
+ */
+function disable (reason) {
+
+  const logReason = reason === REASON_GDPR ? ' due to GDPR-Forget-Me request' : ''
+
+  if (isDisabled()) {
+    Logger.log('adjustSDK is already disabled' + logReason)
+    return false
+  }
+
+  Logger.log('adjustSDK has been disabled' + logReason)
+
+  _setDisabled(true, reason)
+
+  return true
+}
+
+/**
+ * Enable sdk if not GDPR forgotten
+ */
+function enable () {
+
+  if (isGdprForgotten()) {
+    Logger.log('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+    return false
+  }
+
+  if (!isDisabled()) {
+    Logger.log('adjustSDK is already enabled')
+    return false
+  }
+
+  Logger.log('adjustSDK has been enabled')
+
+  _setDisabled(false)
+
+  return true
 }
 
 /**
@@ -177,9 +223,10 @@ export {
   updateAttribution,
   updateLastActive,
   sync,
-  setDisabled,
   isDisabled,
   isGdprForgotten,
+  disable,
+  enable,
   clear,
   destroy
 }

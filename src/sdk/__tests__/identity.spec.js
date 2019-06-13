@@ -23,7 +23,7 @@ describe('test identity methods', () => {
     jest.clearAllMocks()
     localStorage.clear()
     Identity.destroy()
-    Identity.setDisabled(false)
+    ActivityState.default.state = {disabled: false}
   })
 
   afterAll(() => {
@@ -50,13 +50,21 @@ describe('test identity methods', () => {
 
       expect(Identity.isDisabled()).toBeFalsy()
 
-      Identity.setDisabled(true)
+      Identity.disable()
 
       expect(Identity.isDisabled()).toBeTruthy()
 
-      Identity.setDisabled(false)
+      Identity.disable()
+
+      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
+
+      Identity.enable()
 
       expect(Identity.isDisabled()).toBeFalsy()
+
+      Identity.enable()
+
+      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
 
     })
 
@@ -68,7 +76,7 @@ describe('test identity methods', () => {
         .then(() => {
           expect(Identity.isDisabled()).toBeFalsy()
 
-          Identity.setDisabled(true)
+          Identity.disable()
 
           expect(Identity.isDisabled()).toBeTruthy()
         })
@@ -78,13 +86,13 @@ describe('test identity methods', () => {
 
       expect.assertions(2)
 
-      Identity.setDisabled(true)
+      Identity.disable()
 
       return Identity.start()
         .then(() => {
           expect(Identity.isDisabled()).toBeTruthy()
 
-          Identity.setDisabled(false)
+          Identity.enable()
 
           expect(Identity.isDisabled()).toBeFalsy()
         })
@@ -94,7 +102,7 @@ describe('test identity methods', () => {
 
       expect(Identity.isDisabled()).toBeFalsy()
 
-      Identity.setDisabled(true)
+      Identity.disable()
 
       expect(Identity.isDisabled()).toBeTruthy()
 
@@ -106,19 +114,21 @@ describe('test identity methods', () => {
 
     it('checks if disabled due to GDPR-Forget-Me request', () => {
 
-      Identity.setDisabled(true, 'gdpr')
+      Identity.disable('gdpr')
 
       expect(Identity.isDisabled()).toBeTruthy()
       expect(Identity.isGdprForgotten()).toBeTruthy()
 
-      Identity.setDisabled(false)
-
-      expect(Identity.isDisabled()).toBeFalsy()
-
-      Identity.setDisabled(true)
+      Identity.enable()
 
       expect(Identity.isDisabled()).toBeTruthy()
-      expect(Identity.isGdprForgotten()).toBeFalsy()
+      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+
+      Identity.disable()
+
+      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
+      expect(Identity.isDisabled()).toBeTruthy()
+      expect(Identity.isGdprForgotten()).toBeTruthy()
 
     })
 
@@ -171,7 +181,7 @@ describe('test identity methods', () => {
 
       expect.assertions(2)
 
-      Identity.setDisabled(true)
+      Identity.disable()
 
       QuickStorage.default.state = null
 

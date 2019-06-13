@@ -5,7 +5,7 @@ import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestro
 import {extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
-import {start, isDisabled, isGdprForgotten, setDisabled, clear as identityClear, destroy as identityDestroy} from './identity'
+import {start, isDisabled, isGdprForgotten, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as sdkClickCheck, destroy as sdkClickDestroy} from './sdk-click'
@@ -128,20 +128,9 @@ function setOfflineMode (state) {
  */
 function _disable (reason) {
 
-  if (isDisabled()) {
-    Logger.log('adjustSDK is already disabled')
-    return
-  }
+  const done = identityDisable(reason)
 
-  const logMessage = reason === REASON_GDPR
-    ? 'adjustSDK has been disabled due to GDPR-Forget-Me request'
-    : 'adjustSDK has been disabled'
-
-  Logger.log(logMessage)
-
-  setDisabled(true, reason)
-
-  if (Config.isInitialised()) {
+  if (done && Config.isInitialised()) {
     _shutdown()
   }
 
@@ -178,21 +167,9 @@ function _gdprDisable () {
  */
 function enable () {
 
-  if (isGdprForgotten()) {
-    Logger.log('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
-    return
-  }
+  const done = identityEnable()
 
-  if (!isDisabled()) {
-    Logger.log('adjustSDK is already enabled')
-    return
-  }
-
-  Logger.log('adjustSDK has been enabled')
-
-  setDisabled(false)
-
-  if (_params) {
+  if (done && _params) {
     _start(_params)
   }
 
