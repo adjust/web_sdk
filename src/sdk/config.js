@@ -1,17 +1,16 @@
 import {MINUTE, SECOND, DAY} from './constants'
-import {extend, detectPlatform, buildList} from './utilities'
+import {extend, buildList} from './utilities'
 import Logger from './logger'
 
 /**
  * Client's config before initialisation
  *
- * @type {{environment: string, appToken: string, osName: string}}
+ * @type {{environment: string, appToken: string}}
  * @private
  */
 const _initial = {
   appToken: '',
-  environment: '',
-  osName: detectPlatform()
+  environment: ''
 }
 
 /**

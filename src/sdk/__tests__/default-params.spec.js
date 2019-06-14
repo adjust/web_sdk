@@ -17,6 +17,10 @@ describe('request default parameters formation', () => {
     ActivityState.default.current = {uuid: 'some-uuid'}
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('test tracking enabled', () => {
 
     let navigatorDNT
@@ -41,72 +45,70 @@ describe('request default parameters formation', () => {
 
     it('reads track_enabled from window.navigator.doNotTrack', () => {
 
-      expect(defaultParams.default()).toEqual({
-        createdAt: 'some-time',
-        sentAt: 'some-time',
-        webUuid: 'some-uuid',
-        gpsAdid: 'some-uuid'
-      })
+      const initial = defaultParams.default()
+
+      expect(initial.trackingEnabled).toBeUndefined()
 
       navigatorDNT.mockReturnValue(0)
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: true})
+      expect(defaultParams.default().trackingEnabled).toEqual(true)
 
       navigatorDNT.mockReturnValue(1)
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: false})
+      expect(defaultParams.default().trackingEnabled).toEqual(false)
 
       navigatorDNT.mockReturnValue('no')
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: true})
+      expect(defaultParams.default().trackingEnabled).toEqual(true)
 
       navigatorDNT.mockReturnValue('yes')
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: false})
+      expect(defaultParams.default().trackingEnabled).toEqual(false)
 
     })
 
     it('reads track_enabled from window.doNotTrack', () => {
 
-      expect(defaultParams.default()).toEqual({
-        createdAt: 'some-time',
-        sentAt: 'some-time',
-        webUuid: 'some-uuid',
-        gpsAdid: 'some-uuid'
-      })
+      const initial = defaultParams.default()
+
+      expect(initial.trackingEnabled).toBeUndefined()
 
       windowDNT.mockReturnValue(0)
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: true})
+      expect(defaultParams.default().trackingEnabled).toEqual(true)
 
       windowDNT.mockReturnValue(1)
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: false})
+      expect(defaultParams.default().trackingEnabled).toEqual(false)
 
       windowDNT.mockReturnValue('no')
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: true})
+      expect(defaultParams.default().trackingEnabled).toEqual(true)
 
       windowDNT.mockReturnValue('yes')
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: false})
+      expect(defaultParams.default().trackingEnabled).toEqual(false)
 
     })
 
     it('reads track_enabled from window.navigator.msDoNotTrack', () => {
 
-      expect(defaultParams.default()).toEqual({
-        createdAt: 'some-time',
-        sentAt: 'some-time',
-        webUuid: 'some-uuid',
-        gpsAdid: 'some-uuid'
-      })
+      const initial = defaultParams.default()
+
+      expect(initial.trackingEnabled).toBeUndefined()
 
       msDNT.mockReturnValue(0)
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: true})
+      expect(defaultParams.default().trackingEnabled).toEqual(true)
 
       msDNT.mockReturnValue(1)
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: false})
+      expect(defaultParams.default().trackingEnabled).toEqual(false)
 
       msDNT.mockReturnValue('no')
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: true})
+      expect(defaultParams.default().trackingEnabled).toEqual(true)
 
       msDNT.mockReturnValue('yes')
-      expect(defaultParams.default()).toMatchObject({trackingEnabled: false})
+      expect(defaultParams.default().trackingEnabled).toEqual(false)
 
     })
+  })
+
+  it('test os_name and os_version - by default is unknown', () => {
+
+    expect(defaultParams.default().osName).toEqual('unknown')
+    expect(defaultParams.default().osVersion).toEqual(undefined)
+
   })
 
 

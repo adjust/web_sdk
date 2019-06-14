@@ -14,7 +14,8 @@ describe('perform api requests', () => {
     'created_at=some-time',
     'sent_at=some-time',
     'web_uuid=some-uuid',
-    'gps_adid=some-uuid'
+    'gps_adid=some-uuid',
+    'os_name=unknown'
   ].join('&')
   const oldXMLHttpRequest = window.XMLHttpRequest
   let mockXHR = null
@@ -141,7 +142,6 @@ describe('perform api requests', () => {
         url: '/some-url',
         params: {
           appToken: 'cdf123',
-          osName: 'macos',
           eventToken: '567abc',
           some: 'thing',
           very: 'nice',
@@ -152,7 +152,7 @@ describe('perform api requests', () => {
       return flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&app_token=cdf123&os_name=macos&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&app_token=cdf123&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -316,8 +316,7 @@ describe('perform api requests', () => {
         url: '/session',
         params: {
           appToken: '123abc',
-          environment: 'sandbox',
-          osName: 'ios'
+          environment: 'sandbox'
         }
       }).then(result => {
         expect(result).toEqual({
@@ -351,8 +350,7 @@ describe('perform api requests', () => {
         url: '/session',
         params: {
           appToken: '123abc',
-          environment: 'sandbox',
-          osName: 'ios'
+          environment: 'sandbox'
         }
       }).then(result => {
         expect(result).toEqual({
@@ -383,8 +381,7 @@ describe('perform api requests', () => {
         url: '/session',
         params: {
           appToken: '123abc',
-          environment: 'sandbox',
-          osName: 'ios'
+          environment: 'sandbox'
         }
       }).then(result => {
         expect(result).toEqual({
@@ -414,8 +411,7 @@ describe('perform api requests', () => {
         url: '/event',
         params: {
           appToken: '123abc',
-          environment: 'sandbox',
-          osName: 'ios'
+          environment: 'sandbox'
         }
       }).then(result => {
         expect(result).toEqual({
