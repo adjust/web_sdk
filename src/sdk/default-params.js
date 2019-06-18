@@ -1,6 +1,6 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
-import {getOsNameAndVersion, getBrowserNameAndVersion} from './detector'
+import {getOsNameAndVersion, getBrowserNameAndVersion, getDeviceType} from './detector'
 import ActivityState from './activity-state'
 
 /**
@@ -109,6 +109,16 @@ function _getLanguage () {
   return {language, country: (country ? '' + country.toLowerCase() : undefined)}
 }
 
+/**
+ * Get device type
+ *
+ * @returns {{deviceType: string|undefined}}
+ * @private
+ */
+function _getDeviceType () {
+  return {deviceType: getDeviceType()}
+}
+
 export default function defaultParams () {
   return extend({},
     _getCreatedAt(),
@@ -118,6 +128,7 @@ export default function defaultParams () {
     _getOsNameAndVersion(),
     _getBrowserNameAndVersion(),
     _getPlatform(),
-    _getLanguage()
+    _getLanguage(),
+    _getDeviceType()
   )
 }

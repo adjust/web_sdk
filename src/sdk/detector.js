@@ -262,7 +262,43 @@ function getBrowserNameAndVersion () {
   return _browserParams(match[0], match[1])
 }
 
+/**
+ * Basic device detection
+ *
+ * @returns {string}
+ */
+function getDeviceType () {
+
+  const ua = _getUserAgent()
+
+  if ((navigator.platform || '').toLowerCase().indexOf('mac') !== -1) {
+    return 'mac'
+  }
+
+  if (/bot|googlebot|crawler|spider|robot|crawling|slurp/i.test(ua)) {
+    return 'bot'
+  }
+
+  if (/(iPhone|iPad|iPod)/.test(ua) && !window.MSStream) {
+    if (/iPod/.test(ua)) {
+      return 'ipod'
+    }
+    if (/iPhone/.test(ua)) {
+      return 'iphone'
+    }
+    if (/iPad/.test(ua)) {
+      return 'ipad'
+    }
+  }
+
+  if( /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua) ) {
+    return 'mobile'
+  }
+
+}
+
 export {
   getOsNameAndVersion,
-  getBrowserNameAndVersion
+  getBrowserNameAndVersion,
+  getDeviceType
 }

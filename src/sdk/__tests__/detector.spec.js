@@ -1,16 +1,26 @@
 /* eslint-disable */
 import * as detector from '../detector'
+import {setGlobalProp} from './_helper'
 
 describe('os name and version detector', () => {
 
+  let oldUserAgent = window.navigator.userAgent
+  let oldPlatform = window.navigator.platform
   let userAgentSpy
+  let platformSpy
 
   beforeEach(() => {
+    setGlobalProp(window.navigator, 'userAgent')
+    setGlobalProp(window.navigator, 'platform')
+
     userAgentSpy = jest.spyOn(window.navigator, 'userAgent', 'get')
+    platformSpy = jest.spyOn(window.navigator, 'platform', 'get')
   })
 
   afterEach(() => {
     jest.clearAllMocks()
+    window.navigator.userAgent = oldUserAgent
+    window.navigator.platform = oldPlatform
   })
 
   describe('os detection', () => {
@@ -759,6 +769,95 @@ describe('os name and version detector', () => {
       expect(browser.browserVersion).toEqual('9')
 
 
+    })
+
+  })
+
+  describe('device type detection', () => {
+
+    let deviceType
+
+    it('detects iPhone, iPad and iPod', () => {
+
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('iphone')
+
+
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('ipad')
+
+
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (iPod touch; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('ipod')
+
+    })
+
+    it('detects Mac', () => {
+
+      platformSpy.mockReturnValue('MacIntel')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('mac')
+
+
+      platformSpy.mockReturnValue('Mac68K')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('mac')
+
+
+      platformSpy.mockReturnValue('MacPPC')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('mac')
+
+    })
+
+    it('detects bot', () => {
+
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('bot')
+
+
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('bot')
+
+
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('bot')
+
+
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)')
+
+      deviceType = detector.getDeviceType()
+
+      expect(deviceType).toEqual('bot')
+
+    })
+
+    it('returns undefined when no known device type is detected', () => {
+      expect(detector.getDeviceType()).toEqual(undefined)
     })
 
   })
