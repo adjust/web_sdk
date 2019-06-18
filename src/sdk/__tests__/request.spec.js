@@ -16,7 +16,8 @@ describe('perform api requests', () => {
     'web_uuid=some-uuid',
     'gps_adid=some-uuid',
     'os_name=unknown',
-    'browser_name=unknown'
+    'browser_name=unknown',
+    'platform=web'
   ].join('&')
   const oldXMLHttpRequest = window.XMLHttpRequest
   let mockXHR = null

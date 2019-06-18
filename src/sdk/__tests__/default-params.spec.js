@@ -122,4 +122,8 @@ describe('request default parameters formation', () => {
 
   })
 
+  it('test platform parameter - hardcoded to web', () => {
+    expect(defaultParams.default().platform).toEqual('web')
+  })
+
 })

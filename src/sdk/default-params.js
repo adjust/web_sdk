@@ -88,6 +88,16 @@ function _getBrowserNameAndVersion () {
   return {browserName, browserVersion}
 }
 
+/**
+ * Get platform parameter => hardcoded to `web`
+ *
+ * @returns {{platform: string}}
+ * @private
+ */
+function _getPlatform () {
+  return {platform: 'web'}
+}
+
 export default function defaultParams () {
   return extend({},
     _getCreatedAt(),
@@ -95,6 +105,7 @@ export default function defaultParams () {
     _getWebUuid(),
     _getTrackEnabled(),
     _getOsNameAndVersion(),
-    _getBrowserNameAndVersion()
+    _getBrowserNameAndVersion(),
+    _getPlatform()
   )
 }
