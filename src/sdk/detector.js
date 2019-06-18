@@ -1,5 +1,7 @@
 let _osName
 let _osVersion
+let _browserName
+let _browserVersion
 /**
  * Regular expressions for detecting OS name and OS version
  * IMPORTANT: order does matter, do not change it!
@@ -42,6 +44,16 @@ const _osRules = [{
   name: 'linux',
   nameRegex: /Linux/
 }]
+
+/**
+ * Get User Agent string
+ *
+ * @returns {string | string}
+ * @private
+ */
+function _getUserAgent () {
+  return navigator.userAgent || navigator.vendor || window.opera
+}
 
 /**
  * Extract Windows Phone OS version
@@ -157,7 +169,7 @@ function _getSymbianOSVersion (ua) {
  */
 function getOsNameAndVersion () {
 
-  const ua = navigator.userAgent || navigator.vendor || window.opera
+  const ua = _getUserAgent()
   let result = {osName: _osName, osVersion: _osVersion}
 
   if ((_osName || _osVersion) && __ADJUST__ENV !== 'test') {
@@ -176,6 +188,81 @@ function getOsNameAndVersion () {
   return result
 }
 
+/**
+ * Provide json structure for browser name and version detection
+ *
+ * @param {string|undefined} browserName
+ * @param {string|undefined} browserVersion
+ * @returns {{browserVersion: string|undefined, browserName: string|undefined}}
+ * @private
+ */
+function _browserParams (browserName, browserVersion) {
+  return {
+    browserName: _browserName = browserName,
+    browserVersion: _browserVersion = browserVersion
+  }
+}
+
+/**
+ * Try to do a sub-match to detect UA edge cases for iOS and Android devices
+ *
+ * @param {string} ua
+ * @returns {Array|undefined}
+ * @private
+ */
+function _subMatch (ua) {
+  const map = {OPR: 'Opera', EdgiOS: 'Edge', EdgA: 'Edge', CriOS: 'Chrome', OPiOS: 'Opera Mini', FxiOS: 'Firefox'}
+  const subMatch = ua.match(/\b(OPR|Edge|EdgiOS|EdgA|CriOS|Opera\sMini|OPiOS|FxiOS)\/(\d+)/)
+
+  if (subMatch) {
+    return [
+      subMatch[1].replace((new RegExp(Object.keys(map).join('|'))), k => map[k]),
+      subMatch[2]
+    ]
+  }
+}
+
+/**
+ * Detect browser name and version
+ *
+ * @returns {{browserVersion: string|undefined, browserName: string|undefined}}
+ */
+function getBrowserNameAndVersion () {
+
+  const ua = _getUserAgent()
+
+  if ((_browserName || _browserVersion) && __ADJUST__ENV !== 'test') {
+    return _browserParams(_browserName, _browserVersion)
+  }
+
+  let match = ua.match(/(opera|opios|chrome|crios|safari|firefox|fxios|msie|trident(?=\/))\/?\s*(\d+)/i) || []
+  let subMatch
+
+  if (match[1] === 'Trident' || match[1] === 'MSIE') {
+    if (match[1] === 'Trident') {
+      subMatch = ['IE', /\brv[ :]+(\d+)/g.exec(ua)[1]]
+    } else {
+      subMatch = ua.indexOf('Opera') !== -1 ? ['Opera', undefined] : (['IE', /MSIE\s(\d+)/.exec(ua)[1]])
+    }
+    return _browserParams(subMatch[0], subMatch[1])
+  }
+
+  subMatch = _subMatch(ua)
+
+  if (subMatch) {
+    return _browserParams(subMatch[0], subMatch[1])
+  }
+
+  match = match[2] ? [match[1], match[2]] : []
+
+  if(match && (subMatch = ua.match(/version\/(\d+)/i))) {
+    match.splice(1, 1, subMatch[1])
+  }
+
+  return _browserParams(match[0], match[1])
+}
+
 export {
-  getOsNameAndVersion
+  getOsNameAndVersion,
+  getBrowserNameAndVersion
 }

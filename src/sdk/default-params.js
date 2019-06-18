@@ -1,6 +1,6 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
-import {getOsNameAndVersion} from './detector'
+import {getOsNameAndVersion, getBrowserNameAndVersion} from './detector'
 import ActivityState from './activity-state'
 
 /**
@@ -69,12 +69,23 @@ function _getTrackEnabled () {
 /**
  * Get OS name and OS version
  *
- * @returns {{osVersion, osName: string}}
+ * @returns {{osVersion: string, osName: string|undefined}}
  * @private
  */
 function _getOsNameAndVersion () {
   const {osName = 'unknown', osVersion} = getOsNameAndVersion()
   return {osName, osVersion}
+}
+
+/**
+ * Get browser name and browser version
+ *
+ * @returns {{browserVersion: string, browserName: string|undefined}}
+ * @private
+ */
+function _getBrowserNameAndVersion () {
+  const {browserName = 'unknown', browserVersion} = getBrowserNameAndVersion()
+  return {browserName, browserVersion}
 }
 
 export default function defaultParams () {
@@ -83,6 +94,7 @@ export default function defaultParams () {
     _getSentAt(),
     _getWebUuid(),
     _getTrackEnabled(),
-    _getOsNameAndVersion()
+    _getOsNameAndVersion(),
+    _getBrowserNameAndVersion()
   )
 }

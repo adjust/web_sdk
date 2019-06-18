@@ -106,10 +106,20 @@ describe('request default parameters formation', () => {
 
   it('test os_name and os_version - by default is unknown', () => {
 
-    expect(defaultParams.default().osName).toEqual('unknown')
-    expect(defaultParams.default().osVersion).toEqual(undefined)
+    const params = defaultParams.default()
+
+    expect(params.osName).toEqual('unknown')
+    expect(params.osVersion).toEqual(undefined)
 
   })
 
+  it('test browser_name and browser_version - by default is unknown', () => {
+
+    const params = defaultParams.default()
+
+    expect(params.browserName).toEqual('unknown')
+    expect(params.browserVersion).toEqual(undefined)
+
+  })
 
 })
