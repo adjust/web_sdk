@@ -98,6 +98,17 @@ function _getPlatform () {
   return {platform: 'web'}
 }
 
+/**
+ * Get language preferences
+ *
+ * @returns {{language: string, country: string|undefined}}
+ * @private
+ */
+function _getLanguage () {
+  const [language, country] = (navigator.language || navigator.userLanguage || '').split('-')
+  return {language, country: (country ? '' + country.toLowerCase() : undefined)}
+}
+
 export default function defaultParams () {
   return extend({},
     _getCreatedAt(),
@@ -106,6 +117,7 @@ export default function defaultParams () {
     _getTrackEnabled(),
     _getOsNameAndVersion(),
     _getBrowserNameAndVersion(),
-    _getPlatform()
+    _getPlatform(),
+    _getLanguage()
   )
 }

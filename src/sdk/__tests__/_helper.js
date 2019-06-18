@@ -28,6 +28,14 @@ function setDocumentProp (prop, value) {
   })
 }
 
+function setGlobalProp (o, prop) {
+  Object.defineProperty(o, prop, {
+    configurable: true,
+    get () { return undefined },
+    set (v) { return v }
+  })
+}
+
 function errorResponse () {
   return {response: {message: 'An error', code: 'RETRY'}}
 }
@@ -37,5 +45,6 @@ export {
   createMockXHR,
   randomInRange,
   setDocumentProp,
+  setGlobalProp,
   errorResponse
 }

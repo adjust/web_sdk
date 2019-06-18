@@ -2,13 +2,7 @@
 import * as defaultParams from '../default-params'
 import * as ActivityState from '../activity-state'
 import * as Time from '../time'
-
-function configureGlobalProp (o, prop) {
-  Object.defineProperty(o, prop, {
-    configurable: true,
-    get () { return undefined }
-  })
-}
+import {setGlobalProp} from './_helper'
 
 describe('request default parameters formation', () => {
 
@@ -28,9 +22,9 @@ describe('request default parameters formation', () => {
     let msDNT
 
     beforeEach(() => {
-      configureGlobalProp(window.navigator, 'doNotTrack')
-      configureGlobalProp(window, 'doNotTrack')
-      configureGlobalProp(window.navigator, 'msDoNotTrack')
+      setGlobalProp(window.navigator, 'doNotTrack')
+      setGlobalProp(window, 'doNotTrack')
+      setGlobalProp(window.navigator, 'msDoNotTrack')
 
       navigatorDNT = jest.spyOn(window.navigator, 'doNotTrack', 'get')
       windowDNT = jest.spyOn(window, 'doNotTrack', 'get')
@@ -124,6 +118,50 @@ describe('request default parameters formation', () => {
 
   it('test platform parameter - hardcoded to web', () => {
     expect(defaultParams.default().platform).toEqual('web')
+  })
+
+  describe('test locale preferences', () => {
+
+    const oldLocale = window.navigator.language
+    let navigatorLanguage
+
+    beforeAll(() => {
+      setGlobalProp(window.navigator, 'language')
+      navigatorLanguage = jest.spyOn(window.navigator, 'language', 'get')
+    })
+
+    afterAll(() => {
+      window.navigator.language = oldLocale
+    })
+
+    it('reads only language from locale', () => {
+
+      navigatorLanguage.mockReturnValue('en')
+
+      const params = defaultParams.default()
+
+      expect(params.language).toEqual('en')
+      expect(params.country).toEqual(undefined)
+
+    })
+
+    it('reads both language and country from locale', () => {
+
+      navigatorLanguage.mockReturnValue('fr-FR')
+
+      let params = defaultParams.default()
+
+      expect(params.language).toEqual('fr')
+      expect(params.country).toEqual('fr')
+
+      navigatorLanguage.mockReturnValue('en-US')
+
+      params = defaultParams.default()
+
+      expect(params.language).toEqual('en')
+      expect(params.country).toEqual('us')
+
+    })
   })
 
 })

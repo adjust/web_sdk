@@ -3,7 +3,7 @@ import * as request from '../request'
 import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
-import {flushPromises, createMockXHR} from './_helper'
+import {flushPromises, setGlobalProp, createMockXHR} from './_helper'
 
 jest.mock('../logger')
 jest.useFakeTimers()
@@ -17,20 +17,30 @@ describe('perform api requests', () => {
     'gps_adid=some-uuid',
     'os_name=unknown',
     'browser_name=unknown',
-    'platform=web'
+    'platform=web',
+    'language=en',
+    'country=gb'
   ].join('&')
+
   const oldXMLHttpRequest = window.XMLHttpRequest
+  const oldLocale = window.navigator.language
   let mockXHR = null
 
   beforeAll(() => {
+    setGlobalProp(window.navigator, 'language')
+
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     ActivityState.default.current = {uuid: 'some-uuid'}
+
+    jest.spyOn(window.navigator, 'language', 'get').mockReturnValue('en-GB')
   })
   afterEach(() => {
     window.XMLHttpRequest = oldXMLHttpRequest
+    jest.clearAllMocks()
   })
   afterAll(() => {
     jest.restoreAllMocks()
+    window.navigator.language = oldLocale
   })
 
   it('rejects when network issue', () => {
