@@ -1,6 +1,6 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
-import {getOsNameAndVersion, getBrowserNameAndVersion, getDeviceType} from './detector'
+import {getOsNameAndVersion, getBrowserNameAndVersion, getDeviceType, getCpuType} from './detector'
 import ActivityState from './activity-state'
 
 /**
@@ -119,6 +119,16 @@ function _getDeviceType () {
   return {deviceType: getDeviceType()}
 }
 
+/**
+ * Get cpu type
+ *
+ * @returns {{cpuType: (string|undefined)}}
+ * @private
+ */
+function _getCpuType () {
+  return {cpuType: getCpuType() || undefined}
+}
+
 export default function defaultParams () {
   return extend({},
     _getCreatedAt(),
@@ -129,6 +139,7 @@ export default function defaultParams () {
     _getBrowserNameAndVersion(),
     _getPlatform(),
     _getLanguage(),
-    _getDeviceType()
+    _getDeviceType(),
+    _getCpuType()
   )
 }

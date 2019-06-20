@@ -862,4 +862,25 @@ describe('os name and version detector', () => {
 
   })
 
+  describe('cpu type detection', () => {
+
+    it('detects Win64', () => {
+
+      platformSpy.mockReturnValue('Win32')
+      userAgentSpy.mockReturnValue('Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36')
+
+      expect(detector.getCpuType()).toEqual('Win64')
+
+    })
+
+    it('detects anything else', () => {
+
+      platformSpy.mockReturnValue('MacIntel')
+
+      expect(detector.getCpuType()).toEqual('MacIntel')
+
+    })
+
+  })
+
 })

@@ -87,7 +87,6 @@ function _getAndroidOSVersion (ua) {
  * @private
  */
 function _getiOSVersion (ua) {
-
   let version = ua.match(/OS (\d+)_(\d+)_?(\d+)?/)
   const parse = (v) => parseInt(v || 0, 10)
 
@@ -168,7 +167,6 @@ function _getSymbianOSVersion (ua) {
  * @returns {{osVersion: string|undefined, osName: string|undefined}}
  */
 function getOsNameAndVersion () {
-
   const ua = _getUserAgent()
   let result = {osName: _osName, osVersion: _osVersion}
 
@@ -228,7 +226,6 @@ function _subMatch (ua) {
  * @returns {{browserVersion: string|undefined, browserName: string|undefined}}
  */
 function getBrowserNameAndVersion () {
-
   const ua = _getUserAgent()
 
   if ((_browserName || _browserVersion) && __ADJUST__ENV !== 'test') {
@@ -268,7 +265,6 @@ function getBrowserNameAndVersion () {
  * @returns {string}
  */
 function getDeviceType () {
-
   const ua = _getUserAgent()
 
   if ((navigator.platform || '').toLowerCase().indexOf('mac') !== -1) {
@@ -294,11 +290,23 @@ function getDeviceType () {
   if( /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua) ) {
     return 'mobile'
   }
+}
 
+/**
+ * Get cpu type from navigator.platform property
+ *
+ * @returns {string}
+ */
+function getCpuType () {
+  const ua = _getUserAgent()
+  const overrideWin32 = navigator.platform === 'Win32' && (ua.indexOf('WOW64') !== -1 || ua.indexOf('Win64') !== -1)
+
+  return overrideWin32 ? 'Win64' : navigator.platform
 }
 
 export {
   getOsNameAndVersion,
   getBrowserNameAndVersion,
-  getDeviceType
+  getDeviceType,
+  getCpuType
 }

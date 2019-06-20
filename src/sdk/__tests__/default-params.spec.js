@@ -165,7 +165,11 @@ describe('request default parameters formation', () => {
   })
 
   it('test device_type - by default is undefined', () => {
-    expect(defaultParams.default().device_type).toEqual(undefined)
+    expect(defaultParams.default().deviceType).toEqual(undefined)
+  })
+
+  it('test cpu_type - by default is undefined', () => {
+    expect(defaultParams.default().cpuType).toEqual(undefined)
   })
 
 })
