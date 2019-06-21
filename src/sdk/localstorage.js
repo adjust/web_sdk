@@ -1,4 +1,5 @@
 import ActivityState from './activity-state'
+import State from './state'
 import QuickStorage from './quick-storage'
 import Scheme from './scheme'
 import Logger from './logger'
@@ -50,9 +51,7 @@ function _open () {
     }
   })
 
-  if (!QuickStorage.state) {
-    QuickStorage.state = ActivityState.state
-  }
+  State.recover()
 }
 
 /**

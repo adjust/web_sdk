@@ -34,7 +34,6 @@ const _mandatory = [
  * sessionWindow: number,
  * sessionTimerWindow: number,
  * requestValidityWindow: number,
- * ignoreSwitchToBackground: boolean,
  * baseParams: Object
  * }}
  */
@@ -48,7 +47,6 @@ const baseConfig = {
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
   requestValidityWindow: 28 * DAY,
-  ignoreSwitchToBackground: __ADJUST__ENV === 'development',
   baseParams: extend({}, _initial),
 }
 

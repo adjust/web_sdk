@@ -57,7 +57,7 @@ function _prepareParams (params, globalCallbackParams = [], globalPartnerParams 
 
   return extend(baseParams, {
     callbackParams: callbackParams,
-    partnerParams: partnerParams,
+    partnerParams: partnerParams
   })
 }
 

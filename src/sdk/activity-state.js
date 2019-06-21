@@ -1,6 +1,4 @@
-import {extend, isEmpty} from './utilities'
-import {publish} from './pub-sub'
-import QuickStorage from './quick-storage'
+import {extend} from './utilities'
 
 /**
  * Reference to the activity state
@@ -11,70 +9,37 @@ import QuickStorage from './quick-storage'
 let _activityState = null
 
 /**
- * Reference to the disabled state
+ * Get current activity state
  *
- * @type {Object}
- * @private
+ * @returns {Object|null}
  */
-let _disabledState = extend({}, QuickStorage.state)
-
-export default {
-  /**
-   * Get current activity state
-   *
-   * @returns {Object|null}
-   */
-  get current () {
-    return _activityState ? extend({}, _activityState) : null
-  },
-
-  /**
-   * Set current activity state
-   *
-   * @param {Object} params
-   */
-  set current (params) {
-    _activityState = extend({}, params)
-  },
-
-  /**
-   * Get current disabled state
-   *
-   * @returns {Object}
-   */
-  get state () {
-    if (isEmpty(_disabledState)) {
-      return _disabledState = extend({}, QuickStorage.state)
-    } else {
-      return extend({}, _disabledState)
-    }
-  },
-
-  /**
-   * Set current disabled state
-   *
-   * @param state
-   */
-  set state (state) {
-    QuickStorage.state = state
-    _disabledState = extend({}, state)
-  },
-
-  /**
-   * Reload current disabled state from localStorage
-   */
-  reloadState () {
-    if (QuickStorage.state.disabled && !_disabledState.disabled) {
-      publish('sdk:shutdown', true)
-    }
-
-    _disabledState = extend({}, QuickStorage.state)
-  },
-
-  /**
-   * Destroy current activity state
-   */
-  destroy () {
-    _activityState = null
-  }
+function currentGetter () {
+  return _activityState ? extend({}, _activityState) : null
 }
+
+/**
+ * Set current activity state
+ *
+ * @param {Object} params
+ */
+function currentSetter (params) {
+  _activityState = extend({}, params)
+}
+
+/**
+ * Destroy current activity state
+ */
+function destroy () {
+  _activityState = null
+}
+
+const ActivityState = {
+  destroy
+}
+
+Object.defineProperty(ActivityState, 'current', {
+  get () { return currentGetter() },
+  set (value) { return currentSetter(value) }
+})
+
+export default ActivityState

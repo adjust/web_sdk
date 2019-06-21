@@ -1,7 +1,8 @@
-import {isDisabled, isGdprForgotten} from './identity'
 import {push} from './queue'
+import State from './state'
 import Logger from './logger'
 import Config from './config'
+import {REASON_GDPR} from './constants'
 
 /**
  * Pending request flag
@@ -24,12 +25,12 @@ let _requested = false
  */
 function forget () {
 
-  if (isGdprForgotten()) {
+  if (State.disabled === REASON_GDPR) {
     Logger.log('adjustSDK is already GDPR forgotten')
     return
   }
 
-  if (isDisabled()) {
+  if (State.disabled) {
     Logger.log('adjustSDK is already disabled')
     return
   }

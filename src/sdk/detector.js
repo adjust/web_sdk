@@ -2,6 +2,7 @@ let _osName
 let _osVersion
 let _browserName
 let _browserVersion
+let _deviceType
 /**
  * Regular expressions for detecting OS name and OS version
  * IMPORTANT: order does matter, do not change it!
@@ -267,28 +268,32 @@ function getBrowserNameAndVersion () {
 function getDeviceType () {
   const ua = _getUserAgent()
 
+  if (_deviceType && __ADJUST__ENV !== 'test') {
+    return _deviceType
+  }
+
   if ((navigator.platform || '').toLowerCase().indexOf('mac') !== -1) {
-    return 'mac'
+    return _deviceType = 'mac'
   }
 
   if (/bot|googlebot|crawler|spider|robot|crawling|slurp/i.test(ua)) {
-    return 'bot'
+    return _deviceType = 'bot'
   }
 
   if (/(iPhone|iPad|iPod)/.test(ua) && !window.MSStream) {
     if (/iPod/.test(ua)) {
-      return 'ipod'
+      return _deviceType = 'ipod'
     }
     if (/iPhone/.test(ua)) {
-      return 'iphone'
+      return _deviceType = 'iphone'
     }
     if (/iPad/.test(ua)) {
-      return 'ipad'
+      return _deviceType = 'ipad'
     }
   }
 
   if( /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua) ) {
-    return 'mobile'
+    return _deviceType = 'mobile'
   }
 }
 

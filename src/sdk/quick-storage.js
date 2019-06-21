@@ -2,7 +2,7 @@ import Config from './config'
 import Scheme from './scheme'
 
 const _schemeKeys = Object.keys(Scheme)
-const _storageFields = ['state', ..._schemeKeys]
+const _storageFields = ['disabled',  ..._schemeKeys]
 const _storageName = Config.namespace
 
 /**
@@ -24,7 +24,11 @@ function _get (key) {
  * @private
  */
 function _set (key, value) {
-  localStorage.setItem(`${_storageName}.${key}`, JSON.stringify(value))
+  if (!value) {
+    localStorage.removeItem(`${_storageName}.${key}`)
+  } else {
+    localStorage.setItem(`${_storageName}.${key}`, JSON.stringify(value))
+  }
 }
 
 /**

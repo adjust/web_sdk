@@ -5,7 +5,7 @@ import * as request from '../request'
 import * as Queue from '../queue'
 import * as Time from '../time'
 import * as Logger from '../logger'
-import * as ActivityState from '../activity-state'
+import * as State from '../state'
 import {flushPromises} from './_helper'
 
 jest.mock('../request')
@@ -131,14 +131,14 @@ describe('GDPR forget device functionality', () => {
 
   it('prevents running forget request if sdk already disabled', () => {
 
-    ActivityState.default.state = {disabled: true}
+    State.default.disabled = 'general'
 
     GdprForgetDevice.forget()
 
     expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is already disabled')
     expect(Logger.default.log).toHaveBeenCalledTimes(1)
 
-    ActivityState.default.state = {disabled: true, reason: 'gdpr'}
+    State.default.disabled = 'gdpr'
 
     GdprForgetDevice.forget()
 

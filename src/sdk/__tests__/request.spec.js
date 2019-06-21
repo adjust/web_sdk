@@ -19,7 +19,8 @@ describe('perform api requests', () => {
     'browser_name=unknown',
     'platform=web',
     'language=en',
-    'country=gb'
+    'country=gb',
+    'time_spent=0'
   ].join('&')
 
   const oldXMLHttpRequest = window.XMLHttpRequest

@@ -11,6 +11,7 @@ import * as Logger from '../logger'
 import * as StorageManager from '../storage-manager'
 import * as Attribution from '../attribution'
 import * as ActivityState from '../activity-state'
+import * as State from '../state'
 import mainInstance from '../main.js'
 import sameInstance from '../main.js'
 import {flushPromises, randomInRange} from './_helper'
@@ -269,12 +270,12 @@ function teardown () {
   mainInstance.destroy()
   localStorage.clear()
   jest.clearAllMocks()
-  ActivityState.default.state = {disabled: false}
+  State.default.disabled = null
 }
 
 function teardownAndDisable (reason = 'general') {
   teardown()
-  ActivityState.default.state = {disabled: true, reason}
+  State.default.disabled = reason
 }
 
 describe('main entry point functionality', () => {
@@ -701,7 +702,7 @@ describe('main entry point functionality', () => {
   describe('initially disabled', () => {
 
     beforeAll(() => {
-      ActivityState.default.state = {disabled: true}
+      State.default.disabled = 'general'
     })
 
     describe('sdk: init -> disable -> enable', () => {
@@ -1042,7 +1043,7 @@ describe('main entry point functionality', () => {
     describe('initially enabled', () => {
 
       beforeAll(() => {
-        ActivityState.default.state = {disabled: false}
+        State.default.disabled = null
       })
 
       describe('sdk: init -> forget -> flush', () => {
@@ -1192,7 +1193,7 @@ describe('main entry point functionality', () => {
     describe('initially GDPR disabled', () => {
 
       beforeAll(() => {
-        ActivityState.default.state = {disabled: true, reason: 'gdpr'}
+        State.default.disabled = 'gdpr'
       })
 
       describe('sdk: init -> forget -> flush', () => {
@@ -1329,7 +1330,7 @@ describe('main entry point functionality', () => {
     describe('initially disabled in general', () => {
 
       beforeAll(() => {
-        ActivityState.default.state = {disabled: true}
+        State.default.disabled = 'general'
       })
 
       describe('sdk: init -> forget -> flush', () => {

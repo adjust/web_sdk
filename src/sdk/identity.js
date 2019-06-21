@@ -1,7 +1,8 @@
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
-import {REASON_GDPR, REASON_GENERAL} from './constants'
+import State from './state'
 import Logger from './logger'
+import {REASON_GDPR, REASON_GENERAL} from './constants'
 import {extend} from './utilities'
 
 /**
@@ -33,11 +34,10 @@ function _recover () {
       }
 
       const activityState = ActivityState.current || {uuid: _generateUuid()}
-      const disabledState = ActivityState.state
 
       return StorageManager.addItem('activityState', activityState)
         .then(() => {
-          ActivityState.state = disabledState
+          State.reload()
           return ActivityState.current = activityState
         })
     })
@@ -63,8 +63,7 @@ function start () {
 function _updateActivityState (params) {
   return _recover()
     .then(stored => {
-
-      const activityState = extend({}, stored, params)
+      const activityState = extend({}, stored, ActivityState.current, params)
 
       return StorageManager.updateItem('activityState', activityState)
         .then(() => ActivityState.current = activityState)
@@ -84,15 +83,21 @@ function updateAttribution (attribution) {
 /**
  * Update last active flag
  *
- * @param {boolean=false} ignore
  * @returns {Promise}
  */
-function updateLastActive (ignore) {
-  if (ignore) {
-    return Promise.resolve(ActivityState.current)
-  }
-
+function updateLastActive () {
   return _updateActivityState({lastActive: Date.now()})
+}
+
+/**
+ * Persist changes made directly in activity state and update lastActive flag
+ *
+ * @returns {Promise}
+ */
+function persist () {
+  const activityState = extend({}, ActivityState.current, {lastActive: Date.now()})
+  return StorageManager.updateItem('activityState', activityState)
+    .then(() => ActivityState.current = activityState)
 }
 
 /**
@@ -104,53 +109,15 @@ function updateLastActive (ignore) {
 function sync () {
   return StorageManager.getFirst('activityState')
     .then((activityState = {}) => {
-
       const lastActive = ActivityState.current.lastActive || 0
 
-      if (!isDisabled() && lastActive < activityState.lastActive) {
+      if (!State.disabled && lastActive < activityState.lastActive) {
         ActivityState.current = activityState
-        ActivityState.reloadState()
+        State.reload()
       }
 
       return activityState
     })
-}
-
-/**
- * Check if sdk is disabled
- *
- * @returns {boolean}
- */
-function isDisabled () {
-  return ActivityState.state.disabled
-}
-
-/**
- * Set disabled flag
- *
- * @param {boolean} disabled
- * @param {string=} reason
- * @private
- */
-function _setDisabled (disabled, reason) {
-  const state = {disabled}
-
-  if (disabled) {
-    state.reason = reason || REASON_GENERAL
-  }
-
-  ActivityState.state = state
-}
-
-/**
- * Check if user has been disabled by issuing GDPR-Forgot-Me request
- *
- * @returns {boolean}
- */
-function isGdprForgotten () {
-  const state = ActivityState.state
-
-  return state.disabled && state.reason === REASON_GDPR
 }
 
 /**
@@ -163,14 +130,14 @@ function disable (reason) {
 
   const logReason = reason === REASON_GDPR ? ' due to GDPR-Forget-Me request' : ''
 
-  if (isDisabled()) {
+  if (State.disabled) {
     Logger.log('adjustSDK is already disabled' + logReason)
     return false
   }
 
   Logger.log('adjustSDK has been disabled' + logReason)
 
-  _setDisabled(true, reason)
+  State.disabled = reason || REASON_GENERAL
 
   return true
 }
@@ -180,19 +147,19 @@ function disable (reason) {
  */
 function enable () {
 
-  if (isGdprForgotten()) {
+  if (State.disabled === REASON_GDPR) {
     Logger.log('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
     return false
   }
 
-  if (!isDisabled()) {
+  if (!State.disabled) {
     Logger.log('adjustSDK is already enabled')
     return false
   }
 
   Logger.log('adjustSDK has been enabled')
 
-  _setDisabled(false)
+  State.disabled = null
 
   return true
 }
@@ -222,9 +189,8 @@ export {
   start,
   updateAttribution,
   updateLastActive,
+  persist,
   sync,
-  isDisabled,
-  isGdprForgotten,
   disable,
   enable,
   clear,

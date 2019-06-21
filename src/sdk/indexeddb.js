@@ -1,6 +1,7 @@
 import Config from './config'
 import Scheme from './scheme'
 import ActivityState from './activity-state'
+import State from './state'
 import QuickStorage from './quick-storage'
 import Logger from './logger'
 import {isEmpty, isObject} from './utilities'
@@ -72,10 +73,7 @@ function _handleUpgradeNeeded (e, reject) {
     }
   })
 
-  if (!QuickStorage.state) {
-    QuickStorage.state = ActivityState.state
-  }
-
+  State.recover()
   QuickStorage.clear()
 }
 

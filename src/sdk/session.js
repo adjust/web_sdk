@@ -4,8 +4,9 @@ import Logger from './logger'
 import {push} from './queue'
 import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
 import {timePassed} from './time'
-import {sync, updateLastActive} from './identity'
+import {sync, persist, updateLastActive} from './identity'
 import {get as getGlobalParams} from './global-params'
+import {get as getTimeSpent, update as updateTimeSpent, reset as resetTimeSpent, toForeground, toBackground} from './time-spent'
 
 /**
  * Flag to mark if session watch is already on
@@ -54,6 +55,8 @@ function watch () {
 
   _running = true
 
+  toForeground(true)
+
   if (_adapter) {
     on(document, _adapter.visibilityChange, _handleVisibilityChange)
   }
@@ -77,12 +80,42 @@ function destroy () {
 
   _running = false
 
+  toBackground()
+  resetTimeSpent()
+
   _stopTimer()
 
   if (_adapter) {
     clearTimeout(_idTimeout)
     off(document, _adapter.visibilityChange, _handleVisibilityChange)
   }
+}
+
+/**
+ * Handle transit to background
+ *
+ * @returns {Promise}
+ * @private
+ */
+function _handleBackground () {
+  _stopTimer()
+
+  updateTimeSpent()
+  toBackground()
+
+  return persist()
+}
+
+/**
+ * Handle transit to foreground
+ *
+ * @returns {Promise<any | never>}
+ * @private
+ */
+function _handleForeground () {
+  toForeground()
+
+  return sync().then(_checkSession)
 }
 
 /**
@@ -96,18 +129,15 @@ function _handleVisibilityChange () {
 
   clearTimeout(_idTimeout)
 
-  _idTimeout = setTimeout(() => {
-    if (document[_adapter.hidden]) {
-      _stopTimer()
-      updateLastActive(Config.ignoreSwitchToBackground)
-    } else {
-      sync().then(_checkSession)
-    }
-  }, 0)
+  const handler = document[_adapter.hidden] ? _handleBackground : _handleForeground
+
+  _idTimeout = setTimeout(handler, 0)
 }
 
 /**
- * Start the session timer - every N seconds last active timestamp is updated automatically
+ * Start the session timer, every N seconds:
+ * - time spent and measure point are updated
+ * - last active timestamp is updated automatically
  *
  * @private
  */
@@ -115,7 +145,10 @@ function _startTimer () {
 
   _stopTimer()
 
-  _idInterval = setInterval(updateLastActive, Config.sessionTimerWindow)
+  _idInterval = setInterval(() => {
+    updateTimeSpent()
+    return persist()
+  }, Config.sessionTimerWindow)
 }
 
 /**
@@ -147,6 +180,10 @@ function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
     baseParams.partnerParams = convertToMap(globalPartnerParams)
   }
 
+  baseParams.timeSpent = getTimeSpent()
+
+  resetTimeSpent()
+
   return baseParams
 }
 
@@ -176,11 +213,13 @@ function _checkSession () {
   _startTimer()
 
   const activityState = ActivityState.current || {}
-  const lastActive = activityState.lastActive || 0
+  const lastActive = activityState.lastActive
   const diff = timePassed(lastActive, Date.now())
 
-  if (!lastActive || diff >= Config.sessionWindow) {
-    _trackSession()
+  if (isNaN(lastActive) || diff >= Config.sessionWindow) {
+    return _trackSession()
+  } else {
+    return updateLastActive()
   }
 }
 

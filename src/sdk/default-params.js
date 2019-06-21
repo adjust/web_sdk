@@ -1,6 +1,7 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
 import {getOsNameAndVersion, getBrowserNameAndVersion, getDeviceType, getCpuType} from './detector'
+import {get as getTimeSpent} from './time-spent'
 import ActivityState from './activity-state'
 
 /**
@@ -129,6 +130,15 @@ function _getCpuType () {
   return {cpuType: getCpuType() || undefined}
 }
 
+/**
+ * Get current session time spent
+ * @returns {{timeSpent: (number)}}
+ * @private
+ */
+function _getTimeSpent () {
+  return {timeSpent: getTimeSpent()}
+}
+
 export default function defaultParams () {
   return extend({},
     _getCreatedAt(),
@@ -140,6 +150,7 @@ export default function defaultParams () {
     _getPlatform(),
     _getLanguage(),
     _getDeviceType(),
-    _getCpuType()
+    _getCpuType(),
+    _getTimeSpent()
   )
 }

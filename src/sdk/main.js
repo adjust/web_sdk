@@ -1,11 +1,12 @@
 import Config from './config'
 import StorageManager from './storage-manager'
 import Logger from './logger'
+import State from './state'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
 import {extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
-import {start, isDisabled, isGdprForgotten, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
+import {start, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as sdkClickCheck, destroy as sdkClickDestroy} from './sdk-click'
@@ -142,7 +143,7 @@ function _disable (reason) {
 function disable () {
   if (gdprForgetRequested()) {
 
-    const logMessage = isGdprForgotten()
+    const logMessage = State.disabled === REASON_GDPR
       ? 'adjustSDK is already disabled due to GDPR-Forget-me request'
       : 'There is pending GDPR Forget Me request, can not disable at this moment'
 
@@ -248,7 +249,7 @@ function destroy () {
  */
 function _start (params = {}) {
 
-  if (isDisabled()) {
+  if (State.disabled) {
     Logger.log('adjustSDK is disabled, can not start the sdk')
     return
   }
@@ -267,7 +268,7 @@ function _start (params = {}) {
 
   start()
     .then(() => {
-      if (isDisabled()) {
+      if (State.disabled) {
         _shutdown()
         return
       }
@@ -294,7 +295,7 @@ function _start (params = {}) {
  */
 function _run (description, method, ...args) {
 
-  if (isDisabled()) {
+  if (State.disabled) {
     Logger.log(`adjustSDK is disabled, can not ${description}`)
     return
   }
