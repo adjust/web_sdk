@@ -1,6 +1,5 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
-import {getOsNameAndVersion, getBrowserNameAndVersion, getDeviceType, getCpuType} from './detector'
 import {get as getTimeSpent} from './time-spent'
 import ActivityState from './activity-state'
 
@@ -68,28 +67,6 @@ function _getTrackEnabled () {
 }
 
 /**
- * Get OS name and OS version
- *
- * @returns {{osVersion: string, osName: string|undefined}}
- * @private
- */
-function _getOsNameAndVersion () {
-  const {osName = 'unknown', osVersion} = getOsNameAndVersion()
-  return {osName, osVersion}
-}
-
-/**
- * Get browser name and browser version
- *
- * @returns {{browserVersion: string, browserName: string|undefined}}
- * @private
- */
-function _getBrowserNameAndVersion () {
-  const {browserName = 'unknown', browserVersion} = getBrowserNameAndVersion()
-  return {browserName, browserVersion}
-}
-
-/**
  * Get platform parameter => hardcoded to `web`
  *
  * @returns {{platform: string}}
@@ -111,23 +88,15 @@ function _getLanguage () {
 }
 
 /**
- * Get device type
- *
- * @returns {{deviceType: string|undefined}}
- * @private
- */
-function _getDeviceType () {
-  return {deviceType: getDeviceType()}
-}
-
-/**
- * Get cpu type
+ * Get cpu type from navigator.platform property
  *
  * @returns {{cpuType: (string|undefined)}}
- * @private
  */
 function _getCpuType () {
-  return {cpuType: getCpuType() || undefined}
+  const ua = navigator.userAgent || navigator.vendor || window.opera
+  const overrideWin32 = navigator.platform === 'Win32' && (ua.indexOf('WOW64') !== -1 || ua.indexOf('Win64') !== -1)
+
+  return {cpuType: (overrideWin32 ? 'Win64' : navigator.platform) || undefined}
 }
 
 /**
@@ -145,11 +114,8 @@ export default function defaultParams () {
     _getSentAt(),
     _getWebUuid(),
     _getTrackEnabled(),
-    _getOsNameAndVersion(),
-    _getBrowserNameAndVersion(),
     _getPlatform(),
     _getLanguage(),
-    _getDeviceType(),
     _getCpuType(),
     _getTimeSpent()
   )

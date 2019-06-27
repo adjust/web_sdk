@@ -98,24 +98,6 @@ describe('request default parameters formation', () => {
     })
   })
 
-  it('test os_name and os_version - by default is unknown', () => {
-
-    const params = defaultParams.default()
-
-    expect(params.osName).toEqual('unknown')
-    expect(params.osVersion).toEqual(undefined)
-
-  })
-
-  it('test browser_name and browser_version - by default is unknown', () => {
-
-    const params = defaultParams.default()
-
-    expect(params.browserName).toEqual('unknown')
-    expect(params.browserVersion).toEqual(undefined)
-
-  })
-
   it('test platform parameter - hardcoded to web', () => {
     expect(defaultParams.default().platform).toEqual('web')
   })
@@ -162,10 +144,6 @@ describe('request default parameters formation', () => {
       expect(params.country).toEqual('us')
 
     })
-  })
-
-  it('test device_type - by default is undefined', () => {
-    expect(defaultParams.default().deviceType).toEqual(undefined)
   })
 
   it('test cpu_type - by default is undefined', () => {
