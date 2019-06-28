@@ -92,10 +92,6 @@ function getTimestamp () {
  */
 function timePassed (d1, d2) {
 
-  // if ((!d1 || !d2) && (d1 !== 0 && d2 !== 0)) {
-  //   return 0
-  // }
-
   if (isNaN(d1) || isNaN(d2)) {
     return 0
   }
