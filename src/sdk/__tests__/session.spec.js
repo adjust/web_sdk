@@ -8,12 +8,24 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import * as TimeSpent from '../time-spent'
+import * as SessionParams from '../session-params'
 import {flushPromises, setDocumentProp} from './_helper'
 import {MINUTE} from '../constants'
 
 jest.mock('../logger')
 jest.useFakeTimers()
+
+function goToForeground () {
+  setDocumentProp('hidden', false)
+  global.document.dispatchEvent(new Event('visibilitychange'))
+  jest.runOnlyPendingTimers()
+}
+
+function goToBackground () {
+  setDocumentProp('hidden', true)
+  global.document.dispatchEvent(new Event('visibilitychange'))
+  jest.runOnlyPendingTimers()
+}
 
 describe('test session functionality', () => {
 
@@ -91,14 +103,18 @@ describe('test session functionality', () => {
 
       let currentTime = Date.now()
       let currentLastActive
+      let sessionParams
 
       Session.watch()
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(18)
+      sessionParams = SessionParams.getAll()
+
+      expect.assertions(23)
       expect(setInterval).toHaveBeenCalledTimes(1)
-      expect(TimeSpent.get()).toEqual(0)
+      expect(sessionParams.timeSpent).toEqual(0)
+      expect(sessionParams.sessionLength).toEqual(0)
 
       return flushPromises()
         .then(() => {
@@ -110,10 +126,13 @@ describe('test session functionality', () => {
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
+          sessionParams = SessionParams.getAll()
+
           expect(Identity.persist).toHaveBeenCalledTimes(1)
           expect(activityState.lastActive).toEqual(currentTime)
           expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(TimeSpent.get()).toEqual(60)
+          expect(sessionParams.timeSpent).toEqual(60)
+          expect(sessionParams.sessionLength).toEqual(60)
 
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
@@ -122,11 +141,14 @@ describe('test session functionality', () => {
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
+
+          sessionParams = SessionParams.getAll()
 
           expect(Identity.persist).toHaveBeenCalledTimes(2)
           expect(activityState.lastActive).toEqual(currentTime)
           expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(TimeSpent.get()).toEqual(120)
+          expect(sessionParams.timeSpent).toEqual(120)
+          expect(sessionParams.sessionLength).toEqual(120)
 
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
@@ -136,10 +158,13 @@ describe('test session functionality', () => {
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
+          sessionParams = SessionParams.getAll()
+
           expect(Identity.persist).toHaveBeenCalledTimes(3)
           expect(activityState.lastActive).toEqual(currentTime)
           expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(TimeSpent.get()).toEqual(180)
+          expect(sessionParams.timeSpent).toEqual(180)
+          expect(sessionParams.sessionLength).toEqual(180)
 
           currentLastActive = currentTime
 
@@ -153,10 +178,13 @@ describe('test session functionality', () => {
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
+          sessionParams = SessionParams.getAll()
+
           expect(Identity.persist).toHaveBeenCalledTimes(3)
           expect(activityState.lastActive).toEqual(currentLastActive)
           expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(TimeSpent.get()).toEqual(0)
+          expect(sessionParams.timeSpent).toEqual(0)
+          expect(sessionParams.sessionLength).toEqual(0)
 
           return flushPromises()
         })
@@ -180,7 +208,8 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {
-              timeSpent: 0
+              timeSpent: 0,
+              sessionLength: 0
             }
           })
 
@@ -231,7 +260,8 @@ describe('test session functionality', () => {
           params: {
             callbackParams: {key1: 'value1', key2: 'value2'},
             partnerParams: {some: 'thing', very: 'nice'},
-            timeSpent: 0
+            timeSpent: 0,
+            sessionLength: 0
           }
         })
 
@@ -251,7 +281,7 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(5)
+      expect.assertions(6)
 
       return Identity.updateLastActive()
         .then(() => {
@@ -272,8 +302,11 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => {
+          const sessionParams = SessionParams.getAll()
+
           expect(ActivityState.default.current.lastActive).toBe(currentTime)
-          expect(TimeSpent.get()).toEqual(60)
+          expect(sessionParams.timeSpent).toEqual(60)
+          expect(sessionParams.sessionLength).toEqual(60)
         })
 
     })
@@ -307,15 +340,19 @@ describe('test session functionality', () => {
 
       let currentTime = Date.now()
       let currentLastActive
+      let sessionParams
 
       Session.watch()
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(41)
+      sessionParams = SessionParams.getAll()
+
+      expect.assertions(51)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
-      expect(TimeSpent.get()).toEqual(0)
+      expect(sessionParams.timeSpent).toEqual(0)
+      expect(sessionParams.sessionLength).toEqual(0)
 
       return flushPromises()
         .then(() => {
@@ -331,19 +368,18 @@ describe('test session functionality', () => {
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
+          sessionParams = SessionParams.getAll()
+
           // update within the timer (2 loops)
           expect(Identity.persist).toHaveBeenCalledTimes(2)
           expect(activityState.lastActive).toEqual(currentTime)
           expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(TimeSpent.get()).toEqual(120) // 2m
+          expect(sessionParams.timeSpent).toEqual(120) // 2m
+          expect(sessionParams.sessionLength).toEqual(120) // 2m
 
           currentLastActive = currentTime
 
-          // go to background
-          setDocumentProp('hidden', true)
-          global.document.dispatchEvent(new Event('visibilitychange'))
-
-          jest.runOnlyPendingTimers()
+          goToBackground()
 
           expect(clearInterval).toHaveBeenCalledTimes(2)
 
@@ -352,10 +388,13 @@ describe('test session functionality', () => {
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
+          sessionParams = SessionParams.getAll()
+
           expect(Identity.persist).toHaveBeenCalledTimes(3)
           expect(activityState.lastActive).toEqual(currentLastActive)
           expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(TimeSpent.get()).toEqual(120)
+          expect(sessionParams.timeSpent).toEqual(120)
+          expect(sessionParams.sessionLength).toEqual(120)
 
           dateNowSpy.mockReturnValue(currentTime += 5 * MINUTE)
           jest.advanceTimersByTime(5 * MINUTE)
@@ -365,11 +404,14 @@ describe('test session functionality', () => {
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
+          sessionParams = SessionParams.getAll()
+
           // nothing changed because we're in background
           expect(Identity.persist).toHaveBeenCalledTimes(3)
           expect(activityState.lastActive).toEqual(currentLastActive)
           expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(TimeSpent.get()).toEqual(120)
+          expect(sessionParams.timeSpent).toEqual(120)
+          expect(sessionParams.sessionLength).toEqual(420) // 2m + (5m)
 
           dateNowSpy.mockReturnValue(currentTime += 10 * MINUTE)
           jest.advanceTimersByTime(10 * MINUTE)
@@ -378,20 +420,20 @@ describe('test session functionality', () => {
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
+
+          sessionParams = SessionParams.getAll()
+
           // again nothing changed because we're still in background
           expect(Identity.persist).toHaveBeenCalledTimes(3)
           expect(activityState.lastActive).toEqual(currentLastActive)
           expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(TimeSpent.get()).toEqual(120)
+          expect(sessionParams.timeSpent).toEqual(120)
+          expect(sessionParams.sessionLength).toEqual(1020) // 2m + (5m + 10m)
 
           dateNowSpy.mockReturnValue(currentTime += 14 * MINUTE)
           jest.advanceTimersByTime(14 * MINUTE)
 
-          // go back to foreground after 5 + 10 + 14 = 29m
-          setDocumentProp('hidden', false)
-          global.document.dispatchEvent(new Event('visibilitychange'))
-
-          jest.runOnlyPendingTimers()
+          goToForeground() // after 5 + 10 + 14 = 29m
 
           return flushPromises()
         })
@@ -406,9 +448,12 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 4 * MINUTE)
           jest.advanceTimersByTime(4 * MINUTE)
 
+          sessionParams = SessionParams.getAll()
+
           // update within the timer (4 loops)
           expect(Identity.persist).toHaveBeenCalledTimes(7) // 3 + 4 loops
-          expect(TimeSpent.get()).toEqual(360) // 2m + 4m
+          expect(sessionParams.timeSpent).toEqual(360) // 2m + 4m
+          expect(sessionParams.sessionLength).toEqual(2100) // 2m + (5m + 10m + 14m) + 4m
 
           return flushPromises()
         })
@@ -421,9 +466,12 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 6 * MINUTE)
           jest.advanceTimersByTime(6 * MINUTE)
 
+          sessionParams = SessionParams.getAll()
+
           // update within the timer (6 loops)
           expect(Identity.persist).toHaveBeenCalledTimes(13) // 3 + 4 + 6 loops
-          expect(TimeSpent.get()).toEqual(720) // 2m + 4m + 6m
+          expect(sessionParams.timeSpent).toEqual(720) // 2m + 4m + 6m
+          expect(sessionParams.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
 
           return flushPromises()
         })
@@ -435,49 +483,51 @@ describe('test session functionality', () => {
 
           currentLastActive = currentTime
 
-          // go back to background
-          setDocumentProp('hidden', true)
-          global.document.dispatchEvent(new Event('visibilitychange'))
-
-          jest.runOnlyPendingTimers()
+          goToBackground()
 
           expect(clearInterval).toHaveBeenCalledTimes(4)
 
           dateNowSpy.mockReturnValue(currentTime += 31 * MINUTE)
           jest.advanceTimersByTime(31 * MINUTE)
 
-          // go back to foreground
-          setDocumentProp('hidden', false)
-          global.document.dispatchEvent(new Event('visibilitychange'))
+          goToForeground()
 
-          jest.runOnlyPendingTimers()
+          sessionParams = SessionParams.getAll()
 
-          expect(TimeSpent.get()).toEqual(720) // 2m + 4m + 6m
+          expect(sessionParams.timeSpent).toEqual(720) // 2m + 4m + 6m
+          expect(sessionParams.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
 
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
+          sessionParams = SessionParams.getAll()
+
           expect(setInterval).toHaveBeenCalledTimes(3)
           expect(clearInterval).toHaveBeenCalledTimes(5)
           expect(activityState.lastActive).toEqual(currentLastActive)
           expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(TimeSpent.get()).toEqual(0)
+          expect(sessionParams.timeSpent).toEqual(0)
+          expect(sessionParams.sessionLength).toEqual(0)
 
           // session window reached, so request was sent
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
             params: {
-              timeSpent: 720
+              timeSpent: 720,
+              sessionLength: 2460
             }
           })
 
           dateNowSpy.mockReturnValue(currentTime += 10 * MINUTE)
           jest.advanceTimersByTime(10 * MINUTE)
 
-          expect(TimeSpent.get()).toEqual(600) // 10m
+          sessionParams = SessionParams.getAll()
+
+          expect(sessionParams.timeSpent).toEqual(600) // 10m
+          expect(sessionParams.sessionLength).toEqual(600) // 10m
 
           return flushPromises()
         })
@@ -494,9 +544,9 @@ describe('test session functionality', () => {
       return Identity.updateLastActive()
         .then(() => {
 
-          setDocumentProp('hidden', false)
-
           Session.watch()
+
+          goToBackground()
 
           jest.runOnlyPendingTimers()
 
@@ -508,9 +558,7 @@ describe('test session functionality', () => {
 
           expect(Queue.push).not.toHaveBeenCalled()
 
-          global.document.dispatchEvent(new Event('visibilitychange'))
-
-          jest.runOnlyPendingTimers()
+          goToForeground()
 
           return flushPromises()
         })
@@ -519,7 +567,10 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: { timeSpent: 0}
+            params: {
+              timeSpent: 0,
+              sessionLength: 0
+            }
           })
         })
     })
@@ -535,11 +586,9 @@ describe('test session functionality', () => {
       return Identity.updateLastActive()
         .then(() => {
 
-          setDocumentProp('hidden', false)
-
           Session.watch()
 
-          jest.runOnlyPendingTimers()
+          goToBackground()
 
           return flushPromises()
         })
@@ -549,9 +598,7 @@ describe('test session functionality', () => {
 
           expect(Queue.push).not.toHaveBeenCalled()
 
-          global.document.dispatchEvent(new Event('visibilitychange'))
-
-          jest.runOnlyPendingTimers()
+          goToForeground()
 
           return flushPromises()
         })

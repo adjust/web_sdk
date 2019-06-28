@@ -6,7 +6,7 @@ import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
 import {timePassed} from './time'
 import {sync, persist, updateLastActive} from './identity'
 import {get as getGlobalParams} from './global-params'
-import {get as getTimeSpent, update as updateTimeSpent, reset as resetTimeSpent, toForeground, toBackground} from './time-spent'
+import {getAll as getSessionParams, updateSessionParam, updateAll as updateSessionParams, reset as resetSessionParams, destroy as destroySessionParams, toForeground, toBackground} from './session-params'
 
 /**
  * Flag to mark if session watch is already on
@@ -81,7 +81,7 @@ function destroy () {
   _running = false
 
   toBackground()
-  resetTimeSpent()
+  destroySessionParams()
 
   _stopTimer()
 
@@ -100,7 +100,7 @@ function destroy () {
 function _handleBackground () {
   _stopTimer()
 
-  updateTimeSpent()
+  updateSessionParams()
   toBackground()
 
   return persist()
@@ -113,6 +113,7 @@ function _handleBackground () {
  * @private
  */
 function _handleForeground () {
+  updateSessionParam('sessionLength')
   toForeground()
 
   return sync().then(_checkSession)
@@ -146,7 +147,7 @@ function _startTimer () {
   _stopTimer()
 
   _idInterval = setInterval(() => {
-    updateTimeSpent()
+    updateSessionParams()
     return persist()
   }, Config.sessionTimerWindow)
 }
@@ -170,7 +171,8 @@ function _stopTimer () {
  */
 function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
 
-  const baseParams = {}
+  const {timeSpent, sessionLength} = getSessionParams()
+  const baseParams = {timeSpent, sessionLength}
 
   if (globalCallbackParams.length) {
     baseParams.callbackParams = convertToMap(globalCallbackParams)
@@ -180,9 +182,7 @@ function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
     baseParams.partnerParams = convertToMap(globalPartnerParams)
   }
 
-  baseParams.timeSpent = getTimeSpent()
-
-  resetTimeSpent()
+  resetSessionParams()
 
   return baseParams
 }

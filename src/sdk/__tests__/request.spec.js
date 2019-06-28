@@ -18,7 +18,8 @@ describe('perform api requests', () => {
     'platform=web',
     'language=en',
     'country=gb',
-    'time_spent=0'
+    'time_spent=0',
+    'session_length=0'
   ].join('&')
 
   const oldXMLHttpRequest = window.XMLHttpRequest

@@ -1,6 +1,6 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
-import {get as getTimeSpent} from './time-spent'
+import {getAll as getSessionParams} from './session-params'
 import ActivityState from './activity-state'
 
 /**
@@ -100,12 +100,15 @@ function _getCpuType () {
 }
 
 /**
- * Get current session time spent
+ * Get current session params:
+ * - time spent
+ * - session length
+ *
  * @returns {{timeSpent: (number)}}
  * @private
  */
-function _getTimeSpent () {
-  return {timeSpent: getTimeSpent()}
+function _getSessionParams () {
+  return getSessionParams()
 }
 
 export default function defaultParams () {
@@ -117,6 +120,6 @@ export default function defaultParams () {
     _getPlatform(),
     _getLanguage(),
     _getCpuType(),
-    _getTimeSpent()
+    _getSessionParams()
   )
 }
