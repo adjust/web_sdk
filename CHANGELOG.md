@@ -15,7 +15,6 @@ Here you can find changes for this project. When updating to a new version be su
 ### Changed
 - using exposed single instance instead of initiating it manually with the `new` (`adjustSDK.init(YOUR_CONFIG)`)
 - session is now automatically tracked, method `trackSession` is no longer available
-- os name and version are now automatically detected
 
 [example-app]:  src/index.js
 [Unreleased]: https://github.com/adjust/web_sdk_dev/pull/1
