@@ -18,23 +18,14 @@ describe('request default parameters formation', () => {
   describe('test tracking enabled', () => {
 
     let navigatorDNT
-    let windowDNT
-    let msDNT
 
     beforeEach(() => {
-      setGlobalProp(window.navigator, 'doNotTrack')
-      setGlobalProp(window, 'doNotTrack')
-      setGlobalProp(window.navigator, 'msDoNotTrack')
-
-      navigatorDNT = jest.spyOn(window.navigator, 'doNotTrack', 'get')
-      windowDNT = jest.spyOn(window, 'doNotTrack', 'get')
-      msDNT = jest.spyOn(window.navigator, 'msDoNotTrack', 'get')
+      setGlobalProp(global.window.navigator, 'doNotTrack')
+      navigatorDNT = jest.spyOn(global.window.navigator, 'doNotTrack', 'get')
     })
 
     afterEach(() => {
-      delete window.navigator.doNotTrack
-      delete window.navigator.msDoNotTrack
-      delete window.doNotTrack
+      delete global.window.navigator.doNotTrack
     })
 
     it('reads track_enabled from window.navigator.doNotTrack', () => {
@@ -56,46 +47,6 @@ describe('request default parameters formation', () => {
       expect(defaultParams.default().trackingEnabled).toEqual(false)
 
     })
-
-    it('reads track_enabled from window.doNotTrack', () => {
-
-      const initial = defaultParams.default()
-
-      expect(initial.trackingEnabled).toBeUndefined()
-
-      windowDNT.mockReturnValue(0)
-      expect(defaultParams.default().trackingEnabled).toEqual(true)
-
-      windowDNT.mockReturnValue(1)
-      expect(defaultParams.default().trackingEnabled).toEqual(false)
-
-      windowDNT.mockReturnValue('no')
-      expect(defaultParams.default().trackingEnabled).toEqual(true)
-
-      windowDNT.mockReturnValue('yes')
-      expect(defaultParams.default().trackingEnabled).toEqual(false)
-
-    })
-
-    it('reads track_enabled from window.navigator.msDoNotTrack', () => {
-
-      const initial = defaultParams.default()
-
-      expect(initial.trackingEnabled).toBeUndefined()
-
-      msDNT.mockReturnValue(0)
-      expect(defaultParams.default().trackingEnabled).toEqual(true)
-
-      msDNT.mockReturnValue(1)
-      expect(defaultParams.default().trackingEnabled).toEqual(false)
-
-      msDNT.mockReturnValue('no')
-      expect(defaultParams.default().trackingEnabled).toEqual(true)
-
-      msDNT.mockReturnValue('yes')
-      expect(defaultParams.default().trackingEnabled).toEqual(false)
-
-    })
   })
 
   it('test platform parameter - hardcoded to web', () => {
@@ -104,16 +55,16 @@ describe('request default parameters formation', () => {
 
   describe('test locale preferences', () => {
 
-    const oldLocale = window.navigator.language
+    const oldLocale = global.window.navigator.language
     let navigatorLanguage
 
     beforeAll(() => {
-      setGlobalProp(window.navigator, 'language')
-      navigatorLanguage = jest.spyOn(window.navigator, 'language', 'get')
+      setGlobalProp(global.window.navigator, 'language')
+      navigatorLanguage = jest.spyOn(global.window.navigator, 'language', 'get')
     })
 
     afterAll(() => {
-      window.navigator.language = oldLocale
+      global.window.navigator.language = oldLocale
     })
 
     it('reads only language from locale', () => {
