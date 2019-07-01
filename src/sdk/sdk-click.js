@@ -1,5 +1,6 @@
 import Package from './package'
 import {getHostName} from './utilities'
+import {getTimestamp} from './time'
 
 /**
  * Package request instance
@@ -50,7 +51,8 @@ function check () {
     _request.send({
       params: {
         source: 'referrer',
-        referrer: window.location.search.substring(1)
+        referrer: window.location.search.substring(1),
+        clickTime: getTimestamp()
       }
     })
   }

@@ -4,6 +4,7 @@ import * as request from '../request'
 import * as StorageManager from '../storage-manager'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
+import * as Time from '../time'
 import {errorResponse, flushPromises} from './_helper'
 
 jest.mock('../request')
@@ -74,6 +75,7 @@ describe('test request queuing functionality', () => {
     jest.spyOn(StorageManager.default, 'addItem')
     jest.spyOn(Logger.default, 'info')
     jest.spyOn(Logger.default, 'log')
+    jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
 
   afterEach(() => {

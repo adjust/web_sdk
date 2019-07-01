@@ -83,6 +83,7 @@ describe('test sdk-click functionality', () => {
       url: '/sdk_click',
       method: 'POST',
       params: {
+        clickTime: 'some-time',
         createdAt: 'some-time',
         source: 'referrer',
         referrer: 'adjust_param=value&something=else'
@@ -105,6 +106,7 @@ describe('test sdk-click functionality', () => {
       url: '/sdk_click',
       method: 'POST',
       params: {
+        clickTime: 'some-time',
         createdAt: 'some-time',
         source: 'referrer',
         referrer: 'adj_param1=value&bla=truc&adj_param2=bla'
@@ -127,6 +129,7 @@ describe('test sdk-click functionality', () => {
       url: '/sdk_click',
       method: 'POST',
       params: {
+        clickTime: 'some-time',
         createdAt: 'some-time',
         source: 'referrer',
         referrer: 'adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada'
@@ -206,7 +209,7 @@ describe('test sdk-click functionality', () => {
 
     SdkClick.check()
     // initiate another sdk_click call
-    SdkClick.check(SdkClick)
+    SdkClick.check()
 
     jest.runOnlyPendingTimers()
 
