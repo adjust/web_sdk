@@ -103,6 +103,7 @@ function _getCpuType () {
  * Get current session params:
  * - time spent
  * - session length
+ * - session count
  *
  * @returns {{timeSpent: (number)}}
  * @private

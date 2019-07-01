@@ -2,7 +2,7 @@ import Config from './config'
 import {extend, isEmpty, isObject, isValidJson, isRequest} from './utilities'
 import {updateLastActive} from './identity'
 import {publish} from './pub-sub'
-import {updateAll as updateSessionParams} from './session-params'
+import {updateSessionParam, updateOffset} from './session-params'
 import defaultParams from './default-params'
 import ActivityState from './activity-state'
 
@@ -191,7 +191,12 @@ function _interceptResponse (result = {}, options) {
     publish('attribution:check', result)
   }
 
-  updateSessionParams()
+  updateOffset()
+
+  if (isSessionRequest) {
+    updateSessionParam('sessionCount')
+  }
+
   updateLastActive()
 
   return result

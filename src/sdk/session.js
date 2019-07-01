@@ -6,7 +6,7 @@ import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
 import {timePassed} from './time'
 import {sync, persist, updateLastActive} from './identity'
 import {get as getGlobalParams} from './global-params'
-import {getAll as getSessionParams, updateSessionParam, updateAll as updateSessionParams, reset as resetSessionParams, destroy as destroySessionParams, toForeground, toBackground} from './session-params'
+import {getAll as getSessionParams, updateSessionParam, updateOffset, reset as resetSessionParams, destroy as destroySessionParams, toForeground, toBackground} from './session-params'
 
 /**
  * Flag to mark if session watch is already on
@@ -100,7 +100,7 @@ function destroy () {
 function _handleBackground () {
   _stopTimer()
 
-  updateSessionParams()
+  updateOffset()
   toBackground()
 
   return persist()
@@ -147,7 +147,7 @@ function _startTimer () {
   _stopTimer()
 
   _idInterval = setInterval(() => {
-    updateSessionParams()
+    updateOffset()
     return persist()
   }, Config.sessionTimerWindow)
 }

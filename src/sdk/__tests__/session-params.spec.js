@@ -5,11 +5,18 @@ import {MINUTE, SECOND} from '../constants'
 
 describe('session params functionality', () => {
 
+  const now = Date.now()
   let dateNowSpy
-  let currentTime = Date.now()
+  let currentTime
 
   beforeAll(() => {
     dateNowSpy = jest.spyOn(Date, 'now')
+  })
+
+  beforeEach(() => {
+    currentTime = now
+    dateNowSpy.mockReturnValue(currentTime)
+    SessionParams.toForeground()
   })
 
   afterEach(() => {
@@ -27,7 +34,7 @@ describe('session params functionality', () => {
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     const params = SessionParams.getAll()
 
@@ -39,7 +46,7 @@ describe('session params functionality', () => {
     SessionParams.toBackground()
 
     dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     const params = SessionParams.getAll()
 
@@ -54,7 +61,7 @@ describe('session params functionality', () => {
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 3 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     params = SessionParams.getAll()
 
@@ -62,7 +69,7 @@ describe('session params functionality', () => {
     expect(params.sessionLength).toEqual((3 * MINUTE) / SECOND)
 
     dateNowSpy.mockReturnValue(currentTime += 5 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     params = SessionParams.getAll()
 
@@ -72,7 +79,7 @@ describe('session params functionality', () => {
     SessionParams.toBackground()
 
     dateNowSpy.mockReturnValue(currentTime += MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     params = SessionParams.getAll()
 
@@ -85,28 +92,28 @@ describe('session params functionality', () => {
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 3 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     expect(SessionParams.getAll().sessionLength).toEqual((3 * MINUTE) / SECOND)
 
     SessionParams.toBackground()
 
     dateNowSpy.mockReturnValue(currentTime += 29 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     expect(SessionParams.getAll().sessionLength).toEqual((32 * MINUTE) / SECOND)
 
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     expect(SessionParams.getAll().sessionLength).toEqual((33 * MINUTE) / SECOND)
 
     SessionParams.toBackground()
 
     dateNowSpy.mockReturnValue(currentTime += 30 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     expect(SessionParams.getAll().sessionLength).toEqual((33 * MINUTE) / SECOND)
 
@@ -118,7 +125,7 @@ describe('session params functionality', () => {
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 6 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     params = SessionParams.getAll()
 
@@ -140,7 +147,7 @@ describe('session params functionality', () => {
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     params = SessionParams.getAll()
 
@@ -169,7 +176,7 @@ describe('session params functionality', () => {
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 3 * MINUTE)
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
 
     params = SessionParams.getAll()
 
@@ -183,7 +190,7 @@ describe('session params functionality', () => {
     expect(params.timeSpent).toEqual((5 * MINUTE) / SECOND)
     expect(params.sessionLength).toEqual((5 * MINUTE) / SECOND)
 
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
     SessionParams.toBackground()
 
     dateNowSpy.mockReturnValue(currentTime += MINUTE)
@@ -193,7 +200,7 @@ describe('session params functionality', () => {
     expect(params.timeSpent).toEqual((5 * MINUTE) / SECOND)
     expect(params.sessionLength).toEqual((6 * MINUTE) / SECOND)
 
-    SessionParams.updateAll()
+    SessionParams.updateOffset()
     SessionParams.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += MINUTE)
@@ -202,6 +209,31 @@ describe('session params functionality', () => {
 
     expect(params.timeSpent).toEqual((6 * MINUTE) / SECOND)
     expect(params.sessionLength).toEqual((7 * MINUTE) / SECOND)
+  })
+
+  it('update session count on demand and never resets it', () => {
+
+    SessionParams.toForeground()
+
+    expect(SessionParams.getAll().sessionCount).toEqual(0)
+
+    SessionParams.updateSessionParam('sessionCount')
+
+    expect(SessionParams.getAll().sessionCount).toEqual(1)
+
+    SessionParams.updateSessionParam('sessionCount')
+    SessionParams.updateSessionParam('sessionCount')
+
+    expect(SessionParams.getAll().sessionCount).toEqual(3)
+
+    SessionParams.reset()
+
+    expect(SessionParams.getAll().sessionCount).toEqual(3)
+
+    SessionParams.destroy()
+
+    expect(SessionParams.getAll().sessionCount).toEqual(3)
+
   })
 
 })

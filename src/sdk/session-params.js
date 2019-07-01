@@ -3,6 +3,7 @@ import {SECOND} from './constants'
 import {timePassed} from './time'
 import {extend} from './utilities'
 import Config from './config'
+import Logger from './logger'
 
 /**
  * Last point when user was active
@@ -70,24 +71,51 @@ function _getOffset () {
 }
 
 /**
- * Get particular session param, like time spent or session length
+ * Get time spent with optional offset from last point
  *
- * @param {string} key
  * @returns {number}
  * @private
  */
-function _getSessionParam (key) {
+function _getTimeSpent () {
   const activityState = ActivityState.current || {}
-  const param = activityState[key]
+  const timeSpent = activityState.timeSpent
 
-  if (param === null) {
+  if (timeSpent === null) {
+    return 0
+  }
+
+  return (timeSpent || 0) + (_active ? _getOffset() : 0)
+}
+
+/**
+ * Get session length with optional offset from last point
+ *
+ * @returns {number}
+ * @private
+ */
+function _getSessionLength () {
+  const activityState = ActivityState.current || {}
+  const sessionLength = activityState.sessionLength
+
+  if (sessionLength === null) {
     return 0
   }
 
   const withinWindow = timePassed(_lastActive, Date.now()) < Config.sessionWindow
-  const withOffset = _active || (key === 'sessionLength' && withinWindow)
+  const withOffset = _active || withinWindow
 
-  return (param || 0) + (withOffset ? _getOffset() : 0)
+  return (sessionLength || 0) + (withOffset ? _getOffset() : 0)
+}
+
+/**
+ * Get total number of sessions so far
+ *
+ * @returns {number}
+ * @private
+ */
+function _getSessionCount () {
+  const activityState = ActivityState.current || {}
+  return activityState.sessionCount || 0
 }
 
 /**
@@ -97,22 +125,10 @@ function _getSessionParam (key) {
  */
 function getAll () {
   return {
-    timeSpent: _getSessionParam('timeSpent'),
-    sessionLength: _getSessionParam('sessionLength')
+    timeSpent: _getTimeSpent(),
+    sessionLength: _getSessionLength(),
+    sessionCount: _getSessionCount()
   }
-}
-
-/**
- * Update all session params
- *
- * @returns {number}
- */
-function updateAll () {
-  const {timeSpent, sessionLength} = getAll()
-
-  _update({timeSpent, sessionLength})
-  _updateLastActive()
-
 }
 
 /**
@@ -121,9 +137,36 @@ function updateAll () {
  * @param key
  */
 function updateSessionParam (key) {
-  const param = _getSessionParam(key)
+  let param
 
-  _update({[key]: param})
+  switch (key) {
+    case 'timeSpent':
+      param = _getTimeSpent()
+      break
+    case 'sessionLength':
+      param = _getSessionLength()
+      break
+    case 'sessionCount':
+      param = _getSessionCount() + 1
+      break
+    default:
+      Logger.error(`Key ${key} does not exist in Activity State`)
+  }
+
+  if (param !== undefined) {
+    _update({[key]: param})
+    _updateLastActive()
+  }
+}
+
+/**
+ * Update session params which have time offset from last measure point
+ */
+function updateOffset () {
+  const timeSpent = _getTimeSpent()
+  const sessionLength = _getSessionLength()
+
+  _update({timeSpent, sessionLength})
   _updateLastActive()
 }
 
@@ -147,8 +190,8 @@ export {
   toForeground,
   toBackground,
   getAll,
-  updateAll,
   updateSessionParam,
+  updateOffset,
   reset,
   destroy
 }
