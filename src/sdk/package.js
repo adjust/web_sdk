@@ -104,6 +104,10 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
       _params.current = extend({}, params)
     }
 
+    _params.current = extend({
+      createdAt: getTimestamp()
+    }, _params.current)
+
     if (typeof continueCb === 'function') {
       _continueCb.current = continueCb
     }
@@ -222,9 +226,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
         return request({
           url: _url.current,
           method: _method.current,
-          params: extend({
-            createdAt: getTimestamp()
-          }, _params.current, Config.baseParams)
+          params: extend({}, _params.current, Config.baseParams)
         })
           .then(result => _continue(result, resolve))
           .catch(({response = {}} = {}) => response.code === 'RETRY' ? retry() : clear())

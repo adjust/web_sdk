@@ -4,6 +4,7 @@ import ActivityState from './activity-state'
 import Logger from './logger'
 import Package from './package'
 import {extend} from './utilities'
+import {getTimestamp} from './time'
 
 /**
  * Package request instance
@@ -56,6 +57,8 @@ function _continue () {
  * @returns {Promise}
  */
 function push ({url, method, params}) {
+  params = extend({}, params, {createdAt: getTimestamp()})
+
   const pending = extend({timestamp: Date.now()}, {url, method, params})
 
   return StorageManager.addItem(_storeName, pending)

@@ -27,7 +27,8 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
   expect(setTimeout.mock.calls[times - 1][1]).toBe(wait)
   expect(request.default.mock.calls[lastRequest][0]).toMatchObject({
     url: config.url,
-    method: 'GET'
+    method: 'GET',
+    params: {createdAt: 'some-time'}
   })
   expect(request.default.mock.results[0].value)[requestAction].toEqual(requestActionResult)
   expect(Logger.default.log).toHaveBeenLastCalledWith(logMessage)
@@ -100,14 +101,15 @@ describe('test request queuing functionality', () => {
     return flushPromises()
       .then(() => {
 
-        expect(StorageManager.default.addItem).toHaveBeenCalledWith('queue', Object.assign({timestamp: now}, config))
+        expect(StorageManager.default.addItem).toHaveBeenCalledWith('queue', Object.assign({timestamp: now}, Object.assign(config, {params: {createdAt: 'some-time'}})))
 
         jest.runOnlyPendingTimers()
 
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
         expect(request.default.mock.calls[0][0]).toMatchObject({
           url: config.url,
-          method: 'GET'
+          method: 'GET',
+          params: {createdAt: 'some-time'}
         })
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /some-url in 150ms')
 
@@ -139,9 +141,9 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1'},
-          {timestamp: 1552914489218, url: '/some-url-2'},
-          {timestamp: 1552914489219, url: '/some-url-3'}
+          {timestamp: 1552914489217, url: '/some-url-1', params: {createdAt: 'some-time'}},
+          {timestamp: 1552914489218, url: '/some-url-2', params: {createdAt: 'some-time'}},
+          {timestamp: 1552914489219, url: '/some-url-3', params: {createdAt: 'some-time'}}
         ])
 
         return checkExecution({config: config1, times: 1, reset: true}) // + 5 assertions
@@ -185,8 +187,8 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1'},
-          {timestamp: 1552914489218, url: '/some-url-2'}
+          {timestamp: 1552914489217, url: '/some-url-1', params: {createdAt: 'some-time'}},
+          {timestamp: 1552914489218, url: '/some-url-2', params: {createdAt: 'some-time'}}
         ])
 
         return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
@@ -254,9 +256,9 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1'},
-          {timestamp: 1552914489218, url: '/some-url-2'},
-          {timestamp: 1552914489219, url: '/some-url-3'}
+          {timestamp: 1552914489217, url: '/some-url-1', params: {createdAt: 'some-time'}},
+          {timestamp: 1552914489218, url: '/some-url-2', params: {createdAt: 'some-time'}},
+          {timestamp: 1552914489219, url: '/some-url-3', params: {createdAt: 'some-time'}}
         ])
 
         return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
@@ -307,8 +309,8 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1'},
-          {timestamp: 1552914489218, url: '/some-url-2'}
+          {timestamp: 1552914489217, url: '/some-url-1', params: {createdAt: 'some-time'}},
+          {timestamp: 1552914489218, url: '/some-url-2', params: {createdAt: 'some-time'}}
         ])
 
         Queue.setOffline(false)
@@ -361,7 +363,7 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: 1552914489218, url: '/event'}
+          {timestamp: 1552914489218, url: '/event', params: {createdAt: 'some-time'}}
         ])
 
         Queue.setOffline(false)
@@ -405,8 +407,8 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/session'},
-          {timestamp: 1552914489218, url: '/event'}
+          {timestamp: 1552914489217, url: '/session', params: {createdAt: 'some-time'}},
+          {timestamp: 1552914489218, url: '/event', params: {createdAt: 'some-time'}}
         ])
 
         Queue.setOffline(false)
