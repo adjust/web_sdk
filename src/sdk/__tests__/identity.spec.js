@@ -7,6 +7,7 @@ import * as Logger from '../logger'
 import * as QuickStorage from '../quick-storage'
 import * as PubSub from '../pub-sub'
 import {flushPromises} from './_helper'
+import {extend} from '../utilities'
 
 jest.mock('../logger')
 
@@ -214,38 +215,28 @@ describe('test identity methods', () => {
 
     it('update last active', () => {
 
-      let cachedActivityState = {}
-
-      expect.assertions(4)
+      expect.assertions(2)
 
       jest.spyOn(Date, 'now').mockReturnValueOnce(456)
 
       return Identity.persist()
         .then(activityState => {
-
-          cachedActivityState = ActivityState.default.current
-
-          expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toEqual({uuid: '123', lastActive: 456})
           expect(ActivityState.default.current).toEqual({uuid: '123', lastActive: 456})
-          expect(StorageManager.default.addItem).not.toHaveBeenCalled()
-
         })
     })
 
-    it('updates attribution', () => {
+    it('updates attribution and last active along with it', () => {
 
-      expect.assertions(4)
+      expect.assertions(2)
 
-      return Identity.updateAttribution({adid: '456'})
+      jest.spyOn(Date, 'now').mockReturnValueOnce(123456)
+      ActivityState.default.current = extend(ActivityState.default.current, {attribution: {adid: 'bla'}})
+
+      return Identity.persist()
         .then(activityState => {
-
-          const cachedActivityState = ActivityState.default.current
-
-          expect(activityState).toEqual(cachedActivityState)
-          expect(activityState).toEqual({uuid: '123', attribution: {adid: '456'}})
-          expect(ActivityState.default.current).toEqual({uuid: '123', attribution: {adid: '456'}})
-          expect(StorageManager.default.addItem).not.toHaveBeenCalled()
+          expect(activityState).toEqual({uuid: '123', lastActive: 123456, attribution: {adid: 'bla'}})
+          expect(ActivityState.default.current).toEqual({uuid: '123', lastActive: 123456, attribution: {adid: 'bla'}})
         })
 
     })

@@ -54,33 +54,6 @@ function start () {
 }
 
 /**
- * Update activity state in memory and store it
- *
- * @param {Object} params
- * @returns {Promise}
- * @private
- */
-function _updateActivityState (params) {
-  return _recover()
-    .then(stored => {
-      const activityState = extend({}, stored, ActivityState.current, params)
-
-      return StorageManager.updateItem('activityState', activityState)
-        .then(() => ActivityState.current = activityState)
-    })
-}
-
-/**
- * Update attribution information
- *
- * @param {Object} attribution
- * @returns {Promise}
- */
-function updateAttribution (attribution) {
-  return _updateActivityState({attribution})
-}
-
-/**
  * Persist changes made directly in activity state and update lastActive flag
  *
  * @returns {Promise}
@@ -182,7 +155,6 @@ function destroy () {
 
 export {
   start,
-  updateAttribution,
   persist,
   sync,
   disable,

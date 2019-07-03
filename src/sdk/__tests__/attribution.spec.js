@@ -6,6 +6,7 @@ import * as Time from '../time'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
+import * as StorageManager from '../storage-manager'
 import {errorResponse, flushPromises} from './_helper'
 
 jest.mock('../request')
@@ -18,7 +19,6 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
 
     jest.spyOn(request, 'default')
-    jest.spyOn(Identity, 'updateAttribution')
     jest.spyOn(Identity, 'persist')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
@@ -67,7 +67,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(6)
+    expect.assertions(8)
 
     Attribution.check({some: 'thing'})
 
@@ -82,8 +82,11 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
-        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(2)
+        expect(activityState.attribution).toEqual(formatted)
+        expect(ActivityState.default.current.attribution).toEqual(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -92,11 +95,12 @@ describe('test attribution functionality', () => {
   it('requests timed-out attribution which returns the same as existing one', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
+    const cachedActivityState = {attribution: Object.assign({adid: '123'}, currentAttribution.attribution)}
 
-    ActivityState.default.current = {attribution: Object.assign({adid: '123'}, currentAttribution.attribution)}
+    ActivityState.default.current = cachedActivityState
     request.default.mockResolvedValue(currentAttribution)
 
-    expect.assertions(6)
+    expect.assertions(8)
 
     Attribution.check({ask_in: 3000})
 
@@ -111,8 +115,11 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
-        expect(Identity.updateAttribution).not.toHaveBeenCalled()
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toEqual(cachedActivityState.attribution)
+        expect(ActivityState.default.current.attribution).toEqual(cachedActivityState.attribution)
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
@@ -126,7 +133,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(5)
+    expect.assertions(7)
 
     Attribution.check({ask_in: 2000})
 
@@ -137,8 +144,11 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
-        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(2)
+        expect(activityState.attribution).toEqual(formatted)
+        expect(ActivityState.default.current.attribution).toEqual(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -153,7 +163,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(5)
+    expect.assertions(7)
 
     Attribution.check({ask_in: 2000})
 
@@ -164,8 +174,11 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
-        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(2)
+        expect(activityState.attribution).toEqual(formatted)
+        expect(ActivityState.default.current.attribution).toEqual(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -180,17 +193,21 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(3)
+    expect.assertions(6)
 
     Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
-        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(2)
+        expect(activityState.attribution).toEqual(formatted)
+        expect(ActivityState.default.current.attribution).toEqual(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
 
@@ -205,28 +222,36 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue({ask_in: 3000})
 
-    expect.assertions(9)
+    expect.assertions(16)
 
     Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
-        expect(Identity.updateAttribution).not.toHaveBeenCalled()
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
         expect(PubSub.publish).not.toHaveBeenCalled()
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toEqual(oldAttribution)
+        expect(ActivityState.default.current.attribution).toEqual(oldAttribution)
 
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(2)
 
         return flushPromises()
-      }).then(() => {
+      })
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
 
-        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toEqual(oldAttribution)
+        expect(ActivityState.default.current.attribution).toEqual(oldAttribution)
 
         request.default.mockClear()
         request.default.mockResolvedValue(newAttribution)
@@ -236,11 +261,15 @@ describe('test attribution functionality', () => {
         expect(request.default).toHaveBeenCalledTimes(1)
 
         return flushPromises()
-      }).then(() => {
+      })
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
 
         jest.runOnlyPendingTimers()
 
-        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+        expect(activityState.attribution).toEqual(formatted)
+        expect(ActivityState.default.current.attribution).toEqual(formatted)
+        expect(Identity.persist).toHaveBeenCalledTimes(2)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
   })
@@ -253,39 +282,51 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockRejectedValue(errorResponse())
 
-    expect.assertions(12)
+    expect.assertions(21)
 
     Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
 
-        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
 
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(2)
 
         return flushPromises()
-      }).then(() => {
+      })
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
 
-        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
 
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(3)
 
         return flushPromises()
-      }).then(() => {
+      })
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
 
-        expect(Identity.updateAttribution).not.toHaveBeenCalled()
         expect(PubSub.publish).not.toHaveBeenCalled()
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
 
         request.default.mockClear()
         request.default.mockResolvedValue(newAttribution)
@@ -295,8 +336,12 @@ describe('test attribution functionality', () => {
         expect(request.default).toHaveBeenCalledTimes(1)
 
         return flushPromises()
-      }).then(() => {
-        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+      })
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(activityState.attribution).toEqual(formatted)
+        expect(ActivityState.default.current.attribution).toEqual(formatted)
+        expect(Identity.persist).toHaveBeenCalledTimes(2)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })
   })
@@ -308,7 +353,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(3)
+    expect.assertions(6)
 
     Attribution.check({ask_in: 2000})
     Attribution.destroy()
@@ -316,10 +361,14 @@ describe('test attribution functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).not.toHaveBeenCalled()
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => {
-        expect(Identity.updateAttribution).not.toHaveBeenCalled()
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
         expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
@@ -333,7 +382,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(6)
+    expect.assertions(8)
 
     Attribution.check({ask_in: 2000})
     // initiate another attribution call
@@ -342,12 +391,15 @@ describe('test attribution functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(2)
 
     return flushPromises()
-      .then(() => {
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
         expect(request.default).toHaveBeenCalledTimes(1)
-        expect(Identity.updateAttribution).toHaveBeenCalledTimes(1)
-        expect(Identity.updateAttribution).toHaveBeenCalledWith(formatted)
+        expect(activityState.attribution).toEqual(formatted)
+        expect(ActivityState.default.current.attribution).toEqual(formatted)
+        expect(Identity.persist).toHaveBeenCalledTimes(3)
         expect(PubSub.publish).toHaveBeenCalledTimes(1)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
       })

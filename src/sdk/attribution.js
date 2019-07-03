@@ -1,6 +1,6 @@
 import {publish} from './pub-sub'
 import {extend} from './utilities'
-import {persist, updateAttribution} from './identity'
+import {persist} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Package from './package'
@@ -59,7 +59,9 @@ function _setAttribution (result = {}) {
 
   const attribution = extend({adid: result.adid}, result.attribution)
 
-  return updateAttribution(attribution)
+  ActivityState.current = extend(ActivityState.current, {attribution})
+
+  return persist()
     .then(() => {
       publish('attribution:change', attribution)
       Logger.info('Attribution has been updated')
