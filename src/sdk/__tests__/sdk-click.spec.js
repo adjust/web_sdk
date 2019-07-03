@@ -2,6 +2,8 @@
 import * as SdkClick from '../sdk-click'
 import * as request from '../request'
 import * as Time from '../time'
+import * as Identity from '../identity'
+import * as ActivityState from '../activity-state'
 import {errorResponse, flushPromises, setDocumentProp} from './_helper'
 
 jest.mock('../request')
@@ -15,6 +17,10 @@ describe('test sdk-click functionality', () => {
   beforeAll(() => {
     jest.spyOn(request, 'default')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(Identity, 'persist')
+    jest.spyOn(ActivityState.default, 'updateSessionOffset')
+
+    ActivityState.default.current = {uuid: 'some-uuid'}
   })
 
   afterEach(() => {
@@ -24,6 +30,7 @@ describe('test sdk-click functionality', () => {
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
+    ActivityState.default.destroy()
   })
 
   it('does nothing if there are no adjust params in the url', () => {
@@ -35,6 +42,8 @@ describe('test sdk-click functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).not.toHaveBeenCalled()
+    expect(ActivityState.default.updateSessionOffset).not.toHaveBeenCalled()
+    expect(Identity.persist).not.toHaveBeenCalled()
 
   })
 
@@ -49,6 +58,8 @@ describe('test sdk-click functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).not.toHaveBeenCalled()
+    expect(ActivityState.default.updateSessionOffset).not.toHaveBeenCalled()
+    expect(Identity.persist).not.toHaveBeenCalled()
 
     setDocumentProp('referrer', 'http://some-site.com')
 
@@ -65,6 +76,8 @@ describe('test sdk-click functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).not.toHaveBeenCalled()
+    expect(ActivityState.default.updateSessionOffset).not.toHaveBeenCalled()
+    expect(Identity.persist).not.toHaveBeenCalled()
 
     setDocumentProp('referrer', 'http://some-site.com')
 
@@ -89,6 +102,8 @@ describe('test sdk-click functionality', () => {
         referrer: 'adjust_param=value&something=else'
       }
     })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
   })
@@ -112,6 +127,8 @@ describe('test sdk-click functionality', () => {
         referrer: 'adj_param1=value&bla=truc&adj_param2=bla'
       }
     })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
   })
@@ -135,6 +152,8 @@ describe('test sdk-click functionality', () => {
         referrer: 'adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada'
       }
     })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
   })

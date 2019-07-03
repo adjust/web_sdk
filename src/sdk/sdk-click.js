@@ -1,6 +1,8 @@
 import Package from './package'
-import {getHostName} from './utilities'
+import {getHostName, extend} from './utilities'
 import {getTimestamp} from './time'
+import {persist} from './identity'
+import ActivityState from './activity-state'
 
 /**
  * Package request instance
@@ -49,12 +51,16 @@ function _shouldSendClick () {
 function check () {
   if (_shouldSendClick()) {
     _request.send({
-      params: {
+      params: extend({
         source: 'referrer',
         referrer: window.location.search.substring(1),
         clickTime: getTimestamp()
-      }
+      }, ActivityState.getParams())
     })
+
+    ActivityState.updateSessionOffset()
+
+    return persist()
   }
 }
 

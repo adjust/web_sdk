@@ -1,6 +1,6 @@
 import {publish} from './pub-sub'
 import {extend} from './utilities'
-import {updateAttribution} from './identity'
+import {persist, updateAttribution} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Package from './package'
@@ -63,7 +63,6 @@ function _setAttribution (result = {}) {
     .then(() => {
       publish('attribution:change', attribution)
       Logger.info('Attribution has been updated')
-      Logger.log('Updated attribution:', attribution)
       return attribution
     })
 }
@@ -99,11 +98,15 @@ function check (sessionResult = {}) {
   }
 
   _request.send({
-    params: {
+    params: extend({
       initiatedBy: !sessionResult.ask_in ? 'sdk' : 'backend'
-    },
+    }, ActivityState.getParams()),
     wait: sessionResult.ask_in
   })
+
+  ActivityState.updateSessionOffset()
+
+  return persist()
 }
 
 /**

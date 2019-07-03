@@ -4,9 +4,8 @@ import Logger from './logger'
 import {push} from './queue'
 import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
 import {timePassed} from './time'
-import {sync, persist, updateLastActive} from './identity'
+import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
-import {getAll as getSessionParams, updateSessionParam, updateOffset, reset as resetSessionParams, destroy as destroySessionParams, toForeground, toBackground} from './session-params'
 
 /**
  * Flag to mark if session watch is already on
@@ -55,7 +54,7 @@ function watch () {
 
   _running = true
 
-  toForeground(true)
+  ActivityState.toForeground(true)
 
   if (_adapter) {
     on(document, _adapter.visibilityChange, _handleVisibilityChange)
@@ -80,8 +79,7 @@ function destroy () {
 
   _running = false
 
-  toBackground()
-  destroySessionParams()
+  ActivityState.toBackground()
 
   _stopTimer()
 
@@ -100,8 +98,8 @@ function destroy () {
 function _handleBackground () {
   _stopTimer()
 
-  updateOffset()
-  toBackground()
+  ActivityState.updateSessionOffset()
+  ActivityState.toBackground()
 
   return persist()
 }
@@ -113,8 +111,8 @@ function _handleBackground () {
  * @private
  */
 function _handleForeground () {
-  updateSessionParam('sessionLength')
-  toForeground()
+  ActivityState.updateParam('sessionLength')
+  ActivityState.toForeground()
 
   return sync().then(_checkSession)
 }
@@ -147,7 +145,7 @@ function _startTimer () {
   _stopTimer()
 
   _idInterval = setInterval(() => {
-    updateOffset()
+    ActivityState.updateSessionOffset()
     return persist()
   }, Config.sessionTimerWindow)
 }
@@ -171,8 +169,7 @@ function _stopTimer () {
  */
 function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
 
-  const {timeSpent, sessionLength} = getSessionParams()
-  const baseParams = {timeSpent, sessionLength}
+  const baseParams = {}
 
   if (globalCallbackParams.length) {
     baseParams.callbackParams = convertToMap(globalCallbackParams)
@@ -181,8 +178,6 @@ function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
   if (globalPartnerParams.length) {
     baseParams.partnerParams = convertToMap(globalPartnerParams)
   }
-
-  resetSessionParams()
 
   return baseParams
 }
@@ -219,7 +214,7 @@ function _checkSession () {
   if (isNaN(lastActive) || diff >= Config.sessionWindow) {
     return _trackSession()
   } else {
-    return updateLastActive()
+    return persist()
   }
 }
 

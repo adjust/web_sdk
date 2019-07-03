@@ -1,6 +1,5 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
-import {getAll as getSessionParams} from './session-params'
 import ActivityState from './activity-state'
 
 /**
@@ -99,19 +98,6 @@ function _getCpuType () {
   return {cpuType: (overrideWin32 ? 'Win64' : navigator.platform) || undefined}
 }
 
-/**
- * Get current session params:
- * - time spent
- * - session length
- * - session count
- *
- * @returns {{timeSpent: (number)}}
- * @private
- */
-function _getSessionParams () {
-  return getSessionParams()
-}
-
 export default function defaultParams () {
   return extend({},
     _getCreatedAt(),
@@ -120,7 +106,6 @@ export default function defaultParams () {
     _getTrackEnabled(),
     _getPlatform(),
     _getLanguage(),
-    _getCpuType(),
-    _getSessionParams()
+    _getCpuType()
   )
 }

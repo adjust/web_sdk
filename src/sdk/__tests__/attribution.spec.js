@@ -19,9 +19,11 @@ describe('test attribution functionality', () => {
 
     jest.spyOn(request, 'default')
     jest.spyOn(Identity, 'updateAttribution')
+    jest.spyOn(Identity, 'persist')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'log')
+    jest.spyOn(ActivityState.default, 'updateSessionOffset')
   })
 
   afterEach(() => {
@@ -29,7 +31,7 @@ describe('test attribution functionality', () => {
   })
 
   afterAll(() => {
-    ActivityState.default.current = {}
+    ActivityState.default.destroy()
 
     jest.clearAllTimers()
     jest.restoreAllMocks()
@@ -44,9 +46,11 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect.assertions(2)
+    expect.assertions(4)
 
     expect(request.default).not.toHaveBeenCalled()
+    expect(ActivityState.default.updateSessionOffset).not.toHaveBeenCalled()
+    expect(Identity.persist).not.toHaveBeenCalled()
 
     attributionPromise
       .then(result => {
@@ -63,7 +67,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(4)
+    expect.assertions(6)
 
     Attribution.check({some: 'thing'})
 
@@ -74,6 +78,8 @@ describe('test attribution functionality', () => {
       url: '/attribution',
       params: {initiatedBy: 'sdk'}
     })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
       .then(() => {
@@ -90,7 +96,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: Object.assign({adid: '123'}, currentAttribution.attribution)}
     request.default.mockResolvedValue(currentAttribution)
 
-    expect.assertions(4)
+    expect.assertions(6)
 
     Attribution.check({ask_in: 3000})
 
@@ -101,6 +107,8 @@ describe('test attribution functionality', () => {
       url: '/attribution',
       params: {initiatedBy: 'backend'}
     })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
       .then(() => {
@@ -118,13 +126,15 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(3)
+    expect.assertions(5)
 
     Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
       .then(() => {
@@ -143,13 +153,15 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(3)
+    expect.assertions(5)
 
     Attribution.check({ask_in: 2000})
 
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
       .then(() => {

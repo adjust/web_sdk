@@ -16,6 +16,7 @@ describe('test identity methods', () => {
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(StorageManager.default, 'getFirst')
     jest.spyOn(StorageManager.default, 'addItem')
+    jest.spyOn(StorageManager.default, 'updateItem')
     jest.spyOn(ActivityState.default, 'destroy')
     jest.spyOn(Logger.default, 'log')
   })
@@ -211,7 +212,7 @@ describe('test identity methods', () => {
         })
     })
 
-    it('updates last active', () => {
+    it('update last active', () => {
 
       let cachedActivityState = {}
 
@@ -219,7 +220,7 @@ describe('test identity methods', () => {
 
       jest.spyOn(Date, 'now').mockReturnValueOnce(456)
 
-      return Identity.updateLastActive()
+      return Identity.persist()
         .then(activityState => {
 
           cachedActivityState = ActivityState.default.current
@@ -327,14 +328,14 @@ describe('test identity methods', () => {
 
       jest.spyOn(Date, 'now').mockReturnValue(456)
 
-      return Identity.updateLastActive()
+      return Identity.persist()
         .then(activityState => {
 
           const cachedActivityState = ActivityState.default.current
 
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toMatchObject({lastActive: 456})
-          expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
+          expect(StorageManager.default.updateItem).toHaveBeenCalledTimes(1)
         })
     })
   })

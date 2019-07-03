@@ -17,10 +17,7 @@ describe('perform api requests', () => {
     'gps_adid=some-uuid',
     'platform=web',
     'language=en',
-    'country=gb',
-    'time_spent=0',
-    'session_length=0',
-    'session_count=0'
+    'country=gb'
   ].join('&')
 
   const oldXMLHttpRequest = window.XMLHttpRequest
@@ -323,7 +320,7 @@ describe('perform api requests', () => {
         tracking_state: 'opted_out'
       })
 
-      expect.assertions(4)
+      expect.assertions(3)
 
       request.default({
         url: '/session',
@@ -340,7 +337,6 @@ describe('perform api requests', () => {
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
-        expect(ActivityState.default.current.sessionCount).toBe(1)
       })
 
       return flushPromises()
@@ -358,7 +354,7 @@ describe('perform api requests', () => {
         ask_in: 2500
       })
 
-      expect.assertions(3)
+      expect.assertions(2)
 
       request.default({
         url: '/session',
@@ -373,7 +369,6 @@ describe('perform api requests', () => {
           ask_in: 2500
         })
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
-        expect(ActivityState.default.current.sessionCount).toBe(2)
       })
 
       return flushPromises()
@@ -390,7 +385,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02',
       })
 
-      expect.assertions(3)
+      expect.assertions(2)
 
       request.default({
         url: '/session',
@@ -404,7 +399,6 @@ describe('perform api requests', () => {
           timestamp: '2019-02-02'
         })
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
-        expect(ActivityState.default.current.sessionCount).toBe(3)
       })
 
       return flushPromises()

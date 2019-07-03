@@ -6,6 +6,7 @@ import * as Queue from '../queue'
 import * as Time from '../time'
 import * as Logger from '../logger'
 import * as State from '../state'
+import * as ActivityState from '../activity-state'
 import {flushPromises} from './_helper'
 
 jest.mock('../request')
@@ -27,7 +28,10 @@ function expectRequest () {
 
   const fullConfig = Object.assign({}, requestConfig, {
     params: Object.assign({
-      createdAt: 'some-time'
+      createdAt: 'some-time',
+      timeSpent: 0,
+      sessionLength: 0,
+      sessionCount: 1
     }, requestConfig.params, appConfig)
   })
 
@@ -67,6 +71,8 @@ describe('GDPR forget device functionality', () => {
     jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'log')
+
+    ActivityState.default.current = {uuid: 'some-uuid'}
   })
 
   afterEach(() => {
@@ -78,6 +84,7 @@ describe('GDPR forget device functionality', () => {
   afterAll(() => {
     jest.restoreAllMocks()
     Config.default.destroy()
+    ActivityState.default.destroy()
   })
 
   it('queue forget device until sdk is initialised', () => {

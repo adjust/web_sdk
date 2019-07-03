@@ -3,7 +3,8 @@ import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Package from './package'
-import {extend} from './utilities'
+import {extend, isRequest} from './utilities'
+import {persist} from './identity'
 import {getTimestamp} from './time'
 
 /**
@@ -49,6 +50,25 @@ function _continue () {
 }
 
 /**
+ * Update activity state params
+ *
+ * @param {string} url
+ * @returns {Promise}
+ * @private
+ */
+function _updateActivityStateParams (url) {
+
+  if (isRequest(url, 'session')) {
+    ActivityState.updateParam('sessionCount')
+    ActivityState.resetSessionOffset()
+  } else {
+    ActivityState.updateSessionOffset()
+  }
+
+  return persist()
+}
+
+/**
  * Push request to the queue
  *
  * @param {string} url
@@ -57,11 +77,14 @@ function _continue () {
  * @returns {Promise}
  */
 function push ({url, method, params}) {
-  params = extend({}, params, {createdAt: getTimestamp()})
+  params = extend({
+    createdAt: getTimestamp()
+  }, ActivityState.getParams(), params)
 
   const pending = extend({timestamp: Date.now()}, {url, method, params})
 
   return StorageManager.addItem(_storeName, pending)
+    .then(() => _updateActivityStateParams(url))
     .then(() => _request.isRunning() ? {} : run())
 }
 

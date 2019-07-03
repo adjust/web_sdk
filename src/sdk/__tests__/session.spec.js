@@ -8,11 +8,11 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import * as SessionParams from '../session-params'
 import {flushPromises, setDocumentProp} from './_helper'
 import {MINUTE} from '../constants'
 
 jest.mock('../logger')
+jest.mock('../request')
 jest.useFakeTimers()
 
 function goToForeground () {
@@ -40,7 +40,8 @@ describe('test session functionality', () => {
     jest.spyOn(Utilities, 'off')
     jest.spyOn(Identity, 'persist')
     jest.spyOn(Identity, 'sync').mockImplementation(() => Promise.resolve({}))
-    jest.spyOn(Queue, 'push').mockImplementation(() => {})
+    jest.spyOn(Queue, 'push')
+    jest.spyOn(Queue, 'run').mockImplementation(() => {})
     jest.spyOn(Logger.default, 'error')
   })
 
@@ -103,36 +104,42 @@ describe('test session functionality', () => {
 
       let currentTime = Date.now()
       let currentLastActive
-      let sessionParams
+      let activityState
 
       Session.watch()
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      sessionParams = SessionParams.getAll()
+      activityState = ActivityState.default.current
 
-      expect.assertions(23)
+      expect.assertions(31)
       expect(setInterval).toHaveBeenCalledTimes(1)
-      expect(sessionParams.timeSpent).toEqual(0)
-      expect(sessionParams.sessionLength).toEqual(0)
+      expect(activityState.timeSpent).toBeUndefined()
+      expect(activityState.sessionLength).toBeUndefined()
 
       return flushPromises()
         .then(() => {
+          Queue.push.mockClear() // clear mock happened when watch started
+          Identity.persist.mockClear()
+
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
 
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           expect(Identity.persist).toHaveBeenCalledTimes(1)
+          expect(record.lastActive).toEqual(currentTime)
           expect(activityState.lastActive).toEqual(currentTime)
-          expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(sessionParams.timeSpent).toEqual(60)
-          expect(sessionParams.sessionLength).toEqual(60)
+          expect(record.timeSpent).toEqual(60)
+          expect(activityState.timeSpent).toEqual(60)
+          expect(record.sessionLength).toEqual(60)
+          expect(activityState.sessionLength).toEqual(60)
+
 
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
@@ -140,15 +147,17 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           expect(Identity.persist).toHaveBeenCalledTimes(2)
+          expect(record.lastActive).toEqual(currentTime)
           expect(activityState.lastActive).toEqual(currentTime)
-          expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(sessionParams.timeSpent).toEqual(120)
-          expect(sessionParams.sessionLength).toEqual(120)
+          expect(record.timeSpent).toEqual(120)
+          expect(activityState.timeSpent).toEqual(120)
+          expect(record.sessionLength).toEqual(120)
+          expect(activityState.sessionLength).toEqual(120)
 
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
@@ -156,15 +165,17 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           expect(Identity.persist).toHaveBeenCalledTimes(3)
+          expect(record.lastActive).toEqual(currentTime)
           expect(activityState.lastActive).toEqual(currentTime)
-          expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(sessionParams.timeSpent).toEqual(180)
-          expect(sessionParams.sessionLength).toEqual(180)
+          expect(record.timeSpent).toEqual(180)
+          expect(activityState.timeSpent).toEqual(180)
+          expect(record.sessionLength).toEqual(180)
+          expect(activityState.sessionLength).toEqual(180)
 
           currentLastActive = currentTime
 
@@ -176,15 +187,17 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           expect(Identity.persist).toHaveBeenCalledTimes(3)
+          expect(record.lastActive).toEqual(currentLastActive)
           expect(activityState.lastActive).toEqual(currentLastActive)
-          expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(sessionParams.timeSpent).toEqual(0)
-          expect(sessionParams.sessionLength).toEqual(0)
+          expect(record.timeSpent).toEqual(180)
+          expect(activityState.timeSpent).toEqual(180)
+          expect(record.sessionLength).toEqual(180)
+          expect(activityState.sessionLength).toEqual(180)
 
           return flushPromises()
         })
@@ -194,31 +207,31 @@ describe('test session functionality', () => {
 
       _reset()
 
-      Identity.start()
-
-      Session.watch()
-
       expect.assertions(3)
 
-      expect(Utilities.on).toHaveBeenCalled()
-
-      return flushPromises()
+      return Identity.start()
         .then(() => {
-          expect(Queue.push).toHaveBeenCalledWith({
-            url: '/session',
-            method: 'POST',
-            params: {
-              timeSpent: 0,
-              sessionLength: 0
-            }
-          })
 
-          jest.runOnlyPendingTimers()
+          Session.watch()
+
+          expect(Utilities.on).toHaveBeenCalled()
 
           return flushPromises()
-        })
-        .then(() => {
-          expect(ActivityState.default.current.lastActive).toBeDefined()
+            .then(() => {
+              expect(Queue.push).toHaveBeenCalledWith({
+                url: '/session',
+                method: 'POST',
+                params: {}
+              })
+
+              jest.runOnlyPendingTimers()
+
+              return flushPromises()
+            })
+            .then(() => {
+              expect(ActivityState.default.current.lastActive).toBeDefined()
+            })
+
         })
 
     })
@@ -242,36 +255,33 @@ describe('test session functionality', () => {
         GlobalParams.add(callbackParams, 'callback'),
         GlobalParams.add(partnerParams, 'partner')
       ])
-      .then(() => {
+        .then(() => Identity.start())
+        .then(() => {
 
-        Identity.start()
+          Session.watch()
 
-        Session.watch()
+          expect(Utilities.on).toHaveBeenCalled()
 
-        expect(Utilities.on).toHaveBeenCalled()
-
-        return flushPromises()
-      })
-      .then(() => {
-
-        expect(Queue.push).toHaveBeenCalledWith({
-          url: '/session',
-          method: 'POST',
-          params: {
-            callbackParams: {key1: 'value1', key2: 'value2'},
-            partnerParams: {some: 'thing', very: 'nice'},
-            timeSpent: 0,
-            sessionLength: 0
-          }
+          return flushPromises()
         })
+        .then(() => {
 
-        jest.runOnlyPendingTimers()
+          expect(Queue.push).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {
+              callbackParams: {key1: 'value1', key2: 'value2'},
+              partnerParams: {some: 'thing', very: 'nice'}
+            }
+          })
 
-        return flushPromises()
-      })
-      .then(() => {
-        expect(ActivityState.default.current.lastActive).toBeDefined()
-      })
+          jest.runOnlyPendingTimers()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(ActivityState.default.current.lastActive).toBeDefined()
+        })
 
     })
 
@@ -283,7 +293,7 @@ describe('test session functionality', () => {
 
       expect.assertions(6)
 
-      return Identity.updateLastActive()
+      return Identity.persist()
         .then(() => {
           Session.watch()
 
@@ -302,11 +312,11 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => {
-          const sessionParams = SessionParams.getAll()
+          const activityState = ActivityState.default.current
 
-          expect(ActivityState.default.current.lastActive).toBe(currentTime)
-          expect(sessionParams.timeSpent).toEqual(60)
-          expect(sessionParams.sessionLength).toEqual(60)
+          expect(activityState.lastActive).toBe(currentTime)
+          expect(activityState.timeSpent).toEqual(60)
+          expect(activityState.sessionLength).toEqual(60)
         })
 
     })
@@ -340,25 +350,24 @@ describe('test session functionality', () => {
 
       let currentTime = Date.now()
       let currentLastActive
-      let sessionParams
+      let activityState
 
       Session.watch()
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      sessionParams = SessionParams.getAll()
+      activityState = ActivityState.default.current
 
-      expect.assertions(51)
+      expect.assertions(63)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
-      expect(sessionParams.timeSpent).toEqual(0)
-      expect(sessionParams.sessionLength).toEqual(0)
+      expect(activityState.timeSpent).toBeUndefined()
+      expect(activityState.sessionLength).toBeUndefined()
 
       return flushPromises()
         .then(() => {
           Queue.push.mockClear() // clear mock happened when watch started
-
-          expect(Identity.persist).not.toHaveBeenCalled()
+          Identity.persist.mockClear()
 
           dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
           jest.advanceTimersByTime(2 * MINUTE)
@@ -366,16 +375,18 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           // update within the timer (2 loops)
           expect(Identity.persist).toHaveBeenCalledTimes(2)
+          expect(record.lastActive).toEqual(currentTime)
           expect(activityState.lastActive).toEqual(currentTime)
-          expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-          expect(sessionParams.timeSpent).toEqual(120) // 2m
-          expect(sessionParams.sessionLength).toEqual(120) // 2m
+          expect(record.timeSpent).toEqual(120) // 2m
+          expect(activityState.timeSpent).toEqual(120)
+          expect(record.sessionLength).toEqual(120) // 2m
+          expect(activityState.sessionLength).toEqual(120)
 
           currentLastActive = currentTime
 
@@ -386,15 +397,17 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           expect(Identity.persist).toHaveBeenCalledTimes(3)
+          expect(record.lastActive).toEqual(currentLastActive)
           expect(activityState.lastActive).toEqual(currentLastActive)
-          expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(sessionParams.timeSpent).toEqual(120)
-          expect(sessionParams.sessionLength).toEqual(120)
+          expect(record.timeSpent).toEqual(120)
+          expect(activityState.timeSpent).toEqual(120)
+          expect(record.sessionLength).toEqual(120)
+          expect(activityState.sessionLength).toEqual(120)
 
           dateNowSpy.mockReturnValue(currentTime += 5 * MINUTE)
           jest.advanceTimersByTime(5 * MINUTE)
@@ -402,16 +415,18 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           // nothing changed because we're in background
           expect(Identity.persist).toHaveBeenCalledTimes(3)
+          expect(record.lastActive).toEqual(currentLastActive)
           expect(activityState.lastActive).toEqual(currentLastActive)
-          expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(sessionParams.timeSpent).toEqual(120)
-          expect(sessionParams.sessionLength).toEqual(420) // 2m + (5m)
+          expect(record.timeSpent).toEqual(120)
+          expect(activityState.timeSpent).toEqual(120)
+          expect(record.sessionLength).toEqual(120)
+          expect(activityState.sessionLength).toEqual(120)
 
           dateNowSpy.mockReturnValue(currentTime += 10 * MINUTE)
           jest.advanceTimersByTime(10 * MINUTE)
@@ -419,16 +434,18 @@ describe('test session functionality', () => {
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           // again nothing changed because we're still in background
           expect(Identity.persist).toHaveBeenCalledTimes(3)
+          expect(record.lastActive).toEqual(currentLastActive)
           expect(activityState.lastActive).toEqual(currentLastActive)
-          expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(sessionParams.timeSpent).toEqual(120)
-          expect(sessionParams.sessionLength).toEqual(1020) // 2m + (5m + 10m)
+          expect(record.timeSpent).toEqual(120)
+          expect(activityState.timeSpent).toEqual(120)
+          expect(record.sessionLength).toEqual(120)
+          expect(activityState.sessionLength).toEqual(120)
 
           dateNowSpy.mockReturnValue(currentTime += 14 * MINUTE)
           jest.advanceTimersByTime(14 * MINUTE)
@@ -448,40 +465,38 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 4 * MINUTE)
           jest.advanceTimersByTime(4 * MINUTE)
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           // update within the timer (4 loops)
-          expect(Identity.persist).toHaveBeenCalledTimes(7) // 3 + 4 loops
-          expect(sessionParams.timeSpent).toEqual(360) // 2m + 4m
-          expect(sessionParams.sessionLength).toEqual(2100) // 2m + (5m + 10m + 14m) + 4m
+          expect(Identity.persist).toHaveBeenCalledTimes(8) // 3 + 4 loops + 1 * session check
+          expect(activityState.timeSpent).toEqual(360) // 2m + 4m
+          expect(activityState.sessionLength).toEqual(2100) // 2m + (5m + 10m + 14m) + 4m
 
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          expect(activityState.lastActive).toEqual(currentTime)
+          expect(record.lastActive).toEqual(currentTime)
           expect(ActivityState.default.current.lastActive).toEqual(currentTime)
 
           dateNowSpy.mockReturnValue(currentTime += 6 * MINUTE)
           jest.advanceTimersByTime(6 * MINUTE)
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
           // update within the timer (6 loops)
-          expect(Identity.persist).toHaveBeenCalledTimes(13) // 3 + 4 + 6 loops
-          expect(sessionParams.timeSpent).toEqual(720) // 2m + 4m + 6m
-          expect(sessionParams.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
+          expect(Identity.persist).toHaveBeenCalledTimes(14) // 3 + 4 + 1 * session check + 6 loops
+          expect(activityState.timeSpent).toEqual(720) // 2m + 4m + 6m
+          expect(activityState.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
 
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          expect(activityState.lastActive).toEqual(currentTime)
+          expect(record.lastActive).toEqual(currentTime)
           expect(ActivityState.default.current.lastActive).toEqual(currentTime)
-
-          currentLastActive = currentTime
 
           goToBackground()
 
@@ -492,42 +507,44 @@ describe('test session functionality', () => {
 
           goToForeground()
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
-          expect(sessionParams.timeSpent).toEqual(720) // 2m + 4m + 6m
-          expect(sessionParams.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
+          expect(Identity.persist).toHaveBeenCalledTimes(15)
+          expect(activityState.timeSpent).toEqual(720) // 2m + 4m + 6m
+          expect(activityState.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
 
           return flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
-        .then(activityState => {
+        .then(record => {
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
+          expect(Identity.persist).toHaveBeenCalledTimes(16)
           expect(setInterval).toHaveBeenCalledTimes(3)
           expect(clearInterval).toHaveBeenCalledTimes(5)
-          expect(activityState.lastActive).toEqual(currentLastActive)
-          expect(ActivityState.default.current.lastActive).toEqual(currentLastActive)
-          expect(sessionParams.timeSpent).toEqual(0)
-          expect(sessionParams.sessionLength).toEqual(0)
+          expect(record.lastActive).toEqual(currentTime)
+          expect(activityState.lastActive).toEqual(currentTime)
+          expect(record.timeSpent).toEqual(0)
+          expect(activityState.timeSpent).toEqual(0)
+          expect(record.sessionLength).toEqual(0)
+          expect(activityState.sessionLength).toEqual(0)
 
           // session window reached, so request was sent
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {
-              timeSpent: 720,
-              sessionLength: 2460
-            }
+            params: {}
           })
 
           dateNowSpy.mockReturnValue(currentTime += 10 * MINUTE)
           jest.advanceTimersByTime(10 * MINUTE)
 
-          sessionParams = SessionParams.getAll()
+          activityState = ActivityState.default.current
 
-          expect(sessionParams.timeSpent).toEqual(600) // 10m
-          expect(sessionParams.sessionLength).toEqual(600) // 10m
+          expect(Identity.persist).toHaveBeenCalledTimes(26)
+          expect(activityState.timeSpent).toEqual(600) // 10m
+          expect(activityState.sessionLength).toEqual(600) // 10m
 
           return flushPromises()
         })
@@ -541,7 +558,7 @@ describe('test session functionality', () => {
 
       expect.assertions(3)
 
-      return Identity.updateLastActive()
+      return Identity.persist()
         .then(() => {
 
           Session.watch()
@@ -567,10 +584,7 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {
-              timeSpent: 0,
-              sessionLength: 0
-            }
+            params: {}
           })
         })
     })
@@ -583,7 +597,7 @@ describe('test session functionality', () => {
 
       expect.assertions(2)
 
-      return Identity.updateLastActive()
+      return Identity.persist()
         .then(() => {
 
           Session.watch()

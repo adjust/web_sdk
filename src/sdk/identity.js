@@ -81,20 +81,15 @@ function updateAttribution (attribution) {
 }
 
 /**
- * Update last active flag
- *
- * @returns {Promise}
- */
-function updateLastActive () {
-  return _updateActivityState({lastActive: Date.now()})
-}
-
-/**
  * Persist changes made directly in activity state and update lastActive flag
  *
  * @returns {Promise}
  */
 function persist () {
+  if (State.disabled === REASON_GDPR) {
+    return Promise.resolve({})
+  }
+
   const activityState = extend({}, ActivityState.current, {lastActive: Date.now()})
   return StorageManager.updateItem('activityState', activityState)
     .then(() => ActivityState.current = activityState)
@@ -188,7 +183,6 @@ function destroy () {
 export {
   start,
   updateAttribution,
-  updateLastActive,
   persist,
   sync,
   disable,

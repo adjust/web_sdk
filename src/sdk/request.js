@@ -1,8 +1,6 @@
 import Config from './config'
 import {extend, isEmpty, isObject, isValidJson, isRequest} from './utilities'
-import {updateLastActive} from './identity'
 import {publish} from './pub-sub'
-import {updateSessionParam, updateOffset} from './session-params'
 import defaultParams from './default-params'
 import ActivityState from './activity-state'
 
@@ -190,14 +188,6 @@ function _interceptResponse (result = {}, options) {
   if (!isAttributionRequest && (result.ask_in || isSessionRequest && !isAttributionPresent)) {
     publish('attribution:check', result)
   }
-
-  updateOffset()
-
-  if (isSessionRequest) {
-    updateSessionParam('sessionCount')
-  }
-
-  updateLastActive()
 
   return result
 }

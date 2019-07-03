@@ -7,6 +7,7 @@ import * as StorageManager from '../storage-manager'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as request from '../request'
+import * as ActivityState from '../activity-state'
 import {flushPromises} from './_helper'
 
 jest.mock('../request')
@@ -23,7 +24,10 @@ function expectRequest (requestConfig) {
 
   const fullConfig = Object.assign({}, requestConfig, {
     params: Object.assign({
-      createdAt: 'some-time'
+      createdAt: 'some-time',
+      timeSpent: 0,
+      sessionLength: 0,
+      sessionCount: 1
     }, requestConfig.params, appConfig)
   })
 
@@ -46,6 +50,8 @@ describe('event tracking functionality', () => {
     jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'error')
+
+    ActivityState.default.current = {uuid: 'some-uuid'}
   })
 
   afterEach(() => {
@@ -55,6 +61,7 @@ describe('event tracking functionality', () => {
 
   afterAll(() => {
     Config.default.destroy()
+    ActivityState.default.destroy()
 
     jest.clearAllTimers()
     jest.restoreAllMocks()
