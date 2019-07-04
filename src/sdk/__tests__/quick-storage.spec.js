@@ -3,6 +3,8 @@ import * as QuickStorage from '../quick-storage'
 
 describe('test low-level localStorage manipulation', () => {
 
+  const stores = QuickStorage.default.stores
+  const storeNames = QuickStorage.default.names
   const queueRecords = [
     {timestamp: 1, url: '/url1'},
     {timestamp: 2, url: '/url2'}
@@ -29,17 +31,17 @@ describe('test low-level localStorage manipulation', () => {
   it('throws when trying to run setter which is not defined', () => {
 
     expect(() => {
-      QuickStorage.default.undefinedSetter = 'blah'
+      stores.undefinedSetter = 'blah'
     }).toThrow(new TypeError('Cannot add property undefinedSetter, object is not extensible'))
 
   })
 
   it('has getters and setters which names match the sdk db scheme', () => {
 
-    const queueProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'queue')
-    const activityStateProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'activityState')
-    const globalParamsProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'globalParams')
-    const disabledProp = Object.getOwnPropertyDescriptor(QuickStorage.default, 'disabled')
+    const queueProp = Object.getOwnPropertyDescriptor(stores, storeNames.queue)
+    const activityStateProp = Object.getOwnPropertyDescriptor(stores, storeNames.activityState)
+    const globalParamsProp = Object.getOwnPropertyDescriptor(stores, storeNames.globalParams)
+    const disabledProp = Object.getOwnPropertyDescriptor(stores, storeNames.disabled)
 
     expect(queueProp.get).toBeDefined()
     expect(queueProp.set).toBeDefined()
@@ -57,10 +59,10 @@ describe('test low-level localStorage manipulation', () => {
 
   it('returns empty result when no data in localStorage', () => {
 
-    expect(QuickStorage.default.queue).toBeNull()
-    expect(QuickStorage.default.activityState).toBeNull()
-    expect(QuickStorage.default.globalParams).toBeNull()
-    expect(QuickStorage.default.disabled).toBeNull()
+    expect(stores.queue).toBeNull()
+    expect(stores.activityState).toBeNull()
+    expect(stores.globalParams).toBeNull()
+    expect(stores.disabled).toBeNull()
 
     expect(localStorage.getItem).toHaveBeenCalledTimes(4)
     expect(localStorage.getItem.mock.calls[0][0]).toEqual('adjust-sdk.queue')
@@ -72,17 +74,17 @@ describe('test low-level localStorage manipulation', () => {
 
   it('sets and gets result from localStorage', () => {
 
-    QuickStorage.default.queue = queueRecords
-    QuickStorage.default.activityState = activityStateRecords
-    QuickStorage.default.globalParams = globalParamsRecords
-    QuickStorage.default.disabled = disabledRecord
+    stores.queue = queueRecords
+    stores.activityState = activityStateRecords
+    stores.globalParams = globalParamsRecords
+    stores.disabled = disabledRecord
 
     expect(localStorage.setItem).toHaveBeenCalledTimes(4)
 
-    expect(QuickStorage.default.queue).toEqual(queueRecords)
-    expect(QuickStorage.default.activityState).toEqual(activityStateRecords)
-    expect(QuickStorage.default.globalParams).toEqual(globalParamsRecords)
-    expect(QuickStorage.default.disabled).toEqual(disabledRecord)
+    expect(stores.queue).toEqual(queueRecords)
+    expect(stores.activityState).toEqual(activityStateRecords)
+    expect(stores.globalParams).toEqual(globalParamsRecords)
+    expect(stores.disabled).toEqual(disabledRecord)
 
     expect(localStorage.setItem.mock.calls[0][1]).toEqual(JSON.stringify(queueRecords))
     expect(localStorage.setItem.mock.calls[1][1]).toEqual(JSON.stringify(activityStateRecords))
@@ -95,10 +97,10 @@ describe('test low-level localStorage manipulation', () => {
 
     localStorage.setItem('should-stay-intact', 'something')
 
-    QuickStorage.default.queue = queueRecords
-    QuickStorage.default.activityState = activityStateRecords
-    QuickStorage.default.globalParams = globalParamsRecords
-    QuickStorage.default.disabled = disabledRecord
+    stores.queue = queueRecords
+    stores.activityState = activityStateRecords
+    stores.globalParams = globalParamsRecords
+    stores.disabled = disabledRecord
 
     expect(localStorage.getItem('should-stay-intact')).toBe('something')
     expect(localStorage.getItem('adjust-sdk.queue')).toEqual(JSON.stringify(queueRecords))
@@ -108,10 +110,10 @@ describe('test low-level localStorage manipulation', () => {
 
     QuickStorage.default.clear()
 
-    expect(QuickStorage.default.queue).toBeNull()
-    expect(QuickStorage.default.activityState).toBeNull()
-    expect(QuickStorage.default.globalParams).toBeNull()
-    expect(QuickStorage.default.disabled).toEqual(disabledRecord)
+    expect(stores.queue).toBeNull()
+    expect(stores.activityState).toBeNull()
+    expect(stores.globalParams).toBeNull()
+    expect(stores.disabled).toEqual(disabledRecord)
 
     expect(localStorage.getItem('should-stay-intact')).toBe('something')
     expect(localStorage.getItem('adjust-sdk.queue')).toBeNull()

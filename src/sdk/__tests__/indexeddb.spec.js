@@ -6,10 +6,13 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as QuickStorage from '../quick-storage'
 import * as Logger from '../logger'
+import * as Scheme from '../scheme'
 
 jest.mock('../logger')
 
 describe('IndexedDB usage', () => {
+
+  const storeNames = Scheme.default.names
 
   window.indexedDB = fakeIDB
   window.IDBKeyRange = IDBKeyRange
@@ -19,9 +22,9 @@ describe('IndexedDB usage', () => {
   })
 
   afterEach(() => {
-    IndexedDB.default.clear('queue')
-    IndexedDB.default.clear('activityState')
-    IndexedDB.default.clear('globalParams')
+    IndexedDB.default.clear(storeNames.queue)
+    IndexedDB.default.clear(storeNames.activityState)
+    IndexedDB.default.clear(storeNames.globalParams)
   })
 
   afterAll(() => {
@@ -65,15 +68,15 @@ describe('IndexedDB usage', () => {
         expect(error.name).toEqual('NotFoundError')
         expect(error.message).toEqual('No objectStore named test in this database')
 
-        return IndexedDB.default.getAll('queue')
+        return IndexedDB.default.getAll(storeNames.queue)
       })
       .then(result => {
 
         expect(result).toEqual([])
 
-        return IndexedDB.default.addBulk('queue', queueSet)
+        return IndexedDB.default.addBulk(storeNames.queue, queueSet)
       })
-      .then(() => IndexedDB.default.getAll('queue'))
+      .then(() => IndexedDB.default.getAll(storeNames.queue))
       .then(result => {
         expect(result).toEqual([
           {timestamp: 1, url: '/url1'},
@@ -87,7 +90,7 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(1)
 
-    return IndexedDB.default.getFirst('activityState')
+    return IndexedDB.default.getFirst(storeNames.activityState)
       .then(result => {
         expect(result).toBeUndefined()
       })
@@ -98,7 +101,7 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(1)
 
-    return IndexedDB.default.getAll('queue')
+    return IndexedDB.default.getAll(storeNames.queue)
       .then(result => {
         expect(result).toEqual([])
       })
@@ -116,8 +119,8 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(1)
 
-    return IndexedDB.default.addBulk('queue', queueSet)
-      .then(() => IndexedDB.default.getFirst('queue'))
+    return IndexedDB.default.addBulk(storeNames.queue, queueSet)
+      .then(() => IndexedDB.default.getFirst(storeNames.queue))
       .then(result => {
         expect(result).toEqual({timestamp: 1552701608300, url: '/url1'})
       })
@@ -134,12 +137,12 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(3)
 
-    return IndexedDB.default.addBulk('activityState', activityStateSet)
-      .then(() => IndexedDB.default.getItem('activityState', 2))
+    return IndexedDB.default.addBulk(storeNames.activityState, activityStateSet)
+      .then(() => IndexedDB.default.getItem(storeNames.activityState, 2))
       .then(result => {
         expect(result).toEqual({uuid: 2, lastActive: 12346})
 
-        return IndexedDB.default.getItem('activityState', 3)
+        return IndexedDB.default.getItem(storeNames.activityState, 3)
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
@@ -159,12 +162,12 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(3)
 
-    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
-      .then(() => IndexedDB.default.getItem('globalParams', ['key1', 'callback']))
+    return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet)
+      .then(() => IndexedDB.default.getItem(storeNames.globalParams, ['key1', 'callback']))
       .then(result => {
         expect(result).toEqual({key: 'key1', value: 'cvalue1', type: 'callback'})
 
-        return IndexedDB.default.getItem('globalParams', ['key3', 'callback'])
+        return IndexedDB.default.getItem(storeNames.globalParams, ['key3', 'callback'])
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
@@ -177,12 +180,12 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(5)
 
-    return IndexedDB.default.addItem('queue', {timestamp: 1, url: '/url1'})
+    return IndexedDB.default.addItem(storeNames.queue, {timestamp: 1, url: '/url1'})
       .then(id => {
 
         expect(id).toEqual(1)
 
-        return IndexedDB.default.getAll('queue')
+        return IndexedDB.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -190,13 +193,13 @@ describe('IndexedDB usage', () => {
           {timestamp: 1, url: '/url1'}
         ])
 
-        return IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'})
+        return IndexedDB.default.addItem(storeNames.queue, {timestamp: 2, url: '/url2'})
       })
       .then(id => {
 
         expect(id).toEqual(2)
 
-        return IndexedDB.default.getAll('queue')
+        return IndexedDB.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -205,7 +208,7 @@ describe('IndexedDB usage', () => {
           {timestamp: 2, url: '/url2'}
         ])
 
-        return IndexedDB.default.addItem('queue', {timestamp: 2, url: '/url2'})
+        return IndexedDB.default.addItem(storeNames.queue, {timestamp: 2, url: '/url2'})
       })
       .catch(error => {
         expect(error.target._error.name).toBe('ConstraintError')
@@ -217,12 +220,12 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(7)
 
-    return IndexedDB.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+    return IndexedDB.default.addItem(storeNames.globalParams, {key: 'key1', value: 'value1', type: 'callback'})
       .then((id) => {
 
         expect(id).toEqual(['key1', 'callback'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -230,13 +233,13 @@ describe('IndexedDB usage', () => {
           {key: 'key1', value: 'value1', type: 'callback'}
         ])
 
-        return IndexedDB.default.addItem('globalParams', {key: 'key2', value: 'value2', type: 'callback'})
+        return IndexedDB.default.addItem(storeNames.globalParams, {key: 'key2', value: 'value2', type: 'callback'})
       })
       .then(id => {
 
         expect(id).toEqual(['key2', 'callback'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -245,13 +248,13 @@ describe('IndexedDB usage', () => {
           {key: 'key2', value: 'value2', type: 'callback'}
         ])
 
-        return IndexedDB.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'partner'})
+        return IndexedDB.default.addItem(storeNames.globalParams, {key: 'key1', value: 'value1', type: 'partner'})
       })
       .then(id => {
 
         expect(id).toEqual(['key1', 'partner'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -261,7 +264,7 @@ describe('IndexedDB usage', () => {
           {key: 'key1', value: 'value1', type: 'partner'}
         ])
 
-        return IndexedDB.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+        return IndexedDB.default.addItem(storeNames.globalParams, {key: 'key1', value: 'value1', type: 'callback'})
       })
       .catch(error => {
         expect(error.target._error.name).toBe('ConstraintError')
@@ -279,13 +282,13 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(8)
 
-    return IndexedDB.default.addBulk('activityState', activityStateSet)
-      .then(() => IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}}))
+    return IndexedDB.default.addBulk(storeNames.activityState, activityStateSet)
+      .then(() => IndexedDB.default.updateItem(storeNames.activityState, {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}}))
       .then(update => {
 
         expect(update).toEqual(1)
 
-        return IndexedDB.default.getAll('activityState')
+        return IndexedDB.default.getAll(storeNames.activityState)
       })
       .then(result => {
 
@@ -294,25 +297,25 @@ describe('IndexedDB usage', () => {
           {uuid: 2, lastActive: 12346}
         ])
 
-        return IndexedDB.default.updateItem('activityState', {uuid: 1, lastActive: 12348})
+        return IndexedDB.default.updateItem(storeNames.activityState, {uuid: 1, lastActive: 12348})
       })
       .then(update => {
 
         expect(update).toEqual(1)
 
-        return IndexedDB.default.getItem('activityState', 1)
+        return IndexedDB.default.getItem(storeNames.activityState, 1)
       })
       .then(result => {
 
         expect(result).toEqual({uuid: 1, lastActive: 12348})
 
-        return IndexedDB.default.updateItem('activityState', {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}})
+        return IndexedDB.default.updateItem(storeNames.activityState, {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}})
       })
       .then(update => {
 
         expect(update).toEqual(2)
 
-        return IndexedDB.default.getAll('activityState')
+        return IndexedDB.default.getAll(storeNames.activityState)
       })
       .then(result => {
 
@@ -321,13 +324,13 @@ describe('IndexedDB usage', () => {
           {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}}
         ])
 
-        return IndexedDB.default.updateItem('activityState', {uuid: 3, lastActive: 12350})
+        return IndexedDB.default.updateItem(storeNames.activityState, {uuid: 3, lastActive: 12350})
       })
       .then(update => {
 
         expect(update).toEqual(3)
 
-        return IndexedDB.default.getAll('activityState')
+        return IndexedDB.default.getAll(storeNames.activityState)
       })
       .then(result => {
 
@@ -351,13 +354,13 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(6)
 
-    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
-      .then(() => IndexedDB.default.updateItem('globalParams', {key: 'key1', value: 'updated value1', type: 'callback'}))
+    return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet)
+      .then(() => IndexedDB.default.updateItem(storeNames.globalParams, {key: 'key1', value: 'updated value1', type: 'callback'}))
       .then(update => {
 
         expect(update).toEqual(['key1', 'callback'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -367,13 +370,13 @@ describe('IndexedDB usage', () => {
           {key: 'key1', value: 'value1', type: 'partner'}
         ])
 
-        return IndexedDB.default.updateItem('globalParams', {key: 'key2', value: 'updated value2', type: 'callback'})
+        return IndexedDB.default.updateItem(storeNames.globalParams, {key: 'key2', value: 'updated value2', type: 'callback'})
       })
       .then(update => {
 
         expect(update).toEqual(['key2', 'callback'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -383,13 +386,13 @@ describe('IndexedDB usage', () => {
           {key: 'key1', value: 'value1', type: 'partner'}
         ])
 
-        return IndexedDB.default.updateItem('globalParams', {key: 'key2', value: 'value2', type: 'partner'})
+        return IndexedDB.default.updateItem(storeNames.globalParams, {key: 'key2', value: 'value2', type: 'partner'})
       })
       .then(update => {
 
         expect(update).toEqual(['key2', 'partner'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
         expect(result).toEqual([
@@ -413,8 +416,8 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(7)
 
-    return IndexedDB.default.addBulk('queue', queueSet)
-      .then(() => IndexedDB.default.getAll('queue'))
+    return IndexedDB.default.addBulk(storeNames.queue, queueSet)
+      .then(() => IndexedDB.default.getAll(storeNames.queue))
       .then(result => {
 
         expect(result).toEqual([
@@ -423,13 +426,13 @@ describe('IndexedDB usage', () => {
           {timestamp: 3, url: '/url3'}
         ])
 
-        return IndexedDB.default.deleteItem('queue', 2)
+        return IndexedDB.default.deleteItem(storeNames.queue, 2)
       })
       .then(deleted => {
 
         expect(deleted).toEqual(2)
 
-        return IndexedDB.default.getAll('queue')
+        return IndexedDB.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -438,13 +441,13 @@ describe('IndexedDB usage', () => {
           {timestamp: 3, url: '/url3'}
         ])
 
-        return IndexedDB.default.deleteItem('queue', 1)
+        return IndexedDB.default.deleteItem(storeNames.queue, 1)
       })
       .then(deleted => {
 
         expect(deleted).toEqual(1)
 
-        return IndexedDB.default.getAll('queue')
+        return IndexedDB.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -452,13 +455,13 @@ describe('IndexedDB usage', () => {
           {timestamp: 3, url: '/url3'}
         ])
 
-        return IndexedDB.default.deleteItem('queue', 5)
+        return IndexedDB.default.deleteItem(storeNames.queue, 5)
       })
       .then(deleted => {
 
         expect(deleted).toEqual(5)
 
-        return IndexedDB.default.getAll('queue')
+        return IndexedDB.default.getAll(storeNames.queue)
       })
       .then(result => {
         expect(result).toEqual([
@@ -480,13 +483,13 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(6)
 
-    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
-      .then(() => IndexedDB.default.deleteItem('globalParams', ['key2', 'callback']))
+    return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet)
+      .then(() => IndexedDB.default.deleteItem(storeNames.globalParams, ['key2', 'callback']))
       .then(deleted => {
 
         expect(deleted).toEqual(['key2', 'callback'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -496,13 +499,13 @@ describe('IndexedDB usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return IndexedDB.default.deleteItem('globalParams', ['key1', 'partner'])
+        return IndexedDB.default.deleteItem(storeNames.globalParams, ['key1', 'partner'])
       })
       .then(deleted => {
 
         expect(deleted).toEqual(['key1', 'partner'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -511,13 +514,13 @@ describe('IndexedDB usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return IndexedDB.default.deleteItem('globalParams', ['key5', 'callback'])
+        return IndexedDB.default.deleteItem(storeNames.globalParams, ['key5', 'callback'])
       })
       .then(deleted => {
 
         expect(deleted).toEqual(['key5', 'callback'])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -540,8 +543,8 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(3)
 
-    return IndexedDB.default.addBulk('queue', queueSet)
-      .then(() => IndexedDB.default.getAll('queue'))
+    return IndexedDB.default.addBulk(storeNames.queue, queueSet)
+      .then(() => IndexedDB.default.getAll(storeNames.queue))
       .then(result => {
 
         expect(result).toEqual([
@@ -550,7 +553,7 @@ describe('IndexedDB usage', () => {
           {timestamp: 1552911178981, url: '/url3'}
         ])
 
-        return IndexedDB.default.deleteBulk('queue', {upperBound: 1552705208300})
+        return IndexedDB.default.deleteBulk(storeNames.queue, {upperBound: 1552705208300})
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -558,7 +561,7 @@ describe('IndexedDB usage', () => {
           {timestamp: 1552705208300, url: '/url2'},
         ])
       })
-      .then(() => IndexedDB.default.getAll('queue'))
+      .then(() => IndexedDB.default.getAll(storeNames.queue))
       .then(result => {
         expect(result).toEqual([
           {timestamp: 1552911178981, url: '/url3'}
@@ -581,8 +584,8 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(5)
 
-    return IndexedDB.default.addBulk('globalParams', globalParamsSet)
-      .then(() => IndexedDB.default.getAll('globalParams'))
+    return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet)
+      .then(() => IndexedDB.default.getAll(storeNames.globalParams))
       .then(result => {
         expect(result).toEqual([
           {key: 'key1', value: 'value1', type: 'callback'},
@@ -593,7 +596,7 @@ describe('IndexedDB usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return IndexedDB.default.deleteBulk('globalParams', 'partner')
+        return IndexedDB.default.deleteBulk(storeNames.globalParams, 'partner')
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -601,7 +604,7 @@ describe('IndexedDB usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
         expect(result).toEqual([
@@ -611,7 +614,7 @@ describe('IndexedDB usage', () => {
           {key: 'key4', value: 'value4', type: 'callback'}
         ])
 
-        return IndexedDB.default.deleteBulk('globalParams', 'callback')
+        return IndexedDB.default.deleteBulk(storeNames.globalParams, 'callback')
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -621,7 +624,7 @@ describe('IndexedDB usage', () => {
           {key: 'key4', value: 'value4', type: 'callback'}
         ])
 
-        return IndexedDB.default.getAll('globalParams')
+        return IndexedDB.default.getAll(storeNames.globalParams)
       })
       .then(result => {
         expect(result).toEqual([])
@@ -639,8 +642,8 @@ describe('IndexedDB usage', () => {
 
     expect.assertions(2)
 
-    return IndexedDB.default.addBulk('queue', queueSet)
-      .then(() => IndexedDB.default.getAll('queue'))
+    return IndexedDB.default.addBulk(storeNames.queue, queueSet)
+      .then(() => IndexedDB.default.getAll(storeNames.queue))
       .then(result => {
 
         expect(result).toEqual([
@@ -648,9 +651,9 @@ describe('IndexedDB usage', () => {
           {timestamp: 2, url: '/url2'}
         ])
 
-        return IndexedDB.default.clear('queue')
+        return IndexedDB.default.clear(storeNames.queue)
       })
-      .then(() => IndexedDB.default.getAll('queue'))
+      .then(() => IndexedDB.default.getAll(storeNames.queue))
       .then(result => {
         expect(result).toEqual([])
       })
@@ -673,7 +676,7 @@ describe('IndexedDB usage', () => {
 
         expect(activityState.uuid).toBeDefined()
 
-        return IndexedDB.default.getFirst('activityState')
+        return IndexedDB.default.getFirst(storeNames.activityState)
       })
       .then(stored => {
 
@@ -690,12 +693,12 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(4)
 
-      return IndexedDB.default.addBulk('globalParams', [])
+      return IndexedDB.default.addBulk(storeNames.globalParams, [])
         .catch(error => {
           expect(error.name).toEqual('NoTargetDefined')
           expect(error.message).toEqual('No array provided to perform add bulk operation into globalParams store')
 
-          return IndexedDB.default.addBulk('queue')
+          return IndexedDB.default.addBulk(storeNames.queue)
         })
         .catch(error => {
           expect(error.name).toEqual('NoTargetDefined')
@@ -719,16 +722,16 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(3)
 
-      return IndexedDB.default.addBulk('globalParams', globalParamsSet1)
+      return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return IndexedDB.default.addBulk('globalParams', globalParamsSet2)
+          return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet2)
         })
         .then(result => {
           expect(result).toEqual([['key2', 'callback'], ['par', 'partner']])
 
-          return IndexedDB.default.getAll('globalParams')
+          return IndexedDB.default.getAll(storeNames.globalParams)
         })
         .then(result => {
           expect(result).toEqual([
@@ -757,16 +760,16 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(3)
 
-      return IndexedDB.default.addBulk('globalParams', globalParamsSet1)
+      return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return IndexedDB.default.addBulk('globalParams', globalParamsSet2, true)
+          return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet2, true)
         })
         .then(result => {
           expect(result).toEqual([['key1', 'callback'], ['par', 'partner'], ['bla', 'partner']])
 
-          return IndexedDB.default.getAll('globalParams')
+          return IndexedDB.default.getAll(storeNames.globalParams)
         })
         .then(result => {
           expect(result).toEqual([
@@ -795,11 +798,11 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(2)
 
-      return IndexedDB.default.addBulk('globalParams', globalParamsSet1)
+      return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return IndexedDB.default.addBulk('globalParams', globalParamsSet2)
+          return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet2)
         })
         .catch(error => {
           expect(error.target._error.name).toEqual('ConstraintError')
@@ -818,10 +821,10 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(2)
 
-      return IndexedDB.default.addBulk('globalParams', globalParamsSet)
+      return IndexedDB.default.addBulk(storeNames.globalParams, globalParamsSet)
         .then(() => Promise.all([
-          IndexedDB.default.filterBy('globalParams', 'callback'),
-          IndexedDB.default.filterBy('globalParams', 'partner')
+          IndexedDB.default.filterBy(storeNames.globalParams, 'callback'),
+          IndexedDB.default.filterBy(storeNames.globalParams, 'partner')
         ]))
         .then(([callbackParams, partnerParams]) => {
           expect(callbackParams).toEqual([
@@ -859,11 +862,11 @@ describe('IndexedDB usage', () => {
 
       expect.assertions(2)
 
-      return IndexedDB.default.getFirst('activityState')
+      return IndexedDB.default.getFirst(storeNames.activityState)
         .then(result => {
           expect(result).toBeUndefined()
 
-          return IndexedDB.default.getAll('queue')
+          return IndexedDB.default.getAll(storeNames.queue)
         })
         .then(result => {
           expect(result).toEqual([])
@@ -874,21 +877,21 @@ describe('IndexedDB usage', () => {
     it('returns result migrated from the localStorage when upgraded within restarted window session', () => {
 
       // prepare some rows manually
-      QuickStorage.default.queue = queueSet
-      QuickStorage.default.activityState = activityStateSet
+      QuickStorage.default.stores[storeNames.queue] = queueSet
+      QuickStorage.default.stores[storeNames.activityState] = activityStateSet
 
       expect.assertions(4)
 
-      return IndexedDB.default.getFirst('activityState')
+      return IndexedDB.default.getFirst(storeNames.activityState)
         .then(result => {
           expect(result).toEqual(activityStateSet[0])
 
-          return IndexedDB.default.getAll('queue')
+          return IndexedDB.default.getAll(storeNames.queue)
         })
         .then(result => {
           expect(result).toEqual(queueSet)
-          expect(QuickStorage.default.queue).toBeNull()
-          expect(QuickStorage.default.activityState).toBeNull()
+          expect(QuickStorage.default.stores[storeNames.queue]).toBeNull()
+          expect(QuickStorage.default.stores[storeNames.activityState]).toBeNull()
         })
     })
 
@@ -906,25 +909,25 @@ describe('IndexedDB usage', () => {
           expect(inMemoryActivityState.uuid).toBeDefined()
 
           // prepare some rows manually
-          QuickStorage.default.queue = queueSet
-          QuickStorage.default.activityState = activityStateSet
+          QuickStorage.default.stores[storeNames.queue] = queueSet
+          QuickStorage.default.stores[storeNames.activityState] = activityStateSet
 
           IndexedDB.default.destroy()
           fakeIDB._databases.clear()
 
-          return IndexedDB.default.getFirst('activityState')
+          return IndexedDB.default.getFirst(storeNames.activityState)
         })
         .then(result => {
 
           expect(result).toEqual(inMemoryActivityState)
           expect(result.uuid).toBeDefined()
 
-          return IndexedDB.default.getAll('queue')
+          return IndexedDB.default.getAll(storeNames.queue)
         })
         .then(result => {
           expect(result).toEqual(queueSet)
-          expect(QuickStorage.default.queue).toBeNull()
-          expect(QuickStorage.default.activityState).toBeNull()
+          expect(QuickStorage.default.stores[storeNames.queue]).toBeNull()
+          expect(QuickStorage.default.stores[storeNames.activityState]).toBeNull()
         })
 
     })

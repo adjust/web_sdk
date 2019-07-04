@@ -5,6 +5,8 @@ import * as PubSub from '../pub-sub'
 
 describe('activity state functionality', () => {
 
+  const disabledStoreName = QuickStorage.default.names.disabled
+
   beforeAll(() => {
     jest.spyOn(PubSub, 'publish')
   })
@@ -29,11 +31,11 @@ describe('activity state functionality', () => {
 
   it('reloads in-memory variables when storage got changed outside of current tab', () => {
 
-    QuickStorage.default.disabled = 'general'
+    QuickStorage.default.stores[disabledStoreName] = 'general'
 
     expect(State.default.disabled).toEqual('general')
 
-    QuickStorage.default.disabled = 'gdpr'
+    QuickStorage.default.stores[disabledStoreName] = 'gdpr'
 
     expect(State.default.disabled).toEqual('general')
 
@@ -43,7 +45,7 @@ describe('activity state functionality', () => {
 
     State.default.disabled = null
 
-    QuickStorage.default.disabled = 'gdpr'
+    QuickStorage.default.stores[disabledStoreName] = 'gdpr'
 
     State.default.reload()
 
@@ -56,17 +58,17 @@ describe('activity state functionality', () => {
 
     State.default.disabled = 'gdpr'
 
-    expect(QuickStorage.default.disabled).toEqual('gdpr')
+    expect(QuickStorage.default.stores[disabledStoreName]).toEqual('gdpr')
 
     localStorage.clear()
 
     expect(State.default.disabled).toEqual('gdpr')
-    expect(QuickStorage.default.disabled).toBeNull()
+    expect(QuickStorage.default.stores[disabledStoreName]).toBeNull()
 
     State.default.recover()
 
     expect(State.default.disabled).toEqual('gdpr')
-    expect(QuickStorage.default.disabled).toEqual('gdpr')
+    expect(QuickStorage.default.stores[disabledStoreName]).toEqual('gdpr')
 
   })
 

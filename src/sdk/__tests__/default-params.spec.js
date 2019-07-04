@@ -4,6 +4,8 @@ import * as ActivityState from '../activity-state'
 import * as Time from '../time'
 import {setGlobalProp} from './_helper'
 
+jest.mock('../logger')
+
 describe('request default parameters formation', () => {
 
   beforeAll(() => {

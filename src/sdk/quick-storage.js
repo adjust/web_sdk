@@ -1,8 +1,10 @@
+import {extend} from './utilities'
 import Config from './config'
 import Scheme from './scheme'
 
-const _schemeKeys = Object.keys(Scheme)
-const _storageFields = ['disabled',  ..._schemeKeys]
+const _disabledName = 'disabled'
+const _schemeKeys = Object.values(Scheme.names)
+const _storageFields = [_disabledName,  ..._schemeKeys]
 const _storageName = Config.namespace
 
 /**
@@ -41,16 +43,18 @@ function clear () {
 }
 
 const QuickStorage = {
+  names: extend({disabled: _disabledName}, Scheme.names),
+  stores: {},
   clear
 }
 
 _storageFields.forEach(key => {
-  Object.defineProperty(QuickStorage, key, {
+  Object.defineProperty(QuickStorage.stores, key, {
     get () { return _get(key) },
     set (value) { return _set(key, value) }
   })
 })
 
-Object.freeze(QuickStorage)
+Object.freeze(QuickStorage.stores)
 
 export default QuickStorage

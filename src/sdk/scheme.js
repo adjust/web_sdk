@@ -1,21 +1,32 @@
+const QUEUE_STORE = 'queue'
+const ACTIVITY_STATE_STORE = 'activityState'
+const GLOBAL_PARAMS = 'globalParams'
+
 export default {
-  queue: {
-    options: {
-      keyPath: 'timestamp',
-      autoIncrement: false
-    }
+  names: {
+    queue: QUEUE_STORE,
+    activityState: ACTIVITY_STATE_STORE,
+    globalParams: GLOBAL_PARAMS
   },
-  activityState: {
-    options: {
-      keyPath: 'uuid',
-      autoIncrement: false
-    }
-  },
-  globalParams: {
-    index: 'type',
-    options: {
-      keyPath: ['key', 'type'],
-      autoIncrement: false
+  stores: {
+    [QUEUE_STORE]: {
+      options: {
+        keyPath: 'timestamp',
+        autoIncrement: false
+      }
+    },
+    [ACTIVITY_STATE_STORE]: {
+      options: {
+        keyPath: 'uuid',
+        autoIncrement: false
+      }
+    },
+    [GLOBAL_PARAMS]: {
+      index: 'type',
+      options: {
+        keyPath: ['key', 'type'],
+        autoIncrement: false
+      }
     }
   }
 }

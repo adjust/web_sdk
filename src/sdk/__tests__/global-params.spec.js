@@ -12,7 +12,7 @@ describe('global parameters functionality', () => {
   })
 
   afterEach(() => {
-    StorageManager.default.clear('globalParams')
+    localStorage.clear()
     jest.clearAllMocks()
   })
 

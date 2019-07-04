@@ -55,20 +55,21 @@ function _handleUpgradeNeeded (e, reject) {
 
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
-  const keys = Object.keys(Scheme)
+  const storeNames = Object.values(Scheme.names)
 
-  keys.forEach(storeName => {
-    const objectStore = db.createObjectStore(storeName, Scheme[storeName].options)
+  storeNames.forEach(storeName => {
+    const storeInfo = Scheme.stores[storeName]
+    const objectStore = db.createObjectStore(storeName, storeInfo.options)
 
-    if (Scheme[storeName].index) {
-      objectStore.createIndex(`${Scheme[storeName].index}Index`, Scheme[storeName].index)
+    if (storeInfo.index) {
+      objectStore.createIndex(`${storeInfo.index}Index`, storeInfo.index)
     }
 
-    if (storeName === 'activityState' && inMemoryAvailable) {
+    if (storeName === Scheme.names.activityState && inMemoryAvailable) {
       objectStore.add(activityState)
       Logger.info('Activity state has been recovered')
-    } else if (QuickStorage[storeName]) {
-      QuickStorage[storeName].forEach(record => objectStore.add(record))
+    } else if (QuickStorage.stores[storeName]) {
+      QuickStorage.stores[storeName].forEach(record => objectStore.add(record))
       Logger.info(`Migration from localStorage done for ${storeName} store`)
     }
   })
@@ -135,10 +136,11 @@ function _getTranStore ({storeName, mode = 'readonly'}, reject) {
 
   const transaction = _db.transaction([storeName], mode)
   const store = transaction.objectStore(storeName)
+  const storeInfo = Scheme.stores[storeName]
   let index
 
-  if (Scheme[storeName].index) {
-    index = store.index(`${Scheme[storeName].index}Index`)
+  if (storeInfo.index) {
+    index = store.index(`${storeInfo.index}Index`)
   }
 
   transaction.onerror = reject

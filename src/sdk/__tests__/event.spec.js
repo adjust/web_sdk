@@ -55,7 +55,7 @@ describe('event tracking functionality', () => {
   })
 
   afterEach(() => {
-    StorageManager.default.clear('globalParams')
+    localStorage.clear()
     jest.clearAllMocks()
   })
 

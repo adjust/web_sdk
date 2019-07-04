@@ -1,3 +1,4 @@
+import Scheme from './scheme'
 import Config from './config'
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
@@ -32,7 +33,7 @@ let _isOffline = false
  * @type {string}
  * @private
  */
-const _storeName = 'queue'
+const _storeName = Scheme.names.queue
 
 /**
  * Remove from the top and continue running pending requests

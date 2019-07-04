@@ -1,6 +1,7 @@
-import {convertToMap, intersection} from './utilities'
+import Scheme from './scheme'
 import StorageManager from './storage-manager'
 import Logger from './logger'
+import {convertToMap, intersection} from './utilities'
 
 /**
  * Name of the store used by global params
@@ -8,7 +9,7 @@ import Logger from './logger'
  * @type {string}
  * @private
  */
-const _storeName = 'globalParams'
+const _storeName = Scheme.names.globalParams
 
 /**
  * Get callback and partner global parameters

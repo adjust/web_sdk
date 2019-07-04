@@ -2,6 +2,7 @@ import {extend} from './utilities'
 import {getTimestamp} from './time'
 import ActivityState from './activity-state'
 import StorageManager from './storage-manager'
+import Scheme from './scheme'
 
 /**
  * Get created at timestamp
@@ -106,7 +107,7 @@ function _getCpuType () {
  * @private
  */
 function _getQueueSize () {
-  return StorageManager.getAll('queue')
+  return StorageManager.getAll(Scheme.names.queue)
     .then(records => ({queueSize: records.length}))
 }
 

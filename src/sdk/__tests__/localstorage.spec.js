@@ -4,10 +4,13 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as QuickStorage from '../quick-storage'
 import * as Logger from '../logger'
+import * as Scheme from '../scheme'
 
 jest.mock('../logger')
 
 describe('LocalStorage usage', () => {
+
+  const storeNames = Scheme.default.names
 
   beforeAll(() => {
     jest.spyOn(Logger.default, 'error')
@@ -49,19 +52,19 @@ describe('LocalStorage usage', () => {
         expect(error.message).toBe('No store named test in this storage')
       })
 
-    LocalStorage.default.getAll('queue')
+    LocalStorage.default.getAll(storeNames.queue)
       .then(result => {
         expect(result).toEqual([])
       })
 
     // prepare some rows manually
-    QuickStorage.default.queue = [
+    QuickStorage.default.stores[storeNames.queue] = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'},
       {timestamp: 3, url: '/url3'}
     ]
 
-    LocalStorage.default.getAll('queue')
+    LocalStorage.default.getAll(storeNames.queue)
       .then(result => {
         expect(result).toEqual([
           {timestamp: 1, url: '/url1'},
@@ -76,7 +79,7 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(1)
 
-    return LocalStorage.default.getFirst('activityState')
+    return LocalStorage.default.getFirst(storeNames.activityState)
       .then(result => {
         expect(result).toBeUndefined()
       })
@@ -87,7 +90,7 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(1)
 
-    return LocalStorage.default.getAll('queue')
+    return LocalStorage.default.getAll(storeNames.queue)
       .then(result => {
         expect(result).toEqual([])
       })
@@ -97,7 +100,7 @@ describe('LocalStorage usage', () => {
   it('returns first row from particular store', () => {
 
     // prepare some rows manually
-    QuickStorage.default.queue = [
+    QuickStorage.default.stores[storeNames.queue] = [
       {timestamp: 1552701608300, url: '/url1'},
       {timestamp: 1552705208300, url: '/url2'},
       {timestamp: 1552911178981, url: '/url3'},
@@ -105,7 +108,7 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(1)
 
-    return LocalStorage.default.getFirst('queue')
+    return LocalStorage.default.getFirst(storeNames.queue)
       .then(result => {
         expect(result).toEqual({timestamp: 1552701608300, url: '/url1'})
       })
@@ -115,18 +118,18 @@ describe('LocalStorage usage', () => {
   it('gets item from the activityState store', () => {
 
     // prepare some rows manually
-    QuickStorage.default.activityState = [
+    QuickStorage.default.stores[storeNames.activityState] = [
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
     ]
 
     expect.assertions(3)
 
-    return LocalStorage.default.getItem('activityState', 2)
+    return LocalStorage.default.getItem(storeNames.activityState, 2)
       .then(result => {
         expect(result).toEqual({uuid: 2, lastActive: 12346})
 
-        return LocalStorage.default.getItem('activityState', 3)
+        return LocalStorage.default.getItem(storeNames.activityState, 3)
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
@@ -138,7 +141,7 @@ describe('LocalStorage usage', () => {
   it('gets item from the globalParams store - with composite key', () => {
 
     // prepare some rows manually
-    QuickStorage.default.globalParams = [
+    QuickStorage.default.stores[storeNames.globalParams] = [
       {key: 'key1', value: 'cvalue1', type: 'callback'},
       {key: 'key2', value: 'cvalue2', type: 'callback'},
       {key: 'key1', value: 'pvalue1', type: 'partner'}
@@ -146,11 +149,11 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(3)
 
-    return LocalStorage.default.getItem('globalParams', ['key1', 'callback'])
+    return LocalStorage.default.getItem(storeNames.globalParams, ['key1', 'callback'])
       .then(result => {
         expect(result).toEqual({key: 'key1', value: 'cvalue1', type: 'callback'})
 
-        return LocalStorage.default.getItem('globalParams', ['key3', 'callback'])
+        return LocalStorage.default.getItem(storeNames.globalParams, ['key3', 'callback'])
       })
       .catch(error => {
         expect(error.name).toEqual('NotFoundError')
@@ -163,12 +166,12 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(8)
 
-    return LocalStorage.default.addItem('queue', {timestamp: 1, url: '/url1'})
+    return LocalStorage.default.addItem(storeNames.queue, {timestamp: 1, url: '/url1'})
       .then(id => {
 
         expect(id).toEqual(1)
 
-        return LocalStorage.default.getAll('queue')
+        return LocalStorage.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -176,13 +179,13 @@ describe('LocalStorage usage', () => {
           {timestamp: 1, url: '/url1'}
         ])
 
-        return LocalStorage.default.addItem('queue', {timestamp: 2, url: '/url2'})
+        return LocalStorage.default.addItem(storeNames.queue, {timestamp: 2, url: '/url2'})
       })
       .then(id => {
 
         expect(id).toEqual(2)
 
-        return LocalStorage.default.getAll('queue')
+        return LocalStorage.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -191,13 +194,13 @@ describe('LocalStorage usage', () => {
           {timestamp: 2, url: '/url2'}
         ])
 
-        return LocalStorage.default.addItem('queue', {timestamp: 3, url: '/url3'})
+        return LocalStorage.default.addItem(storeNames.queue, {timestamp: 3, url: '/url3'})
       })
       .then(id => {
 
         expect(id).toEqual(3)
 
-        return LocalStorage.default.getAll('queue')
+        return LocalStorage.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -207,7 +210,7 @@ describe('LocalStorage usage', () => {
           {timestamp: 3, url: '/url3'}
         ])
 
-        return LocalStorage.default.addItem('queue', {timestamp: 2, url: '/url2'})
+        return LocalStorage.default.addItem(storeNames.queue, {timestamp: 2, url: '/url2'})
       })
       .catch(error => {
         expect(error.name).toBe('ConstraintError')
@@ -220,12 +223,12 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(8)
 
-    return LocalStorage.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+    return LocalStorage.default.addItem(storeNames.globalParams, {key: 'key1', value: 'value1', type: 'callback'})
       .then((id) => {
 
         expect(id).toEqual(['key1', 'callback'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -233,13 +236,13 @@ describe('LocalStorage usage', () => {
           {key: 'key1', value: 'value1', type: 'callback'}
         ])
 
-        return LocalStorage.default.addItem('globalParams', {key: 'key2', value: 'value2', type: 'callback'})
+        return LocalStorage.default.addItem(storeNames.globalParams, {key: 'key2', value: 'value2', type: 'callback'})
       })
       .then(id => {
 
         expect(id).toEqual(['key2', 'callback'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -248,13 +251,13 @@ describe('LocalStorage usage', () => {
           {key: 'key2', value: 'value2', type: 'callback'}
         ])
 
-        return LocalStorage.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'partner'})
+        return LocalStorage.default.addItem(storeNames.globalParams, {key: 'key1', value: 'value1', type: 'partner'})
       })
       .then(id => {
 
         expect(id).toEqual(['key1', 'partner'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -264,7 +267,7 @@ describe('LocalStorage usage', () => {
           {key: 'key1', value: 'value1', type: 'partner'}
         ])
 
-        return LocalStorage.default.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
+        return LocalStorage.default.addItem(storeNames.globalParams, {key: 'key1', value: 'value1', type: 'callback'})
       })
       .catch(error => {
         expect(error.name).toBe('ConstraintError')
@@ -276,19 +279,19 @@ describe('LocalStorage usage', () => {
   it('updates items in the activityState store', () => {
 
     // prepare some rows manually
-    QuickStorage.default.activityState = [
+    QuickStorage.default.stores[storeNames.activityState] = [
       {uuid: 1, lastActive: 12345},
       {uuid: 2, lastActive: 12346}
     ]
 
     expect.assertions(8)
 
-    return LocalStorage.default.updateItem('activityState', {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
+    return LocalStorage.default.updateItem(storeNames.activityState, {uuid: 1, lastActive: 12347, attribution: {adid: 'something'}})
       .then(update => {
 
         expect(update).toEqual(1)
 
-        return LocalStorage.default.getAll('activityState')
+        return LocalStorage.default.getAll(storeNames.activityState)
       })
       .then(result => {
 
@@ -297,25 +300,25 @@ describe('LocalStorage usage', () => {
           {uuid: 2, lastActive: 12346}
         ])
 
-        return LocalStorage.default.updateItem('activityState', {uuid: 1, lastActive: 12348})
+        return LocalStorage.default.updateItem(storeNames.activityState, {uuid: 1, lastActive: 12348})
       })
       .then(update => {
 
         expect(update).toEqual(1)
 
-        return LocalStorage.default.getItem('activityState', 1)
+        return LocalStorage.default.getItem(storeNames.activityState, 1)
       })
       .then(result => {
 
         expect(result).toEqual({uuid: 1, lastActive: 12348})
 
-        return LocalStorage.default.updateItem('activityState', {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}})
+        return LocalStorage.default.updateItem(storeNames.activityState, {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}})
       })
       .then(update => {
 
         expect(update).toEqual(2)
 
-        return LocalStorage.default.getAll('activityState')
+        return LocalStorage.default.getAll(storeNames.activityState)
       })
       .then(result => {
 
@@ -324,13 +327,13 @@ describe('LocalStorage usage', () => {
           {uuid: 2, lastActive: 12349, attribution: {adid: 'something'}}
         ])
 
-        return LocalStorage.default.updateItem('activityState', {uuid: 3, lastActive: 12350})
+        return LocalStorage.default.updateItem(storeNames.activityState, {uuid: 3, lastActive: 12350})
       })
       .then(update => {
 
         expect(update).toEqual(3)
 
-        return LocalStorage.default.getAll('activityState')
+        return LocalStorage.default.getAll(storeNames.activityState)
       })
       .then(result => {
 
@@ -346,7 +349,7 @@ describe('LocalStorage usage', () => {
   it('updates items in the globalParams store - with composite key', () => {
 
     // prepare some rows manually
-    QuickStorage.default.globalParams = [
+    QuickStorage.default.stores[storeNames.globalParams] = [
       {key: 'key1', value: 'value1', type: 'callback'},
       {key: 'key2', value: 'value2', type: 'callback'},
       {key: 'key1', value: 'value1', type: 'partner'}
@@ -354,12 +357,12 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(6)
 
-    return LocalStorage.default.updateItem('globalParams', {key: 'key1', value: 'updated value1', type: 'callback'})
+    return LocalStorage.default.updateItem(storeNames.globalParams, {key: 'key1', value: 'updated value1', type: 'callback'})
       .then(update => {
 
         expect(update).toEqual(['key1', 'callback'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -369,13 +372,13 @@ describe('LocalStorage usage', () => {
           {key: 'key1', value: 'value1', type: 'partner'}
         ])
 
-        return LocalStorage.default.updateItem('globalParams', {key: 'key2', value: 'updated value2', type: 'callback'})
+        return LocalStorage.default.updateItem(storeNames.globalParams, {key: 'key2', value: 'updated value2', type: 'callback'})
       })
       .then(update => {
 
         expect(update).toEqual(['key2', 'callback'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -385,13 +388,13 @@ describe('LocalStorage usage', () => {
           {key: 'key1', value: 'value1', type: 'partner'}
         ])
 
-        return LocalStorage.default.updateItem('globalParams', {key: 'key2', value: 'value2', type: 'partner'})
+        return LocalStorage.default.updateItem(storeNames.globalParams, {key: 'key2', value: 'value2', type: 'partner'})
       })
       .then(update => {
 
         expect(update).toEqual(['key2', 'partner'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
         expect(result).toEqual([
@@ -407,7 +410,7 @@ describe('LocalStorage usage', () => {
   it('deletes item by item in the queue store', () => {
 
     // prepare some rows manually
-    QuickStorage.default.queue = [
+    QuickStorage.default.stores[storeNames.queue] = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'},
       {timestamp: 3, url: '/url3'},
@@ -416,12 +419,12 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(6)
 
-    return LocalStorage.default.deleteItem('queue', 2)
+    return LocalStorage.default.deleteItem(storeNames.queue, 2)
       .then(deleted => {
 
         expect(deleted).toEqual(2)
 
-        return LocalStorage.default.getAll('queue')
+        return LocalStorage.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -431,13 +434,13 @@ describe('LocalStorage usage', () => {
           {timestamp: 4, url: '/url4'}
         ])
 
-        return LocalStorage.default.deleteItem('queue', 4)
+        return LocalStorage.default.deleteItem(storeNames.queue, 4)
       })
       .then(deleted => {
 
         expect(deleted).toEqual(4)
 
-        return LocalStorage.default.getAll('queue')
+        return LocalStorage.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -446,13 +449,13 @@ describe('LocalStorage usage', () => {
           {timestamp: 3, url: '/url3'}
         ])
 
-        return LocalStorage.default.deleteItem('queue', 5)
+        return LocalStorage.default.deleteItem(storeNames.queue, 5)
       })
       .then(deleted => {
 
         expect(deleted).toEqual(5)
 
-        return LocalStorage.default.getAll('queue')
+        return LocalStorage.default.getAll(storeNames.queue)
       })
       .then(result => {
 
@@ -467,7 +470,7 @@ describe('LocalStorage usage', () => {
   it('deletes item by item in the globalParams store - with composite key', () => {
 
     // prepare some rows manually
-    QuickStorage.default.globalParams = [
+    QuickStorage.default.stores[storeNames.globalParams] = [
       {key: 'key1', value: 'value1', type: 'callback'},
       {key: 'key2', value: 'value2', type: 'callback'},
       {key: 'key1', value: 'value1', type: 'partner'},
@@ -476,12 +479,12 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(6)
 
-    return LocalStorage.default.deleteItem('globalParams', ['key2', 'callback'])
+    return LocalStorage.default.deleteItem(storeNames.globalParams, ['key2', 'callback'])
       .then(deleted => {
 
         expect(deleted).toEqual(['key2', 'callback'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -491,13 +494,13 @@ describe('LocalStorage usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return LocalStorage.default.deleteItem('globalParams', ['key1', 'partner'])
+        return LocalStorage.default.deleteItem(storeNames.globalParams, ['key1', 'partner'])
       })
       .then(deleted => {
 
         expect(deleted).toEqual(['key1', 'partner'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -506,13 +509,13 @@ describe('LocalStorage usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return LocalStorage.default.deleteItem('globalParams', ['key5', 'callback'])
+        return LocalStorage.default.deleteItem(storeNames.globalParams, ['key5', 'callback'])
       })
       .then(deleted => {
 
         expect(deleted).toEqual(['key5', 'callback'])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
 
@@ -527,7 +530,7 @@ describe('LocalStorage usage', () => {
   it ('deletes items until certain bound from the queue store', () => {
 
     // prepare some rows manually
-    QuickStorage.default.queue = [
+    QuickStorage.default.stores[storeNames.queue] = [
       {timestamp: 1552701608300, url: '/url1'},
       {timestamp: 1552705208300, url: '/url2'},
       {timestamp: 1552911178981, url: '/url3'},
@@ -535,7 +538,7 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(3)
 
-    return LocalStorage.default.getAll('queue')
+    return LocalStorage.default.getAll(storeNames.queue)
       .then(result => {
 
         expect(result).toEqual([
@@ -544,7 +547,7 @@ describe('LocalStorage usage', () => {
           {timestamp: 1552911178981, url: '/url3'}
         ])
 
-        return LocalStorage.default.deleteBulk('queue', {upperBound: 1552705208300})
+        return LocalStorage.default.deleteBulk(storeNames.queue, {upperBound: 1552705208300})
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -552,7 +555,7 @@ describe('LocalStorage usage', () => {
           {timestamp: 1552705208300, url: '/url2'},
         ])
       })
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(() => LocalStorage.default.getAll(storeNames.queue))
       .then(result => {
         expect(result).toEqual([
           {timestamp: 1552911178981, url: '/url3'}
@@ -564,7 +567,7 @@ describe('LocalStorage usage', () => {
   it ('deletes items in bulk by type from the globalParams store - with composite key', () => {
 
     // prepare some rows manually
-    QuickStorage.default.globalParams = [
+    QuickStorage.default.stores[storeNames.globalParams] = [
       {key: 'key4', value: 'value4', type: 'callback'},
       {key: 'key2', value: 'value2', type: 'callback'},
       {key: 'key2', value: 'value2', type: 'partner'},
@@ -575,7 +578,7 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(5)
 
-    return LocalStorage.default.getAll('globalParams')
+    return LocalStorage.default.getAll(storeNames.globalParams)
       .then(result => {
         expect(result).toEqual([
           {key: 'key1', value: 'value1', type: 'callback'},
@@ -586,7 +589,7 @@ describe('LocalStorage usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return LocalStorage.default.deleteBulk('globalParams', 'partner')
+        return LocalStorage.default.deleteBulk(storeNames.globalParams, 'partner')
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -594,7 +597,7 @@ describe('LocalStorage usage', () => {
           {key: 'key2', value: 'value2', type: 'partner'}
         ])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
         expect(result).toEqual([
@@ -604,7 +607,7 @@ describe('LocalStorage usage', () => {
           {key: 'key4', value: 'value4', type: 'callback'}
         ])
 
-        return LocalStorage.default.deleteBulk('globalParams', 'callback')
+        return LocalStorage.default.deleteBulk(storeNames.globalParams, 'callback')
       })
       .then(deleted => {
         expect(deleted).toEqual([
@@ -614,7 +617,7 @@ describe('LocalStorage usage', () => {
           {key: 'key4', value: 'value4', type: 'callback'}
         ])
 
-        return LocalStorage.default.getAll('globalParams')
+        return LocalStorage.default.getAll(storeNames.globalParams)
       })
       .then(result => {
         expect(result).toEqual([])
@@ -625,14 +628,14 @@ describe('LocalStorage usage', () => {
   it('clears items from the queue store', () => {
 
     // prepare some rows manually
-    QuickStorage.default.queue = [
+    QuickStorage.default.stores[storeNames.queue] = [
       {timestamp: 1, url: '/url1'},
       {timestamp: 2, url: '/url2'}
     ]
 
     expect.assertions(2)
 
-    return LocalStorage.default.getAll('queue')
+    return LocalStorage.default.getAll(storeNames.queue)
       .then(result => {
 
         expect(result).toEqual([
@@ -640,9 +643,9 @@ describe('LocalStorage usage', () => {
           {timestamp: 2, url: '/url2'}
         ])
 
-        return LocalStorage.default.clear('queue')
+        return LocalStorage.default.clear(storeNames.queue)
       })
-      .then(() => LocalStorage.default.getAll('queue'))
+      .then(() => LocalStorage.default.getAll(storeNames.queue))
       .then(result => {
         expect(result).toEqual([])
       })
@@ -663,7 +666,7 @@ describe('LocalStorage usage', () => {
 
         expect(activityState.uuid).toBeDefined()
 
-        return LocalStorage.default.getFirst('activityState')
+        return LocalStorage.default.getFirst(storeNames.activityState)
       })
       .then(stored => {
 
@@ -681,12 +684,12 @@ describe('LocalStorage usage', () => {
 
       expect.assertions(4)
 
-      return LocalStorage.default.addBulk('globalParams', [])
+      return LocalStorage.default.addBulk(storeNames.globalParams, [])
         .catch(error => {
           expect(error.name).toEqual('NoTargetDefined')
           expect(error.message).toEqual('No array provided to perform add bulk operation into globalParams store')
 
-          return LocalStorage.default.addBulk('queue')
+          return LocalStorage.default.addBulk(storeNames.queue)
         })
         .catch(error => {
           expect(error.name).toEqual('NoTargetDefined')
@@ -710,16 +713,16 @@ describe('LocalStorage usage', () => {
 
       expect.assertions(3)
 
-      return LocalStorage.default.addBulk('globalParams', globalParamsSet1)
+      return LocalStorage.default.addBulk(storeNames.globalParams, globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return LocalStorage.default.addBulk('globalParams', globalParamsSet2)
+          return LocalStorage.default.addBulk(storeNames.globalParams, globalParamsSet2)
         })
         .then(result => {
           expect(result).toEqual([['key2', 'callback'], ['par', 'partner']])
 
-          return LocalStorage.default.getAll('globalParams')
+          return LocalStorage.default.getAll(storeNames.globalParams)
         })
         .then(result => {
           expect(result).toEqual([
@@ -749,16 +752,16 @@ describe('LocalStorage usage', () => {
 
       expect.assertions(3)
 
-      return LocalStorage.default.addBulk('globalParams', globalParamsSet1)
+      return LocalStorage.default.addBulk(storeNames.globalParams, globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return LocalStorage.default.addBulk('globalParams', globalParamsSet2, true)
+          return LocalStorage.default.addBulk(storeNames.globalParams, globalParamsSet2, true)
         })
         .then(result => {
           expect(result).toEqual([['key1', 'callback'], ['par', 'partner'], ['bla', 'partner']])
 
-          return LocalStorage.default.getAll('globalParams')
+          return LocalStorage.default.getAll(storeNames.globalParams)
         })
         .then(result => {
           expect(result).toEqual([
@@ -787,11 +790,11 @@ describe('LocalStorage usage', () => {
 
       expect.assertions(3)
 
-      return LocalStorage.default.addBulk('globalParams', globalParamsSet1)
+      return LocalStorage.default.addBulk(storeNames.globalParams, globalParamsSet1)
         .then(result => {
           expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
 
-          return LocalStorage.default.addBulk('globalParams', globalParamsSet2)
+          return LocalStorage.default.addBulk(storeNames.globalParams, globalParamsSet2)
         })
         .catch(error => {
           expect(error.name).toEqual('ConstraintError')
@@ -812,10 +815,10 @@ describe('LocalStorage usage', () => {
 
       expect.assertions(2)
 
-      return LocalStorage.default.addBulk('globalParams', globalParamsSet)
+      return LocalStorage.default.addBulk(storeNames.globalParams, globalParamsSet)
         .then(() => Promise.all([
-          LocalStorage.default.filterBy('globalParams', 'callback'),
-          LocalStorage.default.filterBy('globalParams', 'partner')
+          LocalStorage.default.filterBy(storeNames.globalParams, 'callback'),
+          LocalStorage.default.filterBy(storeNames.globalParams, 'partner')
         ]))
         .then(([callbackParams, partnerParams]) => {
           expect(callbackParams).toEqual([

@@ -39,15 +39,17 @@ function _open () {
     return
   }
 
-  const stores = Object.keys(Scheme)
+  const storeNames = Object.values(Scheme.names)
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 
-  stores.forEach(storeName => {
-    if (storeName === 'activityState' && !QuickStorage.activityState) {
-      QuickStorage.activityState = inMemoryAvailable ? [activityState] : []
-    } else if (!QuickStorage[storeName]) {
-      QuickStorage[storeName] = []
+  storeNames.forEach(storeName => {
+    const asStoreName = Scheme.names.activityState
+
+    if (storeName === asStoreName && !QuickStorage.stores[asStoreName]) {
+      QuickStorage.stores[asStoreName] = inMemoryAvailable ? [activityState] : []
+    } else if (!QuickStorage.stores[storeName]) {
+      QuickStorage.stores[storeName] = []
     }
   })
 
@@ -63,7 +65,7 @@ function _open () {
  */
 function _getKeys (storeName) {
 
-  const keyPath = Scheme[storeName].options.keyPath
+  const keyPath = Scheme.stores[storeName].options.keyPath
 
   return keyPath instanceof Array ? keyPath.slice() : [keyPath]
 }
@@ -84,7 +86,7 @@ function _initRequest ({storeName, id, item}, action) {
 
   return new Promise((resolve, reject) => {
 
-    const items = QuickStorage[storeName]
+    const items = QuickStorage.stores[storeName]
     const keys = _getKeys(storeName)
 
     if (id) {
@@ -150,7 +152,7 @@ function getAll (storeName, firstOnly) {
 
   return new Promise((resolve, reject) => {
 
-    const value = QuickStorage[storeName]
+    const value = QuickStorage.stores[storeName]
 
     if (value instanceof Array) {
       resolve(firstOnly ? value[0] : _sort(value, _getKeys(storeName)))
@@ -212,7 +214,7 @@ function filterBy (storeName, by) {
   return getAll(storeName)
     .then(result => {
       return result.filter(item => {
-        return item[Scheme[storeName].index] === by
+        return item[Scheme.stores[storeName].index] === by
       })
     })
 }
@@ -242,7 +244,7 @@ function addItem (storeName, item) {
       reject({name: 'ConstraintError', message: `Item ${_keyValuePairs(keys, item)} already exists`})
     } else {
       items.push(item)
-      QuickStorage[storeName] = items
+      QuickStorage.stores[storeName] = items
       resolve(_return(keys, item))
     }
   })
@@ -280,7 +282,7 @@ function addBulk (storeName, target, overwrite) {
     if (existing.length && !overwrite) {
       reject({name: 'ConstraintError', message: `Items with ${keys.join(':')} => ${existing.map(i => keys.map(k => i.target[k]).join(':')).join(',')} already exist`})
     } else {
-      QuickStorage[storeName] = _sort([...items, ...target], keys)
+      QuickStorage.stores[storeName] = _sort([...items, ...target], keys)
       resolve(target.map((item) => keys.map(k => item[k])))
     }
   })
@@ -301,7 +303,7 @@ function updateItem (storeName, item) {
       items.splice(index, 1, item)
     }
 
-    QuickStorage[storeName] = items
+    QuickStorage.stores[storeName] = items
     resolve(_return(keys, item))
   })
 }
@@ -317,7 +319,7 @@ function deleteItem (storeName, id) {
   return _initRequest({storeName, id}, (resolve, _, {items, index}) => {
     if (index !== -1) {
       items.splice(index, 1)
-      QuickStorage[storeName] = items
+      QuickStorage.stores[storeName] = items
     }
 
     resolve(id)
@@ -367,7 +369,7 @@ function deleteBulk (storeName, condition) {
     .then(items => {
 
       const keys = _getKeys(storeName)
-      const key = Scheme[storeName].index || keys[0]
+      const key = Scheme.stores[storeName].index || keys[0]
       const bound = isObject(condition) ? condition.upperBound : condition
       const force = isObject(condition) ? null : condition
       const first = items[0]
@@ -386,7 +388,7 @@ function deleteBulk (storeName, condition) {
 
       const deleted = items.splice(0, index + 1)
 
-      QuickStorage[storeName] = items
+      QuickStorage.stores[storeName] = items
 
       return deleted
     })
@@ -403,7 +405,7 @@ function clear (storeName) {
   _open()
 
   return new Promise(resolve => {
-    QuickStorage[storeName] = []
+    QuickStorage.stores[storeName] = []
     resolve({})
   })
 }

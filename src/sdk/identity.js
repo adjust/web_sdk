@@ -1,9 +1,18 @@
+import Scheme from './scheme'
 import StorageManager from './storage-manager'
 import ActivityState from './activity-state'
 import State from './state'
 import Logger from './logger'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
 import {extend} from './utilities'
+
+/**
+ * Name of the store used by activityState
+ *
+ * @type {string}
+ * @private
+ */
+const _storeName = Scheme.names.activityState
 
 /**
  * Generate random  uuid v4
@@ -27,7 +36,7 @@ function _generateUuid () {
  * @private
  */
 function _recover () {
-  return StorageManager.getFirst('activityState')
+  return StorageManager.getFirst(_storeName)
     .then(stored => {
       if (stored) {
         return stored
@@ -35,7 +44,7 @@ function _recover () {
 
       const activityState = ActivityState.current || {uuid: _generateUuid()}
 
-      return StorageManager.addItem('activityState', activityState)
+      return StorageManager.addItem(_storeName, activityState)
         .then(() => {
           State.reload()
           return ActivityState.current = activityState
@@ -64,7 +73,7 @@ function persist () {
   }
 
   const activityState = extend({}, ActivityState.current, {lastActive: Date.now()})
-  return StorageManager.updateItem('activityState', activityState)
+  return StorageManager.updateItem(_storeName, activityState)
     .then(() => ActivityState.current = activityState)
 }
 
@@ -75,7 +84,7 @@ function persist () {
  * @returns {Promise}
  */
 function sync () {
-  return StorageManager.getFirst('activityState')
+  return StorageManager.getFirst(_storeName)
     .then((activityState = {}) => {
       const lastActive = ActivityState.current.lastActive || 0
 
@@ -141,9 +150,9 @@ function clear () {
 
   ActivityState.current = newActivityState
 
-  return StorageManager.getFirst('activityState')
-    .then(current => current ? StorageManager.deleteItem('activityState', current.uuid) : null)
-    .then(() => StorageManager.addItem('activityState', newActivityState))
+  return StorageManager.getFirst(_storeName)
+    .then(current => current ? StorageManager.deleteItem(_storeName, current.uuid) : null)
+    .then(() => StorageManager.addItem(_storeName, newActivityState))
 }
 
 /**
