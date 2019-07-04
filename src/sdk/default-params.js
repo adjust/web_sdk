@@ -1,6 +1,7 @@
 import {extend} from './utilities'
 import {getTimestamp} from './time'
 import ActivityState from './activity-state'
+import StorageManager from './storage-manager'
 
 /**
  * Get created at timestamp
@@ -98,14 +99,27 @@ function _getCpuType () {
   return {cpuType: (overrideWin32 ? 'Win64' : navigator.platform) || undefined}
 }
 
+/**
+ * Get the current queue size
+ *
+ * @returns {Promise}
+ * @private
+ */
+function _getQueueSize () {
+  return StorageManager.getAll('queue')
+    .then(records => ({queueSize: records.length}))
+}
+
 export default function defaultParams () {
-  return extend({},
-    _getCreatedAt(),
-    _getSentAt(),
-    _getWebUuid(),
-    _getTrackEnabled(),
-    _getPlatform(),
-    _getLanguage(),
-    _getCpuType()
-  )
+  return _getQueueSize()
+    .then(queueSize => extend({},
+      _getCreatedAt(),
+      _getSentAt(),
+      _getWebUuid(),
+      _getTrackEnabled(),
+      _getPlatform(),
+      _getLanguage(),
+      _getCpuType(),
+      queueSize
+    ))
 }

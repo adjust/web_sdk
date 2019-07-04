@@ -99,7 +99,8 @@ describe('test sdk-click functionality', () => {
         clickTime: 'some-time',
         createdAt: 'some-time',
         source: 'referrer',
-        referrer: 'adjust_param=value&something=else'
+        referrer: 'adjust_param=value&something=else',
+        queueSize: 1
       }
     })
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
@@ -124,7 +125,8 @@ describe('test sdk-click functionality', () => {
         clickTime: 'some-time',
         createdAt: 'some-time',
         source: 'referrer',
-        referrer: 'adj_param1=value&bla=truc&adj_param2=bla'
+        referrer: 'adj_param1=value&bla=truc&adj_param2=bla',
+        queueSize: 1
       }
     })
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
@@ -149,7 +151,8 @@ describe('test sdk-click functionality', () => {
         clickTime: 'some-time',
         createdAt: 'some-time',
         source: 'referrer',
-        referrer: 'adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada'
+        referrer: 'adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada',
+        queueSize: 1
       }
     })
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)

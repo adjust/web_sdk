@@ -17,7 +17,8 @@ describe('perform api requests', () => {
     'gps_adid=some-uuid',
     'platform=web',
     'language=en',
-    'country=gb'
+    'country=gb',
+    'queue_size=0'
   ].join('&')
 
   const oldXMLHttpRequest = window.XMLHttpRequest

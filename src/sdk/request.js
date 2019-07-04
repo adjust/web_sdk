@@ -58,11 +58,12 @@ function _getErrorObject (xhr, onlyResponse) {
  * Encode key-value pairs to be used in url
  *
  * @param {Object} params
+ * @param {Object} defaultParams
  * @returns {string}
  * @private
  */
-function _encodeParams (params) {
-  params = extend(defaultParams(), params)
+function _encodeParams (params, defaultParams) {
+  params = extend(defaultParams, params)
 
   return Object
     .entries(params)
@@ -118,11 +119,12 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
  * @param {string} url
  * @param {string} method
  * @param {Object} params
+ * @param {Object} defaultParams
  * @returns {{encodedParams: string, fullUrl: string}}
  * @private
  */
-function _prepareUrlAndParams (url, method = 'GET', params = {}) {
-  const encodedParams = _encodeParams(params)
+function _prepareUrlAndParams (url, method = 'GET', params = {}, defaultParams = {}) {
+  const encodedParams = _encodeParams(params, defaultParams)
   const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
   const baseUrl = __ADJUST__ENV === 'test' ? '' : Config.baseUrl[base]
 
@@ -138,10 +140,11 @@ function _prepareUrlAndParams (url, method = 'GET', params = {}) {
  * @param {string} url
  * @param {string} [method='GET']
  * @param {Object} [params={}]
+ * @param {Object} defaultParams
  * @returns {Promise}
  */
-function _buildXhr ({url, method = 'GET', params = {}}) {
-  const {fullUrl, encodedParams} = _prepareUrlAndParams(url, method, params)
+function _buildXhr ({url, method = 'GET', params = {}}, defaultParams) {
+  const {fullUrl, encodedParams} = _prepareUrlAndParams(url, method, params, defaultParams)
 
   return new Promise((resolve, reject) => {
 
@@ -199,6 +202,7 @@ function _interceptResponse (result = {}, options) {
  * @returns {Promise}
  */
 export default function request (options) {
-  return _buildXhr(options)
+  return defaultParams()
+    .then(params => _buildXhr(options, params))
     .then(result => _interceptResponse(result, options))
 }

@@ -54,7 +54,8 @@ function check () {
       params: extend({
         source: 'referrer',
         referrer: window.location.search.substring(1),
-        clickTime: getTimestamp()
+        clickTime: getTimestamp(),
+        queueSize: 1
       }, ActivityState.getParams())
     })
 

@@ -30,27 +30,51 @@ describe('request default parameters formation', () => {
 
     it('reads track_enabled from window.navigator.doNotTrack', () => {
 
-      const initial = defaultParams.default()
+      expect.assertions(5)
 
-      expect(initial.trackingEnabled).toBeUndefined()
+      return defaultParams.default()
+        .then(params => {
+          expect(params.trackingEnabled).toBeUndefined()
 
-      navigatorDNT.mockReturnValue(0)
-      expect(defaultParams.default().trackingEnabled).toEqual(true)
+          navigatorDNT.mockReturnValue(0)
 
-      navigatorDNT.mockReturnValue(1)
-      expect(defaultParams.default().trackingEnabled).toEqual(false)
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
 
-      navigatorDNT.mockReturnValue('no')
-      expect(defaultParams.default().trackingEnabled).toEqual(true)
+          navigatorDNT.mockReturnValue(1)
 
-      navigatorDNT.mockReturnValue('yes')
-      expect(defaultParams.default().trackingEnabled).toEqual(false)
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+
+          navigatorDNT.mockReturnValue('no')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
+
+          navigatorDNT.mockReturnValue('yes')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+        })
 
     })
   })
 
   it('test platform parameter - hardcoded to web', () => {
-    expect(defaultParams.default().platform).toEqual('web')
+    expect.assertions(1)
+
+    return defaultParams.default()
+      .then(params => {
+        expect(params.platform).toEqual('web')
+      })
   })
 
   describe('test locale preferences', () => {
@@ -71,34 +95,46 @@ describe('request default parameters formation', () => {
 
       navigatorLanguage.mockReturnValue('en')
 
-      const params = defaultParams.default()
+      expect.assertions(2)
 
-      expect(params.language).toEqual('en')
-      expect(params.country).toEqual(undefined)
+      return defaultParams.default()
+        .then(params => {
+          expect(params.language).toEqual('en')
+          expect(params.country).toBeUndefined()
+        })
 
     })
 
     it('reads both language and country from locale', () => {
 
+      expect.assertions(4)
+
       navigatorLanguage.mockReturnValue('fr-FR')
 
-      let params = defaultParams.default()
+      return defaultParams.default()
+        .then(params => {
+          expect(params.language).toEqual('fr')
+          expect(params.country).toEqual('fr')
 
-      expect(params.language).toEqual('fr')
-      expect(params.country).toEqual('fr')
+          navigatorLanguage.mockReturnValue('en-US')
 
-      navigatorLanguage.mockReturnValue('en-US')
-
-      params = defaultParams.default()
-
-      expect(params.language).toEqual('en')
-      expect(params.country).toEqual('us')
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.language).toEqual('en')
+          expect(params.country).toEqual('us')
+        })
 
     })
   })
 
   it('test cpu_type - by default is undefined', () => {
-    expect(defaultParams.default().cpuType).toEqual(undefined)
+    expect.assertions(1)
+
+    return defaultParams.default()
+      .then(params => {
+        expect(params.cpuType).toBeUndefined()
+      })
   })
 
 })
