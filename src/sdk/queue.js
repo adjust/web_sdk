@@ -51,6 +51,24 @@ function _continue () {
 }
 
 /**
+ * Prepare parameters which are about to be sent with the request
+ *
+ * @param url
+ * @param params
+ * @returns {any}
+ * @private
+ */
+function _prepareParams (url, params) {
+  const baseParams = extend({
+    createdAt: getTimestamp()
+  }, isRequest(url, 'event') ? {
+    eventCount: ActivityState.current.eventCount || 1
+  } : {})
+
+  return extend(baseParams, ActivityState.getParams(), params)
+}
+
+/**
  * Update activity state params
  *
  * @param {string} url
@@ -58,6 +76,10 @@ function _continue () {
  * @private
  */
 function _updateActivityStateParams (url) {
+
+  if (isRequest(url, 'event')) {
+    ActivityState.updateParam('eventCount')
+  }
 
   if (isRequest(url, 'session')) {
     ActivityState.updateParam('sessionCount')
@@ -78,9 +100,7 @@ function _updateActivityStateParams (url) {
  * @returns {Promise}
  */
 function push ({url, method, params}) {
-  params = extend({
-    createdAt: getTimestamp()
-  }, ActivityState.getParams(), params)
+  params = _prepareParams(url, params)
 
   const pending = extend({timestamp: Date.now()}, {url, method, params})
 

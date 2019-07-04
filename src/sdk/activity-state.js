@@ -128,7 +128,17 @@ function _getSessionCount () {
 }
 
 /**
- * Get all available activity state params
+ * Get total number of events so far
+ *
+ * @returns {number|null}
+ * @private
+ */
+function _getEventCount () {
+  return (_activityState || {}).eventCount || 0
+}
+
+/**
+ * Get activity state params that are sent with each request
  *
  * @returns {Object}
  */
@@ -165,6 +175,9 @@ function updateParam (key) {
       break
     case 'sessionCount':
       param = _getSessionCount() + 1
+      break
+    case 'eventCount':
+      param = _getEventCount() + 1
       break
     default:
       Logger.error(`Key ${key} does not exist in Activity State`)

@@ -3,7 +3,6 @@ import * as Config from '../config'
 import * as event from '../event'
 import * as Queue from '../queue'
 import * as Time from '../time'
-import * as StorageManager from '../storage-manager'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as request from '../request'
@@ -27,7 +26,8 @@ function expectRequest (requestConfig) {
       createdAt: 'some-time',
       timeSpent: 0,
       sessionLength: 0,
-      sessionCount: 1
+      sessionCount: 1,
+      eventCount: 1
     }, requestConfig.params, appConfig)
   })
 
@@ -55,6 +55,7 @@ describe('event tracking functionality', () => {
   })
 
   afterEach(() => {
+    ActivityState.default.current = Object.assign(ActivityState.default.current, {eventCount: 0})
     localStorage.clear()
     jest.clearAllMocks()
   })

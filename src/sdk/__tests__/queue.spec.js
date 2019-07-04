@@ -377,7 +377,7 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: 1552914489218, url: '/event', params: Object.assign({}, defaultParams, {sessionCount: 2})}
+          {timestamp: 1552914489218, url: '/event', params: Object.assign({}, defaultParams, {sessionCount: 2, eventCount: 1})}
         ])
 
         Queue.setOffline(false)
@@ -422,7 +422,7 @@ describe('test request queuing functionality', () => {
       .then(result => {
         expect(result).toEqual([
           {timestamp: 1552914489217, url: '/session', params: defaultParams},
-          {timestamp: 1552914489218, url: '/event', params: Object.assign({}, defaultParams, {sessionCount: 2})}
+          {timestamp: 1552914489218, url: '/event', params: Object.assign({}, defaultParams, {sessionCount: 2, eventCount: 1})}
         ])
 
         Queue.setOffline(false)
