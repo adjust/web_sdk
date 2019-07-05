@@ -15,8 +15,7 @@ jest.useFakeTimers()
 
 const appConfig = {
   appToken: '123abc',
-  environment: 'sandbox',
-  osName: 'ios'
+  environment: 'sandbox'
 }
 
 function expectRequest (requestConfig) {
@@ -29,7 +28,7 @@ function expectRequest (requestConfig) {
       sessionCount: 1,
       eventCount: 1,
       lastInterval: 0
-    }, requestConfig.params, appConfig)
+    }, requestConfig.params)
   })
 
   return flushPromises()
@@ -89,7 +88,7 @@ describe('event tracking functionality', () => {
   describe('after initialisation', () => {
 
     beforeAll(() => {
-      Object.assign(Config.default.baseParams, appConfig)
+      Config.default.baseParams = appConfig
     })
 
     it('logs an error and return when event token is not provided', () => {

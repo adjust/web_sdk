@@ -5,6 +5,7 @@ import app from './app'
 const appConfig = {
   appToken: 'src556ylophc',
   environment: 'production',
+  defaultTracker: 'bla',
   attributionCallback: attributionCallback
 }
 

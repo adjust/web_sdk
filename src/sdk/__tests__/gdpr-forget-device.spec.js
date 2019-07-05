@@ -15,8 +15,7 @@ jest.useFakeTimers()
 
 const appConfig = {
   appToken: '123abc',
-  environment: 'sandbox',
-  osName: 'ios'
+  environment: 'sandbox'
 }
 
 function expectRequest () {
@@ -33,7 +32,7 @@ function expectRequest () {
       sessionLength: 0,
       sessionCount: 1,
       lastInterval: 0
-    }, requestConfig.params, appConfig)
+    }, requestConfig.params)
   })
 
   expect(Queue.push).toHaveBeenCalledWith(requestConfig)
@@ -97,7 +96,7 @@ describe('GDPR forget device functionality', () => {
     return expectNotRequest()
       .then(() => {
 
-        Object.assign(Config.default.baseParams, appConfig)
+        Config.default.baseParams = appConfig
 
         GdprForgetDevice.forget()
 

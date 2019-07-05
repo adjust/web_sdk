@@ -1,7 +1,6 @@
 import request from './request'
 import {extend, isEmpty} from './utilities'
 import {getTimestamp} from './time'
-import Config from './config'
 import Logger from './logger'
 import backOff from './backoff'
 
@@ -226,7 +225,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
         return request({
           url: _url.current,
           method: _method.current,
-          params: extend({}, _params.current, Config.baseParams)
+          params: extend({}, _params.current)
         })
           .then(result => _continue(result, resolve))
           .catch(({response = {}} = {}) => response.code === 'RETRY' ? retry() : clear())

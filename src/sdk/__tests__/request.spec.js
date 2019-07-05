@@ -3,6 +3,7 @@ import * as request from '../request'
 import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
+import * as Config from '../config'
 import {flushPromises, setGlobalProp, createMockXHR} from './_helper'
 
 jest.mock('../logger')
@@ -10,42 +11,62 @@ jest.useFakeTimers()
 
 describe('perform api requests', () => {
 
+  const appParams = {
+    appToken: '123abc',
+    environment: 'sandbox'
+  }
+
   const defaultParams = [
+    'app_token=123abc',
+    'environment=sandbox',
     'created_at=some-time',
     'sent_at=some-time',
     'web_uuid=some-uuid',
     'gps_adid=some-uuid',
+    'tracking_enabled=true',
     'platform=web',
     'language=en',
     'country=gb',
+    'machine_type=macos',
     'queue_size=0'
   ].join('&')
 
-  const oldXMLHttpRequest = window.XMLHttpRequest
-  const oldLocale = window.navigator.language
+  const oldXMLHttpRequest = global.window.XMLHttpRequest
+  const oldLocale = global.window.navigator.language
+  const oldPlatform = global.window.navigator.platform
+  const oldDNT = global.window.navigator.doNotTrack
   let mockXHR = null
 
   beforeAll(() => {
-    setGlobalProp(window.navigator, 'language')
+    Config.default.baseParams = appParams
+
+    setGlobalProp(global.window.navigator, 'language')
+    setGlobalProp(global.window.navigator, 'platform')
+    setGlobalProp(global.window.navigator, 'doNotTrack')
 
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     ActivityState.default.current = {uuid: 'some-uuid'}
 
-    jest.spyOn(window.navigator, 'language', 'get').mockReturnValue('en-GB')
+    jest.spyOn(global.window.navigator, 'language', 'get').mockReturnValue('en-GB')
+    jest.spyOn(global.window.navigator, 'platform', 'get').mockReturnValue('macos')
+    jest.spyOn(global.window.navigator, 'doNotTrack', 'get').mockReturnValue(0)
   })
   afterEach(() => {
-    window.XMLHttpRequest = oldXMLHttpRequest
+    global.window.XMLHttpRequest = oldXMLHttpRequest
     jest.clearAllMocks()
   })
   afterAll(() => {
     jest.restoreAllMocks()
-    window.navigator.language = oldLocale
+    global.window.navigator.language = oldLocale
+    global.window.navigator.language = oldPlatform
+    global.window.navigator.doNotTrack = oldDNT
+    Config.default.destroy()
   })
 
   it('rejects when network issue', () => {
 
     mockXHR = createMockXHR({error: 'connection failed'}, 500, 'Connection failed')
-    window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -68,7 +89,7 @@ describe('perform api requests', () => {
   it('rejects when status 0', () => {
 
     mockXHR = createMockXHR('', 0, 'Network issue')
-    window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -91,7 +112,7 @@ describe('perform api requests', () => {
   it('resolves error returned from server (because of retry mechanism)', () => {
 
     mockXHR = createMockXHR({error: 'some error'}, 400, 'Some error')
-    window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -109,7 +130,7 @@ describe('perform api requests', () => {
   it('reject badly formed json from server', () => {
 
     mockXHR = createMockXHR('bla bla not json', 200, 'OK')
-    window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -138,7 +159,7 @@ describe('perform api requests', () => {
 
     beforeEach(() => {
       mockXHR = createMockXHR(response)
-      window.XMLHttpRequest = jest.fn(() => mockXHR)
+      global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
       jest.spyOn(mockXHR, 'open')
       jest.spyOn(mockXHR, 'setRequestHeader')
@@ -152,7 +173,6 @@ describe('perform api requests', () => {
       expect(request.default({
         url: '/some-url',
         params: {
-          appToken: 'cdf123',
           eventToken: '567abc',
           some: 'thing',
           very: 'nice',
@@ -163,11 +183,79 @@ describe('perform api requests', () => {
       return flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&app_token=cdf123&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
           mockXHR.onreadystatechange()
+        })
+    })
+
+    it('performs GET request with defaultTracker parameter', () => {
+
+      Config.default.baseParams = Object.assign({defaultTracker: 'blatruc'}, appParams)
+
+      const defaultParamsWithDefaultTracker = [
+        'app_token=123abc',
+        'environment=sandbox',
+        'default_tracker=blatruc',
+        'created_at=some-time',
+        'sent_at=some-time',
+        'web_uuid=some-uuid',
+        'gps_adid=some-uuid',
+        'tracking_enabled=true',
+        'platform=web',
+        'language=en',
+        'country=gb',
+        'machine_type=macos',
+        'queue_size=0'
+      ].join('&')
+
+      expect.assertions(4)
+
+      expect(request.default({
+        url: '/some-other-url',
+        params: {
+          bla: 'truc'
+        }
+      })).resolves.toEqual(response)
+
+      return flushPromises()
+        .then(() => {
+
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-other-url?${defaultParamsWithDefaultTracker}&bla=truc`, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+
+          Config.default.baseParams = appParams
+        })
+    })
+
+    it('tries to inject unknown parameter through configuration', () => {
+
+      Config.default.baseParams = Object.assign({something: 'strange'}, appParams)
+
+      expect.assertions(4)
+
+      expect(request.default({
+        url: '/sweet-url',
+        params: {
+          some: 'thing'
+        }
+      })).resolves.toEqual(response)
+
+      return flushPromises()
+        .then(() => {
+
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/sweet-url?${defaultParams}&some=thing`, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+
+          Config.default.baseParams = appParams
         })
     })
 
@@ -230,7 +318,7 @@ describe('perform api requests', () => {
 
     const prepare = (response) => {
       mockXHR = createMockXHR(response)
-      window.XMLHttpRequest = jest.fn(() => mockXHR)
+      global.window.XMLHttpRequest = jest.fn(() => mockXHR)
     }
 
     it('returns response with whitelisted attributes when not attribution endpoint', () => {
@@ -296,7 +384,7 @@ describe('perform api requests', () => {
 
     const prepare = (response) => {
       mockXHR = createMockXHR(response)
-      window.XMLHttpRequest = jest.fn(() => mockXHR)
+      global.window.XMLHttpRequest = jest.fn(() => mockXHR)
     }
 
     beforeAll(() => {
@@ -324,11 +412,7 @@ describe('perform api requests', () => {
       expect.assertions(3)
 
       request.default({
-        url: '/session',
-        params: {
-          appToken: '123abc',
-          environment: 'sandbox'
-        }
+        url: '/session'
       }).then(result => {
         expect(result).toEqual({
           adid: '123123',
@@ -358,11 +442,7 @@ describe('perform api requests', () => {
       expect.assertions(2)
 
       request.default({
-        url: '/session',
-        params: {
-          appToken: '123abc',
-          environment: 'sandbox'
-        }
+        url: '/session'
       }).then(result => {
         expect(result).toEqual({
           adid: '123123',
@@ -389,11 +469,7 @@ describe('perform api requests', () => {
       expect.assertions(2)
 
       request.default({
-        url: '/session',
-        params: {
-          appToken: '123abc',
-          environment: 'sandbox'
-        }
+        url: '/session'
       }).then(result => {
         expect(result).toEqual({
           adid: '123123',
@@ -421,8 +497,7 @@ describe('perform api requests', () => {
       request.default({
         url: '/event',
         params: {
-          appToken: '123abc',
-          environment: 'sandbox'
+          eventToken: 'token1'
         }
       }).then(result => {
         expect(result).toEqual({
@@ -450,7 +525,7 @@ describe('perform api requests', () => {
       request.default({
         url: '/anything',
         params: {
-          appToken: '123abc'
+          bla: 'truc'
         }
       }).then(result => {
         expect(result).toEqual({
@@ -478,7 +553,7 @@ describe('perform api requests', () => {
       request.default({
         url: '/anything',
         params: {
-          appToken: '123abc'
+          bla: 'truc'
         }
       }).then(result => {
         expect(result).toEqual({

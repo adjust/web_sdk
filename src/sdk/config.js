@@ -3,15 +3,15 @@ import {extend, buildList} from './utilities'
 import Logger from './logger'
 
 /**
- * Client's config before initialisation
+ * Base parameters set by client
+ * - app token
+ * - environment
+ * - default tracker
  *
- * @type {{environment: string, appToken: string}}
+ * @type {Object}
  * @private
  */
-const _initial = {
-  appToken: '',
-  environment: ''
-}
+let _baseParams = {}
 
 /**
  * Mandatory fields to set for sdk initialization
@@ -22,6 +22,17 @@ const _initial = {
 const _mandatory = [
   'appToken',
   'environment'
+]
+
+/**
+ * Allowed fields to set for sdk initialization
+ *
+ * @type {string[]}
+ * @private
+ */
+const _fields = [
+  ..._mandatory,
+  'defaultTracker'
 ]
 
 /**
@@ -37,7 +48,7 @@ const _mandatory = [
  * baseParams: Object
  * }}
  */
-const baseConfig = {
+const _baseConfig = {
   namespace: __ADJUST__NAMESPACE,
   version: `js${__ADJUST__SDK_VERSION}`,
   baseUrl: {
@@ -46,34 +57,42 @@ const baseConfig = {
   },
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
-  requestValidityWindow: 28 * DAY,
-  baseParams: extend({}, _initial),
+  requestValidityWindow: 28 * DAY
 }
 
-const Config = extend(baseConfig, {
-  isInitialised,
-  setParams,
-  hasMissing,
-  destroy
-})
-
 /**
- * Check of configuration has neen initialized
+ * Check of configuration has been initialized
  *
  * @returns {boolean}
  */
 function isInitialised () {
-  return _mandatory.reduce((acc, key) => acc && !!Config.baseParams[key], true)
+  return _mandatory.reduce((acc, key) => acc && !!_baseParams[key], true)
 }
 
 /**
- * Set mandatory params for the sdk to run
+ * Get base params set by client
+ *
+ * @returns {any}
+ * @private
+ */
+function _getParams () {
+  return extend({}, _baseParams)
+}
+
+/**
+ * Set base params for the sdk to run
  *
  * @param {Object} params
+ * @private
  */
-function setParams (params) {
-  _mandatory.forEach(key => {
-    extend(Config.baseParams, {[key]: params[key]})
+function _setParams (params) {
+
+  if (hasMissing(params)) {
+    return
+  }
+
+  _fields.forEach(key => {
+    extend(_baseParams, {[key]: params[key]})
   })
 }
 
@@ -97,10 +116,21 @@ function hasMissing (params) {
 }
 
 /**
- * Restore config to its default state before init
+ * Restore config to its default state
  */
 function destroy () {
-  extend(Config.baseParams, _initial)
+  _baseParams = {}
 }
+
+const Config = extend(_baseConfig, {
+  isInitialised,
+  hasMissing,
+  destroy
+})
+
+Object.defineProperty(Config, 'baseParams', {
+  get () { return _getParams() },
+  set (params) { return _setParams(params) }
+})
 
 export default Config

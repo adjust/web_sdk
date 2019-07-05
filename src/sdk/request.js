@@ -63,7 +63,7 @@ function _getErrorObject (xhr, onlyResponse) {
  * @private
  */
 function _encodeParams (params, defaultParams) {
-  params = extend(defaultParams, params)
+  params = extend(Config.baseParams, defaultParams, params)
 
   return Object
     .entries(params)

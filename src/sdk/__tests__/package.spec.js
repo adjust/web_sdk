@@ -1,6 +1,5 @@
 /* eslint-disable */
 import * as Package from '../package'
-import * as Config from '../config'
 import * as request from '../request'
 import * as Time from '../time'
 import * as Logger from '../logger'
@@ -10,20 +9,14 @@ jest.mock('../request')
 jest.mock('../logger')
 jest.useFakeTimers()
 
-const appParams = {
-  appToken: '123abc',
-  environment: 'sandbox',
-  osName: 'ios'
-}
-
 describe('test package functionality', () => {
 
   let createdAtSpy
   const now = Date.now()
   const matchCreatedAt = {
-    params: Object.assign({
+    params: {
       createdAt: now
-    }, appParams)
+    }
   }
   const someRequest = Package.default({
     url: '/global-request',
@@ -33,8 +26,6 @@ describe('test package functionality', () => {
   })
 
   beforeAll(() => {
-    Object.assign(Config.default.baseParams, appParams)
-
     jest.spyOn(request, 'default')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'error')
@@ -47,8 +38,6 @@ describe('test package functionality', () => {
   })
 
   afterAll(() => {
-    Config.default.destroy()
-
     jest.clearAllTimers()
     jest.restoreAllMocks()
   })
@@ -69,10 +58,10 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenCalledWith({
       url: '/global-request',
       method: 'GET',
-      params: Object.assign({
+      params: {
         createdAt: now,
         some: 'param'
-      }, appParams)
+      }
     })
 
     return flushPromises()
@@ -104,11 +93,11 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenCalledWith({
       url: '/global-request',
       method: 'GET',
-      params: Object.assign({
+      params: {
         createdAt: now,
         more: 'params',
         and: 'more-fun'
-      }, appParams)
+      }
     })
 
     return flushPromises()
@@ -221,10 +210,10 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenLastCalledWith({
       url: '/other-request',
       method: 'POST',
-      params: Object.assign({
+      params: {
         createdAt: now,
         something: 'else'
-      }, appParams)
+      }
     })
 
     return flushPromises()
@@ -240,10 +229,10 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenLastCalledWith({
           url: '/other-request',
           method: 'POST',
-          params: Object.assign({
+          params: {
             createdAt: now,
             something: 'else'
-          }, appParams)
+          }
         })
 
         return flushPromises()
@@ -262,10 +251,10 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenLastCalledWith({
           url: '/other-request',
           method: 'POST',
-          params: Object.assign({
+          params: {
             createdAt: now,
             something: 'else'
-          }, appParams)
+          }
         })
 
         setTimeout.mockClear()
@@ -292,10 +281,10 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/global-request',
           method: 'GET',
-          params: Object.assign({
+          params: {
             createdAt: newNow,
             some: 'param'
-          }, appParams)
+          }
         })
 
         return flushPromises()
@@ -310,9 +299,9 @@ describe('test package functionality', () => {
 
     const newNow = Date.now()
     const matchOuterCreatedAt = {
-      params: Object.assign({
+      params: {
         createdAt: newNow
-      }, appParams)
+      }
     }
 
     request.default.mockRejectedValue(errorResponse())
@@ -492,10 +481,10 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/global-request',
           method: 'GET',
-          params: Object.assign({
+          params: {
             createdAt: newNow,
             some: 'param'
-          }, appParams)
+          }
         })
 
         return flushPromises()
@@ -631,10 +620,10 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/global-request',
           method: 'GET',
-          params: Object.assign({
+          params: {
             createdAt: newNow,
             some: 'param'
-          }, appParams)
+          }
         })
 
         return flushPromises()
@@ -696,9 +685,9 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/another-global-request',
           method: 'GET',
-          params: Object.assign({
+          params: {
             createdAt: now,
-          }, appParams)
+          }
         })
       })
 
@@ -723,11 +712,11 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/new-url',
           method: 'POST',
-          params: Object.assign({
+          params: {
             createdAt: now,
             trc: 'prc',
             bla: 'truc'
-          }, appParams)
+          }
         })
 
         return flushPromises()
@@ -775,10 +764,10 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/another-global-request',
           method: 'GET',
-          params: Object.assign({
+          params: {
             createdAt: now,
             some: 'param'
-          }, appParams)
+          }
         })
 
         return flushPromises()
@@ -809,11 +798,11 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledWith({
           url: '/another-global-request',
           method: 'GET',
-          params: Object.assign({
+          params: {
             createdAt: now,
             bla: 'ble',
             blu: 'bli'
-          }, appParams)
+          }
         })
 
         return flushPromises()
@@ -832,10 +821,10 @@ describe('test package functionality', () => {
             expect(request.default).toHaveBeenCalledWith({
               url: '/another-global-request',
               method: 'GET',
-              params: Object.assign({
+              params: {
                 createdAt: now,
                 some: 'param'
-              }, appParams)
+              }
             })
 
             return flushPromises()

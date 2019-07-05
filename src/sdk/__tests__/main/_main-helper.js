@@ -49,8 +49,7 @@ export function expectStart () {
 export function expectNotStart (restart) {
 
   if (!restart) {
-    expect(Config.default.baseParams.appToken).toEqual('')
-    expect(Config.default.baseParams.environment).toEqual('')
+    expect(Config.default.baseParams).toEqual({})
   }
 
   expect(PubSub.subscribe).not.toHaveBeenCalled()
@@ -175,8 +174,7 @@ export function expectShutDown () {
   expect(SdkClick.destroy).toHaveBeenCalled()
   expect(StorageManager.default.destroy).toHaveBeenCalled()
 
-  expect(Config.default.baseParams.appToken).toEqual('')
-  expect(Config.default.baseParams.environment).toEqual('')
+  expect(Config.default.baseParams).toEqual({})
 }
 
 export function expectNotShutDown () {
@@ -243,8 +241,7 @@ export function expectAllUp (instance) {
 }
 
 export function expectAllDown () {
-  expect(Config.default.baseParams.appToken).toEqual('')
-  expect(Config.default.baseParams.environment).toEqual('')
+  expect(Config.default.baseParams).toEqual({})
 
   expectNotGdprForgetMeCallback()
   expectNotAttributionCallback()

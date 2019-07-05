@@ -254,7 +254,7 @@ function _start (params = {}) {
     return
   }
 
-  Config.setParams(params)
+  Config.baseParams = params
 
   subscribe('sdk:shutdown', () => _shutdown(true))
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
