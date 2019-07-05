@@ -89,15 +89,15 @@ function _getLanguage () {
 }
 
 /**
- * Get cpu type from navigator.platform property
+ * Get machine type from navigator.platform property
  *
- * @returns {{cpuType: (string|undefined)}}
+ * @returns {{machineType: (string|undefined)}}
  */
-function _getCpuType () {
+function _getMachineType () {
   const ua = navigator.userAgent || navigator.vendor || window.opera
   const overrideWin32 = navigator.platform === 'Win32' && (ua.indexOf('WOW64') !== -1 || ua.indexOf('Win64') !== -1)
 
-  return {cpuType: (overrideWin32 ? 'Win64' : navigator.platform) || undefined}
+  return {machineType: (overrideWin32 ? 'Win64' : navigator.platform) || undefined}
 }
 
 /**
@@ -120,7 +120,7 @@ export default function defaultParams () {
       _getTrackEnabled(),
       _getPlatform(),
       _getLanguage(),
-      _getCpuType(),
+      _getMachineType(),
       queueSize
     ))
 }

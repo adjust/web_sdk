@@ -131,13 +131,54 @@ describe('request default parameters formation', () => {
     })
   })
 
-  it('test cpu_type - by default is undefined', () => {
-    expect.assertions(1)
+  describe('test navigator platform value', () => {
+    const oldPlatform = global.window.navigator.platform
+    const oldUserAgent = global.window.navigator.userAgent
+    let navigatorPlatform
+    let userAgent
 
-    return defaultParams.default()
-      .then(params => {
-        expect(params.cpuType).toBeUndefined()
-      })
+    beforeAll(() => {
+      setGlobalProp(global.window.navigator, 'platform')
+      setGlobalProp(global.window.navigator, 'userAgent')
+      navigatorPlatform = jest.spyOn(global.window.navigator, 'platform', 'get')
+      userAgent = jest.spyOn(global.window.navigator, 'userAgent', 'get')
+    })
+
+    afterAll(() => {
+      global.window.navigator.language = oldPlatform
+      global.window.navigator.userAgent = oldUserAgent
+    })
+
+    it('reads machine_type - by default is undefined', () => {
+
+      expect.assertions(2)
+
+      return defaultParams.default()
+        .then(params => {
+          expect(params.machineType).toBeUndefined()
+
+          navigatorPlatform.mockReturnValue('macos')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.machineType).toBe('macos')
+        })
+    })
+
+    it('reads machine_type on 64-bit window machine and corrects it if necessary', () => {
+
+      expect.assertions(1)
+
+      navigatorPlatform.mockReturnValue('Win32')
+      userAgent.mockReturnValue('Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36')
+
+      return defaultParams.default()
+        .then(params => {
+          expect(params.machineType).toBe('Win64')
+        })
+
+    })
   })
 
   it('test queue_size - by default is zero', () => {
