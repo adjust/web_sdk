@@ -1,8 +1,7 @@
 import {SECOND} from './constants'
 import {timePassed} from './time'
-import {extend} from './utilities'
+import {extend, isRequest} from './utilities'
 import Config from './config'
-import Logger from './logger'
 
 /**
  * Reference to the activity state
@@ -57,7 +56,7 @@ function _updateLastActive (sync) {
 }
 
 /**
- * Update activity state with new session params
+ * Update activity state with new params
  *
  * @param {Object} params
  * @private
@@ -124,7 +123,7 @@ function _getSessionLength () {
  * @private
  */
 function _getSessionCount () {
-  return (_activityState || {}).sessionCount || 1
+  return (_activityState || {}).sessionCount || 0
 }
 
 /**
@@ -135,6 +134,17 @@ function _getSessionCount () {
  */
 function _getEventCount () {
   return (_activityState || {}).eventCount || 0
+}
+
+/**
+ * Get time passed since last activity was recorded
+ *
+ * @returns {number}
+ * @private
+ */
+function _getLastInterval () {
+  const lastActive = (_activityState || {}).lastActive || Date.now()
+  return Math.round(timePassed(lastActive, Date.now()) / SECOND)
 }
 
 /**
@@ -150,43 +160,35 @@ function getParams () {
   return {
     timeSpent: _activityState.timeSpent || 0,
     sessionLength: _activityState.sessionLength || 0,
-    sessionCount: _activityState.sessionCount || 1
+    sessionCount: _activityState.sessionCount || 1,
+    lastInterval: _getLastInterval()
   }
 }
 
 /**
- * Update particular session parameter
+ * Update activity state parameters depending on the endpoint which has been run
  *
- * @param key
+ * @param {string} url
  */
-function updateParam (key) {
+function updateParams (url) {
   if (_activityState === null) {
     return
   }
 
-  let param
+  const params = {}
+  params.timeSpent = _getTimeSpent()
+  params.sessionLength = _getSessionLength()
 
-  switch (key) {
-    case 'timeSpent':
-      param = _getTimeSpent()
-      break
-    case 'sessionLength':
-      param = _getSessionLength()
-      break
-    case 'sessionCount':
-      param = _getSessionCount() + 1
-      break
-    case 'eventCount':
-      param = _getEventCount() + 1
-      break
-    default:
-      Logger.error(`Key ${key} does not exist in Activity State`)
+  if (isRequest(url, 'session')) {
+    params.sessionCount = _getSessionCount() + 1
   }
 
-  if (param !== undefined) {
-    _update({[key]: param})
-    _updateLastActive()
+  if (isRequest(url, 'event')) {
+    params.eventCount = _getEventCount() + 1
   }
+
+  _update(params)
+  _updateLastActive()
 }
 
 /**
@@ -201,6 +203,20 @@ function updateSessionOffset () {
   const sessionLength = _getSessionLength()
 
   _update({timeSpent, sessionLength})
+  _updateLastActive()
+}
+
+/**
+ * Update session length
+ */
+function updateSessionLength () {
+  if (_activityState === null) {
+    return
+  }
+
+  const sessionLength = _getSessionLength()
+
+  _update({sessionLength})
   _updateLastActive()
 }
 
@@ -227,8 +243,9 @@ const ActivityState = {
   toForeground,
   toBackground,
   getParams,
-  updateParam,
+  updateParams,
   updateSessionOffset,
+  updateSessionLength,
   resetSessionOffset,
   destroy
 }

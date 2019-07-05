@@ -2,6 +2,7 @@
 import * as defaultParams from '../default-params'
 import * as ActivityState from '../activity-state'
 import * as Time from '../time'
+import * as QuickStorage from '../quick-storage'
 import {setGlobalProp} from './_helper'
 
 jest.mock('../logger')
@@ -137,6 +138,29 @@ describe('request default parameters formation', () => {
       .then(params => {
         expect(params.cpuType).toBeUndefined()
       })
+  })
+
+  it('test queue_size - by default is zero', () => {
+
+    expect.assertions(2)
+
+    return defaultParams.default()
+      .then(params => {
+        expect(params.queueSize).toBe(0)
+
+        QuickStorage.default.stores[QuickStorage.default.names.queue] = [
+          {timestamp: 1, url: '/url1'},
+          {timestamp: 2, url: '/url2'},
+          {timestamp: 3, url: '/url3'}
+        ]
+
+        return defaultParams.default()
+      })
+      .then(params => {
+        expect(params.queueSize).toBe(3)
+      })
+
+
   })
 
 })

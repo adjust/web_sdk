@@ -243,28 +243,34 @@ describe('activity state functionality', () => {
     expect(params.sessionLength).toEqual((7 * MINUTE) / SECOND)
   })
 
-  it('update session count on demand and never resets it', () => {
+  it('update session and event count on demand', () => {
 
     ActivityState.default.toForeground()
+    ActivityState.default.updateParams('/session')
+    ActivityState.default.updateParams('/event')
 
-    expect(ActivityState.default.getParams().sessionCount).toEqual(1)
+    expect(ActivityState.default.current.sessionCount).toEqual(1)
+    expect(ActivityState.default.current.eventCount).toEqual(1)
 
-    ActivityState.default.updateParam('sessionCount')
+    ActivityState.default.updateParams('/session')
 
-    expect(ActivityState.default.getParams().sessionCount).toEqual(2)
+    expect(ActivityState.default.current.sessionCount).toEqual(2)
+    expect(ActivityState.default.current.eventCount).toEqual(1)
 
-    ActivityState.default.updateParam('sessionCount')
-    ActivityState.default.updateParam('sessionCount')
+    ActivityState.default.updateParams('/session')
+    ActivityState.default.updateParams('/event')
 
-    expect(ActivityState.default.getParams().sessionCount).toEqual(4)
+    expect(ActivityState.default.current.sessionCount).toEqual(3)
+    expect(ActivityState.default.current.eventCount).toEqual(2)
 
     ActivityState.default.resetSessionOffset()
 
-    expect(ActivityState.default.getParams().sessionCount).toEqual(4)
+    expect(ActivityState.default.current.sessionCount).toEqual(3)
+    expect(ActivityState.default.current.eventCount).toEqual(2)
 
     ActivityState.default.destroy()
 
-    const params = ActivityState.default.getParams()
+    const params = ActivityState.default.current || {}
 
     expect(params.timeSpent).toBeUndefined()
     expect(params.sessionLength).toBeUndefined()

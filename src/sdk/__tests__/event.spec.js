@@ -27,7 +27,8 @@ function expectRequest (requestConfig) {
       timeSpent: 0,
       sessionLength: 0,
       sessionCount: 1,
-      eventCount: 1
+      eventCount: 1,
+      lastInterval: 0
     }, requestConfig.params, appConfig)
   })
 

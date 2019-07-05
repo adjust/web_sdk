@@ -7,12 +7,13 @@ import * as Logger from '../logger'
 import * as Time from '../time'
 import * as Scheme from '../scheme'
 import {errorResponse, flushPromises} from './_helper'
+import {MINUTE, SECOND} from '../constants'
 
 jest.mock('../request')
 jest.mock('../logger')
 jest.useFakeTimers()
 
-const now = 1552914489217
+const currentTime = Date.now()
 let dateNowSpy
 
 function checkExecution ({config, times, success = true, wait = 150, flush = true, reset = false}) {
@@ -46,7 +47,7 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
 
 function push (configs) {
 
-  let start = 1552914489217
+  let start = currentTime
   let promise = flushPromises()
 
   dateNowSpy.mockReturnValue(configs[0].timestamp || start++)
@@ -55,12 +56,10 @@ function push (configs) {
   configs.shift()
 
   configs.forEach(config => {
-
     promise = promise.then(() => {
       dateNowSpy.mockReturnValue(config.timestamp || start++)
       return Queue.push(config)
     })
-
   })
   return promise
 }
@@ -72,7 +71,8 @@ describe('test request queuing functionality', () => {
     createdAt: 'some-time',
     timeSpent: 0,
     sessionLength: 0,
-    sessionCount: 1
+    sessionCount: 1,
+    lastInterval: 0
   }
 
   beforeAll(() => {
@@ -87,11 +87,13 @@ describe('test request queuing functionality', () => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
 
     ActivityState.default.current = {uuid: 'some-uuid'}
+    ActivityState.default.toForeground()
   })
 
   afterEach(() => {
     jest.clearAllMocks()
 
+    ActivityState.default.current = Object.assign(ActivityState.default.current, {eventCount: 0, sessionCount: 0})
     StorageManager.default.clear(storeNames.queue)
     StorageManager.default.clear(storeNames.activityState)
   })
@@ -104,7 +106,7 @@ describe('test request queuing functionality', () => {
 
   it('pushes request to the queue and executes it if connected', () => {
 
-    dateNowSpy.mockReturnValue(now)
+    dateNowSpy.mockReturnValue(currentTime)
 
     const config = {url: '/some-url'}
 
@@ -115,7 +117,7 @@ describe('test request queuing functionality', () => {
     return flushPromises()
       .then(() => {
 
-        expect(StorageManager.default.addItem).toHaveBeenCalledWith(storeNames.queue, Object.assign({timestamp: now}, Object.assign(config, {params: defaultParams})))
+        expect(StorageManager.default.addItem).toHaveBeenCalledWith(storeNames.queue, Object.assign({timestamp: currentTime}, Object.assign(config, {params: defaultParams})))
 
         jest.runOnlyPendingTimers()
 
@@ -155,9 +157,9 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1', params: defaultParams},
-          {timestamp: 1552914489218, url: '/some-url-2', params: defaultParams},
-          {timestamp: 1552914489219, url: '/some-url-3', params: defaultParams}
+          {timestamp: currentTime, url: '/some-url-1', params: defaultParams},
+          {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams},
+          {timestamp: currentTime+2, url: '/some-url-3', params: defaultParams}
         ])
 
         return checkExecution({config: config1, times: 1, reset: true}) // + 5 assertions
@@ -201,8 +203,8 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1', params: defaultParams},
-          {timestamp: 1552914489218, url: '/some-url-2', params: defaultParams}
+          {timestamp: currentTime, url: '/some-url-1', params: defaultParams},
+          {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams}
         ])
 
         return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
@@ -270,9 +272,9 @@ describe('test request queuing functionality', () => {
       .then(result => {
 
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1', params: defaultParams},
-          {timestamp: 1552914489218, url: '/some-url-2', params: defaultParams},
-          {timestamp: 1552914489219, url: '/some-url-3', params: defaultParams}
+          {timestamp: currentTime, url: '/some-url-1', params: defaultParams},
+          {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams},
+          {timestamp: currentTime+2, url: '/some-url-3', params: defaultParams}
         ])
 
         return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
@@ -323,8 +325,8 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/some-url-1', params: defaultParams},
-          {timestamp: 1552914489218, url: '/some-url-2', params: defaultParams}
+          {timestamp: currentTime, url: '/some-url-1', params: defaultParams},
+          {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams}
         ])
 
         Queue.setOffline(false)
@@ -377,7 +379,7 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: 1552914489218, url: '/event', params: Object.assign({}, defaultParams, {sessionCount: 2, eventCount: 1})}
+          {timestamp: currentTime+1, url: '/event', params: Object.assign({}, defaultParams, {eventCount: 1})}
         ])
 
         Queue.setOffline(false)
@@ -421,8 +423,8 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: 1552914489217, url: '/session', params: defaultParams},
-          {timestamp: 1552914489218, url: '/event', params: Object.assign({}, defaultParams, {sessionCount: 2, eventCount: 1})}
+          {timestamp: currentTime, url: '/session', params: defaultParams},
+          {timestamp: currentTime+1, url: '/event', params: Object.assign({}, defaultParams, {eventCount: 1})}
         ])
 
         Queue.setOffline(false)
@@ -434,6 +436,146 @@ describe('test request queuing functionality', () => {
       .then(() => checkExecution({config: config1, times: 1, reset: true})) // + 5 assertions
       .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
       .then(() => StorageManager.default.getFirst(storeNames.queue))
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+
+  })
+
+  it('runs session and event requests with some delay in between', () => {
+
+    let queue = []
+    const timestamp1 = Date.now()
+    const config1 = {url: '/session'}
+    const timestamp2 = timestamp1 + 3 * MINUTE
+    const config2 = {url: '/event', params: {eventToken: 'token1'}}
+    const timestamp3 = timestamp2 + MINUTE
+    const config3 = {url: '/event', params: {eventToken: 'token2'}}
+    const timestamp4 = timestamp3 + 5 * MINUTE
+    const config4 = {url: '/session'}
+    const timestamp5 = timestamp4 + 23 * SECOND
+    const config5 = {url: '/event', params: {eventToken: 'token3'}}
+
+    expect.assertions(36)
+
+    dateNowSpy.mockReturnValue(timestamp1)
+
+    Queue.push(config1)
+
+    return flushPromises()
+      .then(() => StorageManager.default.getAll(storeNames.queue))
+      .then(result => {
+        expect(result).toEqual(queue = [
+          {timestamp: timestamp1, url: '/session', params: defaultParams}
+        ])
+
+        dateNowSpy.mockReturnValue(timestamp2)
+
+        Queue.push(config2)
+
+        return flushPromises()
+      })
+      .then(() => StorageManager.default.getAll(storeNames.queue))
+      .then(result => {
+        expect(result).toEqual(queue = [
+          ...queue,
+          {timestamp: timestamp2, url: '/event', params: Object.assign({}, defaultParams, {
+              eventToken: 'token1',
+              timeSpent: 180,
+              sessionLength: 180,
+              eventCount: 1,
+              lastInterval: 180
+            })
+          }
+        ])
+
+        dateNowSpy.mockReturnValue(timestamp3)
+
+        Queue.push(config3)
+
+        return flushPromises()
+      })
+      .then(() => StorageManager.default.getAll(storeNames.queue))
+      .then(result => {
+        expect(result).toEqual(queue = [
+          ...queue,
+          {timestamp: timestamp3, url: '/event', params: Object.assign({}, defaultParams, {
+              eventToken: 'token2',
+              timeSpent: 240,
+              sessionLength: 240,
+              eventCount: 2,
+              lastInterval: 60
+            })
+          }
+        ])
+
+        dateNowSpy.mockReturnValue(timestamp4)
+
+        Queue.push(config4)
+
+        return flushPromises()
+      })
+      .then(() => StorageManager.default.getAll(storeNames.queue))
+      .then(result => {
+        expect(result).toEqual(queue = [
+          ...queue,
+          {timestamp: timestamp4, url: '/session', params: Object.assign({}, defaultParams, {
+              timeSpent: 540,
+              sessionLength: 540,
+              sessionCount: 2,
+              lastInterval: 300
+            })
+          }
+        ])
+
+        dateNowSpy.mockReturnValue(timestamp5)
+
+        Queue.push(config5)
+
+        return flushPromises()
+      })
+      .then(() => StorageManager.default.getAll(storeNames.queue))
+      .then(result => {
+        expect(result).toEqual(queue = [
+          ...queue,
+          {timestamp: timestamp5, url: '/event', params: Object.assign({}, defaultParams, {
+              eventToken: 'token3',
+              timeSpent: 23,
+              sessionLength: 23,
+              eventCount: 3,
+              sessionCount: 2,
+              lastInterval: 23
+            })
+          }
+        ])
+
+        return checkExecution({config: config1, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /session has been finished')
+
+        return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /event has been finished')
+
+        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /event has been finished')
+
+        return checkExecution({config: config4, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /session has been finished')
+
+        return checkExecution({config: config5, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /event has been finished')
+
+        return StorageManager.default.getFirst(storeNames.queue)
+      })
       .then(pending => {
         expect(pending).toBeUndefined()
       })

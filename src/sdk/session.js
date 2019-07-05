@@ -111,7 +111,7 @@ function _handleBackground () {
  * @private
  */
 function _handleForeground () {
-  ActivityState.updateParam('sessionLength')
+  ActivityState.updateSessionLength()
   ActivityState.toForeground()
 
   return sync().then(_checkSession)

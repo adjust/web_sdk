@@ -31,7 +31,8 @@ function expectRequest () {
       createdAt: 'some-time',
       timeSpent: 0,
       sessionLength: 0,
-      sessionCount: 1
+      sessionCount: 1,
+      lastInterval: 0
     }, requestConfig.params, appConfig)
   })
 

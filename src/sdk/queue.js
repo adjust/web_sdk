@@ -69,23 +69,16 @@ function _prepareParams (url, params) {
 }
 
 /**
- * Update activity state params
+ * Persist activity state change with session offset reset after session request
  *
  * @param {string} url
  * @returns {Promise}
  * @private
  */
-function _updateActivityStateParams (url) {
-
-  if (isRequest(url, 'event')) {
-    ActivityState.updateParam('eventCount')
-  }
+function _persist (url) {
 
   if (isRequest(url, 'session')) {
-    ActivityState.updateParam('sessionCount')
     ActivityState.resetSessionOffset()
-  } else {
-    ActivityState.updateSessionOffset()
   }
 
   return persist()
@@ -100,12 +93,15 @@ function _updateActivityStateParams (url) {
  * @returns {Promise}
  */
 function push ({url, method, params}) {
+
+  ActivityState.updateParams(url)
+
   params = _prepareParams(url, params)
 
   const pending = extend({timestamp: Date.now()}, {url, method, params})
 
   return StorageManager.addItem(_storeName, pending)
-    .then(() => _updateActivityStateParams(url))
+    .then(() => _persist(url))
     .then(() => _request.isRunning() ? {} : run())
 }
 
