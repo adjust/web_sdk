@@ -16,7 +16,7 @@ describe('activity state functionality', () => {
     currentTime = now
     dateNowSpy.mockReturnValue(currentTime)
     ActivityState.default.current = {uuid: 'some-uuid'}
-    ActivityState.default.toForeground()
+    ActivityState.default.initParams()
   })
 
   afterEach(() => {
@@ -57,8 +57,7 @@ describe('activity state functionality', () => {
 
   })
 
-  it('returns zero for time spent and session lenght initially', () => {
-    ActivityState.default.toForeground()
+  it('returns zero for time spent and session length initially', () => {
 
     dateNowSpy.mockReturnValue(currentTime)
     ActivityState.default.updateSessionOffset()
@@ -84,8 +83,6 @@ describe('activity state functionality', () => {
   it('returns positive number for time spent and session length after some time when in foreground', () => {
 
     let params
-
-    ActivityState.default.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 3 * MINUTE)
     ActivityState.default.updateSessionOffset()
@@ -115,8 +112,6 @@ describe('activity state functionality', () => {
   })
 
   it('measures session length while within session window', () => {
-
-    ActivityState.default.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 3 * MINUTE)
     ActivityState.default.updateSessionOffset()
@@ -149,8 +144,6 @@ describe('activity state functionality', () => {
   it('resets time spent and session length and continues counting from zero if still in foreground', () => {
     let params
 
-    ActivityState.default.toForeground()
-
     dateNowSpy.mockReturnValue(currentTime += 6 * MINUTE)
     ActivityState.default.updateSessionOffset()
 
@@ -171,8 +164,6 @@ describe('activity state functionality', () => {
 
   it('resets time spent and session length and returns zero if went to background', () => {
     let params
-
-    ActivityState.default.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
     ActivityState.default.updateSessionOffset()
@@ -201,8 +192,6 @@ describe('activity state functionality', () => {
 
   it('includes time offset in time spent and session length from the last preserved point', () => {
     let params
-
-    ActivityState.default.toForeground()
 
     dateNowSpy.mockReturnValue(currentTime += 3 * MINUTE)
     ActivityState.default.updateSessionOffset()
@@ -245,7 +234,6 @@ describe('activity state functionality', () => {
 
   it('update session and event count on demand', () => {
 
-    ActivityState.default.toForeground()
     ActivityState.default.updateParams('/session')
     ActivityState.default.updateParams('/event')
 

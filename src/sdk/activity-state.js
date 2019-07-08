@@ -48,11 +48,10 @@ function currentSetter (params) {
 /**
  * Update last active point
  *
- * @param {boolean=} sync
  * @private
  */
-function _updateLastActive (sync) {
-  _lastActive = sync && _activityState.lastActive ? _activityState.lastActive : Date.now()
+function _updateLastActive () {
+  _lastActive = Date.now()
 }
 
 /**
@@ -66,14 +65,10 @@ function _update (params) {
 }
 
 /**
- * Set active flag to true when going foreground and update last active
- *
- * @param {boolean=false} sync
+ * Set active flag to true when going foreground
  */
-function toForeground (sync) {
+function toForeground () {
   _active = true
-
-  _updateLastActive(sync)
 }
 
 /**
@@ -145,6 +140,14 @@ function _getEventCount () {
 function _getLastInterval () {
   const lastActive = (_activityState || {}).lastActive || Date.now()
   return Math.round(timePassed(lastActive, Date.now()) / SECOND)
+}
+
+/**
+ * Initiate session params and go to foreground
+ */
+function initParams () {
+  updateSessionOffset()
+  toForeground()
 }
 
 /**
@@ -237,11 +240,14 @@ function resetSessionOffset () {
  */
 function destroy () {
   _activityState = null
+  _lastActive = 0
+  _active = false
 }
 
 const ActivityState = {
   toForeground,
   toBackground,
+  initParams,
   getParams,
   updateParams,
   updateSessionOffset,

@@ -54,7 +54,7 @@ function watch () {
 
   _running = true
 
-  ActivityState.toForeground(true)
+  ActivityState.initParams()
 
   if (_adapter) {
     on(document, _adapter.visibilityChange, _handleVisibilityChange)

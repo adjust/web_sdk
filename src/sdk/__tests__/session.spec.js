@@ -9,7 +9,9 @@ import * as ActivityState from '../activity-state'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as Scheme from '../scheme'
-import {MINUTE} from '../constants'
+import * as request from '../request'
+import * as Time from '../time'
+import {MINUTE, SECOND} from '../constants'
 import {flushPromises, setDocumentProp} from './_helper'
 
 jest.mock('../logger')
@@ -35,9 +37,11 @@ describe('test session functionality', () => {
     Session.destroy()
     Identity.destroy()
     localStorage.clear()
+    ActivityState.default.current = {eventCount: 0, sessionCount: 0}
   }
 
   beforeAll(() => {
+    jest.spyOn(request, 'default')
     jest.spyOn(Utilities, 'on')
     jest.spyOn(Utilities, 'off')
     jest.spyOn(Identity, 'persist')
@@ -45,6 +49,7 @@ describe('test session functionality', () => {
     jest.spyOn(Queue, 'push')
     jest.spyOn(Queue, 'run').mockImplementation(() => {})
     jest.spyOn(Logger.default, 'error')
+    jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
 
   beforeEach(() => {
@@ -116,8 +121,8 @@ describe('test session functionality', () => {
 
       expect.assertions(31)
       expect(setInterval).toHaveBeenCalledTimes(1)
-      expect(activityState.timeSpent).toBeUndefined()
-      expect(activityState.sessionLength).toBeUndefined()
+      expect(activityState.timeSpent).toEqual(0)
+      expect(activityState.sessionLength).toEqual(0)
 
       return flushPromises()
         .then(() => {
@@ -209,7 +214,7 @@ describe('test session functionality', () => {
 
       _reset()
 
-      expect.assertions(3)
+      expect.assertions(4)
 
       return Identity.start()
         .then(() => {
@@ -228,6 +233,18 @@ describe('test session functionality', () => {
 
               jest.runOnlyPendingTimers()
 
+              expect(request.default).toHaveBeenCalledWith({
+                url: '/session',
+                method: 'POST',
+                params: {
+                  createdAt: 'some-time',
+                  lastInterval: 0,
+                  timeSpent: 0,
+                  sessionLength: 0,
+                  sessionCount: 1
+                }
+              })
+
               return flushPromises()
             })
             .then(() => {
@@ -240,6 +257,10 @@ describe('test session functionality', () => {
 
     it('send install on initial run and append global params', () => {
 
+      let currentTime = Date.now()
+
+      dateNowSpy.mockReturnValue(currentTime)
+
       _reset()
 
       const callbackParams = [
@@ -251,7 +272,7 @@ describe('test session functionality', () => {
         {key: 'very', value: 'nice'}
       ]
 
-      expect.assertions(3)
+      expect.assertions(4)
 
       return Promise.all([
         GlobalParams.add(callbackParams, 'callback'),
@@ -263,6 +284,9 @@ describe('test session functionality', () => {
           Session.watch()
 
           expect(Utilities.on).toHaveBeenCalled()
+
+          dateNowSpy.mockReturnValue(currentTime += 30 * SECOND)
+          jest.advanceTimersByTime(30 * SECOND)
 
           return flushPromises()
         })
@@ -278,6 +302,20 @@ describe('test session functionality', () => {
           })
 
           jest.runOnlyPendingTimers()
+
+          expect(request.default).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {
+              createdAt: 'some-time',
+              lastInterval: 0,
+              timeSpent: 30,
+              sessionLength: 30,
+              sessionCount: 1,
+              callbackParams: {key1: 'value1', key2: 'value2'},
+              partnerParams: {some: 'thing', very: 'nice'}
+            }
+          })
 
           return flushPromises()
         })
@@ -360,11 +398,12 @@ describe('test session functionality', () => {
 
       activityState = ActivityState.default.current
 
-      expect.assertions(63)
+      expect.assertions(65)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
-      expect(activityState.timeSpent).toBeUndefined()
-      expect(activityState.sessionLength).toBeUndefined()
+      expect(activityState.timeSpent).toEqual(0)
+      expect(activityState.sessionLength).toEqual(0)
+      expect(activityState.lastInterval).toBeUndefined()
 
       return flushPromises()
         .then(() => {
@@ -539,12 +578,26 @@ describe('test session functionality', () => {
             params: {}
           })
 
+          jest.runOnlyPendingTimers()
+
+          expect(request.default).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {
+              createdAt: 'some-time',
+              sessionCount: 2,
+              timeSpent: 720,
+              sessionLength: 2460,
+              lastInterval: 1860 // 31 minutes
+            }
+          })
+
           dateNowSpy.mockReturnValue(currentTime += 10 * MINUTE)
           jest.advanceTimersByTime(10 * MINUTE)
 
           activityState = ActivityState.default.current
 
-          expect(Identity.persist).toHaveBeenCalledTimes(26)
+          expect(Identity.persist).toHaveBeenCalledTimes(27)
           expect(activityState.timeSpent).toEqual(600) // 10m
           expect(activityState.sessionLength).toEqual(600) // 10m
 
@@ -558,16 +611,17 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(3)
+      expect.assertions(4)
 
       return Identity.persist()
         .then(() => {
 
           Session.watch()
 
-          goToBackground()
+          dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
+          jest.advanceTimersByTime(2 * MINUTE)
 
-          jest.runOnlyPendingTimers()
+          goToBackground()
 
           return flushPromises()
         })
@@ -588,6 +642,22 @@ describe('test session functionality', () => {
             method: 'POST',
             params: {}
           })
+
+          jest.runOnlyPendingTimers()
+
+          expect(request.default).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {
+              createdAt: 'some-time',
+              sessionCount: 1,
+              timeSpent: 120,
+              sessionLength: 120,
+              lastInterval: 1800 // 30 minutes
+            }
+          })
+
+          return flushPromises()
         })
     })
 
@@ -603,6 +673,9 @@ describe('test session functionality', () => {
         .then(() => {
 
           Session.watch()
+
+          dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
+          jest.advanceTimersByTime(2 * MINUTE)
 
           goToBackground()
 
@@ -620,6 +693,67 @@ describe('test session functionality', () => {
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
+        })
+    })
+
+    it('checks for new session when window reached after session watch restart', () => {
+
+      let currentTime = Date.now()
+      let currentLastActive
+
+      dateNowSpy.mockReturnValue(currentTime)
+
+      expect.assertions(4)
+
+      return Identity.persist()
+        .then(() => {
+
+          Session.watch()
+
+          dateNowSpy.mockReturnValue(currentTime += 40 * SECOND)
+          jest.advanceTimersByTime(40 * SECOND)
+
+          currentLastActive = currentTime
+
+          goToBackground()
+          Session.destroy()
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          dateNowSpy.mockReturnValue(currentTime += Config.default.sessionWindow + 5 * MINUTE) // + 35 minutes
+          jest.advanceTimersByTime(Config.default.sessionWindow + 5 * MINUTE)
+
+          Session.watch()
+
+          expect(Queue.push).not.toHaveBeenCalled()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(Queue.push).toHaveBeenCalledTimes(1)
+          expect(Queue.push).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {}
+          })
+
+          jest.runOnlyPendingTimers()
+
+          expect(request.default).toHaveBeenCalledWith({
+            url: '/session',
+            method: 'POST',
+            params: {
+              createdAt: 'some-time',
+              sessionCount: 1,
+              timeSpent: 40,
+              sessionLength: 40,
+              lastInterval: 2100 // 35 minutes
+            }
+          })
+
+          return flushPromises()
         })
     })
   })

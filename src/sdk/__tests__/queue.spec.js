@@ -85,23 +85,22 @@ describe('test request queuing functionality', () => {
     jest.spyOn(Logger.default, 'info')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
+  })
 
+  beforeEach(() => {
     ActivityState.default.current = {uuid: 'some-uuid'}
-    ActivityState.default.toForeground()
+    ActivityState.default.initParams()
   })
 
   afterEach(() => {
     jest.clearAllMocks()
-
-    ActivityState.default.current = Object.assign(ActivityState.default.current, {eventCount: 0, sessionCount: 0})
-    StorageManager.default.clear(storeNames.queue)
-    StorageManager.default.clear(storeNames.activityState)
+    ActivityState.default.destroy()
+    localStorage.clear()
   })
 
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    ActivityState.default.destroy()
   })
 
   it('pushes request to the queue and executes it if connected', () => {
