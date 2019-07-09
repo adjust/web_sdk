@@ -37,7 +37,7 @@ let _idTimeout
  * @type {{hidden, visibilityChange}}
  * @private
  */
-const _adapter = getVisibilityApiAccess()
+const _pva = getVisibilityApiAccess()
 
 /**
  * Initiate session watch:
@@ -54,11 +54,15 @@ function watch () {
 
   _running = true
 
-  ActivityState.initParams()
-
-  if (_adapter) {
-    on(document, _adapter.visibilityChange, _handleVisibilityChange)
+  if (_pva) {
+    on(document, _pva.visibilityChange, _handleVisibilityChange)
   }
+
+  if (_pva && document[_pva.hidden]) {
+    return
+  }
+
+  ActivityState.initParams()
 
   _checkSession()
 }
@@ -83,9 +87,9 @@ function destroy () {
 
   _stopTimer()
 
-  if (_adapter) {
+  if (_pva) {
     clearTimeout(_idTimeout)
-    off(document, _adapter.visibilityChange, _handleVisibilityChange)
+    off(document, _pva.visibilityChange, _handleVisibilityChange)
   }
 }
 
@@ -128,7 +132,7 @@ function _handleVisibilityChange () {
 
   clearTimeout(_idTimeout)
 
-  const handler = document[_adapter.hidden] ? _handleBackground : _handleForeground
+  const handler = document[_pva.hidden] ? _handleBackground : _handleForeground
 
   _idTimeout = setTimeout(handler, 0)
 }

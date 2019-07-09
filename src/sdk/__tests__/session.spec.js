@@ -737,6 +737,8 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += Config.default.sessionWindow + 5 * MINUTE) // + 35 minutes
           jest.advanceTimersByTime(Config.default.sessionWindow + 5 * MINUTE)
 
+          goToForeground()
+
           Session.watch()
 
           expect(Queue.push).not.toHaveBeenCalled()
@@ -766,6 +768,50 @@ describe('test session functionality', () => {
           })
 
           return flushPromises()
+        })
+    })
+
+    it('prevents check for new session when window reached after session watch restart when still in background', () => {
+
+      let currentTime = Date.now()
+      let currentLastActive
+
+      dateNowSpy.mockReturnValue(currentTime)
+
+      expect.assertions(3)
+
+      return Identity.persist()
+        .then(() => {
+
+          Session.watch()
+
+          dateNowSpy.mockReturnValue(currentTime += 40 * SECOND)
+          jest.advanceTimersByTime(40 * SECOND)
+
+          currentLastActive = currentTime
+
+          goToBackground()
+          Session.destroy()
+
+          return flushPromises()
+        })
+        .then(() => {
+
+          dateNowSpy.mockReturnValue(currentTime += Config.default.sessionWindow + 5 * MINUTE) // + 35 minutes
+          jest.advanceTimersByTime(Config.default.sessionWindow + 5 * MINUTE)
+
+          Session.watch()
+
+          expect(Queue.push).not.toHaveBeenCalled()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(Queue.push).not.toHaveBeenCalled()
+
+          jest.runOnlyPendingTimers()
+
+          expect(request.default).not.toHaveBeenCalled()
         })
     })
   })
