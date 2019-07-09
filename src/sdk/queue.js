@@ -81,6 +81,8 @@ function _persist (url) {
     ActivityState.resetSessionOffset()
   }
 
+  ActivityState.updateLastActive()
+
   return persist()
 }
 
@@ -92,9 +94,9 @@ function _persist (url) {
  * @param {Object=} params
  * @returns {Promise}
  */
-function push ({url, method, params}) {
+function push ({url, method, params}, auto) {
 
-  ActivityState.updateParams(url)
+  ActivityState.updateParams(url, auto)
 
   params = _prepareParams(url, params)
 

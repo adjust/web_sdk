@@ -3,9 +3,9 @@ import ActivityState from './activity-state'
 import Logger from './logger'
 import {push} from './queue'
 import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
-import {timePassed} from './time'
 import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
+import {SECOND} from './constants'
 
 /**
  * Flag to mark if session watch is already on
@@ -194,7 +194,7 @@ function _trackSession () {
         url: '/session',
         method: 'POST',
         params: _prepareParams(callbackParams, partnerParams)
-      })
+      }, true)
     })
 }
 
@@ -207,15 +207,14 @@ function _checkSession () {
 
   _startTimer()
 
-  const activityState = ActivityState.current || {}
-  const lastActive = activityState.lastActive
-  const diff = timePassed(lastActive, Date.now())
+  const lastInterval = (ActivityState.current || {}).lastInterval
+  const currentWindow = lastInterval * SECOND
 
-  if (isNaN(lastActive) || diff >= Config.sessionWindow) {
+  if (lastInterval === -1 || currentWindow >= Config.sessionWindow) {
     return _trackSession()
-  } else {
-    return persist()
   }
+
+  return persist()
 }
 
 export {

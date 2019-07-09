@@ -12,14 +12,6 @@ import Config from './config'
 let _activityState = null
 
 /**
- * Last point when user was active
- *
- * @type {number}
- * @private
- */
-let _lastActive = 0
-
-/**
  * Active flag, if in foreground
  *
  * @type {boolean}
@@ -50,8 +42,9 @@ function currentSetter (params) {
  *
  * @private
  */
-function _updateLastActive () {
-  _lastActive = Date.now()
+function updateLastActive () {
+  _activityState.lastInterval = _getLastInterval()
+  _activityState.lastActive = Date.now()
 }
 
 /**
@@ -85,7 +78,8 @@ function toBackground () {
  * @private
  */
 function _getOffset () {
-  return Math.round(timePassed(_lastActive, Date.now()) / SECOND)
+  const lastActive = (_activityState || {}).lastActive
+  return Math.round(timePassed(lastActive, Date.now()) / SECOND)
 }
 
 /**
@@ -105,7 +99,8 @@ function _getTimeSpent () {
  * @private
  */
 function _getSessionLength () {
-  const withinWindow = timePassed(_lastActive, Date.now()) < Config.sessionWindow
+  const lastActive = (_activityState || {}).lastActive
+  const withinWindow = timePassed(lastActive, Date.now()) < Config.sessionWindow
   const withOffset = _active || !_active && withinWindow
 
   return (_activityState.sessionLength || 0) + (withOffset ? _getOffset() : 0)
@@ -138,8 +133,13 @@ function _getEventCount () {
  * @private
  */
 function _getLastInterval () {
-  const lastActive = (_activityState || {}).lastActive || Date.now()
-  return Math.round(timePassed(lastActive, Date.now()) / SECOND)
+  const lastActive = (_activityState || {}).lastActive
+
+  if (lastActive) {
+    return Math.round(timePassed(lastActive, Date.now()) / SECOND)
+  }
+
+  return -1
 }
 
 /**
@@ -160,11 +160,13 @@ function getParams () {
     return {}
   }
 
+  const lastInterval = _activityState.lastInterval >= 0 ? _activityState.lastInterval: 0
+
   return {
     timeSpent: _activityState.timeSpent || 0,
     sessionLength: _activityState.sessionLength || 0,
     sessionCount: _activityState.sessionCount || 1,
-    lastInterval: _getLastInterval()
+    lastInterval: lastInterval || 0
   }
 }
 
@@ -173,7 +175,7 @@ function getParams () {
  *
  * @param {string} url
  */
-function updateParams (url) {
+function updateParams (url, auto) {
   if (_activityState === null) {
     return
   }
@@ -191,7 +193,10 @@ function updateParams (url) {
   }
 
   _update(params)
-  _updateLastActive()
+
+  if (!auto) {
+    updateLastActive()
+  }
 }
 
 /**
@@ -206,7 +211,7 @@ function updateSessionOffset () {
   const sessionLength = _getSessionLength()
 
   _update({timeSpent, sessionLength})
-  _updateLastActive()
+  updateLastActive()
 }
 
 /**
@@ -220,7 +225,7 @@ function updateSessionLength () {
   const sessionLength = _getSessionLength()
 
   _update({sessionLength})
-  _updateLastActive()
+  updateLastActive()
 }
 
 /**
@@ -231,7 +236,6 @@ function resetSessionOffset () {
     return
   }
 
-  _updateLastActive()
   _update({timeSpent: 0, sessionLength: 0})
 }
 
@@ -240,7 +244,6 @@ function resetSessionOffset () {
  */
 function destroy () {
   _activityState = null
-  _lastActive = 0
   _active = false
 }
 
@@ -253,6 +256,7 @@ const ActivityState = {
   updateSessionOffset,
   updateSessionLength,
   resetSessionOffset,
+  updateLastActive,
   destroy
 }
 
