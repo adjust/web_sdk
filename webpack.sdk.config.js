@@ -12,7 +12,7 @@ module.exports = (env, argv) => ({
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
-    library: 'adjustSDK',
+    library: 'Adjust',
     libraryTarget: 'umd',
     libraryExport: 'default'
   },

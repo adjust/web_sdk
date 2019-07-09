@@ -75,9 +75,9 @@ export function expectNotRunningTrackEvent (instance, noInstance) {
   instance.trackEvent({eventToken: 'blabla'})
 
   if (noInstance) {
-    expect(Logger.default.error).toHaveBeenLastCalledWith('adjustSDK is not initiated, can not track event')
+    expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
   } else {
-    expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not track event')
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not track event')
     expect(event.default).not.toHaveBeenCalled()
   }
 
@@ -120,37 +120,37 @@ export function expectNotRunningStatic (instance) {
 
   instance.addGlobalCallbackParameters([{key: 'key', value: 'value'}])
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not add global callback parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not add global callback parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
   instance.addGlobalPartnerParameters([{key: 'key', value: 'value'}])
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not add global partner parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not add global partner parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
   instance.removeGlobalCallbackParameter('key')
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not remove global callback parameter')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove global callback parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
   instance.removePartnerCallbackParameter('key')
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not remove global partner parameter')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove global partner parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
   instance.removeAllGlobalCallbackParameters()
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not remove all global callback parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove all global callback parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
   instance.removeAllGlobalPartnerParameters()
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not remove all global partner parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove all global partner parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
   instance.setOfflineMode(true)
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not set offline mode')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not set offline mode')
   expect(Queue.setOffline).not.toHaveBeenCalled()
 }
 
@@ -208,7 +208,7 @@ export function expectGdprForgetMeCallback () {
 
   jest.runOnlyPendingTimers()
 
-  expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK has been disabled due to GDPR-Forget-Me request')
+  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled due to GDPR-Forget-Me request')
   expect(Identity.disable).toHaveBeenCalledWith('gdpr')
 
   return flushPromises()

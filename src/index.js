@@ -1,5 +1,5 @@
 import './assets/scss/index.scss'
-import adjustSDK from './sdk/main'
+import Adjust from './sdk/main'
 import app from './app'
 
 const appConfig = {
@@ -34,19 +34,19 @@ const revenueEventConfig = {
 function attributionCallback (e, attribution) {
   app.logAttribution(attribution)
 
-  adjustSDK.removeGlobalCallbackParameter('key1')
-  adjustSDK.removePartnerCallbackParameter('key-1')
+  Adjust.removeGlobalCallbackParameter('key1')
+  Adjust.removePartnerCallbackParameter('key-1')
 }
 
 // INIT: Initiate adjust sdk with specified configuration
-adjustSDK.init(appConfig)
+Adjust.init(appConfig)
 
-adjustSDK.addGlobalCallbackParameters([
+Adjust.addGlobalCallbackParameters([
   {key: 'key1', value: 'last-value1'},
   {key: 'key2', value: 'value2'}
 ])
 
-adjustSDK.addGlobalPartnerParameters([
+Adjust.addGlobalPartnerParameters([
   {key: 'key-1', value: 'value-1'},
   {key: 'key-2', value: 'value-2'},
   {key: 'key-3', value: 'value-3'}
@@ -56,16 +56,16 @@ adjustSDK.addGlobalPartnerParameters([
 app.start({
   eventCb: trackEvent,
   revenueEventCb: trackRevenueEvent,
-  disableCb: adjustSDK.disable,
-  enableCb: adjustSDK.enable,
-  gdprForgetMeCb: adjustSDK.gdprForgetMe
+  disableCb: Adjust.disable,
+  enableCb: Adjust.enable,
+  gdprForgetMeCb: Adjust.gdprForgetMe
 })
 
 function trackEvent () {
-  adjustSDK.trackEvent(someEventConfig)
+  Adjust.trackEvent(someEventConfig)
 }
 
 function trackRevenueEvent (revenue) {
   revenueEventConfig.revenue = revenue || revenueEventConfig.revenue
-  adjustSDK.trackEvent(revenueEventConfig)
+  Adjust.trackEvent(revenueEventConfig)
 }

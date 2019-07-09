@@ -144,7 +144,7 @@ function disable () {
   if (gdprForgetRequested()) {
 
     const logMessage = State.disabled === REASON_GDPR
-      ? 'adjustSDK is already disabled due to GDPR-Forget-me request'
+      ? 'Adjust SDK is already disabled due to GDPR-Forget-me request'
       : 'There is pending GDPR Forget Me request, can not disable at this moment'
 
     Logger.log(logMessage)
@@ -202,7 +202,7 @@ function _handleGdprForgetMe () {
 function _shutdown (async) {
 
   if (async) {
-    Logger.log('adjustSDK has been shutdown due to asynchronous disable')
+    Logger.log('Adjust SDK has been shutdown due to asynchronous disable')
   }
 
   _isStarted = false
@@ -228,7 +228,7 @@ function destroy () {
 
   _params = null
 
-  Logger.log('adjustSDK instance has been destroyed')
+  Logger.log('Adjust SDK instance has been destroyed')
 }
 
 /**
@@ -250,7 +250,7 @@ function destroy () {
 function _start (params = {}) {
 
   if (State.disabled) {
-    Logger.log('adjustSDK is disabled, can not start the sdk')
+    Logger.log('Adjust SDK is disabled, can not start the sdk')
     return
   }
 
@@ -296,7 +296,7 @@ function _start (params = {}) {
 function _run (description, method, ...args) {
 
   if (State.disabled) {
-    Logger.log(`adjustSDK is disabled, can not ${description}`)
+    Logger.log(`Adjust SDK is disabled, can not ${description}`)
     return
   }
 

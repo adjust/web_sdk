@@ -108,7 +108,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK already sent GDPR Forget Me request')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK already sent GDPR Forget Me request')
     })
 
     it('keeps running all static methods and track event', () => {
@@ -125,7 +125,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
       mainInstance.enable()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
 
     })
 
@@ -158,7 +158,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already GDPR forgotten')
     })
   })
 
@@ -171,14 +171,14 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK will run GDPR Forget Me request after initialisation')
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run GDPR Forget Me request after initialisation')
     })
 
     it('fails again to push forget-me request to queue', () => {
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK already sent GDPR Forget Me request')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK already sent GDPR Forget Me request')
 
     })
 

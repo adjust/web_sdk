@@ -73,7 +73,7 @@ describe('event tracking functionality', () => {
 
     event.default({})
 
-    expect(Logger.default.error).toHaveBeenLastCalledWith('adjustSDK is not initiated, can not track event')
+    expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
 
     return flushPromises()
       .then(() => {

@@ -108,11 +108,11 @@ function disable (reason) {
   const logReason = reason === REASON_GDPR ? ' due to GDPR-Forget-Me request' : ''
 
   if (State.disabled) {
-    Logger.log('adjustSDK is already disabled' + logReason)
+    Logger.log('Adjust SDK is already disabled' + logReason)
     return false
   }
 
-  Logger.log('adjustSDK has been disabled' + logReason)
+  Logger.log('Adjust SDK has been disabled' + logReason)
 
   State.disabled = reason || REASON_GENERAL
 
@@ -125,16 +125,16 @@ function disable (reason) {
 function enable () {
 
   if (State.disabled === REASON_GDPR) {
-    Logger.log('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+    Logger.log('Adjust SDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
     return false
   }
 
   if (!State.disabled) {
-    Logger.log('adjustSDK is already enabled')
+    Logger.log('Adjust SDK is already enabled')
     return false
   }
 
-  Logger.log('adjustSDK has been enabled')
+  Logger.log('Adjust SDK has been enabled')
 
   State.disabled = null
 

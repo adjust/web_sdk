@@ -27,7 +27,7 @@
   document,
   'script',
   'http://somewhere/sdk.min.js',
-  'adjustSDK',
+  'Adjust',
   [
     'init',
     'trackEvent',

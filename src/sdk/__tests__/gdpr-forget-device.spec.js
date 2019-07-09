@@ -91,7 +91,7 @@ describe('GDPR forget device functionality', () => {
 
     GdprForgetDevice.forget()
 
-    expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK will run GDPR Forget Me request after initialisation')
+    expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run GDPR Forget Me request after initialisation')
 
     return expectNotRequest()
       .then(() => {
@@ -100,7 +100,7 @@ describe('GDPR forget device functionality', () => {
 
         GdprForgetDevice.forget()
 
-        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK already sent GDPR Forget Me request')
+        expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already sent GDPR Forget Me request')
 
         return expectNotRequest()
       })
@@ -109,7 +109,7 @@ describe('GDPR forget device functionality', () => {
 
         GdprForgetDevice.check()
 
-        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is running pending GDPR Forget Me request')
+        expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending GDPR Forget Me request')
 
         return expectRequest()
       })
@@ -123,7 +123,7 @@ describe('GDPR forget device functionality', () => {
       .then(() => {
         GdprForgetDevice.forget()
 
-        expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK already sent GDPR Forget Me request')
+        expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already sent GDPR Forget Me request')
 
         return expectNotRequest()
       })
@@ -142,14 +142,14 @@ describe('GDPR forget device functionality', () => {
 
     GdprForgetDevice.forget()
 
-    expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is already disabled')
+    expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already disabled')
     expect(Logger.default.log).toHaveBeenCalledTimes(1)
 
     State.default.disabled = 'gdpr'
 
     GdprForgetDevice.forget()
 
-    expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is already GDPR forgotten')
+    expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already GDPR forgotten')
     expect(Logger.default.log).toHaveBeenCalledTimes(2)
 
   })

@@ -42,7 +42,7 @@ It is possible to define attribution callback method as part of the sdk initiali
 With this in mind, initialisation of Adjust JS SDK would look like this inside your web app:
 
 ```js
-adjustSDK.init({
+Adjust.init({
   appToken: 'YourAppToken',
   environment: 'production', // or 'sandbox' in case you are testing SDK locally with your web app
   attributionCallback: function (newAttribution) {
@@ -64,7 +64,7 @@ var eventConfig = {
   eventToken: 'EventToken'
 };
 
-adjustSDK.trackEvent(eventConfig)
+Adjust.trackEvent(eventConfig)
 ```
 
 ### <a id="revenue-tracking"></a>Revenue tracking
@@ -78,7 +78,7 @@ var eventConfig = {
   currency: 'EUR'
 };
 
-adjustSDK.trackEvent(eventConfig)
+Adjust.trackEvent(eventConfig)
 ```
 
 When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here][currency-conversion].
@@ -103,7 +103,7 @@ var eventConfig = {
   }],
 };
 
-adjustSDK.trackEvent(eventConfig)
+Adjust.trackEvent(eventConfig)
 ```
 
 In that case we would track the event and send a request to:
@@ -132,7 +132,7 @@ var eventConfig = {
   }],
 };
 
-adjustSDK.trackEvent(eventConfig)
+Adjust.trackEvent(eventConfig)
 ```
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].
@@ -147,7 +147,7 @@ Here is the list of log levels which can be passed to init config through `logLe
 - `none` - won't print anything
 
 ```js
-adjustSDK.init({
+Adjust.init({
   // other stuff like appToken and environment
   logLevel: 'LogLevel' // where LogLevel is "verbose", "info", "error" or "none"
 });

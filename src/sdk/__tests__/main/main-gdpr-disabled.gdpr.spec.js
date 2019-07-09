@@ -79,7 +79,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       mainInstance.init(config)
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not start the sdk')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
 
       expectNotStart()
       expectNotRunningStatic(mainInstance)
@@ -91,7 +91,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already GDPR forgotten')
     })
 
     it('prevents running all static methods and track event', () => {
@@ -108,7 +108,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       mainInstance.enable()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
 
     })
   })
@@ -122,7 +122,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       mainInstance.init(config)
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled, can not start the sdk')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
 
       Logger.default.log.mockClear()
 
@@ -140,7 +140,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already GDPR forgotten')
     })
   })
 
@@ -153,7 +153,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already GDPR forgotten')
     })
 
     it('initiates but prevents all static methods and track event and fails to push forget-me request to queue', () => {
@@ -161,7 +161,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
       mainInstance.init(config)
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
-      expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 
       expectNotStart()
       expectNotRunningStatic(mainInstance)
@@ -185,7 +185,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
       mainInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already GDPR forgotten')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already GDPR forgotten')
     })
 
     it('flush forget-me event but ignores it', () => {
@@ -198,7 +198,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
       mainInstance.init(config)
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
-      expect(Logger.default.log).toHaveBeenCalledWith('adjustSDK is disabled, can not start the sdk')
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 
       expectNotStart()
       expectNotRunningStatic(mainInstance)

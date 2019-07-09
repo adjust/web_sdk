@@ -26,17 +26,17 @@ let _requested = false
 function forget () {
 
   if (State.disabled === REASON_GDPR) {
-    Logger.log('adjustSDK is already GDPR forgotten')
+    Logger.log('Adjust SDK is already GDPR forgotten')
     return
   }
 
   if (State.disabled) {
-    Logger.log('adjustSDK is already disabled')
+    Logger.log('Adjust SDK is already disabled')
     return
   }
 
   if (_requested) {
-    Logger.log('adjustSDK already sent GDPR Forget Me request')
+    Logger.log('Adjust SDK already sent GDPR Forget Me request')
     return
   }
 
@@ -44,7 +44,7 @@ function forget () {
 
   if (!Config.isInitialised()) {
     _pending = true
-    Logger.log('adjustSDK will run GDPR Forget Me request after initialisation')
+    Logger.log('Adjust SDK will run GDPR Forget Me request after initialisation')
     return
   }
 
@@ -71,7 +71,7 @@ function requested () {
 function check () {
   if (_pending) {
     _requested = false
-    Logger.log('adjustSDK is running pending GDPR Forget Me request')
+    Logger.log('Adjust SDK is running pending GDPR Forget Me request')
     forget()
   }
 }

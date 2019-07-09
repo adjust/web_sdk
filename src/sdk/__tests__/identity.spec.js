@@ -62,7 +62,7 @@ describe('test identity methods', () => {
 
       Identity.disable()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
 
       Identity.enable()
 
@@ -70,7 +70,7 @@ describe('test identity methods', () => {
 
       Identity.enable()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already enabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
     })
 
@@ -127,11 +127,11 @@ describe('test identity methods', () => {
       Identity.enable()
 
       expect(State.default.disabled).toBe('gdpr')
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
 
       Identity.disable()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('adjustSDK is already disabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
       expect(State.default.disabled).toBe('gdpr')
 
     })

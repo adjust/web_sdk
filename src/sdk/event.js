@@ -69,7 +69,7 @@ function _prepareParams (params, globalCallbackParams = [], globalPartnerParams 
 export default function event (params = {}) {
 
   if (!Config.isInitialised()) {
-    Logger.error('adjustSDK is not initiated, can not track event')
+    Logger.error('Adjust SDK is not initiated, can not track event')
     return
   }
 

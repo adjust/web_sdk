@@ -3,7 +3,7 @@ Here you can find changes for this project. When updating to a new version be su
 
 ## [Unreleased]
 ### Added
-- sdk is now exposed under all module definitions, so it works under CommonJS and AMD environments and is also available through global `adjustSDK`
+- sdk is now exposed under all module definitions, so it works under CommonJS and AMD environments and is also available through global `Adjust` when loaded through cdn
 - attribution callback support 
 - retry mechanism for failed attribution requests 
 - retry mechanism for failed session and event requests (pending calls are cached in storage)
@@ -11,9 +11,11 @@ Here you can find changes for this project. When updating to a new version be su
 - settings global callback and partner parameters, along with removal of previously set ones
 - offline mode
 - possibility to set the log level on init
+- disable/enable sdk
+- GDPR Forget Me ability
 
 ### Changed
-- using exposed single instance instead of initiating it manually with the `new` (`adjustSDK.init(YOUR_CONFIG)`)
+- using exposed single instance instead of initiating it manually with the `new` (`Adjust.init(YOUR_CONFIG)`)
 - session is now automatically tracked, method `trackSession` is no longer available
 
 [example-app]:  src/index.js
