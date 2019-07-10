@@ -160,7 +160,7 @@ function getParams () {
     return {}
   }
 
-  const lastInterval = _activityState.lastInterval >= 0 ? _activityState.lastInterval: 0
+  const lastInterval = _activityState.lastInterval >= 0 ? _activityState.lastInterval : 0
 
   return {
     timeSpent: _activityState.timeSpent || 0,
@@ -174,6 +174,7 @@ function getParams () {
  * Update activity state parameters depending on the endpoint which has been run
  *
  * @param {string} url
+ * @param {boolean=false} auto
  */
 function updateParams (url, auto) {
   if (_activityState === null) {

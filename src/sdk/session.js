@@ -41,9 +41,10 @@ const _pva = getVisibilityApiAccess()
 
 /**
  * Initiate session watch:
+ * - bind to visibility change event to track window state (if out of focus or closed)
+ * - initiate activity state params and visibility state
  * - check session initially
  * - set the timer to update last active timestamp
- * - bind to visibility change event to track window state (if out of focus or closed)
  */
 function watch () {
 
@@ -94,7 +95,10 @@ function destroy () {
 }
 
 /**
- * Handle transit to background
+ * Handle transit to background:
+ * - stop the timer
+ * - update session params
+ * - persist changes (store updated activity state)
  *
  * @returns {Promise}
  * @private
@@ -109,7 +113,9 @@ function _handleBackground () {
 }
 
 /**
- * Handle transit to foreground
+ * Handle transit to foreground:
+ * - update session length
+ * - check for the session and restart the timer
  *
  * @returns {Promise<any | never>}
  * @private
@@ -122,9 +128,7 @@ function _handleForeground () {
 }
 
 /**
- * Handle visibility change and perform certain actions:
- * - if page is hidden then stop the timer and update last active timestamp
- * - if page is visible then check for the session and restart the timer
+ * Handle visibility change and perform appropriate actions
  *
  * @private
  */
@@ -139,8 +143,8 @@ function _handleVisibilityChange () {
 
 /**
  * Start the session timer, every N seconds:
- * - time spent and measure point are updated
- * - last active timestamp is updated automatically
+ * - update session params
+ * - persist changes (store updated activity state)
  *
  * @private
  */
