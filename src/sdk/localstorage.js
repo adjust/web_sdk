@@ -415,7 +415,7 @@ function clear (storeName) {
  */
 function destroy () {}
 
-export default {
+export {
   isSupported,
   getAll,
   getFirst,

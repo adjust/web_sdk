@@ -395,7 +395,7 @@ function destroy () {
   _db = null
 }
 
-export default {
+export {
   isSupported,
   getAll,
   getFirst,

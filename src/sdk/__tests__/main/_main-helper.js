@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Config from '../../config'
 import * as PubSub from '../../pub-sub'
 import * as Identity from '../../identity'
@@ -70,12 +69,16 @@ export function expectRunningTrackEvent (instance) {
 
 }
 
-export function expectNotRunningTrackEvent (instance, noInstance) {
+export function expectNotRunningTrackEvent (instance, noInstance, noStorage) {
 
   instance.trackEvent({eventToken: 'blabla'})
 
   if (noInstance) {
-    expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
+    if (noStorage) {
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not track event, no storage available')
+    } else {
+      expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
+    }
   } else {
     expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not track event')
     expect(event.default).not.toHaveBeenCalled()
@@ -116,42 +119,57 @@ export function expectRunningStatic (instance) {
   return {assertions: 7}
 }
 
-export function expectNotRunningStatic (instance) {
+export function expectNotRunningStatic (instance, noStorage) {
 
   instance.addGlobalCallbackParameters([{key: 'key', value: 'value'}])
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not add global callback parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
+    ? 'Adjust SDK can not add global callback parameters, no storage available'
+    : 'Adjust SDK is disabled, can not add global callback parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
   instance.addGlobalPartnerParameters([{key: 'key', value: 'value'}])
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not add global partner parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
+    ? 'Adjust SDK can not add global partner parameters, no storage available'
+    : 'Adjust SDK is disabled, can not add global partner parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
   instance.removeGlobalCallbackParameter('key')
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove global callback parameter')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
+    ? 'Adjust SDK can not remove global callback parameter, no storage available'
+    : 'Adjust SDK is disabled, can not remove global callback parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
   instance.removePartnerCallbackParameter('key')
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove global partner parameter')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
+    ? 'Adjust SDK can not remove global partner parameter, no storage available'
+    : 'Adjust SDK is disabled, can not remove global partner parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
   instance.removeAllGlobalCallbackParameters()
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove all global callback parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
+    ? 'Adjust SDK can not remove all global callback parameters, no storage available'
+    : 'Adjust SDK is disabled, can not remove all global callback parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
   instance.removeAllGlobalPartnerParameters()
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove all global partner parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
+    ? 'Adjust SDK can not remove all global partner parameters, no storage available'
+    : 'Adjust SDK is disabled, can not remove all global partner parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
   instance.setOfflineMode(true)
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not set offline mode')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
+    ? 'Adjust SDK can not set offline mode, no storage available'
+    : 'Adjust SDK is disabled, can not set offline mode')
   expect(Queue.setOffline).not.toHaveBeenCalled()
+
 }
 
 export function expectAttributionCallback () {

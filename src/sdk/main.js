@@ -39,6 +39,11 @@ function init (params = {}) {
 
   Logger.setLogLevel(params.logLevel, params.logOutput)
 
+  if (!StorageManager) {
+    Logger.error('Adjust SDK can not start, there is no storage available')
+    return
+  }
+
   if (Config.isInitialised()) {
     Logger.error('You already initiated your instance')
     return
@@ -294,6 +299,11 @@ function _start (params = {}) {
  * @private
  */
 function _run (description, method, ...args) {
+
+  if (!StorageManager) {
+    Logger.log(`Adjust SDK can not ${description}, no storage available`)
+    return
+  }
 
   if (State.disabled) {
     Logger.log(`Adjust SDK is disabled, can not ${description}`)

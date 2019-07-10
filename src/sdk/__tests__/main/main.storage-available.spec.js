@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as PubSub from '../../pub-sub'
 import * as Queue from '../../queue'
 import * as Session from '../../session'
@@ -7,8 +6,8 @@ import * as Config from '../../config'
 import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
-import mainInstance from '../../main.js'
-import sameInstance from '../../main.js'
+import mainInstance from '../../main'
+import sameInstance from '../../main'
 import {
   config,
   expectStart,
@@ -22,7 +21,7 @@ jest.mock('../../request')
 jest.mock('../../logger')
 jest.useFakeTimers()
 
-describe('main entry point - test instance initiation', () => {
+describe('main entry point - test instance initiation when storage is available', () => {
 
   beforeAll(() => {
     jest.spyOn(event, 'default')

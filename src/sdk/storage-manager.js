@@ -1,21 +1,28 @@
-import IndexedDB from './indexeddb'
-import LocalStorage from './localstorage'
+import * as IndexedDB from './indexeddb'
+import * as LocalStorage from './localstorage'
 import Logger from './logger'
 
-let StorageManager = {}
+function init () {
+  let storage
+  let type
 
-if (IndexedDB.isSupported()) {
-  StorageManager = IndexedDB
-  StorageManager.type = 'indexedDB'
-} else if (LocalStorage.isSupported()) {
-  StorageManager = LocalStorage
-  StorageManager.type = 'localStorage'
-}
+  if (IndexedDB.isSupported()) {
+    storage = IndexedDB
+    type = 'indexedDB'
+  } else if (LocalStorage.isSupported()) {
+    storage = LocalStorage
+    type = 'localStorage'
+  }
 
-if (StorageManager.type) {
-  Logger.info(`Storage set to ${StorageManager.type}`)
-} else {
+  if (type) {
+    Logger.info(`Available storage is ${type}`)
+    return storage
+  }
+
   Logger.error('There is no storage available, app will run with minimum set of features')
+  return null
+
 }
 
-export default StorageManager
+export default init()
+
