@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Config from '../config'
 import * as Utilities from '../utilities'
 import * as Session from '../session'

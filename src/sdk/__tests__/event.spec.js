@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Config from '../config'
 import * as event from '../event'
 import * as Queue from '../queue'

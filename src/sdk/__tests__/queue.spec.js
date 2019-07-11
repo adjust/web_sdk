@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Queue from '../queue'
 import * as request from '../request'
 import * as StorageManager from '../storage-manager'

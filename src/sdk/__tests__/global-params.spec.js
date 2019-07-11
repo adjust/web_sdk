@@ -1,6 +1,4 @@
-/* eslint-disable */
 import * as GlobalParams from '../global-params'
-import * as StorageManager from '../storage-manager'
 import * as Logger from '../logger'
 
 jest.mock('../logger')

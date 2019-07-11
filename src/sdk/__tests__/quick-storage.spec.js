@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as QuickStorage from '../quick-storage'
 
 describe('test low-level localStorage manipulation', () => {

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as PubSub from '../pub-sub'
 
 jest.useFakeTimers()

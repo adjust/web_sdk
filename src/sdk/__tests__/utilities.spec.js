@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Utilities from '../utilities'
 
 describe('test for utility methods', () => {

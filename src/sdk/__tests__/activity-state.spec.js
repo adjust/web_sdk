@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as ActivityState from '../activity-state'
 import {MINUTE, SECOND} from '../constants'
 

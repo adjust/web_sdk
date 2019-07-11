@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Identity from '../identity'
 import * as StorageManager from '../storage-manager'
 import * as ActivityState from '../activity-state'

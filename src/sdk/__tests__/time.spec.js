@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Time from '../time'
 import * as Constants from '../constants'
 

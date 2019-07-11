@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Logger from '../logger'
 
 describe('test Logger functionality', () => {

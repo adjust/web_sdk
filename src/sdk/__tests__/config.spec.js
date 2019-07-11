@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Config from '../config'
 import * as Logger from '../logger'
 

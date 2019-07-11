@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as defaultParams from '../default-params'
 import * as ActivityState from '../activity-state'
 import * as Time from '../time'

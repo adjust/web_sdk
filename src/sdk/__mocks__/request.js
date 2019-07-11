@@ -1,4 +1,3 @@
-/* eslint-disable */
 const response = JSON.stringify({
   status: 'success'
 })

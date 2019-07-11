@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 function flushPromises () {
   return new Promise(resolve => setImmediate(resolve))
 }
