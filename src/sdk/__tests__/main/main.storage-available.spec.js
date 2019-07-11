@@ -6,8 +6,8 @@ import * as Config from '../../config'
 import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
-import mainInstance from '../../main'
-import sameInstance from '../../main'
+import AdjustInstance from '../../main'
+import OtherInstance from '../../main'
 import {
   config,
   expectStart,
@@ -44,25 +44,25 @@ describe('main entry point - test instance initiation when storage is available'
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    teardown(mainInstance)
+    teardown(AdjustInstance)
   })
 
   describe('uninitiated instance', () => {
 
     it('logs an error and return when not all parameters provided', () => {
 
-      mainInstance.init()
+      AdjustInstance.init()
 
       expect(Logger.default.error).toHaveBeenLastCalledWith('You must define appToken and environment')
 
-      mainInstance.init({appToken: 'a-token'})
+      AdjustInstance.init({appToken: 'a-token'})
 
       expect(Logger.default.error).toHaveBeenLastCalledWith('You must define environment')
     })
 
     it('logs an error and return when trying to track event before init', () => {
 
-      mainInstance.trackEvent()
+      AdjustInstance.trackEvent()
 
       expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
     })
@@ -70,7 +70,7 @@ describe('main entry point - test instance initiation when storage is available'
 
   describe('initiated instance', () => {
     beforeAll(() => {
-      mainInstance.init(config)
+      AdjustInstance.init(config)
     })
 
     it('sets basic configuration', () => {
@@ -88,24 +88,24 @@ describe('main entry point - test instance initiation when storage is available'
 
     it('tests if single instance is returned', () => {
 
-      sameInstance.init({
+      OtherInstance.init({
         appToken: 'some-other-app-token',
         environment: 'sandbox'
       })
 
       expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
-      expect(mainInstance).toBe(sameInstance)
+      expect(AdjustInstance).toBe(OtherInstance)
       expect(Config.default.baseParams.appToken).toEqual('some-app-token')
       expect(Config.default.baseParams.environment).toEqual('production')
 
     })
 
     it('runs all static methods', () => {
-      expectRunningStatic(mainInstance)
+      expectRunningStatic(AdjustInstance)
     })
 
     it('runs track event', () => {
-      expectRunningTrackEvent(mainInstance)
+      expectRunningTrackEvent(AdjustInstance)
     })
   })
 

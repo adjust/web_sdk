@@ -8,7 +8,7 @@ import * as Logger from '../../logger'
 import * as StorageManager from '../../storage-manager'
 import * as Attribution from '../../attribution'
 import * as SdkClick from '../../sdk-click'
-import mainInstance from '../../main.js'
+import AdjustInstance from '../../main.js'
 import {randomInRange} from './../_helper'
 
 import {
@@ -78,17 +78,17 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
   describe('sdk: init -> forget -> flush', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('initiates and runs all static methods and track event', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
       expect.assertions(19)
 
-      const a1 = expectRunningStatic(mainInstance)
-      const a2 = expectRunningTrackEvent(mainInstance)
+      const a1 = expectRunningStatic(AdjustInstance)
+      const a2 = expectRunningTrackEvent(AdjustInstance)
       const a3 = expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
@@ -98,21 +98,21 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
     it('pushes forget-me request to queue', () => {
 
-      mainInstance.gdprForgetMe()
+      AdjustInstance.gdprForgetMe()
 
       expect(Queue.push).toHaveBeenCalledWith(gdprConfig)
     })
 
     it('fails to push forget-me request to queue again', () => {
-      mainInstance.gdprForgetMe()
+      AdjustInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK already sent GDPR Forget Me request')
     })
 
     it('keeps running all static methods and track event', () => {
-      expectRunningStatic(mainInstance)
-      expectRunningTrackEvent(mainInstance)
+      expectRunningStatic(AdjustInstance)
+      expectRunningTrackEvent(AdjustInstance)
     })
 
     it('flush forget-me event and disables with shutdown', () => {
@@ -122,25 +122,25 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
     it('fails to enable sdk after GDPR-Forget-Me has taken effect', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
 
     })
 
     it('prevents running all static methods and track event', () => {
-      expectNotRunningStatic(mainInstance)
-      expectNotRunningTrackEvent(mainInstance)
+      expectNotRunningStatic(AdjustInstance)
+      expectNotRunningTrackEvent(AdjustInstance)
     })
   })
 
   describe('sdk: init -> flush -> forget', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     beforeAll(() => {
-      mainInstance.init(config)
+      AdjustInstance.init(config)
     })
 
     it('flush forget-me event and disables with shutdown', () => {
@@ -149,12 +149,12 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     })
 
     it('prevents running all static methods and track event', () => {
-      expectNotRunningStatic(mainInstance)
-      expectNotRunningTrackEvent(mainInstance)
+      expectNotRunningStatic(AdjustInstance)
+      expectNotRunningTrackEvent(AdjustInstance)
     })
 
     it('fails to push forget-me request to queue because already forgotten', () => {
-      mainInstance.gdprForgetMe()
+      AdjustInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already GDPR forgotten')
@@ -163,18 +163,18 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
   describe('sdk: forget -> init -> flush', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('does not push forget-me request to queue yet', () => {
-      mainInstance.gdprForgetMe()
+      AdjustInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run GDPR Forget Me request after initialisation')
     })
 
     it('fails again to push forget-me request to queue', () => {
-      mainInstance.gdprForgetMe()
+      AdjustInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK already sent GDPR Forget Me request')
@@ -183,10 +183,10 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
     it('initiates and runs all static methods and track event and pushes forget-me to queue', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
-      const a1 = expectRunningStatic(mainInstance)
-      const a2 = expectRunningTrackEvent(mainInstance)
+      const a1 = expectRunningStatic(AdjustInstance)
+      const a2 = expectRunningTrackEvent(AdjustInstance)
       const a3 = expectStart()
       const promise = a3.promise
         .then(() => {
@@ -206,11 +206,11 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
   describe('sdk: forget -> flush -> init', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('does not push forget-me request to queue yet', () => {
-      mainInstance.gdprForgetMe()
+      AdjustInstance.gdprForgetMe()
 
       expect(Queue.push).not.toHaveBeenCalled()
     })
@@ -222,12 +222,12 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
     it('initiates and runs all static methods and track event and pushes forget-me to queue', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
       expect.assertions(20)
 
-      const a1 = expectRunningStatic(mainInstance)
-      const a2 = expectRunningTrackEvent(mainInstance)
+      const a1 = expectRunningStatic(AdjustInstance)
+      const a2 = expectRunningTrackEvent(AdjustInstance)
       const a3 = expectStart()
       const promise = a3.promise
         .then(() => {

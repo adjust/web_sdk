@@ -8,7 +8,7 @@ import * as Logger from '../../logger'
 import * as StorageManager from '../../storage-manager'
 import * as Attribution from '../../attribution'
 import * as SdkClick from '../../sdk-click'
-import mainInstance from '../../main.js'
+import AdjustInstance from '../../main.js'
 import {flushPromises, randomInRange} from './../_helper'
 
 import {
@@ -73,15 +73,15 @@ describe('main entry point - test enable/disable when in initially enabled state
 
   describe('sdk: init -> disable -> enable', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('initiates and runs all static methods and track event', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
-      const a1 = expectRunningStatic(mainInstance)
-      const a2 = expectRunningTrackEvent(mainInstance)
+      const a1 = expectRunningStatic(AdjustInstance)
+      const a2 = expectRunningTrackEvent(AdjustInstance)
       const a3 = expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
@@ -91,7 +91,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk with shutdown', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -101,13 +101,13 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('prevents running all static methods and track event', () => {
-      expectNotRunningStatic(mainInstance)
-      expectNotRunningTrackEvent(mainInstance)
+      expectNotRunningStatic(AdjustInstance)
+      expectNotRunningTrackEvent(AdjustInstance)
     })
 
     it('fails to disable already disabled sdk', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
 
@@ -116,7 +116,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('enables sdk with restart', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       const a = expectStart()
 
@@ -132,14 +132,14 @@ describe('main entry point - test enable/disable when in initially enabled state
 
   describe('sdk: init and disable and enable', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('initiates, disables and enables one after another', () => {
 
-      mainInstance.init(config)
-      mainInstance.disable()
-      mainInstance.enable()
+      AdjustInstance.init(config)
+      AdjustInstance.disable()
+      AdjustInstance.enable()
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
@@ -150,21 +150,21 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('ensures that everything is up', () => {
-      return expectAllUp(mainInstance)
+      return expectAllUp(AdjustInstance)
     })
   })
 
   describe('sdk: init -> enable -> disable', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('initiates and runs all static methods and track event', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
-      const a1 = expectRunningStatic(mainInstance)
-      const a2 = expectRunningTrackEvent(mainInstance)
+      const a1 = expectRunningStatic(AdjustInstance)
+      const a2 = expectRunningTrackEvent(AdjustInstance)
       const a3 = expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
@@ -174,7 +174,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails to enable already enabled sdk', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -183,7 +183,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk with shutdown', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -193,19 +193,19 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('prevents running all static methods and track event', () => {
-      expectNotRunningStatic(mainInstance)
-      expectNotRunningTrackEvent(mainInstance)
+      expectNotRunningStatic(AdjustInstance)
+      expectNotRunningTrackEvent(AdjustInstance)
     })
   })
 
   describe('sdk: disable -> init -> enable', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('disables sdk without shutdown', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -215,24 +215,24 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('prevents running all static methods and track event', () => {
-      expectNotRunningStatic(mainInstance)
-      expectNotRunningTrackEvent(mainInstance)
+      expectNotRunningStatic(AdjustInstance)
+      expectNotRunningTrackEvent(AdjustInstance)
     })
 
     it('initiates and still prevents running all static methods and track event', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 
       expectNotStart()
-      expectNotRunningStatic(mainInstance)
-      expectNotRunningTrackEvent(mainInstance)
+      expectNotRunningStatic(AdjustInstance)
+      expectNotRunningTrackEvent(AdjustInstance)
     })
 
     it('fails to disable already disabled sdk', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
 
@@ -241,7 +241,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('enables sdk with restart', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       const a = expectStart()
 
@@ -258,20 +258,20 @@ describe('main entry point - test enable/disable when in initially enabled state
   describe('sdk: enable -> init -> disable', () => {
 
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('runs all static methods', () => {
-      expectRunningStatic(mainInstance)
+      expectRunningStatic(AdjustInstance)
     })
 
     it('prevents running track event', () => {
-      expectNotRunningTrackEvent(mainInstance, true)
+      expectNotRunningTrackEvent(AdjustInstance, true)
     })
 
     it('fails to enable already enabled sdk', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -280,12 +280,12 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and runs all static methods and track event', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
       expect.assertions(19)
 
-      const a1 = expectRunningStatic(mainInstance)
-      const a2 = expectRunningTrackEvent(mainInstance)
+      const a1 = expectRunningStatic(AdjustInstance)
+      const a2 = expectRunningTrackEvent(AdjustInstance)
       const a3 = expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
@@ -295,7 +295,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails again to enable already enabled sdk', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -304,7 +304,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk with shutdown', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -316,14 +316,14 @@ describe('main entry point - test enable/disable when in initially enabled state
 
   describe('sdk: enable and init and disable', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('enables, initiates and disable one after another', () => {
 
-      mainInstance.enable()
-      mainInstance.init(config)
-      mainInstance.disable()
+      AdjustInstance.enable()
+      AdjustInstance.init(config)
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already enabled')
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -339,12 +339,12 @@ describe('main entry point - test enable/disable when in initially enabled state
 
   describe('sdk: disable -> enable -> init', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('disables sdk without shutdown', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -355,7 +355,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('enables sdk without restart', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
@@ -366,12 +366,12 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and runs all static methods and track event', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
       expect.assertions(19)
 
-      const a1 = expectRunningStatic(mainInstance)
-      const a2 = expectRunningTrackEvent(mainInstance)
+      const a1 = expectRunningStatic(AdjustInstance)
+      const a2 = expectRunningTrackEvent(AdjustInstance)
       const a3 = expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
@@ -382,12 +382,12 @@ describe('main entry point - test enable/disable when in initially enabled state
 
   describe('sdk: enable -> disable -> init', () => {
     afterAll(() => {
-      teardown(mainInstance)
+      teardown(AdjustInstance)
     })
 
     it('fails to enable already enabled sdk', () => {
 
-      mainInstance.enable()
+      AdjustInstance.enable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -396,7 +396,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk without shutdown', () => {
 
-      mainInstance.disable()
+      AdjustInstance.disable()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -407,13 +407,13 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and prevents running all static methods and track event', () => {
 
-      mainInstance.init(config)
+      AdjustInstance.init(config)
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 
       expectNotStart()
-      expectNotRunningStatic(mainInstance)
-      expectNotRunningTrackEvent(mainInstance)
+      expectNotRunningStatic(AdjustInstance)
+      expectNotRunningTrackEvent(AdjustInstance)
     })
   })
 

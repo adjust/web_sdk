@@ -2,6 +2,25 @@ import * as IndexedDB from './indexeddb'
 import * as LocalStorage from './localstorage'
 import Logger from './logger'
 
+/**
+ * Check which storage is available and pick it up
+ * Prefer indexedDB over localStorage
+ *
+ * @returns {{
+ * isSupported?,
+ * getAll?,
+ * getFirst?,
+ * getItem?,
+ * filterBy?,
+ * addItem?,
+ * addBulk?,
+ * updateItem?,
+ * deleteItem?,
+ * deleteBulk?,
+ * clear?,
+ * destroy?
+ * }|null}
+ */
 function init () {
   let storage
   let type
