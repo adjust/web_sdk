@@ -1,4 +1,4 @@
-import * as QuickStorage from '../quick-storage'
+import * as QuickStorage from '../../storage/quick-storage'
 
 describe('test low-level localStorage manipulation', () => {
 

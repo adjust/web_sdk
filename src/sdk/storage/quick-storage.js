@@ -1,9 +1,9 @@
-import {extend} from './utilities'
-import Config from './config'
-import Scheme from './scheme'
+import {extend} from '../utilities'
+import Config from '../config'
+import SchemeMap from './scheme-map'
 
 const _disabledName = 'disabled'
-const _schemeKeys = Object.values(Scheme.names)
+const _schemeKeys = Object.values(SchemeMap.storeNames)
 const _storageFields = [_disabledName,  ..._schemeKeys]
 const _storageName = Config.namespace
 
@@ -43,7 +43,7 @@ function clear () {
 }
 
 const QuickStorage = {
-  names: extend({disabled: _disabledName}, Scheme.names),
+  names: extend({disabled: _disabledName}, SchemeMap.storeNames),
   stores: {},
   clear
 }

@@ -1,14 +1,14 @@
-import * as Logger from '../logger'
+import * as Logger from '../../logger'
 
-jest.mock('../logger')
+jest.mock('../../logger')
 
 describe('test storage availability', () => {
 
   function mockAvailability (idbSupport, lsSupport) {
-    jest.doMock('../indexeddb', () => ({
+    jest.doMock('../../storage/indexeddb', () => ({
       isSupported () { return idbSupport }
     }))
-    jest.doMock('../localstorage', () => ({
+    jest.doMock('../../storage/localstorage', () => ({
       isSupported () { return lsSupport }
     }))
   }
@@ -33,51 +33,54 @@ describe('test storage availability', () => {
     jest.isolateModules(() => {
       mockAvailability(false, false)
 
-      const StorageManager = require('../storage-manager')
+      const StorageManager = require('../../storage/storage-manager').default
 
-      expect(StorageManager.default).toBeNull()
+      expect(StorageManager).toBeNull()
       expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
     })
   })
 
   it('sets indexedDB as available storage', () => {
 
-    expect.assertions(2)
+    expect.assertions(3)
 
     jest.isolateModules(() => {
       mockAvailability(true, false)
 
-      const StorageManager = require('../storage-manager')
+      const StorageManager = require('../../storage/storage-manager').default
 
-      expect(StorageManager.default).not.toBeNull()
+      expect(StorageManager).not.toBeNull()
+      expect(StorageManager.type).toBe('indexedDB')
       expect(Logger.default.info).toHaveBeenCalledWith('Available storage is indexedDB')
     })
   })
 
   it('sets localStorage as available storage', () => {
 
-    expect.assertions(2)
+    expect.assertions(3)
 
     jest.isolateModules(() => {
       mockAvailability(false, true)
 
-      const StorageManager = require('../storage-manager')
+      const StorageManager = require('../../storage/storage-manager').default
 
-      expect(StorageManager.default).not.toBeNull()
+      expect(StorageManager).not.toBeNull()
+      expect(StorageManager.type).toBe('localStorage')
       expect(Logger.default.info).toHaveBeenCalledWith('Available storage is localStorage')
     })
   })
 
   it('prefers indexedDB over localStorage as available storage', () => {
 
-    expect.assertions(2)
+    expect.assertions(3)
 
     jest.isolateModules(() => {
       mockAvailability(true, true)
 
-      const StorageManager = require('../storage-manager')
+      const StorageManager = require('../../storage/storage-manager').default
 
-      expect(StorageManager.default).not.toBeNull()
+      expect(StorageManager).not.toBeNull()
+      expect(StorageManager.type).toBe('indexedDB')
       expect(Logger.default.info).toHaveBeenCalledWith('Available storage is indexedDB')
     })
   })

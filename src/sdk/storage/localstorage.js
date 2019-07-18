@@ -1,9 +1,10 @@
-import ActivityState from './activity-state'
-import State from './state'
-import QuickStorage from './quick-storage'
+import ActivityState from '../activity-state'
+import State from '../state'
+import QuickStorage from '../storage/quick-storage'
+import SchemeMap from './scheme-map'
 import Scheme from './scheme'
-import Logger from './logger'
-import {findIndex, isEmpty, isObject} from './utilities'
+import Logger from '../logger'
+import {findIndex, isEmpty, isObject} from '../utilities'
 
 /**
  * Check if LocalStorage is supported in the current browser
@@ -39,14 +40,14 @@ function _open () {
     return
   }
 
-  const storeNames = Object.values(Scheme.names)
+  const storeNames = Object.values(SchemeMap.storeNames)
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 
   storeNames.forEach(storeName => {
-    const asStoreName = Scheme.names.activityState
+    const asStoreName = SchemeMap.storeNames.activityState
 
-    if (storeName === asStoreName && !QuickStorage.stores[asStoreName]) {
+    if (storeName === SchemeMap.storeNames.activityState && !QuickStorage.stores[asStoreName]) {
       QuickStorage.stores[asStoreName] = inMemoryAvailable ? [activityState] : []
     } else if (!QuickStorage.stores[storeName]) {
       QuickStorage.stores[storeName] = []
@@ -65,7 +66,7 @@ function _open () {
  */
 function _getKeys (storeName) {
 
-  const keyPath = Scheme.stores[storeName].options.keyPath
+  const keyPath = Scheme[storeName].options.keyPath
 
   return keyPath instanceof Array ? keyPath.slice() : [keyPath]
 }
@@ -99,7 +100,7 @@ function _initRequest ({storeName, id, item}, action) {
 
     const index = item ? findIndex(items, keys, item) : null
 
-    return action(resolve, reject, {keys, items, item, index})
+    return action(resolve, reject, {keys, items, index})
   })
 }
 
@@ -157,7 +158,7 @@ function getAll (storeName, firstOnly) {
     if (value instanceof Array) {
       resolve(firstOnly ? value[0] : _sort(value, _getKeys(storeName)))
     } else {
-      reject({name: 'NotFoundError', message: `No store named ${storeName} in this storage`})
+      reject({name: 'NotFoundError', message: `No objectStore named ${storeName} in this database`})
     }
   })
 }
@@ -173,20 +174,6 @@ function getFirst (storeName) {
 }
 
 /**
- * Print key value pairs to be used in error trace message
- *
- * @param {Array} keys
- * @param {Object} item
- * @returns {string}
- * @private
- */
-function _keyValuePairs (keys, item) {
-  return keys.join(':') + ' => ' + keys.map((key) => {
-    return item[key]
-  }).join(':')
-}
-
-/**
  * Get item from a particular store
  *
  * @param {string} storeName
@@ -194,9 +181,9 @@ function _keyValuePairs (keys, item) {
  * @returns {Promise}
  */
 function getItem (storeName, id) {
-  return _initRequest({storeName, id}, (resolve, reject, {keys, items, item, index}) => {
+  return _initRequest({storeName, id}, (resolve, reject, {items, index}) => {
     if (index === -1) {
-      reject({name: 'NotFoundError', message: `No record found ${_keyValuePairs(keys, item)} in ${storeName} store`})
+      reject({name: 'NotRecordFoundError', message: `Requested record not found in ${storeName} store`})
     } else {
       resolve(items[index])
     }
@@ -214,7 +201,7 @@ function filterBy (storeName, by) {
   return getAll(storeName)
     .then(result => {
       return result.filter(item => {
-        return item[Scheme.stores[storeName].index] === by
+        return item[Scheme[storeName].index] === by
       })
     })
 }
@@ -241,7 +228,7 @@ function _return (keys, item) {
 function addItem (storeName, item) {
   return _initRequest({storeName, item}, (resolve, reject, {keys, items, index}) => {
     if (index !== -1) {
-      reject({name: 'ConstraintError', message: `Item ${_keyValuePairs(keys, item)} already exists`})
+      reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing item into ${storeName} store`})
     } else {
       items.push(item)
       QuickStorage.stores[storeName] = items
@@ -280,7 +267,7 @@ function addBulk (storeName, target, overwrite) {
     }
 
     if (existing.length && !overwrite) {
-      reject({name: 'ConstraintError', message: `Items with ${keys.join(':')} => ${existing.map(i => keys.map(k => i.target[k]).join(':')).join(',')} already exist`})
+      reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing items into ${storeName} store`})
     } else {
       QuickStorage.stores[storeName] = _sort([...items, ...target], keys)
       resolve(target.map((item) => keys.map(k => item[k])))
@@ -369,7 +356,7 @@ function deleteBulk (storeName, condition) {
     .then(items => {
 
       const keys = _getKeys(storeName)
-      const key = Scheme.stores[storeName].index || keys[0]
+      const key = Scheme[storeName].index || keys[0]
       const bound = isObject(condition) ? condition.upperBound : condition
       const force = isObject(condition) ? null : condition
       const first = items[0]
