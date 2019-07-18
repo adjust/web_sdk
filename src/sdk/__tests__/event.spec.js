@@ -6,7 +6,7 @@ import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as request from '../request'
 import * as ActivityState from '../activity-state'
-import {flushPromises} from './_helper'
+import {flushPromises} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -162,7 +162,7 @@ describe('event tracking functionality', () => {
           eventToken: '123abc',
           callbackParams: {'some-key': 'some-value'},
           partnerParams: {key1: 'value1', key2: 'value2'},
-          revenue: "100.00000",
+          revenue: '100.00000',
           currency: 'EUR'
         }
       })
@@ -192,7 +192,7 @@ describe('event tracking functionality', () => {
               eventToken: 'bla',
               callbackParams: {key1: 'value1', key2: 'value2'},
               partnerParams: {},
-              revenue: "34.67000",
+              revenue: '34.67000',
               currency: 'EUR'
             }
           })

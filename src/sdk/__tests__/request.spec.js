@@ -3,7 +3,7 @@ import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
 import * as Config from '../config'
-import {flushPromises, setGlobalProp, createMockXHR} from './_helper'
+import {flushPromises, setGlobalProp, createMockXHR} from './_common'
 
 jest.mock('../logger')
 jest.useFakeTimers()

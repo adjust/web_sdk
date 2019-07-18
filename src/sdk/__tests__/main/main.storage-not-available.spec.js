@@ -10,7 +10,7 @@ import {
   expectNotStart,
   expectNotRunningTrackEvent,
   expectNotRunningStatic
-} from './_main-helper'
+} from './_main.common'
 
 jest.mock('../../logger')
 
@@ -40,7 +40,7 @@ describe('main entry point - test instance initiation when storage is not availa
   })
 
   it('prevents initiation if storage is not available', () => {
-    jest.doMock('../../storage-manager', () => { return null })
+    jest.doMock('../../storage/storage-manager', () => { return null })
 
     const AdjustInstance = require('../../main').default
 

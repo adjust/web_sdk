@@ -1,5 +1,5 @@
 import * as State from '../state'
-import * as QuickStorage from '../quick-storage'
+import * as QuickStorage from '../storage/quick-storage'
 import * as PubSub from '../pub-sub'
 
 describe('activity state functionality', () => {

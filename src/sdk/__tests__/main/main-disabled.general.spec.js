@@ -5,11 +5,11 @@ import * as event from '../../event'
 import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
-import * as StorageManager from '../../storage-manager'
+import * as StorageManager from '../../storage/storage-manager'
 import * as Attribution from '../../attribution'
 import * as SdkClick from '../../sdk-click'
 import AdjustInstance from '../../main.js'
-import {flushPromises, randomInRange} from './../_helper'
+import {flushPromises, randomInRange} from './../_common'
 
 import {
   config,
@@ -23,7 +23,7 @@ import {
   expectNotShutDown,
   expectAllDown,
   teardownAndDisable
-} from './_main-helper'
+} from './_main.common'
 import * as State from '../../state'
 
 jest.mock('../../request')

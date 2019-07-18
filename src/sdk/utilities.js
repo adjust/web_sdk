@@ -36,7 +36,7 @@ function isEmpty (obj) {
  * @returns {boolean}
  */
 function isObject (obj) {
-  return typeof obj === 'object' && obj !== null
+  return typeof obj === 'object' && obj !== null && !(obj instanceof Array)
 }
 
 /**
@@ -192,6 +192,18 @@ function getHostName (url = '') {
   return url.replace(/^(http(s)*:\/\/)*(www\.)*/, '').split('/')[0].split('?')[0]
 }
 
+/**
+ * Transform array entry into object key:value pair entry
+ *
+ * @param {Object} acc
+ * @param {string} key
+ * @param {string} value
+ * @returns {Object}
+ */
+function reducer (acc, [key, value]) {
+  return extend(acc, {[key]: value})
+}
+
 export {
   buildList,
   isEmpty,
@@ -205,5 +217,6 @@ export {
   convertToMap,
   intersection,
   isRequest,
-  getHostName
+  getHostName,
+  reducer
 }

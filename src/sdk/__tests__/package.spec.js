@@ -2,7 +2,7 @@ import * as Package from '../package'
 import * as request from '../request'
 import * as Time from '../time'
 import * as Logger from '../logger'
-import {errorResponse, flushPromises} from './_helper'
+import {errorResponse, flushPromises} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')

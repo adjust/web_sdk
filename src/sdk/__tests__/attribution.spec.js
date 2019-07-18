@@ -5,9 +5,9 @@ import * as Time from '../time'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
-import * as StorageManager from '../storage-manager'
-import * as Scheme from '../scheme'
-import {errorResponse, flushPromises} from './_helper'
+import * as StorageManager from '../storage/storage-manager'
+import * as SchemeMap from '../storage/scheme-map'
+import {errorResponse, flushPromises} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -15,7 +15,7 @@ jest.useFakeTimers()
 
 describe('test attribution functionality', () => {
 
-  const storeNames = Scheme.default.names
+  const storeNames = SchemeMap.default.storeNames
 
   beforeAll(() => {
     ActivityState.default.current = {}

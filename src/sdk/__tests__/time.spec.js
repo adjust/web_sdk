@@ -5,7 +5,7 @@ const _origDate = global.Date
 
 const mockDate = date => {
   global.Date = class extends global.Date {
-    constructor() {
+    constructor () {
       super()
       return date
     }

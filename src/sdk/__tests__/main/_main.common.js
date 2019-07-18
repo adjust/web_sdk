@@ -7,11 +7,11 @@ import * as event from '../../event'
 import * as GlobalParams from '../../global-params'
 import * as State from '../../state'
 import * as Attribution from '../../attribution'
-import * as StorageManager from '../../storage-manager'
+import * as StorageManager from '../../storage/storage-manager'
 import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
 import * as SdkClick from '../../sdk-click'
-import {flushPromises} from '../_helper'
+import {flushPromises} from '../_common'
 
 export const config = {
   appToken: 'some-app-token',

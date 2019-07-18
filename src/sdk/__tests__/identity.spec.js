@@ -1,11 +1,11 @@
 import * as Identity from '../identity'
-import * as StorageManager from '../storage-manager'
+import * as StorageManager from '../storage/storage-manager'
 import * as ActivityState from '../activity-state'
 import * as State from '../state'
 import * as Logger from '../logger'
-import * as QuickStorage from '../quick-storage'
+import * as QuickStorage from '../storage/quick-storage'
 import * as PubSub from '../pub-sub'
-import {flushPromises} from './_helper'
+import {flushPromises} from './_common'
 import {extend} from '../utilities'
 
 jest.mock('../logger')
@@ -140,8 +140,11 @@ describe('test identity methods', () => {
   describe('when activity state exists', () => {
 
     beforeEach(() => {
-      StorageManager.default.addItem(storeNames.activityState, {uuid: '123'}).then(Identity.start)
-      StorageManager.default.addItem.mockClear()
+      return StorageManager.default.addItem(storeNames.activityState, {uuid: '123'})
+        .then(() => {
+          StorageManager.default.addItem.mockClear()
+          return Identity.start()
+        })
     })
 
     it('gets existing activity state', () => {

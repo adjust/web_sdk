@@ -15,7 +15,7 @@ import {
   expectRunningStatic,
   expectAttributionCallback,
   teardown
-} from './_main-helper'
+} from './_main.common'
 
 jest.mock('../../request')
 jest.mock('../../logger')

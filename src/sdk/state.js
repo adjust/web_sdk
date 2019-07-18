@@ -1,5 +1,5 @@
 import {publish} from './pub-sub'
-import QuickStorage from './quick-storage'
+import QuickStorage from './storage/quick-storage'
 
 /**
  * Name of the store used by disabled

@@ -6,7 +6,7 @@ import * as Time from '../time'
 import * as Logger from '../logger'
 import * as State from '../state'
 import * as ActivityState from '../activity-state'
-import {flushPromises} from './_helper'
+import {flushPromises} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')

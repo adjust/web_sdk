@@ -1,5 +1,5 @@
 import Config from './config'
-import StorageManager from './storage-manager'
+import StorageManager from './storage/storage-manager'
 import Logger from './logger'
 import State from './state'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'

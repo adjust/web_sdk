@@ -1,17 +1,17 @@
 import * as Config from '../config'
 import * as Utilities from '../utilities'
 import * as Session from '../session'
-import * as StorageManager from '../storage-manager'
+import * as StorageManager from '../storage/storage-manager'
 import * as Queue from '../queue'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import * as Scheme from '../scheme'
+import * as SchemeMap from '../storage/scheme-map'
 import * as request from '../request'
 import * as Time from '../time'
 import {MINUTE, SECOND} from '../constants'
-import {flushPromises, setDocumentProp} from './_helper'
+import {flushPromises, setDocumentProp} from './_common'
 
 jest.mock('../logger')
 jest.mock('../request')
@@ -31,7 +31,7 @@ function goToBackground () {
 
 describe('test session functionality', () => {
 
-  const storeNames = Scheme.default.names
+  const storeNames = SchemeMap.default.storeNames
   const _reset = () => {
     Session.destroy()
     Identity.destroy()
@@ -52,7 +52,7 @@ describe('test session functionality', () => {
   })
 
   beforeEach(() => {
-    StorageManager.default.addItem(storeNames.activityState, {uuid: '123'}).then(Identity.start)
+    return StorageManager.default.addItem(storeNames.activityState, {uuid: '123'}).then(Identity.start)
   })
 
   afterEach(() => {
@@ -710,7 +710,6 @@ describe('test session functionality', () => {
     it('checks for new session when window reached after session watch restart', () => {
 
       let currentTime = Date.now()
-      let currentLastActive
 
       dateNowSpy.mockReturnValue(currentTime)
 
@@ -723,8 +722,6 @@ describe('test session functionality', () => {
 
           dateNowSpy.mockReturnValue(currentTime += 40 * SECOND)
           jest.advanceTimersByTime(40 * SECOND)
-
-          currentLastActive = currentTime
 
           goToBackground()
           Session.destroy()
@@ -773,7 +770,6 @@ describe('test session functionality', () => {
     it('prevents check for new session when window reached after session watch restart when still in background', () => {
 
       let currentTime = Date.now()
-      let currentLastActive
 
       dateNowSpy.mockReturnValue(currentTime)
 
@@ -786,8 +782,6 @@ describe('test session functionality', () => {
 
           dateNowSpy.mockReturnValue(currentTime += 40 * SECOND)
           jest.advanceTimersByTime(40 * SECOND)
-
-          currentLastActive = currentTime
 
           goToBackground()
           Session.destroy()

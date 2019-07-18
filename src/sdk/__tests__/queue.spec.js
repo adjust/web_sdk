@@ -1,11 +1,11 @@
 import * as Queue from '../queue'
 import * as request from '../request'
-import * as StorageManager from '../storage-manager'
+import * as StorageManager from '../storage/storage-manager'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
 import * as Time from '../time'
-import * as Scheme from '../scheme'
-import {errorResponse, flushPromises} from './_helper'
+import * as SchemeMap from '../storage/scheme-map'
+import {errorResponse, flushPromises} from './_common'
 import {MINUTE, SECOND} from '../constants'
 
 jest.mock('../request')
@@ -65,7 +65,7 @@ function push (configs) {
 
 describe('test request queuing functionality', () => {
 
-  const storeNames = Scheme.default.names
+  const storeNames = SchemeMap.default.storeNames
   const defaultParams = {
     createdAt: 'some-time',
     timeSpent: 0,

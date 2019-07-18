@@ -1,8 +1,8 @@
 import * as defaultParams from '../default-params'
 import * as ActivityState from '../activity-state'
 import * as Time from '../time'
-import * as QuickStorage from '../quick-storage'
-import {setGlobalProp} from './_helper'
+import * as QuickStorage from '../storage/quick-storage'
+import {setGlobalProp} from './_common'
 
 jest.mock('../logger')
 

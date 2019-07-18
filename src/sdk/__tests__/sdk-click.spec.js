@@ -3,7 +3,7 @@ import * as request from '../request'
 import * as Time from '../time'
 import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
-import {errorResponse, flushPromises, setDocumentProp} from './_helper'
+import {errorResponse, flushPromises, setDocumentProp} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')
