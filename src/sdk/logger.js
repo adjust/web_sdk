@@ -91,6 +91,26 @@ function setLogLevel (logLevel, logOutput) {
 }
 
 /**
+ * Get log method name prefix including prefixes to align messages
+ *
+ * @param {string} methodName
+ * @returns {string}
+ * @private
+ */
+function _getMethodNamePrefix (methodName) {
+
+  let spaces = ''
+
+  if (methodName === 'log') {
+    spaces = '  '
+  } else if (methodName === 'info') {
+    spaces = ' '
+  }
+
+  return `${methodName.toUpperCase()}:${spaces}`
+}
+
+/**
  * Output the message to the console
  *
  * @param {string} methodName
@@ -104,7 +124,7 @@ function _log (methodName, ...message) {
   const outputContainer = _output ? document.querySelector(_output) : null
 
   if (outputContainer) {
-    outputContainer.textContent += [`[${Config.namespace}]`, `${methodName.toUpperCase()}:`, ...message].join(' ') + '\n'
+    outputContainer.textContent += [`[${Config.namespace}]`, _getMethodNamePrefix(methodName), ...message].join(' ') + '\n'
     outputContainer.scrollTop = outputContainer.scrollHeight
   }
 

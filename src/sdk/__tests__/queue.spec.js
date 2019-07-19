@@ -78,11 +78,12 @@ describe('test request queuing functionality', () => {
     dateNowSpy = jest.spyOn(Date, 'now')
 
     jest.spyOn(Queue, 'push')
-    jest.spyOn(Queue, 'run')
     jest.spyOn(request, 'default')
     jest.spyOn(StorageManager.default, 'addItem')
+    jest.spyOn(StorageManager.default, 'getFirst')
     jest.spyOn(Logger.default, 'info')
     jest.spyOn(Logger.default, 'log')
+    jest.spyOn(Logger.default, 'error')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
 
@@ -436,6 +437,54 @@ describe('test request queuing functionality', () => {
       .then(() => StorageManager.default.getFirst(storeNames.queue))
       .then(pending => {
         expect(pending).toBeUndefined()
+      })
+
+  })
+
+  it('prevents re-setting offline/online mode if already online/offline', () => {
+
+    Queue.setOffline(false)
+
+    return flushPromises()
+      .then(() => {
+        expect(Logger.default.error).toHaveBeenCalledWith('The app is already in online mode')
+        expect(StorageManager.default.getFirst).not.toHaveBeenCalled()
+        Logger.default.error.mockClear()
+
+        Queue.setOffline(true)
+
+        return flushPromises()
+      })
+      .then(() => {
+        expect(Logger.default.error).not.toHaveBeenCalled()
+        expect(StorageManager.default.getFirst).not.toHaveBeenCalled()
+
+        Queue.setOffline(true)
+
+        return flushPromises()
+      })
+      .then(() => {
+        expect(Logger.default.error).toHaveBeenCalledWith('The app is already in offline mode')
+        expect(StorageManager.default.getFirst).not.toHaveBeenCalled()
+        Logger.default.error.mockClear()
+
+        Queue.setOffline(false)
+
+        return flushPromises()
+      })
+      .then(() => {
+        expect(Logger.default.error).not.toHaveBeenCalled()
+        expect(StorageManager.default.getFirst).toHaveBeenCalledWith(storeNames.queue)
+        StorageManager.default.getFirst.mockClear()
+
+        Queue.setOffline(false)
+
+        return flushPromises()
+      })
+      .then(() => {
+        expect(Logger.default.error).toHaveBeenCalledWith('The app is already in online mode')
+        expect(StorageManager.default.getFirst).not.toHaveBeenCalled()
+        Logger.default.error.mockClear()
       })
 
   })

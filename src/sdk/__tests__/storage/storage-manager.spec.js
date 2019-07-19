@@ -15,7 +15,6 @@ describe('test storage availability', () => {
 
   beforeAll(() => {
     jest.spyOn(Logger.default, 'error')
-    jest.spyOn(Logger.default, 'info')
   })
 
   afterEach(() => {
@@ -42,7 +41,7 @@ describe('test storage availability', () => {
 
   it('sets indexedDB as available storage', () => {
 
-    expect.assertions(3)
+    expect.assertions(2)
 
     jest.isolateModules(() => {
       mockAvailability(true, false)
@@ -51,13 +50,12 @@ describe('test storage availability', () => {
 
       expect(StorageManager).not.toBeNull()
       expect(StorageManager.type).toBe('indexedDB')
-      expect(Logger.default.info).toHaveBeenCalledWith('Available storage is indexedDB')
     })
   })
 
   it('sets localStorage as available storage', () => {
 
-    expect.assertions(3)
+    expect.assertions(2)
 
     jest.isolateModules(() => {
       mockAvailability(false, true)
@@ -66,13 +64,12 @@ describe('test storage availability', () => {
 
       expect(StorageManager).not.toBeNull()
       expect(StorageManager.type).toBe('localStorage')
-      expect(Logger.default.info).toHaveBeenCalledWith('Available storage is localStorage')
     })
   })
 
   it('prefers indexedDB over localStorage as available storage', () => {
 
-    expect.assertions(3)
+    expect.assertions(2)
 
     jest.isolateModules(() => {
       mockAvailability(true, true)
@@ -81,7 +78,6 @@ describe('test storage availability', () => {
 
       expect(StorageManager).not.toBeNull()
       expect(StorageManager.type).toBe('indexedDB')
-      expect(Logger.default.info).toHaveBeenCalledWith('Available storage is indexedDB')
     })
   })
 

@@ -155,6 +155,11 @@ function run (cleanUp) {
  */
 function setOffline (state = false) {
 
+  if (state === _isOffline) {
+    Logger.error(`The app is already in ${(state ? 'offline' : 'online')} mode`)
+    return
+  }
+
   const wasOffline = _isOffline
 
   _isOffline = state

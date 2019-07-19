@@ -44,6 +44,8 @@ function init (params = {}) {
     return
   }
 
+  Logger.info(`Available storage is ${StorageManager.type}`)
+
   if (Config.isInitialised()) {
     Logger.error('You already initiated your instance')
     return

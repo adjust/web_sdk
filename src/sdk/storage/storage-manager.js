@@ -197,8 +197,6 @@ function init () {
   }
 
   if (type) {
-    Logger.info(`Available storage is ${type}`)
-
     return extend({
       type,
       isSupported: storage.isSupported,
