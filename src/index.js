@@ -6,10 +6,12 @@ const appConfig = {
   appToken: 'src556ylophc',
   environment: 'production',
   defaultTracker: 'bla',
-  attributionCallback: attributionCallback
+  attributionCallback: attributionCallback,
+  logLevel: 'verbose', // 'none', 'error', 'info', 'verbose'
+  logOutput: '#log'
 }
 
-const someEventConfig = {
+const basicEventConfig = {
   eventToken: 'yywcyo'
 }
 
@@ -31,41 +33,39 @@ const revenueEventConfig = {
   ]
 }
 
+const globalCallpackParams = [
+  {key: 'key1', value: 'value1'},
+  {key: 'key2', value: 'value2'}
+]
+
+const globalPartnerParams = [
+  {key: 'key-1', value: 'value-1'},
+  {key: 'key-2', value: 'value-2'},
+  {key: 'key-3', value: 'value-3'}
+]
+
 function attributionCallback (e, attribution) {
   app.logAttribution(attribution)
-
-  Adjust.removeGlobalCallbackParameter('key1')
-  Adjust.removePartnerCallbackParameter('key-1')
 }
 
 // INIT: Initiate adjust sdk with specified configuration
 Adjust.init(appConfig)
 
-Adjust.addGlobalCallbackParameters([
-  {key: 'key1', value: 'last-value1'},
-  {key: 'key2', value: 'value2'}
-])
-
-Adjust.addGlobalPartnerParameters([
-  {key: 'key-1', value: 'value-1'},
-  {key: 'key-2', value: 'value-2'},
-  {key: 'key-3', value: 'value-3'}
-])
-
 // NOTE: this is custom demo app implementation
 app.start({
-  eventCb: trackEvent,
-  revenueEventCb: trackRevenueEvent,
-  disableCb: Adjust.disable,
-  enableCb: Adjust.enable,
-  gdprForgetMeCb: Adjust.gdprForgetMe
+  event: () => Adjust.trackEvent(basicEventConfig),
+  revent: () => Adjust.trackEvent(revenueEventConfig),
+  addgcp: () => Adjust.addGlobalCallbackParameters(globalCallpackParams),
+  addgpp: () => Adjust.addGlobalPartnerParameters(globalPartnerParams),
+  removegcp: () => Adjust.removeGlobalCallbackParameter('key1'),
+  removegpp: () => Adjust.removePartnerCallbackParameter('key-1'),
+  removeallgcp: Adjust.removeAllGlobalCallbackParameters,
+  removeallgpp: Adjust.removeAllGlobalPartnerParameters,
+  gooffline: () => Adjust.setOfflineMode(true),
+  goonline: () => Adjust.setOfflineMode(false),
+  disable: Adjust.disable,
+  enable: Adjust.enable,
+  gdpr: Adjust.gdprForgetMe,
+  destroy: Adjust.destroy,
+  reinit: () => Adjust.init(appConfig)
 })
-
-function trackEvent () {
-  Adjust.trackEvent(someEventConfig)
-}
-
-function trackRevenueEvent (revenue) {
-  revenueEventConfig.revenue = revenue || revenueEventConfig.revenue
-  Adjust.trackEvent(revenueEventConfig)
-}

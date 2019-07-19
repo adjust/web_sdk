@@ -1,8 +1,27 @@
 @import "~normalize.css";
 @import "loader";
+@import "flex-grid";
+
+$bgColor: #eee;
+$headerBgColor: #222831;
+$logBgColor: #393e46;
+$logFontColor: #00bed5;
+$buttonBgColor: #ddd;
+$buttonHoverBgColor: #d9d9d9;
+$buttonBorderColor: #ccc;
+$buttonFontColor: #555;
+$logoSize: 42px;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
 
 body {
   font-family: Helvetica, sans-serif;
+  background-color: $bgColor;
+  height: 100%;
 }
 
 ul {
@@ -27,123 +46,93 @@ h1, h2, h3, h4, h5, h6 {
   margin: 20px;
 }
 
-.content {
-  width: 700px;
-  margin: 0 auto;
-}
-
 h1 {
   text-align: center;
-  color: #666;
-  font-size: 20px;
-  margin: 20px 0 50px;
+  color: $logFontColor;
+  font-size: 18px;
+  padding: 0;
+  margin: 0;
+  background-color: $headerBgColor;
+
+  span {
+    display: block;
+    padding: 12px 0 12px $logoSize;
+    text-indent: -$logoSize;
+  }
 }
 
-h5 {
-  margin-bottom: 2px;
-  color: #999;
-  font-weight: normal;
+.adjust-logo {
+  $logoImgSize: $logoSize - 12px;
+  display: block;
+  float: left;
+  width: $logoSize;
+  height: $logoSize;
+  margin-right: 5px;
+  background-image: url("../images/adjust-logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: $logoImgSize $logoImgSize;
 }
 
 button {
   display: block;
-  width: 100px;
   font-size: 15px;
   padding:  10px;
-  border: 1px solid #999;
-  background: #ddd;
+  border: 1px solid $buttonBorderColor;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background: $buttonBgColor;
   box-shadow: none;
   outline: none;
   cursor: pointer;
-  color: #555;
-  margin-left: 20px;
+  color: $buttonFontColor;
 
   &:hover {
-    background: #eee;
+    background: $buttonHoverBgColor;
   }
 }
 
 pre {
-  border: 1px solid #ccc;
+  border: 1px solid $buttonBorderColor;
   background-color: #fefefe;
-  min-height: 150px;
   padding: 10px;
   overflow: auto;
   line-height: 20px;
-  color: #ccc;
-  margin-top: 0;
+  color: #bbb;
+  margin: 0;
 
-  &.success {
-    color: #2b8b00;
-  }
-
-  &.error {
-    color: #e02d45;
-  }
-
-  &.small {
-    min-height: 60px;
+  &.big {
+    height: 200px;
+    color: $logFontColor;
+    background: $logBgColor;
+    border-color: $headerBgColor;
   }
 
   &.inline {
     display: inline-block;
     min-height: 21px;
-    margin: 0;
-    width: 343px;
+    margin: 0 0 0 -4px;
+    width: 150px;
     vertical-align: middle;
     padding: 8px 10px;
+    border-left: none;
   }
 }
 
 .section {
-  margin-bottom: 20px;
-}
+  width: 460px;
+  margin: 0 auto 20px;
 
-.section-row {
-  margin-bottom: 20px;
-
-  label,
-  input,
   button {
     display: inline-block;
     vertical-align: middle;
+    width: 270px;
+    text-align: left;
   }
 }
 
-label {
-  color: #999;
-  display: block;
-
-  i {
-    font-style: normal;
-  }
-
-  span {
-    display: block;
-    padding: 20px 0 7px;
-    margin-right: 210px;
-  }
-
-  button {
-    float: right;
-  }
-
-  &.long {
-    width: 204px;
-  }
-}
-
-input {
-  padding: 5px 2px;
-}
-
-input[type=number] {
-  width: 70px;
-  text-align: right;
-
-  + i {
-    font-style: normal;
-    color: #999;
-  }
+.actions {
+  overflow: auto;
+  padding-top: 20px;
 }
 

@@ -1,35 +1,84 @@
-<div class="content">
-  <h1>Web SDK demo</h1>
+<div class="content flex-one flex-box-column">
+  <div class="flex-auto">
+    <h1><i class="adjust-logo"></i> <span>Web SDK Demo</span></h1>
 
-  <div class="section-row">
-    <label class="long">Some Event</label>
-    <button id="event-btn">track</button>
-    <pre id="log-event" class="inline"></pre>
+    <pre id="log" class="big"></pre>
   </div>
 
-  <div class="section-row">
-    <label for="revenue-event-input">Revenue Event</label>
-    <input type="number" name="revenue-event-input" id="revenue-event-input" placeholder="10" min="0"><i>€</i>
-    <button id="revenue-event-btn">track</button>
-    <pre id="log-revenue-event" class="inline"></pre>
+  <div class="actions flex-one">
+    <div class="section">
+      <button id="event" class="action">Track Event</button>
+      <pre id="event-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="revent" class="action">Track Revenue Event</button>
+      <pre id="revent-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="addgcp" class="action">Add Global Callback Params</button>
+      <pre id="addgcp-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="addgpp" class="action">Add Global Partner Params</button>
+      <pre id="addgpp-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="removegcp" class="action">Remove Global Callback Param</button>
+      <pre id="removegcp-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="removegpp" class="action">Remove Global Partner Param</button>
+      <pre id="removegpp-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="removeallgcp" class="action">Remove All Global Callback Params</button>
+      <pre id="removeallgcp-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="removeallgpp" class="action">Remove All Global Partner Params</button>
+      <pre id="removeallgpp-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="gooffline" class="action">Go Offline</button>
+      <pre id="gooffline-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="goonline" class="action">Go Online</button>
+      <pre id="goonline-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="disable" class="action">Disable SDK</button>
+      <pre id="disable-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="enable" class="action">Enable SDK</button>
+      <pre id="enable-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="gdpr" class="action">GDPR Forget Me</button>
+      <pre id="gdpr-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="destroy" class="action">Destroy instance</button>
+      <pre id="destroy-log" class="inline"></pre>
+    </div>
+
+    <div class="section">
+      <button id="reinit" class="action">Re-init instance</button>
+      <pre id="reinit-log" class="inline"></pre>
+    </div>
   </div>
-
-  <div class="section">
-    <label for="log-attribution"><span>Attribution - <i id="attribution-status">no change</i></span></label>
-    <pre id="log-attribution"></pre>
-  </div>
-
-  <div class="section">
-    <button id="disable-btn">Disable</button>
-  </div>
-
-  <div class="section">
-    <button id="enable-btn">Enable</button>
-  </div>
-
-  <div class="section">
-    <button id="gdpr-btn">GDPR Forget Me</button>
-  </div>
-
-
 </div>
