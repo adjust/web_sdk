@@ -6,6 +6,7 @@ import State from '../state'
 import QuickStorage from '../storage/quick-storage'
 import Logger from '../logger'
 import {isEmpty, isObject} from '../utilities'
+import {convertRecord, convertStoreName} from './converter'
 
 const _dbName = Config.namespace
 const _dbVersion = 1
@@ -54,9 +55,9 @@ function _handleUpgradeNeeded (e, reject) {
   e.target.transaction.onerror = reject
   e.target.transaction.onabort = reject
 
+  const storeNames = Object.values(SchemeMap.storeNames.left)
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
-  const storeNames = Object.values(SchemeMap.storeNames)
 
   storeNames.forEach(storeName => {
     const storeInfo = Scheme[storeName]
@@ -66,8 +67,8 @@ function _handleUpgradeNeeded (e, reject) {
       objectStore.createIndex(`${storeInfo.index}Index`, storeInfo.index)
     }
 
-    if (storeName === SchemeMap.storeNames.activityState && inMemoryAvailable) {
-      objectStore.add(activityState)
+    if (storeName === SchemeMap.storeNames.left.activityState && inMemoryAvailable) {
+      objectStore.add(convertRecord({storeName: convertStoreName({storeName, dir: 'right'}), record: activityState, dir: 'left'}))
       Logger.info('Activity state has been recovered')
     } else if (QuickStorage.stores[storeName]) {
       QuickStorage.stores[storeName].forEach(record => objectStore.add(record))
@@ -184,7 +185,7 @@ function _initRequest ({storeName, target, action, mode = 'readonly'}) {
 
         request.onsuccess = () => {
           if (action === 'get' && !request.result) {
-            reject({name: 'NotRecordFoundError', message: `Requested record not found in ${storeName} store`})
+            reject({name: 'NotRecordFoundError', message: `Requested record not found in "${storeName}" store`})
           } else {
             resolve(request.result || target)
           }
@@ -210,7 +211,7 @@ function _initBulkRequest ({storeName, target, action, mode = 'readonly'}) {
     .then(() => {
       return new Promise((resolve, reject) => {
         if (!target || target && !target.length) {
-          return reject({name: 'NoTargetDefined', message: `No array provided to perform ${action} bulk operation into ${storeName} store`})
+          return reject({name: 'NoTargetDefined', message: `No array provided to perform ${action} bulk operation into "${storeName}" store`})
         }
 
         const {transaction, store} = _getTranStore({storeName, mode}, reject)

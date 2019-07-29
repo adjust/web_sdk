@@ -11,7 +11,7 @@ jest.mock('../../logger')
 
 describe('IndexedDB usage', () => {
 
-  const storeNames = SchemeMap.default.storeNames
+  const storeNames = SchemeMap.default.storeNames.left
 
   window.indexedDB = fakeIDB
   window.IDBKeyRange = IDBKeyRange
@@ -77,7 +77,7 @@ describe('IndexedDB usage', () => {
 
             expect(activityState.uuid).toBeDefined()
 
-            return StorageManager.getFirst(storeNames.activityState)
+            return StorageManager.getFirst('activityState')
           })
           .then(stored => {
 
@@ -95,7 +95,7 @@ describe('IndexedDB usage', () => {
           {t: 2, u: 2}
         ]
         const activityStateSet = [
-          {uuid: 1, la: 12345, at: {a: 'blabla', tt: '123abc', tn: 'tracker', nt: 'bla'}}
+          {u: 1, la: 12345, at: {a: 'blabla', tt: '123abc', tn: 'tracker', nt: 'bla'}}
         ]
         const globalParamsSet = [
           {k: 'key-1', v: 'value-1', t: 1},
@@ -114,11 +114,11 @@ describe('IndexedDB usage', () => {
 
           expect.assertions(2)
 
-          return StorageManager.getFirst(storeNames.activityState)
+          return StorageManager.getFirst('activityState')
             .then(result => {
               expect(result).toBeUndefined()
 
-              return StorageManager.getAll(storeNames.queue)
+              return StorageManager.getAll('queue')
             })
             .then(result => {
               expect(result).toEqual([])
@@ -135,7 +135,7 @@ describe('IndexedDB usage', () => {
 
           expect.assertions(6)
 
-          return StorageManager.getFirst(storeNames.activityState)
+          return StorageManager.getFirst('activityState')
             .then(result => {
               expect(result).toEqual({
                 uuid: 1,
@@ -148,7 +148,7 @@ describe('IndexedDB usage', () => {
                 }
               })
 
-              return StorageManager.getAll(storeNames.queue)
+              return StorageManager.getAll('queue')
             })
             .then(result => {
               expect(result).toEqual([
@@ -159,7 +159,7 @@ describe('IndexedDB usage', () => {
               expect(QuickStorage.default.stores[storeNames.activityState]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.globalParams]).toBeNull()
 
-              return StorageManager.getAll(storeNames.globalParams)
+              return StorageManager.getAll('globalParams')
             })
             .then(result => {
               expect(result).toEqual([
@@ -191,14 +191,14 @@ describe('IndexedDB usage', () => {
               StorageManager.destroy()
               fakeIDB._databases.clear()
 
-              return StorageManager.getFirst(storeNames.activityState)
+              return StorageManager.getFirst('activityState')
             })
             .then(result => {
 
               expect(result).toEqual(inMemoryActivityState)
               expect(result.uuid).toBeDefined()
 
-              return StorageManager.getAll(storeNames.queue)
+              return StorageManager.getAll('queue')
             })
             .then(result => {
               expect(result).toEqual([
@@ -209,7 +209,7 @@ describe('IndexedDB usage', () => {
               expect(QuickStorage.default.stores[storeNames.activityState]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.globalParams]).toBeNull()
 
-              return StorageManager.getAll(storeNames.globalParams)
+              return StorageManager.getAll('globalParams')
             })
             .then(result => {
               expect(result).toEqual([

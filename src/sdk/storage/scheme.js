@@ -1,25 +1,25 @@
 import SchemeMap from './scheme-map'
 
-const _storeNames = SchemeMap.storeNames
+const _storeNames = SchemeMap.storeNames.left
 const _scheme = SchemeMap.right
 
 export default {
   [_storeNames.queue]: {
     options: {
-      keyPath: _scheme[_storeNames.queue].keyPath.list[0],
+      keyPath: _scheme.queue.keyPath.list[0],
       autoIncrement: false
     }
   },
   [_storeNames.activityState]: {
     options: {
-      keyPath: _scheme[_storeNames.activityState].keyPath.list[0],
+      keyPath: _scheme.activityState.keyPath.list[0],
       autoIncrement: false
     }
   },
   [_storeNames.globalParams]: {
-    index: SchemeMap.getShortKey(_storeNames.globalParams, 'type'),
+    index: SchemeMap.getShortKey('globalParams', 'type'),
     options: {
-      keyPath: _scheme[_storeNames.globalParams].keyPath.list,
+      keyPath: _scheme.globalParams.keyPath.list,
       autoIncrement: false
     }
   }

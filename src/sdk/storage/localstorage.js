@@ -5,6 +5,7 @@ import SchemeMap from './scheme-map'
 import Scheme from './scheme'
 import Logger from '../logger'
 import {findIndex, isEmpty, isObject} from '../utilities'
+import {convertRecord, convertStoreName} from './converter'
 
 /**
  * Check if LocalStorage is supported in the current browser
@@ -40,15 +41,15 @@ function _open () {
     return
   }
 
-  const storeNames = Object.values(SchemeMap.storeNames)
+  const storeNames = Object.values(SchemeMap.storeNames.left)
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 
   storeNames.forEach(storeName => {
-    const asStoreName = SchemeMap.storeNames.activityState
+    const asStoreName = SchemeMap.storeNames.left.activityState
 
-    if (storeName === SchemeMap.storeNames.activityState && !QuickStorage.stores[asStoreName]) {
-      QuickStorage.stores[asStoreName] = inMemoryAvailable ? [activityState] : []
+    if (storeName === asStoreName && !QuickStorage.stores[asStoreName]) {
+      QuickStorage.stores[asStoreName] = inMemoryAvailable ? [convertRecord({storeName: convertStoreName({storeName, dir: 'right'}), record: activityState, dir: 'left'})] : []
     } else if (!QuickStorage.stores[storeName]) {
       QuickStorage.stores[storeName] = []
     }
@@ -183,7 +184,7 @@ function getFirst (storeName) {
 function getItem (storeName, id) {
   return _initRequest({storeName, id}, (resolve, reject, {items, index}) => {
     if (index === -1) {
-      reject({name: 'NotRecordFoundError', message: `Requested record not found in ${storeName} store`})
+      reject({name: 'NotRecordFoundError', message: `Requested record not found in "${storeName}" store`})
     } else {
       resolve(items[index])
     }
@@ -228,7 +229,7 @@ function _return (keys, item) {
 function addItem (storeName, item) {
   return _initRequest({storeName, item}, (resolve, reject, {keys, items, index}) => {
     if (index !== -1) {
-      reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing item into ${storeName} store`})
+      reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing item into "${storeName}" store`})
     } else {
       items.push(item)
       QuickStorage.stores[storeName] = items
@@ -249,7 +250,7 @@ function addBulk (storeName, target, overwrite) {
   return _initRequest({storeName}, (resolve, reject, {keys, items}) => {
 
     if (!target || target && !target.length) {
-      return reject({name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into ${storeName} store`})
+      return reject({name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into "${storeName}" store`})
     }
 
     let existing = []
@@ -267,7 +268,7 @@ function addBulk (storeName, target, overwrite) {
     }
 
     if (existing.length && !overwrite) {
-      reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing items into ${storeName} store`})
+      reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing items into "${storeName}" store`})
     } else {
       QuickStorage.stores[storeName] = _sort([...items, ...target], keys)
       resolve(target.map((item) => keys.map(k => item[k])))

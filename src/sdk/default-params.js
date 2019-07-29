@@ -2,7 +2,6 @@ import {extend} from './utilities'
 import {getTimestamp} from './time'
 import ActivityState from './activity-state'
 import StorageManager from './storage/storage-manager'
-import SchemeMap from './storage/scheme-map'
 
 /**
  * Get created at timestamp
@@ -107,7 +106,7 @@ function _getMachineType () {
  * @private
  */
 function _getQueueSize () {
-  return StorageManager.getAll(SchemeMap.storeNames.queue)
+  return StorageManager.getAll('queue')
     .then(records => ({queueSize: records.length}))
 }
 

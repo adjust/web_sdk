@@ -2,7 +2,7 @@ import * as IndexedDB from './indexeddb'
 import * as LocalStorage from './localstorage'
 import Logger from '../logger'
 import {extend, isObject, reducer} from '../utilities'
-import {convertRecord, convertRecords, convertValues, encodeValue} from './converter'
+import {convertRecord, convertRecords, convertValues, encodeValue, convertStoreName, decodeErrorMessage} from './converter'
 
 /**
  * Methods to extend
@@ -19,7 +19,8 @@ const _methods = {
   addBulk: _addBulk,
   updateItem: _updateItem,
   deleteItem: _deleteItem,
-  deleteBulk: _deleteBulk
+  deleteBulk: _deleteBulk,
+  clear: _clear
 }
 
 /**
@@ -60,6 +61,7 @@ function _getFirst (storage, storeName) {
 function _getItem (storage, storeName, target) {
   return storage.getItem(storeName, convertValues({storeName, dir: 'left', target}))
     .then(record => convertRecord({storeName, dir: 'right', record}))
+    .catch(error => Promise.reject(decodeErrorMessage({storeName, error})))
 }
 
 /**
@@ -88,6 +90,7 @@ function _filterBy (storage, storeName, target) {
 function _addItem (storage, storeName, record) {
   return storage.addItem(storeName, convertRecord({storeName, dir: 'left', record}))
     .then(target => convertValues({storeName, dir: 'right', target}))
+    .catch(error => Promise.reject(decodeErrorMessage({storeName, error})))
 }
 
 /**
@@ -103,6 +106,7 @@ function _addItem (storage, storeName, record) {
 function _addBulk (storage, storeName, records, overwrite) {
   return storage.addBulk(storeName, convertRecords({storeName, dir: 'left', records}), overwrite)
     .then(values => values.map(target => convertValues({storeName, dir: 'right', target})))
+    .catch(error => Promise.reject(decodeErrorMessage({storeName, error})))
 }
 
 /**
@@ -148,6 +152,18 @@ function _deleteBulk (storage, storeName, target) {
 }
 
 /**
+ * Extends storage's clear method by passing encoded storage name
+ *
+ * @param {Object} storage
+ * @param {string} storeName
+ * @returns {Promise}
+ * @private
+ */
+function _clear (storage, storeName) {
+  return storage.clear(storeName)
+}
+
+/**
  * Augment whitelisted methods with encoding/decoding functionality
  *
  * @param {Object} storage
@@ -158,8 +174,8 @@ function _augment (storage) {
   return Object
     .entries(_methods)
     .map(([methodName, method]) => {
-      return [methodName, (...args) => {
-        return method.call(null, storage, ...args)
+      return [methodName, (storeName, ...args) => {
+        return method.call(null, storage, convertStoreName({storeName, dir: 'left'}), ...args)
       }]
     })
     .reduce(reducer, {})
@@ -200,7 +216,6 @@ function init () {
     return extend({
       type,
       isSupported: storage.isSupported,
-      clear: storage.clear,
       destroy: storage.destroy
     }, _augment(storage))
   }

@@ -159,7 +159,7 @@ describe('test Converter utility', () => {
         }
       }
     })).toEqual({
-      uuid: '123abc',
+      u: '123abc',
       ts: 10,
       sl: 20,
       sc: 30,
@@ -182,7 +182,7 @@ describe('test Converter utility', () => {
       storeName: 'activityState',
       dir: 'right',
       record: {
-        uuid: '123abc',
+        u: '123abc',
         ts: 1,
         sl: 5,
         sc: 5,

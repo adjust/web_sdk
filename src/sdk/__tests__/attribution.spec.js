@@ -6,7 +6,6 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
 import * as StorageManager from '../storage/storage-manager'
-import * as SchemeMap from '../storage/scheme-map'
 import {errorResponse, flushPromises} from './_common'
 
 jest.mock('../request')
@@ -14,8 +13,6 @@ jest.mock('../logger')
 jest.useFakeTimers()
 
 describe('test attribution functionality', () => {
-
-  const storeNames = SchemeMap.default.storeNames
 
   beforeAll(() => {
     ActivityState.default.current = {}
@@ -84,7 +81,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
         expect(activityState.attribution).toEqual(formatted)
@@ -117,7 +114,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(1)
         expect(activityState.attribution).toEqual(cachedActivityState.attribution)
@@ -146,7 +143,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
         expect(activityState.attribution).toEqual(formatted)
@@ -176,7 +173,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
         expect(activityState.attribution).toEqual(formatted)
@@ -205,7 +202,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
         expect(activityState.attribution).toEqual(formatted)
@@ -234,7 +231,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(PubSub.publish).not.toHaveBeenCalled()
         expect(Identity.persist).toHaveBeenCalledTimes(1)
@@ -247,7 +244,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       })
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
 
         expect(PubSub.publish).not.toHaveBeenCalled()
@@ -264,7 +261,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       })
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
 
         jest.runOnlyPendingTimers()
@@ -294,7 +291,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
 
         expect(PubSub.publish).not.toHaveBeenCalled()
@@ -308,7 +305,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       })
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
 
         expect(PubSub.publish).not.toHaveBeenCalled()
@@ -322,7 +319,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       })
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
 
         expect(PubSub.publish).not.toHaveBeenCalled()
@@ -339,7 +336,7 @@ describe('test attribution functionality', () => {
 
         return flushPromises()
       })
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(activityState.attribution).toEqual(formatted)
         expect(ActivityState.default.current.attribution).toEqual(formatted)
@@ -366,7 +363,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(activityState.attribution).toBeUndefined()
         expect(ActivityState.default.current.attribution).toBeUndefined()
@@ -396,7 +393,7 @@ describe('test attribution functionality', () => {
     expect(Identity.persist).toHaveBeenCalledTimes(2)
 
     return flushPromises()
-      .then(() => StorageManager.default.getFirst(storeNames.activityState))
+      .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(request.default).toHaveBeenCalledTimes(1)
         expect(activityState.attribution).toEqual(formatted)

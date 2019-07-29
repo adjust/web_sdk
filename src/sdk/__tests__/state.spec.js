@@ -30,11 +30,11 @@ describe('activity state functionality', () => {
 
   it('reloads in-memory variables when storage got changed outside of current tab', () => {
 
-    QuickStorage.default.stores[disabledStoreName] = 'general'
+    QuickStorage.default.stores[disabledStoreName] = 1
 
     expect(State.default.disabled).toEqual('general')
 
-    QuickStorage.default.stores[disabledStoreName] = 'gdpr'
+    QuickStorage.default.stores[disabledStoreName] = 2
 
     expect(State.default.disabled).toEqual('general')
 
@@ -44,7 +44,7 @@ describe('activity state functionality', () => {
 
     State.default.disabled = null
 
-    QuickStorage.default.stores[disabledStoreName] = 'gdpr'
+    QuickStorage.default.stores[disabledStoreName] = 2
 
     State.default.reload()
 
@@ -57,7 +57,7 @@ describe('activity state functionality', () => {
 
     State.default.disabled = 'gdpr'
 
-    expect(QuickStorage.default.stores[disabledStoreName]).toEqual('gdpr')
+    expect(QuickStorage.default.stores[disabledStoreName]).toEqual(2)
 
     localStorage.clear()
 
@@ -67,7 +67,7 @@ describe('activity state functionality', () => {
     State.default.recover()
 
     expect(State.default.disabled).toEqual('gdpr')
-    expect(QuickStorage.default.stores[disabledStoreName]).toEqual('gdpr')
+    expect(QuickStorage.default.stores[disabledStoreName]).toEqual(2)
 
   })
 

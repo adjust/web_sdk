@@ -3,14 +3,11 @@ import * as StorageManager from '../../storage/storage-manager'
 import * as Identity from '../../identity'
 import * as ActivityState from '../../activity-state'
 import * as Logger from '../../logger'
-import * as SchemeMap from '../../storage/scheme-map'
 import runSuite from './_storage.common'
 
 jest.mock('../../logger')
 
 describe('LocalStorage usage', () => {
-
-  const storeNames = SchemeMap.default.storeNames
 
   beforeAll(() => {
     jest.spyOn(Logger.default, 'error')
@@ -57,7 +54,7 @@ describe('LocalStorage usage', () => {
 
         expect(activityState.uuid).toBeDefined()
 
-        return StorageManager.default.getFirst(storeNames.activityState)
+        return StorageManager.default.getFirst('activityState')
       })
       .then(stored => {
 

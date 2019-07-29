@@ -7,7 +7,6 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import * as SchemeMap from '../storage/scheme-map'
 import * as request from '../request'
 import * as Time from '../time'
 import {MINUTE, SECOND} from '../constants'
@@ -31,7 +30,6 @@ function goToBackground () {
 
 describe('test session functionality', () => {
 
-  const storeNames = SchemeMap.default.storeNames
   const _reset = () => {
     Session.destroy()
     Identity.destroy()
@@ -52,7 +50,7 @@ describe('test session functionality', () => {
   })
 
   beforeEach(() => {
-    return StorageManager.default.addItem(storeNames.activityState, {uuid: '123'}).then(Identity.start)
+    return StorageManager.default.addItem('activityState', {uuid: '123'}).then(Identity.start)
   })
 
   afterEach(() => {
@@ -134,7 +132,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -155,7 +153,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -175,7 +173,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -199,7 +197,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -432,7 +430,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -454,7 +452,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -472,7 +470,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -491,7 +489,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current
@@ -533,7 +531,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           expect(record.lastActive).toEqual(currentTime)
@@ -551,7 +549,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           expect(record.lastActive).toEqual(currentTime)
@@ -578,7 +576,7 @@ describe('test session functionality', () => {
 
           return flushPromises()
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
 
           activityState = ActivityState.default.current

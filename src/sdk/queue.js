@@ -1,4 +1,3 @@
-import SchemeMap from './storage/scheme-map'
 import Config from './config'
 import StorageManager from './storage/storage-manager'
 import ActivityState from './activity-state'
@@ -33,7 +32,7 @@ let _isOffline = false
  * @type {string}
  * @private
  */
-const _storeName = SchemeMap.storeNames.queue
+const _storeName = 'queue'
 
 /**
  * Remove from the top and continue running pending requests

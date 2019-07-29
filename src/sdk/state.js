@@ -1,5 +1,17 @@
 import {publish} from './pub-sub'
 import QuickStorage from './storage/quick-storage'
+import {REASON_GENERAL, REASON_GDPR} from './constants'
+
+/**
+ * Encoded values for each reason
+ *
+ * @type {Object}
+ * @private
+ */
+const _reasons = {
+  [REASON_GENERAL]: 1,
+  [REASON_GDPR]: 2
+}
 
 /**
  * Name of the store used by disabled
@@ -15,7 +27,18 @@ let _storeName = QuickStorage.names.disabled
  * @type {Object}
  * @private
  */
-let _disabled = QuickStorage.stores[_storeName]
+let _disabled = _decodeDisabled()
+
+/**
+ * Decode disabled value from storage
+ *
+ * @returns {string}
+ * @private
+ */
+function _decodeDisabled () {
+  const reason = QuickStorage.stores[_storeName]
+  return reason === 1 ? REASON_GENERAL : (reason === 2 ? REASON_GDPR : null)
+}
 
 /**
  * Get current disabled state
@@ -24,7 +47,7 @@ let _disabled = QuickStorage.stores[_storeName]
  */
 function _disabledGetter () {
   if (!_disabled) {
-    _disabled = QuickStorage.stores[_storeName]
+    _disabled = _decodeDisabled()
   }
 
   return _disabled
@@ -36,7 +59,7 @@ function _disabledGetter () {
  * @param {string|null} reason
  */
 function _disabledSetter (reason) {
-  QuickStorage.stores[_storeName] = reason
+  QuickStorage.stores[_storeName] = _reasons[reason]
   _disabled = reason
 }
 
@@ -48,7 +71,7 @@ function reload () {
     publish('sdk:shutdown', true)
   }
 
-  _disabled = QuickStorage.stores[_storeName]
+  _disabled = _decodeDisabled()
 }
 
 /**
@@ -56,7 +79,7 @@ function reload () {
  */
 function recover () {
   if (!QuickStorage.stores[_storeName]) {
-    QuickStorage.stores[_storeName] = _disabled
+    QuickStorage.stores[_storeName] = _reasons[_disabled]
   }
 }
 

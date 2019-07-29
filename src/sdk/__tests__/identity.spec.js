@@ -46,7 +46,7 @@ describe('test identity methods', () => {
   describe('test toggle disable depending on initialization state', () => {
 
     afterEach(() => {
-      StorageManager.default.clear(storeNames.activityState)
+      StorageManager.default.clear('activityState')
       StorageManager.default.getFirst.mockClear()
       Identity.destroy()
     })
@@ -140,7 +140,7 @@ describe('test identity methods', () => {
   describe('when activity state exists', () => {
 
     beforeEach(() => {
-      return StorageManager.default.addItem(storeNames.activityState, {uuid: '123'})
+      return StorageManager.default.addItem('activityState', {uuid: '123'})
         .then(() => {
           StorageManager.default.addItem.mockClear()
           return Identity.start()
@@ -170,7 +170,7 @@ describe('test identity methods', () => {
 
       expect.assertions(4)
 
-      return StorageManager.default.deleteItem(storeNames.activityState, '123')
+      return StorageManager.default.deleteItem('activityState', '123')
         .then(Identity.start)
         .then(activityState => {
 
@@ -179,7 +179,7 @@ describe('test identity methods', () => {
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toEqual({uuid: '123'})
           expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
-          expect(StorageManager.default.addItem).toHaveBeenCalledWith(storeNames.activityState, {uuid: '123'})
+          expect(StorageManager.default.addItem).toHaveBeenCalledWith('activityState', {uuid: '123'})
         })
     })
 
@@ -194,7 +194,7 @@ describe('test identity methods', () => {
       return Identity.start()
         .then(() => {
           expect(State.default.disabled).toEqual('general')
-          expect(QuickStorage.default.stores[storeNames.disabled]).toEqual('general')
+          expect(QuickStorage.default.stores[storeNames.disabled]).toEqual(1)
         })
     })
 
@@ -204,7 +204,7 @@ describe('test identity methods', () => {
 
       Identity.destroy()
 
-      return StorageManager.default.deleteItem(storeNames.activityState, '123')
+      return StorageManager.default.deleteItem('activityState', '123')
         .then(Identity.start)
         .then(activityState => {
 
@@ -259,9 +259,9 @@ describe('test identity methods', () => {
           expect(activityState).toEqual(ActivityState.default.current)
 
           // update happens in another tab
-          return StorageManager.default.updateItem(storeNames.activityState, Object.assign({}, activityState, {lastActive: 123}))
+          return StorageManager.default.updateItem('activityState', Object.assign({}, activityState, {lastActive: 123}))
         })
-        .then(() => StorageManager.default.getFirst(storeNames.activityState))
+        .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
           compareActivityState = Object.assign({}, activityState)
@@ -287,7 +287,7 @@ describe('test identity methods', () => {
         .then(() => {
           expect(ActivityState.default.current).toEqual({uuid: 'unknown'})
 
-          return StorageManager.default.getFirst(storeNames.activityState)
+          return StorageManager.default.getFirst('activityState')
         })
         .then(activityState => {
           expect(activityState).toEqual({uuid: 'unknown'})

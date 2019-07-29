@@ -1,4 +1,3 @@
-import SchemeMap from './storage/scheme-map'
 import StorageManager from './storage/storage-manager'
 import ActivityState from './activity-state'
 import State from './state'
@@ -12,7 +11,7 @@ import {extend} from './utilities'
  * @type {string}
  * @private
  */
-const _storeName = SchemeMap.storeNames.activityState
+const _storeName = 'activityState'
 
 /**
  * Generate random  uuid v4

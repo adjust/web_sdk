@@ -125,7 +125,7 @@ function removeAllGlobalPartnerParameters () {
  * @param {boolean} state
  */
 function setOfflineMode (state) {
-  _run('set offline mode', setOffline, state)
+  _run(`set ${state ? 'offline' : 'online'} mode`, setOffline, state)
 }
 
 /**

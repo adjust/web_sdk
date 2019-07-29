@@ -52,7 +52,7 @@ function convertRecord ({storeName, dir, record, scheme}) {
     return
   }
 
-  scheme = scheme || SchemeMap[dir][storeName].fields
+  scheme = scheme || SchemeMap[dir][convertStoreName({storeName, dir: 'right'})].fields
 
   return Object
     .entries(record)
@@ -82,7 +82,7 @@ function convertRecords ({storeName, dir, records = []}) {
  * @returns {*|*[]}
  */
 function convertValues ({storeName, dir, target}) {
-  const scheme = SchemeMap[dir][storeName]
+  const scheme = SchemeMap[dir][convertStoreName({storeName, dir: 'right'})]
   const values = target instanceof Array ? target.slice() : [target]
   const keys = scheme.keyPath.list
   const converted = keys
@@ -101,9 +101,36 @@ function encodeValue (target) {
   return SchemeMap.values[target] || target
 }
 
+/**
+ * Convert store name by defined direction
+ *
+ * @param {string} storeName
+ * @param {string} dir
+ * @returns {string}
+ */
+function convertStoreName ({storeName, dir}) {
+  return SchemeMap.storeNames[dir][storeName] || storeName
+}
+
+/**
+ * Decode error message by replacing short store name with long readable one
+ *
+ * @param {string} storeName
+ * @param Object{} error
+ * @returns {{name: string, message: string}}
+ */
+function decodeErrorMessage ({storeName, error}) {
+  return {
+    name: error.name,
+    message: error.message.replace(`"${storeName}"`, convertStoreName({storeName, dir: 'right'}))
+  }
+}
+
 export {
   convertRecord,
   convertRecords,
   convertValues,
-  encodeValue
+  encodeValue,
+  convertStoreName,
+  decodeErrorMessage
 }

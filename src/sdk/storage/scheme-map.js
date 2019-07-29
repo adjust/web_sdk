@@ -1,8 +1,8 @@
 import {extend, reducer} from '../utilities'
 
-const QUEUE_STORE = 'queue'
-const ACTIVITY_STATE_STORE = 'activityState'
-const GLOBAL_PARAMS_STORE = 'globalParams'
+const QUEUE_STORE = 'q'
+const ACTIVITY_STATE_STORE = 'as'
+const GLOBAL_PARAMS_STORE = 'gp'
 
 const StoreNames = {
   queue: QUEUE_STORE,
@@ -57,8 +57,11 @@ const _activityStateScheme = {
   keyPath: ['uuid'],
   fields: {
     uuid: {
-      key: 'uuid',
-      primary: true
+      key: 'u',
+      primary: true,
+      values: {
+        unknown: '-'
+      }
     },
     timeSpent: 'ts',
     sessionLength: 'sl',
@@ -102,9 +105,9 @@ const _globalParamsScheme = {
 }
 
 const Base = {
-  [StoreNames.queue]: _queueScheme,
-  [StoreNames.activityState]: _activityStateScheme,
-  [StoreNames.globalParams]: _globalParamsScheme
+  queue: _queueScheme,
+  activityState: _activityStateScheme,
+  globalParams: _globalParamsScheme
 }
 
 /**
@@ -257,6 +260,9 @@ export default {
   left: Left,
   right: Right,
   values: Values,
-  storeNames: StoreNames,
+  storeNames: {
+    left: StoreNames,
+    right: _flipObject(StoreNames)
+  },
   getShortKey
 }

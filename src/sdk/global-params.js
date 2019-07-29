@@ -1,4 +1,3 @@
-import SchemeMap from './storage/scheme-map'
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
 import {convertToMap, intersection} from './utilities'
@@ -9,7 +8,7 @@ import {convertToMap, intersection} from './utilities'
  * @type {string}
  * @private
  */
-const _storeName = SchemeMap.storeNames.globalParams
+const _storeName = 'globalParams'
 
 /**
  * Get callback and partner global parameters
