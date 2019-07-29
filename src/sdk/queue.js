@@ -92,9 +92,11 @@ function _persist (url) {
  * @param {string} url
  * @param {string} method
  * @param {Object=} params
+ * @param {boolean=} auto
+ * @param {boolean=} cleanUp
  * @returns {Promise}
  */
-function push ({url, method, params}, auto) {
+function push ({url, method, params}, {auto, cleanUp} = {}) {
 
   ActivityState.updateParams(url, auto)
 
@@ -104,7 +106,7 @@ function push ({url, method, params}, auto) {
 
   return StorageManager.addItem(_storeName, pending)
     .then(() => _persist(url))
-    .then(() => _request.isRunning() ? {} : run())
+    .then(() => _request.isRunning() ? {} : run(cleanUp))
 }
 
 /**

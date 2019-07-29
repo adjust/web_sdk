@@ -8,6 +8,8 @@ import * as Logger from '../../logger'
 import * as StorageManager from '../../storage/storage-manager'
 import * as Attribution from '../../attribution'
 import * as SdkClick from '../../sdk-click'
+import * as State from '../../state'
+import * as GdprForgetDevice from '../../gdpr-forget-device'
 import AdjustInstance from '../../main.js'
 import {randomInRange} from './../_common'
 
@@ -20,7 +22,6 @@ import {
   expectNotStart,
   teardownAndDisable
 } from './_main.common'
-import * as State from '../../state'
 
 jest.mock('../../request')
 jest.mock('../../logger')
@@ -33,7 +34,6 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(Date, 'now').mockImplementation(() => now + randomInRange(1000, 9999))
     jest.spyOn(event, 'default')
     jest.spyOn(Queue, 'push')
-    jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Queue, 'destroy')
     jest.spyOn(Queue, 'clear')
@@ -55,6 +55,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(Attribution, 'destroy')
     jest.spyOn(SdkClick, 'destroy')
     jest.spyOn(StorageManager.default, 'destroy')
+    jest.spyOn(GdprForgetDevice, 'check')
 
     State.default.disabled = 'gdpr'
   })

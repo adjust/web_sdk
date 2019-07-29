@@ -5,6 +5,7 @@ import * as event from '../../event'
 import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
+import * as GdprForgetDevice from '../../gdpr-forget-device'
 import {
   config,
   expectNotStart,
@@ -18,7 +19,6 @@ describe('main entry point - test instance initiation when storage is not availa
 
   beforeAll(() => {
     jest.spyOn(event, 'default')
-    jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Session, 'watch')
     jest.spyOn(GlobalParams, 'get')
@@ -29,6 +29,7 @@ describe('main entry point - test instance initiation when storage is not availa
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Identity, 'start')
     jest.spyOn(PubSub, 'subscribe')
+    jest.spyOn(GdprForgetDevice, 'check')
   })
 
   afterEach(() => {

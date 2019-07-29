@@ -1,7 +1,7 @@
 import Config from './config'
 import ActivityState from './activity-state'
 import Logger from './logger'
-import {push} from './queue'
+import {run as queueRun, push} from './queue'
 import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
 import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
@@ -45,6 +45,8 @@ const _pva = getVisibilityApiAccess()
  * - initiate activity state params and visibility state
  * - check session initially
  * - set the timer to update last active timestamp
+ *
+ * @returns {Promise}
  */
 function watch () {
 
@@ -65,7 +67,7 @@ function watch () {
 
   ActivityState.initParams()
 
-  _checkSession()
+  return _checkSession(true)
 }
 
 /**
@@ -124,7 +126,7 @@ function _handleForeground () {
   ActivityState.updateSessionLength()
   ActivityState.toForeground()
 
-  return sync().then(_checkSession)
+  return sync().then(() => _checkSession())
 }
 
 /**
@@ -193,25 +195,30 @@ function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
 /**
  * Track session by sending the request to the server
  *
+ * @param {boolean=false} cleanUp
  * @private
  */
-function _trackSession () {
+function _trackSession (cleanUp = false) {
   return getGlobalParams()
     .then(({callbackParams, partnerParams}) => {
       push({
         url: '/session',
         method: 'POST',
         params: _prepareParams(callbackParams, partnerParams)
-      }, true)
+      }, {
+        auto: true,
+        cleanUp
+      })
     })
 }
 
 /**
  * Check if session needs to be tracked
  *
+ * @param {boolean=false} cleanUp
  * @private
  */
-function _checkSession () {
+function _checkSession (cleanUp = false) {
 
   _startTimer()
 
@@ -219,7 +226,11 @@ function _checkSession () {
   const currentWindow = lastInterval * SECOND
 
   if (lastInterval === -1 || currentWindow >= Config.sessionWindow) {
-    return _trackSession()
+    return _trackSession(cleanUp)
+  }
+
+  if (cleanUp) {
+    queueRun(cleanUp)
   }
 
   return persist()

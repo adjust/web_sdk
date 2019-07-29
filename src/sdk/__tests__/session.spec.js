@@ -222,7 +222,7 @@ describe('test session functionality', () => {
 
       _reset()
 
-      expect.assertions(4)
+      expect.assertions(5)
 
       return Identity.start()
         .then(() => {
@@ -238,7 +238,11 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {
+            auto: true,
+            cleanUp: true
+          })
+          expect(Queue.run).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 
@@ -279,7 +283,7 @@ describe('test session functionality', () => {
         {key: 'very', value: 'nice'}
       ]
 
-      expect.assertions(4)
+      expect.assertions(5)
 
       return Promise.all([
         GlobalParams.add(callbackParams, 'callback'),
@@ -306,7 +310,11 @@ describe('test session functionality', () => {
               callbackParams: {key1: 'value1', key2: 'value2'},
               partnerParams: {some: 'thing', very: 'nice'}
             }
-          }, true)
+          }, {
+            auto: true,
+            cleanUp: true
+          })
+          expect(Queue.run).not.toHaveBeenCalled()
 
           jest.advanceTimersByTime(150)
 
@@ -338,7 +346,7 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(6)
+      expect.assertions(8)
 
       return Identity.persist()
         .then(() => {
@@ -352,6 +360,8 @@ describe('test session functionality', () => {
         .then(() => {
 
           expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).toHaveBeenCalledTimes(1)
+          expect(Queue.run).toHaveBeenCalledWith(true)
 
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
@@ -405,7 +415,7 @@ describe('test session functionality', () => {
 
       activityState = ActivityState.default.current
 
-      expect.assertions(66)
+      expect.assertions(68)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
       expect(activityState.timeSpent).toEqual(0)
@@ -509,6 +519,7 @@ describe('test session functionality', () => {
 
           // no session window reached, so request was not sent
           expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).not.toHaveBeenCalled()
 
           dateNowSpy.mockReturnValue(currentTime += 4 * MINUTE)
           jest.advanceTimersByTime(4 * MINUTE)
@@ -587,7 +598,11 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {
+            auto: true,
+            cleanUp: false
+          })
+          expect(Queue.run).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 
@@ -622,12 +637,13 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(4)
+      expect.assertions(5)
 
       return Identity.persist()
         .then(() => {
 
           Session.watch()
+          Queue.run.mockClear() // clear mock happened when watch started
 
           dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
           jest.advanceTimersByTime(2 * MINUTE)
@@ -652,7 +668,11 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {
+            auto: true,
+            cleanUp: false
+          })
+          expect(Queue.run).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 
@@ -678,12 +698,13 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(2)
+      expect.assertions(4)
 
       return Identity.persist()
         .then(() => {
 
           Session.watch()
+          Queue.run.mockClear() // clear mock happened when watch started
 
           dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
           jest.advanceTimersByTime(2 * MINUTE)
@@ -697,6 +718,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += Config.default.sessionWindow - SECOND)
 
           expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).not.toHaveBeenCalled()
 
           goToForeground()
 
@@ -704,6 +726,7 @@ describe('test session functionality', () => {
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).not.toHaveBeenCalled()
         })
     })
 
@@ -713,12 +736,13 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(4)
+      expect.assertions(5)
 
       return Identity.persist()
         .then(() => {
 
           Session.watch()
+          Queue.run.mockClear() // clear mock happened when watch started
 
           dateNowSpy.mockReturnValue(currentTime += 40 * SECOND)
           jest.advanceTimersByTime(40 * SECOND)
@@ -747,7 +771,11 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {
+            auto: true,
+            cleanUp: true
+          })
+          expect(Queue.run).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 
@@ -773,12 +801,13 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(3)
+      expect.assertions(5)
 
       return Identity.persist()
         .then(() => {
 
           Session.watch()
+          Queue.run.mockClear() // clear mock happened when watch started
 
           dateNowSpy.mockReturnValue(currentTime += 40 * SECOND)
           jest.advanceTimersByTime(40 * SECOND)
@@ -796,11 +825,13 @@ describe('test session functionality', () => {
           Session.watch()
 
           expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).not.toHaveBeenCalled()
 
           return flushPromises()
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 

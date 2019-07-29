@@ -2,7 +2,7 @@ import Config from './config'
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
 import State from './state'
-import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
+import {setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
 import {extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
@@ -285,7 +285,6 @@ function _start (params = {}) {
       }
 
       gdprForgetCheck()
-      queueRun(true)
       sessionWatch()
 
       _isStarted = true

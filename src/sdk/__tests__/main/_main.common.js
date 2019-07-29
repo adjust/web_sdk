@@ -11,6 +11,7 @@ import * as StorageManager from '../../storage/storage-manager'
 import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
 import * as SdkClick from '../../sdk-click'
+import * as GdprForgetDevice from '../../gdpr-forget-device'
 import {flushPromises} from '../_common'
 
 export const config = {
@@ -38,7 +39,7 @@ export function expectStart () {
 
   const promise = flushPromises()
     .then(() => {
-      expect(Queue.run).toHaveBeenCalledTimes(1)
+      expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
       expect(Session.watch).toHaveBeenCalledTimes(1)
     })
 
@@ -53,7 +54,7 @@ export function expectNotStart (restart) {
 
   expect(PubSub.subscribe).not.toHaveBeenCalled()
   expect(Identity.start).not.toHaveBeenCalled()
-  expect(Queue.run).not.toHaveBeenCalled()
+  expect(GdprForgetDevice.check).not.toHaveBeenCalled()
   expect(Session.watch).not.toHaveBeenCalled()
 
 }

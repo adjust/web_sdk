@@ -8,6 +8,8 @@ import * as Logger from '../../logger'
 import * as StorageManager from '../../storage/storage-manager'
 import * as Attribution from '../../attribution'
 import * as SdkClick from '../../sdk-click'
+import * as State from '../../state'
+import * as GdprForgetDevice from '../../gdpr-forget-device'
 import AdjustInstance from '../../main.js'
 import {flushPromises, randomInRange} from './../_common'
 
@@ -25,7 +27,6 @@ import {
   expectAllDown,
   teardown
 } from './_main.common'
-import * as State from '../../state'
 
 jest.mock('../../request')
 jest.mock('../../logger')
@@ -37,7 +38,6 @@ describe('main entry point - test enable/disable when in initially enabled state
     const now = Date.now()
     jest.spyOn(Date, 'now').mockImplementation(() => now + randomInRange(1000, 9999))
     jest.spyOn(event, 'default')
-    jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Queue, 'destroy')
     jest.spyOn(Session, 'watch')
@@ -58,6 +58,7 @@ describe('main entry point - test enable/disable when in initially enabled state
     jest.spyOn(Attribution, 'destroy')
     jest.spyOn(SdkClick, 'destroy')
     jest.spyOn(StorageManager.default, 'destroy')
+    jest.spyOn(GdprForgetDevice, 'check')
   })
 
   afterEach(() => {
