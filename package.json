@@ -10,10 +10,10 @@
     "start": "webpack-dev-server --content-base dist --hot --mode development --config webpack.demo.config.js",
     "lint": "eslint ./src --ext .js",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
-    "test:coverage": "jest --coverage",
-    "test:all": "npm test && npm run lint"
+    "test": "TZ=UTC jest",
+    "test:watch": "TZ=UTC jest --watchAll",
+    "test:coverage": "TZ=UTC jest --coverage",
+    "test:all": "TZ=UTC npm test && npm run lint"
   },
   "private": true,
   "main": "dist/sdk.js",

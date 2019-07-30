@@ -69,7 +69,7 @@ describe('test for time methods', () => {
 
   it('formats passed timestamp', () => {
 
-    expect(Time.getTimestamp(1564478125377)).toEqual('2019-07-30T11:15:25.377Z+0200')
+    expect(Time.getTimestamp(1564478125377)).toEqual('2019-07-30T09:15:25.377Z+0000')
 
   })
 
