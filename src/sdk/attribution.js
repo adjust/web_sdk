@@ -94,7 +94,6 @@ function _continue (result = {}) {
  * @param {number=} sessionResult.ask_in
  */
 function check (sessionResult = {}) {
-
   if (!sessionResult.ask_in && ActivityState.current.attribution) {
     return Promise.resolve(sessionResult)
   }

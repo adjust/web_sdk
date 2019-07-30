@@ -2,7 +2,6 @@ import Config from './config'
 import {extend, isEmpty, isObject, isValidJson, isRequest} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
-import ActivityState from './activity-state'
 
 /**
  * Get filtered response from successful request
@@ -177,18 +176,14 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams) {
  * @private
  */
 function _interceptResponse (result = {}, options) {
-
-  const activityState = ActivityState.current || {}
   const isAttributionRequest = isRequest(options.url, 'attribution')
-  const isSessionRequest = isRequest(options.url, 'session')
-  const isAttributionPresent = !!activityState.attribution
 
   if (result.tracking_state === 'opted_out') {
     publish('sdk:gdpr-forget-me', true)
     return result
   }
 
-  if (!isAttributionRequest && (result.ask_in || isSessionRequest && !isAttributionPresent)) {
+  if (!isAttributionRequest && result.ask_in) {
     publish('attribution:check', result)
   }
 

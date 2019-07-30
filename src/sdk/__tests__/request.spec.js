@@ -457,32 +457,6 @@ describe('perform api requests', () => {
         })
     })
 
-    it('checks attribution info on session request without ask_in and no stored attribution', () => {
-
-      prepare({
-        adid: '123123',
-        message: 'bla',
-        timestamp: '2019-02-02',
-      })
-
-      expect.assertions(2)
-
-      request.default({
-        url: '/session'
-      }).then(result => {
-        expect(result).toEqual({
-          adid: '123123',
-          timestamp: '2019-02-02'
-        })
-        expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
-      })
-
-      return flushPromises()
-        .then(() => {
-          mockXHR.onreadystatechange()
-        })
-    })
-
     it('does not check attribution info on request other than session without ask_in', () => {
 
       prepare({

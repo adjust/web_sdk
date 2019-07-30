@@ -5,6 +5,7 @@ import {run as queueRun, push} from './queue'
 import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
 import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
+import {publish} from './pub-sub'
 import {SECOND} from './constants'
 
 /**
@@ -144,6 +145,17 @@ function _handleVisibilityChange () {
 }
 
 /**
+ * Check if there is attribution missing and fire an event to request it
+ *
+ * @private
+ */
+function _checkAttribution () {
+  if (!(ActivityState.current || {}).attribution) {
+    publish('attribution:check', {})
+  }
+}
+
+/**
  * Start the session timer, every N seconds:
  * - update session params
  * - persist changes (store updated activity state)
@@ -230,6 +242,7 @@ function _checkSession (cleanUp = false) {
   }
 
   if (cleanUp) {
+    _checkAttribution()
     queueRun(cleanUp)
   }
 

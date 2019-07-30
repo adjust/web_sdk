@@ -9,6 +9,7 @@ import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as request from '../request'
 import * as Time from '../time'
+import * as PubSub from '../pub-sub'
 import {MINUTE, SECOND} from '../constants'
 import {flushPromises, setDocumentProp} from './_common'
 
@@ -47,6 +48,7 @@ describe('test session functionality', () => {
     jest.spyOn(Queue, 'run').mockImplementation(() => {})
     jest.spyOn(Logger.default, 'error')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
+    jest.spyOn(PubSub, 'publish')
   })
 
   beforeEach(() => {
@@ -374,6 +376,52 @@ describe('test session functionality', () => {
           expect(activityState.sessionLength).toEqual(60)
         })
 
+    })
+
+    it('checks attribution when attribution missing if session already tracked', () => {
+
+      let currentTime = Date.now()
+
+      dateNowSpy.mockReturnValue(currentTime)
+
+      expect.assertions(3)
+
+      return Identity.persist()
+        .then(() => {
+          ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: null})
+
+          Session.watch()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).toHaveBeenCalledTimes(1)
+          expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', {})
+        })
+    })
+
+    it('does not check attribution when attribution not missing if session already tracked', () => {
+
+      let currentTime = Date.now()
+
+      dateNowSpy.mockReturnValue(currentTime)
+
+      expect.assertions(3)
+
+      return Identity.persist()
+        .then(() => {
+          ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: {adid: 'bla'}})
+
+          Session.watch()
+
+          return flushPromises()
+        })
+        .then(() => {
+          expect(Queue.push).not.toHaveBeenCalled()
+          expect(Queue.run).toHaveBeenCalledTimes(1)
+          expect(PubSub.publish).not.toHaveBeenCalled()
+        })
     })
 
   })
