@@ -71,11 +71,12 @@ function _getTimezone (date) {
 /**
  * Get the timestamp in the backend format
  *
+ * @param {number=} timestamp
  * @returns {string}
  */
-function getTimestamp () {
+function getTimestamp (timestamp) {
 
-  const d = new Date()
+  const d = timestamp ? new Date(timestamp) : new Date()
   const date = _getDate(d)
   const time = _getTime(d)
   const timezone = _getTimezone(d)

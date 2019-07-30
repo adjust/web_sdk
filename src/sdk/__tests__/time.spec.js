@@ -38,7 +38,7 @@ describe('test for time methods', () => {
 
     mockDate(date)
 
-    expect(Time.getTimestamp(date)).toEqual('2017-11-06T09:40:04.045Z-0100')
+    expect(Time.getTimestamp()).toEqual('2017-11-06T09:40:04.045Z-0100')
 
   })
 
@@ -50,7 +50,7 @@ describe('test for time methods', () => {
 
     mockDate(date)
 
-    expect(Time.getTimestamp(date)).toEqual('2018-02-05T12:09:00.301Z+0000')
+    expect(Time.getTimestamp()).toEqual('2018-02-05T12:09:00.301Z+0000')
 
   })
 
@@ -63,7 +63,13 @@ describe('test for time methods', () => {
 
     mockDate(date)
 
-    expect(Time.getTimestamp(date)).toEqual('2018-06-25T00:00:00.000Z+0000')
+    expect(Time.getTimestamp()).toEqual('2018-06-25T00:00:00.000Z+0000')
+
+  })
+
+  it('formats passed timestamp', () => {
+
+    expect(Time.getTimestamp(1564478125377)).toEqual('2019-07-30T11:15:25.377Z+0200')
 
   })
 

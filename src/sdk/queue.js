@@ -58,11 +58,9 @@ function _continue () {
  * @private
  */
 function _prepareParams (url, params) {
-  const baseParams = extend({
-    createdAt: getTimestamp()
-  }, isRequest(url, 'event') ? {
-    eventCount: ActivityState.current.eventCount || 1
-  } : {})
+  const baseParams = isRequest(url, 'event')
+    ? {eventCount: ActivityState.current.eventCount || 1}
+    : {}
 
   return extend(baseParams, ActivityState.getParams(), params)
 }
@@ -111,13 +109,14 @@ function push ({url, method, params}, {auto, cleanUp} = {}) {
 /**
  * Prepare to send pending request if available
  *
+ * @param {number} timestamp
  * @param {string=} url
  * @param {string=} method
  * @param {Object=} params
  * @returns {Promise}
  * @private
  */
-function _prepareToSend ({url, method, params} = {}) {
+function _prepareToSend ({timestamp, url, method, params} = {}) {
   const activityState = ActivityState.current || {}
   const firstSession = url === '/session' && !activityState.attribution
   const noPending = !url && !method && !params
@@ -126,7 +125,7 @@ function _prepareToSend ({url, method, params} = {}) {
     return Promise.resolve({})
   }
 
-  return _request.send({url, method, params})
+  return _request.send({url, method, params: extend({}, params, {createdAt: getTimestamp(timestamp)})})
 }
 
 /**

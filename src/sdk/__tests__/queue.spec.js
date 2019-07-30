@@ -65,7 +65,6 @@ function push (configs) {
 describe('test request queuing functionality', () => {
 
   const defaultParams = {
-    createdAt: 'some-time',
     timeSpent: 0,
     sessionLength: 0,
     sessionCount: 1,
