@@ -29,16 +29,15 @@ function _generateUuid () {
 }
 
 /**
- * Check if there is activity state, if not create one and sync with running memory
+ * Cache stored activity state into running memory
  *
  * @returns {Promise}
- * @private
  */
-function _recover () {
+function start () {
   return StorageManager.getFirst(_storeName)
     .then(stored => {
       if (stored) {
-        return stored
+        return stored.uuid === 'unknown' ? disable(REASON_GDPR) : stored
       }
 
       const activityState = ActivityState.current || {uuid: _generateUuid()}
@@ -49,15 +48,6 @@ function _recover () {
           return ActivityState.current = activityState
         })
     })
-}
-
-/**
- * Cache stored activity state into running memory
- *
- * @returns {Promise}
- */
-function start () {
-  return _recover()
     .then(stored => ActivityState.current = stored)
 }
 
