@@ -6,7 +6,7 @@ const appConfig = {
   appToken: 'src556ylophc',
   environment: 'production',
   defaultTracker: 'bla',
-  attributionCallback: attributionCallback,
+  attributionCallback,
   logLevel: 'verbose', // 'none', 'error', 'info', 'verbose'
   logOutput: '#log'
 }

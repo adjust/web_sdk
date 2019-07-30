@@ -1,4 +1,4 @@
-const _namespace = 'my-app'
+const _namespace = 'demo-app'
 const _logContainer = document.querySelector('#log')
 const _logDivider = '\n------------------ fresh log ------------------' + '\n\n'
 const _actions = document.querySelectorAll('.action')

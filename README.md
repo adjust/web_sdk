@@ -45,6 +45,7 @@ With this in mind, initialisation of Adjust JS SDK would look like this inside y
 Adjust.init({
   appToken: 'YourAppToken',
   environment: 'production', // or 'sandbox' in case you are testing SDK locally with your web app
+  defaultTracker: 'TrackerToken', // optional 
   attributionCallback: function (newAttribution) {
     console.log(newAttribution) // define your attribution callback function
   }
@@ -146,10 +147,13 @@ Here is the list of log levels which can be passed to init config through `logLe
 - `error` - will print only error message
 - `none` - won't print anything
 
+It's also possible to define log container in order to easier debug from mobile devices. The value should be valid html selector.
+
 ```js
 Adjust.init({
   // other stuff like appToken and environment
-  logLevel: 'LogLevel' // where LogLevel is "verbose", "info", "error" or "none"
+  logLevel: 'LogLevel', // where LogLevel is "verbose", "info", "error" or "none"
+  logOutput: '#log' // optional, show log messages into specified container
 });
 ```
 
