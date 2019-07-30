@@ -19,7 +19,12 @@ function get () {
   return Promise.all([
     StorageManager.filterBy(_storeName, 'callback'),
     StorageManager.filterBy(_storeName, 'partner')
-  ]).then(([callbackParams = [], partnerParams = []]) => ({callbackParams, partnerParams}))
+  ]).then(([callbackParams, partnerParams]) => {
+    return {
+      callbackParams: callbackParams || [],
+      partnerParams: partnerParams || []
+    }
+  })
 }
 
 /**

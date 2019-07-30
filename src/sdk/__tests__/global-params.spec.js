@@ -1,5 +1,6 @@
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
+import * as StorageManager from '../storage/storage-manager'
 
 jest.mock('../logger')
 
@@ -17,6 +18,28 @@ describe('global parameters functionality', () => {
   afterAll(() => {
     jest.restoreAllMocks()
     localStorage.clear()
+  })
+
+  it('returns empty arrays if there are no global callback parameters', () => {
+
+    expect.assertions(4)
+
+    return GlobalParams.get()
+      .then(({callbackParams, partnerParams}) => {
+        expect(callbackParams).toEqual([])
+        expect(partnerParams).toEqual([])
+
+        jest.spyOn(StorageManager.default, 'filterBy')
+          .mockReturnValue(null)
+
+        return GlobalParams.get()
+      })
+      .then(({callbackParams, partnerParams}) => {
+        expect(callbackParams).toEqual([])
+        expect(partnerParams).toEqual([])
+
+        StorageManager.default.filterBy.mockRestore()
+      })
   })
 
   it('stores global callback params and clean duplicates', () => {
@@ -128,7 +151,7 @@ describe('global parameters functionality', () => {
 
   it('removes specified global parameters', () => {
 
-    expect.assertions(2)
+    expect.assertions(4)
 
     return GlobalParams.add([
       {key: 'key1', value: 'value1'},
@@ -146,6 +169,16 @@ describe('global parameters functionality', () => {
         expect(callbackParams).toEqual([
           {key: 'key1', value: 'value1', type: 'callback'},
           {key: 'key3', value: 'value3', type: 'callback'}
+        ])
+        expect(partnerParams).toEqual([
+          {key: 'key3', value: 'value3', type: 'partner'}
+        ])
+      })
+      .then(() => GlobalParams.remove('key3'))
+      .then(() => GlobalParams.get())
+      .then(({callbackParams, partnerParams}) => {
+        expect(callbackParams).toEqual([
+          {key: 'key1', value: 'value1', type: 'callback'}
         ])
         expect(partnerParams).toEqual([
           {key: 'key3', value: 'value3', type: 'partner'}
@@ -184,6 +217,30 @@ describe('global parameters functionality', () => {
         expect(partnerParams).toEqual([])
       })
 
+  })
+
+  it('removes all by default type (callback)', () => {
+
+    expect.assertions(2)
+
+    return GlobalParams.add([
+      {key: 'key1', value: 'value1'},
+      {key: 'key2', value: 'value2'},
+      {key: 'key3', value: 'value3'}
+    ], 'callback')
+      .then(() => GlobalParams.add([
+        {key: 'key1', value: 'value1'},
+        {key: 'key3', value: 'value3'}
+      ], 'partner'))
+      .then(() => GlobalParams.removeAll())
+      .then(() => GlobalParams.get())
+      .then(({callbackParams, partnerParams}) => {
+        expect(callbackParams).toEqual([])
+        expect(partnerParams).toEqual([
+          {key: 'key1', value: 'value1', type: 'partner'},
+          {key: 'key3', value: 'value3', type: 'partner'}
+        ])
+      })
   })
 
   it('clears globalParams store', () => {
