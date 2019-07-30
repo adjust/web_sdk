@@ -112,8 +112,7 @@ describe('event tracking functionality', () => {
         method: 'POST',
         params: {
           eventToken: '123abc',
-          callbackParams: {'some-key': 'some-value'},
-          partnerParams: {}
+          callbackParams: {'some-key': 'some-value'}
         }
       })
     })
@@ -131,9 +130,7 @@ describe('event tracking functionality', () => {
         url: '/event',
         method: 'POST',
         params: {
-          eventToken: '123abc',
-          callbackParams: {},
-          partnerParams: {}
+          eventToken: '123abc'
         }
       })
     })
@@ -191,9 +188,34 @@ describe('event tracking functionality', () => {
             params: {
               eventToken: 'bla',
               callbackParams: {key1: 'value1', key2: 'value2'},
-              partnerParams: {},
               revenue: '34.67000',
               currency: 'EUR'
+            }
+          })
+        })
+    })
+
+    it('sets default partner parameters to be appended to each track event request', () => {
+
+      const partnerParams = [
+        {key: 'key1', value: 'value1'},
+        {key: 'key2', value: 'value2'}
+      ]
+
+      expect.assertions(2)
+
+      return GlobalParams.add(partnerParams, 'partner')
+        .then(() => {
+          event.default({
+            eventToken: 'bla'
+          })
+
+          return expectRequest({
+            url: '/event',
+            method: 'POST',
+            params: {
+              eventToken: 'bla',
+              partnerParams: {key1: 'value1', key2: 'value2'}
             }
           })
         })
@@ -223,8 +245,7 @@ describe('event tracking functionality', () => {
             method: 'POST',
             params: {
               eventToken: 'bla',
-              callbackParams: {key1: 'new value1', key2: 'value2', key3: 'value3'},
-              partnerParams: {}
+              callbackParams: {key1: 'new value1', key2: 'value2', key3: 'value3'}
             }
           })
         })

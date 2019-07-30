@@ -42,6 +42,7 @@ function _getRevenue (revenue, currency) {
  */
 function _prepareParams (params, globalCallbackParams = [], globalPartnerParams = []) {
 
+  const globalParams = {}
   const baseParams = extend({
     eventToken: params.eventToken,
   }, _getRevenue(params.revenue, params.currency))
@@ -55,10 +56,15 @@ function _prepareParams (params, globalCallbackParams = [], globalPartnerParams 
     convertToMap(params.partnerParams)
   )
 
-  return extend(baseParams, {
-    callbackParams: callbackParams,
-    partnerParams: partnerParams
-  })
+  if (!isEmpty(callbackParams)) {
+    globalParams.callbackParams = callbackParams
+  }
+
+  if (!isEmpty(partnerParams)) {
+    globalParams.partnerParams = partnerParams
+  }
+
+  return extend(baseParams, globalParams)
 }
 
 /**
