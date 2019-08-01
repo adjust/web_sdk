@@ -21,6 +21,7 @@ describe('main entry point - test instance initiation when storage is not availa
   beforeAll(() => {
     jest.spyOn(event, 'default')
     jest.spyOn(sdkClick, 'default')
+    jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Session, 'watch')
     jest.spyOn(GlobalParams, 'get')

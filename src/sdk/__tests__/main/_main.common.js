@@ -39,12 +39,14 @@ export function expectStart () {
 
   const promise = flushPromises()
     .then(() => {
+      expect(Queue.run).toHaveBeenCalledTimes(1)
+      expect(Queue.run).toHaveBeenCalledWith(true)
       expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
       expect(Session.watch).toHaveBeenCalledTimes(1)
       expect(sdkClick.default).toHaveBeenCalledTimes(1)
     })
 
-  return {assertions: 11, promise}
+  return {assertions: 13, promise}
 }
 
 export function expectNotStart (restart) {
@@ -55,6 +57,7 @@ export function expectNotStart (restart) {
 
   expect(PubSub.subscribe).not.toHaveBeenCalled()
   expect(Identity.start).not.toHaveBeenCalled()
+  expect(Queue.run).not.toHaveBeenCalled()
   expect(GdprForgetDevice.check).not.toHaveBeenCalled()
   expect(Session.watch).not.toHaveBeenCalled()
   expect(sdkClick.default).not.toHaveBeenCalled()

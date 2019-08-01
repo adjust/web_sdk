@@ -38,6 +38,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(Date, 'now').mockImplementation(() => now + randomInRange(1000, 9999))
     jest.spyOn(event, 'default')
     jest.spyOn(sdkClick, 'default')
+    jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Queue, 'destroy')
     jest.spyOn(Session, 'watch')

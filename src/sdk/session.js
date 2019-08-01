@@ -1,7 +1,7 @@
 import Config from './config'
 import ActivityState from './activity-state'
 import Logger from './logger'
-import {run as queueRun, push} from './queue'
+import {push} from './queue'
 import {on, off, getVisibilityApiAccess, convertToMap} from './utilities'
 import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
@@ -207,30 +207,26 @@ function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
 /**
  * Track session by sending the request to the server
  *
- * @param {boolean=false} cleanUp
  * @private
  */
-function _trackSession (cleanUp = false) {
+function _trackSession () {
   return getGlobalParams()
     .then(({callbackParams, partnerParams}) => {
       push({
         url: '/session',
         method: 'POST',
         params: _prepareParams(callbackParams, partnerParams)
-      }, {
-        auto: true,
-        cleanUp
-      })
+      }, true)
     })
 }
 
 /**
  * Check if session needs to be tracked
  *
- * @param {boolean=false} cleanUp
+ * @param {boolean=false} initial
  * @private
  */
-function _checkSession (cleanUp = false) {
+function _checkSession (initial = false) {
 
   _startTimer()
 
@@ -238,12 +234,11 @@ function _checkSession (cleanUp = false) {
   const currentWindow = lastInterval * SECOND
 
   if (lastInterval === -1 || currentWindow >= Config.sessionWindow) {
-    return _trackSession(cleanUp)
+    return _trackSession()
   }
 
-  if (cleanUp) {
+  if (initial) {
     _checkAttribution()
-    queueRun(cleanUp)
   }
 
   return persist()

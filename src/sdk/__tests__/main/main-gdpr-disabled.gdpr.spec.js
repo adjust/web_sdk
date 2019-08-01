@@ -34,6 +34,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(Date, 'now').mockImplementation(() => now + randomInRange(1000, 9999))
     jest.spyOn(event, 'default')
     jest.spyOn(sdkClick, 'default')
+    jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'push')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Queue, 'destroy')
