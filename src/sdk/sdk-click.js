@@ -40,7 +40,7 @@ export default function sdkClick () {
       url: '/sdk_click',
       method: 'POST',
       params: {
-        source: 'referrer',
+        source: 'web_referrer',
         referrer: window.location.search.substring(1),
         clickTime: getTimestamp()
       }

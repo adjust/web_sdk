@@ -121,7 +121,7 @@ describe('test sdk-click functionality', () => {
       method: 'POST',
       params: {
         clickTime: 'some-time',
-        source: 'referrer',
+        source: 'web_referrer',
         referrer: 'adjust_param=value&something=else'
       }
     })
@@ -140,7 +140,7 @@ describe('test sdk-click functionality', () => {
       method: 'POST',
       params: {
         clickTime: 'some-time',
-        source: 'referrer',
+        source: 'web_referrer',
         referrer: 'adj_param1=value&bla=truc&adj_param2=bla'
       }
     })
@@ -159,7 +159,7 @@ describe('test sdk-click functionality', () => {
       method: 'POST',
       params: {
         clickTime: 'some-time',
-        source: 'referrer',
+        source: 'web_referrer',
         referrer: 'adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada',
       }
     })
