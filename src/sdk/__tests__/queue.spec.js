@@ -43,25 +43,6 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
   }
 }
 
-function push (configs) {
-
-  let start = currentTime
-  let promise = flushPromises()
-
-  dateNowSpy.mockReturnValue(configs[0].timestamp || start++)
-  Queue.push(configs[0])
-
-  configs.shift()
-
-  configs.forEach(config => {
-    promise = promise.then(() => {
-      dateNowSpy.mockReturnValue(config.timestamp || start++)
-      return Queue.push(config)
-    })
-  })
-  return promise
-}
-
 describe('test request queuing functionality', () => {
 
   const defaultParams = {
@@ -93,6 +74,7 @@ describe('test request queuing functionality', () => {
     jest.clearAllMocks()
     ActivityState.default.destroy()
     localStorage.clear()
+    Queue.destroy()
   })
 
   afterAll(() => {
@@ -137,13 +119,19 @@ describe('test request queuing functionality', () => {
 
   it('pushes multiple requests to the queue and executes them if connected', () => {
 
+    dateNowSpy.mockReturnValue(currentTime)
+
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
 
     expect.assertions(21)
 
-    return push([config1, config2, config3])
+    Queue.push(config1)
+    Queue.push(config2)
+    Queue.push(config3)
+
+    return flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(3)
@@ -182,6 +170,8 @@ describe('test request queuing functionality', () => {
 
   it('pushes requests to the queue and retries in fifo order if not connected', () => {
 
+    dateNowSpy.mockReturnValue(currentTime)
+
     request.default.mockRejectedValue(errorResponse())
 
     const config1 = {url: '/some-url-1'}
@@ -189,7 +179,10 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(41)
 
-    return push([config1, config2])
+    Queue.push(config1)
+    Queue.push(config2)
+
+    return flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
@@ -250,6 +243,8 @@ describe('test request queuing functionality', () => {
 
   it('pushes requests to the queue and retries in fifo order if not connected and executes the rest when connected', () => {
 
+    dateNowSpy.mockReturnValue(currentTime)
+
     request.default.mockRejectedValue(errorResponse())
 
     const config1 = {url: '/some-url-1'}
@@ -258,7 +253,11 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(29)
 
-    return push([config1, config2, config3])
+    Queue.push(config1)
+    Queue.push(config2)
+    Queue.push(config3)
+
+    return flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(3)
@@ -299,6 +298,8 @@ describe('test request queuing functionality', () => {
 
   it('does not execute the queue in offline mode and then run the queue when set back to online mode', () => {
 
+    dateNowSpy.mockReturnValue(currentTime)
+
     Queue.setOffline(true)
 
     const config1 = {url: '/some-url-1'}
@@ -308,7 +309,10 @@ describe('test request queuing functionality', () => {
 
     expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
-    return push([config1, config2])
+    Queue.push(config1)
+    Queue.push(config2)
+
+    return flushPromises()
       .then(() => {
 
         jest.runOnlyPendingTimers()
@@ -342,6 +346,8 @@ describe('test request queuing functionality', () => {
 
   it('does execute first session in offline mode and ignores everything else', () => {
 
+    dateNowSpy.mockReturnValue(currentTime)
+
     Queue.setOffline(true)
 
     ActivityState.default.current = null
@@ -353,7 +359,10 @@ describe('test request queuing functionality', () => {
 
     expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
-    return push([config1, config2])
+    Queue.push(config1)
+    Queue.push(config2)
+
+    return flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
@@ -395,6 +404,8 @@ describe('test request queuing functionality', () => {
 
   it('does not execute session when not first one in offline mode and ignores everything else as well', () => {
 
+    dateNowSpy.mockReturnValue(currentTime)
+
     Queue.setOffline(true)
 
     ActivityState.default.current = {attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
@@ -406,7 +417,10 @@ describe('test request queuing functionality', () => {
 
     expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in offline mode')
 
-    return push([config1, config2])
+    Queue.push(config1)
+    Queue.push(config2)
+
+    return flushPromises()
       .then(() => {
 
         jest.runOnlyPendingTimers()
@@ -629,14 +643,16 @@ describe('test request queuing functionality', () => {
 
   it('cleans up pending requests that are older than 28 days', () => {
 
-    const config1 = {timestamp: 1549181400100, url: '/url-1', params: {createdAt: '2019-02-03T09:10:00.100Z+0100'}}
-    const config2 = {timestamp: 1544548200020, url: '/url-2', params: {createdAt: '2018-12-11T18:10:00.020Z+0100'}}
-    const config3 = {timestamp: 1546351540330, url: '/url-3', params: {createdAt: '2019-01-01T15:05:40.330Z+0100'}}
-    const config4 = {timestamp: 1549768530000, url: '/url-4', params: {createdAt: '2019-02-10T04:15:30.000Z+0100'}}
-    const config5 = {timestamp: 1549016404100, url: '/url-5', params: {createdAt: '2019-02-01T11:20:04.100Z+0100'}}
-    const config6 = {timestamp: 1551438000440, url: '/url-6', params: {createdAt: '2019-03-01T12:00:00.440Z+0100'}}
+    const queueSet = [
+      {timestamp: 1549181400100, url: '/url-1', params: {createdAt: '2019-02-03T09:10:00.100Z+0100'}},
+      {timestamp: 1544548200020, url: '/url-2', params: {createdAt: '2018-12-11T18:10:00.020Z+0100'}},
+      {timestamp: 1546351540330, url: '/url-3', params: {createdAt: '2019-01-01T15:05:40.330Z+0100'}},
+      {timestamp: 1549768530000, url: '/url-4', params: {createdAt: '2019-02-10T04:15:30.000Z+0100'}},
+      {timestamp: 1549016404100, url: '/url-5', params: {createdAt: '2019-02-01T11:20:04.100Z+0100'}},
+      {timestamp: 1551438000440, url: '/url-6', params: {createdAt: '2019-03-01T12:00:00.440Z+0100'}}
+    ]
 
-    return push([config1, config2, config3, config4, config5, config6])
+    return StorageManager.default.addBulk('queue', queueSet)
       .then(() => {
         dateNowSpy.mockReturnValue(new Date('2019-03-03').getTime())
 
@@ -649,7 +665,6 @@ describe('test request queuing functionality', () => {
         expect(remained.map(params => params.url)).toEqual(['/url-1', '/url-4', '/url-6'])
 
         Queue.clear()
-        Queue.destroy()
       })
 
   })
@@ -662,7 +677,11 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(6)
 
-    return push([config1, config2, config3])
+    Queue.push(config1)
+    Queue.push(config2)
+    Queue.push(config3)
+
+    return flushPromises()
       .then(() => StorageManager.default.getAll('queue'))
       .then(pending => {
         expect(pending.map(params => params.url)).toEqual(['/url-1', '/url-2', '/url-3'])

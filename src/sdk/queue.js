@@ -35,6 +35,17 @@ let _isOffline = false
 const _storeName = 'queue'
 
 /**
+ * Current running state and task timestamp
+ *
+ * @type {{running: boolean, timestamp: null|number}}
+ * @private
+ */
+const _current = {
+  running: false,
+  timestamp: null
+}
+
+/**
  * Remove from the top and continue running pending requests
  *
  * @returns {Promise}
@@ -45,6 +56,7 @@ function _continue () {
     .then(pending => pending ? StorageManager.deleteItem(_storeName, pending.timestamp) : null)
     .then(() => {
       _request.finish()
+      _current.running = false
       return run()
     })
 }
@@ -63,6 +75,27 @@ function _prepareParams (url, params) {
     : {}
 
   return extend(baseParams, ActivityState.getParams(), params)
+}
+
+/**
+ * Correct timestamp if equal or less then previous one to avoid constraint errors
+ * Cases when needed:
+ * - test environment
+ * - when pushing to queue synchronously, one after an other
+ *
+ * @returns {number}
+ * @private
+ */
+function _prepareTimestamp () {
+  let timestamp = Date.now()
+
+  if (timestamp <= _current.timestamp) {
+    timestamp = _current.timestamp + 1
+  }
+
+  _current.timestamp = timestamp
+
+  return timestamp
 }
 
 /**
@@ -99,11 +132,11 @@ function push ({url, method, params}, {auto, cleanUp} = {}) {
 
   params = _prepareParams(url, params)
 
-  const pending = extend({timestamp: Date.now()}, {url, method, params})
+  const pending = extend({timestamp: _prepareTimestamp()}, {url, method, params})
 
   return StorageManager.addItem(_storeName, pending)
     .then(() => _persist(url))
-    .then(() => _request.isRunning() ? {} : run(cleanUp))
+    .then(() => _current.running ? {} : run(cleanUp))
 }
 
 /**
@@ -122,6 +155,7 @@ function _prepareToSend ({timestamp, url, method, params} = {}) {
   const noPending = !url && !method && !params
 
   if (_isOffline && !firstSession || noPending) {
+    _current.running = false
     return Promise.resolve({})
   }
 
@@ -135,6 +169,8 @@ function _prepareToSend ({timestamp, url, method, params} = {}) {
  * @returns {Promise}
  */
 function run (cleanUp) {
+  _current.running = true
+
   let chain = Promise.resolve({})
 
   if (cleanUp) {
@@ -189,7 +225,7 @@ function _cleanUp () {
  * @returns {boolean}
  */
 function isRunning () {
-  return _request.isRunning()
+  return _current.running
 }
 
 /**
@@ -204,6 +240,8 @@ function clear () {
  */
 function destroy () {
   _request.clear()
+  _current.running = false
+  _current.timestamp = null
 }
 
 export {

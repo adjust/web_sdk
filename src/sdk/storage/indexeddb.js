@@ -160,9 +160,10 @@ function _getTranStore ({storeName, mode = 'readonly'}, reject) {
  * @private
  */
 function _overrideError (reject, error) {
+  const target = error.target.error || error.target._error || {}
   return reject({
-    name: error.target._error.name,
-    message: error.target._error.message
+    name: target.name || 'UnknownError',
+    message: target.message || ''
   })
 }
 

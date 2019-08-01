@@ -65,7 +65,6 @@ describe('event tracking functionality', () => {
 
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    localStorage.clear()
   })
 
   it('prevents running event request before initialisation', () => {
