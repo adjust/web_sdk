@@ -2,12 +2,12 @@ import * as PubSub from '../../pub-sub'
 import * as Queue from '../../queue'
 import * as Session from '../../session'
 import * as event from '../../event'
+import * as sdkClick from '../../sdk-click'
 import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as StorageManager from '../../storage/storage-manager'
 import * as Attribution from '../../attribution'
-import * as SdkClick from '../../sdk-click'
 import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import AdjustInstance from '../../main.js'
@@ -37,6 +37,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
     const now = Date.now()
     jest.spyOn(Date, 'now').mockImplementation(() => now + randomInRange(1000, 9999))
     jest.spyOn(event, 'default')
+    jest.spyOn(sdkClick, 'default')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Queue, 'destroy')
     jest.spyOn(Session, 'watch')
@@ -55,7 +56,6 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(Attribution, 'check')
     jest.spyOn(Attribution, 'destroy')
-    jest.spyOn(SdkClick, 'destroy')
     jest.spyOn(StorageManager.default, 'destroy')
     jest.spyOn(GdprForgetDevice, 'check')
 

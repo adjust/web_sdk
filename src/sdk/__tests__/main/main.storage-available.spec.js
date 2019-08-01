@@ -2,6 +2,7 @@ import * as PubSub from '../../pub-sub'
 import * as Queue from '../../queue'
 import * as Session from '../../session'
 import * as event from '../../event'
+import * as sdkClick from '../../sdk-click'
 import * as Config from '../../config'
 import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
@@ -26,6 +27,7 @@ describe('main entry point - test instance initiation when storage is available'
 
   beforeAll(() => {
     jest.spyOn(event, 'default')
+    jest.spyOn(sdkClick, 'default')
     jest.spyOn(Queue, 'setOffline')
     jest.spyOn(Session, 'watch')
     jest.spyOn(GlobalParams, 'get')

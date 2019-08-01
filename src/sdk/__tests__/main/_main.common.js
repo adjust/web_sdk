@@ -4,13 +4,13 @@ import * as Identity from '../../identity'
 import * as Queue from '../../queue'
 import * as Session from '../../session'
 import * as event from '../../event'
+import * as sdkClick from '../../sdk-click'
 import * as GlobalParams from '../../global-params'
 import * as State from '../../state'
 import * as Attribution from '../../attribution'
 import * as StorageManager from '../../storage/storage-manager'
 import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
-import * as SdkClick from '../../sdk-click'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import {flushPromises} from '../_common'
 
@@ -41,9 +41,10 @@ export function expectStart () {
     .then(() => {
       expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
       expect(Session.watch).toHaveBeenCalledTimes(1)
+      expect(sdkClick.default).toHaveBeenCalledTimes(1)
     })
 
-  return {assertions: 10, promise}
+  return {assertions: 11, promise}
 }
 
 export function expectNotStart (restart) {
@@ -56,6 +57,7 @@ export function expectNotStart (restart) {
   expect(Identity.start).not.toHaveBeenCalled()
   expect(GdprForgetDevice.check).not.toHaveBeenCalled()
   expect(Session.watch).not.toHaveBeenCalled()
+  expect(sdkClick.default).not.toHaveBeenCalled()
 
 }
 
@@ -190,7 +192,6 @@ export function expectShutDown () {
   expect(Session.destroy).toHaveBeenCalled()
   expect(Attribution.destroy).toHaveBeenCalled()
   expect(Identity.destroy).toHaveBeenCalled()
-  expect(SdkClick.destroy).toHaveBeenCalled()
   expect(StorageManager.default.destroy).toHaveBeenCalled()
 
   expect(Config.default.baseParams).toEqual({})
@@ -202,7 +203,6 @@ export function expectNotShutDown () {
   expect(Session.destroy).not.toHaveBeenCalled()
   expect(Attribution.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
-  expect(SdkClick.destroy).not.toHaveBeenCalled()
   expect(StorageManager.default.destroy).not.toHaveBeenCalled()
 }
 

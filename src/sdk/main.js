@@ -9,10 +9,10 @@ import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {start, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
-import {check as sdkClickCheck, destroy as sdkClickDestroy} from './sdk-click'
 import {check as gdprForgetCheck, forget as gdprForgetDevice, requested as gdprForgetRequested, destroy as gdprForgetDestroy} from './gdpr-forget-device'
 import {REASON_GDPR} from './constants'
 import event from './event'
+import sdkClick from './sdk-click'
 
 /**
  * In-memory parameters to be used if restarting
@@ -218,7 +218,6 @@ function _shutdown (async) {
   pubSubDestroy()
   sessionDestroy()
   attributionDestroy()
-  sdkClickDestroy()
   identityDestroy()
   StorageManager.destroy()
   Config.destroy()
@@ -271,8 +270,6 @@ function _start (params = {}) {
     subscribe('attribution:change', params.attributionCallback)
   }
 
-  sdkClickCheck()
-
   start()
     .then(() => {
       if (State.disabled) {
@@ -286,6 +283,7 @@ function _start (params = {}) {
 
       gdprForgetCheck()
       sessionWatch()
+      sdkClick()
 
       _isStarted = true
     })

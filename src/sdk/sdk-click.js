@@ -1,20 +1,6 @@
-import Package from './package'
-import {getHostName, extend} from './utilities'
+import {getHostName} from './utilities'
 import {getTimestamp} from './time'
-import {persist} from './identity'
-import ActivityState from './activity-state'
-
-/**
- * Package request instance
- *
- * @type {Object}
- * @private
- */
-const _request = Package({
-  url: '/sdk_click',
-  method: 'POST',
-  strategy: 'short'
-})
+import {push} from './queue'
 
 /**
  * Check if user got redirected from another domain
@@ -48,31 +34,16 @@ function _shouldSendClick () {
 /**
  * Check if there are parameters to send through sdk_click request
  */
-function check () {
+export default function sdkClick () {
   if (_shouldSendClick()) {
-    _request.send({
-      params: extend({
+    push({
+      url: '/sdk_click',
+      method: 'POST',
+      params: {
         source: 'referrer',
         referrer: window.location.search.substring(1),
-        clickTime: getTimestamp(),
-        queueSize: 1
-      }, ActivityState.getParams())
+        clickTime: getTimestamp()
+      }
     })
-
-    ActivityState.updateSessionOffset()
-
-    return persist()
   }
-}
-
-/**
- * Destroy sdk_click by clearing running request
- */
-function destroy () {
-  _request.clear()
-}
-
-export {
-  check,
-  destroy
 }
