@@ -10,7 +10,7 @@ import {extend, isObject} from '../utilities'
  * @private
  */
 function _getValue (map, value) {
-  return map ? (map[value] || value) : value
+  return map ? (map[value] !== undefined ? map[value] : value) : value
 }
 
 /**

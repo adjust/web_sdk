@@ -1,18 +1,17 @@
 import Config from './config'
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
-import State from './state'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
 import {extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
-import {start, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
+import {start, status, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
-import {check as gdprForgetCheck, forget as gdprForgetDevice, requested as gdprForgetRequested, destroy as gdprForgetDestroy} from './gdpr-forget-device'
-import {REASON_GDPR} from './constants'
+import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
 import event from './event'
 import sdkClick from './sdk-click'
+import {REASON_GDPR} from './constants'
 
 /**
  * In-memory parameters to be used if restarting
@@ -129,65 +128,42 @@ function setOfflineMode (state) {
 }
 
 /**
- * Disable sdk due to a particular reason
- *
- * @param {string=} reason
- * @private
+ * Disable SDK
  */
-function _disable (reason) {
-
-  const done = identityDisable(reason)
+function disable () {
+  const done = identityDisable()
 
   if (done && Config.isInitialised()) {
     _shutdown()
   }
-
-}
-
-/**
- * General disable
- */
-function disable () {
-  if (gdprForgetRequested()) {
-
-    const logMessage = State.disabled === REASON_GDPR
-      ? 'Adjust SDK is already disabled due to GDPR-Forget-me request'
-      : 'There is pending GDPR Forget Me request, can not disable at this moment'
-
-    Logger.log(logMessage)
-    return
-  }
-
-  _disable()
-}
-
-/**
- * Disable initiated through GDPR-Forget-Me request
- *
- * @private
- */
-function _gdprDisable () {
-  _disable(REASON_GDPR)
 }
 
 /**
  * Enable sdk if not GDPR forgotten
  */
 function enable () {
-
   const done = identityEnable()
 
   if (done && _params) {
     _start(_params)
   }
-
 }
 
 /**
- * Request GDPR-Forget-Me in order to disable sdk
+ * Disable sdk and send GDPR-Forget-Me request
  */
 function gdprForgetMe () {
-  gdprForgetDevice()
+  let done = forget()
+
+  if (!done) {
+    return
+  }
+
+  done = identityDisable({reason: REASON_GDPR, pending: true})
+
+  if (done && Config.isInitialised()) {
+    _pause()
+  }
 }
 
 /**
@@ -196,10 +172,32 @@ function gdprForgetMe () {
  * @private
  */
 function _handleGdprForgetMe () {
-  _gdprDisable()
-  identityClear()
-  globalParamsClear()
-  queueClear()
+  if (status() !== 'paused') {
+    return
+  }
+
+  Promise.all([
+    identityClear(),
+    globalParamsClear(),
+    queueClear()
+  ]).then(destroy)
+
+}
+
+/**
+ * Pause sdk by canceling:
+ * - queue execution
+ * - session watch
+ * - attribution listener
+ *
+ * @private
+ */
+function _pause () {
+  _isStarted = false
+
+  queueDestroy()
+  sessionDestroy()
+  attributionDestroy()
 }
 
 /**
@@ -207,34 +205,55 @@ function _handleGdprForgetMe () {
  * @private
  */
 function _shutdown (async) {
-
   if (async) {
     Logger.log('Adjust SDK has been shutdown due to asynchronous disable')
   }
 
-  _isStarted = false
+  _pause()
 
-  queueDestroy()
   pubSubDestroy()
-  sessionDestroy()
-  attributionDestroy()
   identityDestroy()
   StorageManager.destroy()
   Config.destroy()
-
 }
 
 /**
  * Destroy the instance
  */
 function destroy () {
-
   _shutdown()
   gdprForgetDestroy()
 
   _params = null
 
   Logger.log('Adjust SDK instance has been destroyed')
+}
+
+/**
+ * Check the sdk status and proceed with certain actions
+ *
+ * @returns {Promise|boolean}
+ * @private
+ */
+function _continue () {
+  gdprForgetCheck()
+
+  const sdkStatus = status()
+  let message = 'Adjust SDK start has been interrupted'
+
+  if (sdkStatus === 'off') {
+    _shutdown()
+    return Promise.reject({message: message + ' due to complete async disable'})
+  }
+
+  if (sdkStatus === 'paused') {
+    _pause()
+    return Promise.reject({message: message + ' due to partial async disable'})
+  }
+
+  return _isStarted
+    ? Promise.reject({})
+    : true
 }
 
 /**
@@ -255,7 +274,7 @@ function destroy () {
  */
 function _start (params = {}) {
 
-  if (State.disabled) {
+  if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
     return
   }
@@ -271,22 +290,18 @@ function _start (params = {}) {
   }
 
   start()
+    .then(_continue)
     .then(() => {
-      if (State.disabled) {
-        _shutdown()
-        return
-      }
-
-      if (_isStarted) {
-        return
-      }
-
       queueRun(true)
-      gdprForgetCheck()
       sessionWatch()
       sdkClick()
 
       _isStarted = true
+    })
+    .catch(error => {
+      if (error.message) {
+        Logger.log(error.message)
+      }
     })
 }
 
@@ -305,7 +320,7 @@ function _run (description, method, ...args) {
     return
   }
 
-  if (State.disabled) {
+  if (status() !== 'on') {
     Logger.log(`Adjust SDK is disabled, can not ${description}`)
     return
   }

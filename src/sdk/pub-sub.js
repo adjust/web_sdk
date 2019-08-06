@@ -7,6 +7,14 @@
 const _list = {}
 
 /**
+ * Reference to timeout ids so they can be cleared on destroy
+ *
+ * @type {Array}
+ * @private
+ */
+let _timeoutIds = []
+
+/**
  * Get unique id for the callback to use for unsubscribe
  *
  * @returns {string}
@@ -65,17 +73,17 @@ function unsubscribe (id) {
  *
  * @param {string} name
  * @param {*} args
- * @returns {boolean}
+ * @returns {Array}
  */
 function publish (name, args) {
 
   if (!_list[name]) {
-    return false
+    return []
   }
 
   _list[name].forEach(item => {
     if (typeof item.cb === 'function') {
-      setTimeout(() => item.cb(name, args))
+      _timeoutIds.push(setTimeout(() => item.cb(name, args)))
     }
   })
 }
@@ -84,6 +92,9 @@ function publish (name, args) {
  * Destroy all registered events with their callbacks
  */
 function destroy () {
+  _timeoutIds.forEach(clearTimeout)
+  _timeoutIds = []
+
   for (const name in _list) {
     if (_list.hasOwnProperty(name)) {
       delete _list[name]

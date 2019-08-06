@@ -12,6 +12,7 @@ import * as StorageManager from '../../storage/storage-manager'
 import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
+import * as request from '../../request'
 import {flushPromises} from '../_common'
 
 export const config = {
@@ -20,12 +21,12 @@ export const config = {
   attributionCallback: jest.fn()
 }
 
-export const gdprConfig = {
+const gdprConfig = {
   url: '/gdpr_forget_device',
   method: 'POST'
 }
 
-export function expectStart () {
+function _startFirstPart () {
   expect(Config.default.baseParams.appToken).toEqual('some-app-token')
   expect(Config.default.baseParams.environment).toEqual('production')
 
@@ -37,16 +38,33 @@ export function expectStart () {
 
   expect(Identity.start).toHaveBeenCalledTimes(1)
 
-  const promise = flushPromises()
+  return flushPromises()
+}
+
+export function expectStart () {
+  const promise = _startFirstPart()
     .then(() => {
+      expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
       expect(Queue.run).toHaveBeenCalledTimes(1)
       expect(Queue.run).toHaveBeenCalledWith(true)
-      expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
       expect(Session.watch).toHaveBeenCalledTimes(1)
       expect(sdkClick.default).toHaveBeenCalledTimes(1)
     })
 
   return {assertions: 13, promise}
+}
+
+export function expectPartialStartWithGdprRequest () {
+  const promise = _startFirstPart()
+    .then(() => {
+      expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
+      expect(Queue.run).not.toHaveBeenCalled()
+      expect(Session.watch).not.toHaveBeenCalled()
+      expect(sdkClick.default).not.toHaveBeenCalled()
+      expectGdprRequest()
+    })
+
+  return {assertions: 14, promise}
 }
 
 export function expectNotStart (restart) {
@@ -57,8 +75,8 @@ export function expectNotStart (restart) {
 
   expect(PubSub.subscribe).not.toHaveBeenCalled()
   expect(Identity.start).not.toHaveBeenCalled()
-  expect(Queue.run).not.toHaveBeenCalled()
   expect(GdprForgetDevice.check).not.toHaveBeenCalled()
+  expect(Queue.run).not.toHaveBeenCalled()
   expect(Session.watch).not.toHaveBeenCalled()
   expect(sdkClick.default).not.toHaveBeenCalled()
 
@@ -92,6 +110,7 @@ export function expectNotRunningTrackEvent (instance, noInstance, noStorage) {
 
   expect(GlobalParams.get).not.toHaveBeenCalled()
 
+  return {assertions: noInstance ? 2 : 3}
 }
 
 export function expectRunningStatic (instance) {
@@ -176,6 +195,7 @@ export function expectNotRunningStatic (instance, noStorage) {
     : 'Adjust SDK is disabled, can not set offline mode')
   expect(Queue.setOffline).not.toHaveBeenCalled()
 
+  return {assertions: 14}
 }
 
 export function expectAttributionCallback () {
@@ -189,60 +209,95 @@ export function expectAttributionCallback () {
   return flushPromises()
 }
 
-export function expectShutDown () {
+function _expectPause () {
   expect(Queue.destroy).toHaveBeenCalled()
-  expect(PubSub.destroy).toHaveBeenCalled()
   expect(Session.destroy).toHaveBeenCalled()
   expect(Attribution.destroy).toHaveBeenCalled()
+}
+
+export function expectShutDown () {
+  _expectPause()
+  expect(PubSub.destroy).toHaveBeenCalled()
   expect(Identity.destroy).toHaveBeenCalled()
   expect(StorageManager.default.destroy).toHaveBeenCalled()
-
   expect(Config.default.baseParams).toEqual({})
 }
 
-export function expectNotShutDown () {
-  expect(Queue.destroy).not.toHaveBeenCalled()
+export function expectPartialShutDown () {
+  _expectPause()
   expect(PubSub.destroy).not.toHaveBeenCalled()
-  expect(Session.destroy).not.toHaveBeenCalled()
-  expect(Attribution.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
   expect(StorageManager.default.destroy).not.toHaveBeenCalled()
 }
 
-export function expectShutDownAndClear () {
-  expectShutDown()
+function _expectNotPause () {
+  expect(Queue.destroy).not.toHaveBeenCalled()
+  expect(Session.destroy).not.toHaveBeenCalled()
+  expect(Attribution.destroy).not.toHaveBeenCalled()
+}
 
+export function expectNotShutDown () {
+  _expectNotPause()
+  expect(PubSub.destroy).not.toHaveBeenCalled()
+  expect(Identity.destroy).not.toHaveBeenCalled()
+  expect(StorageManager.default.destroy).not.toHaveBeenCalled()
+}
+
+function _expectDestroy () {
+  expectShutDown()
+  expect(GdprForgetDevice.destroy).toHaveBeenCalled()
+  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK instance has been destroyed')
+}
+
+function _expectNotDestroy () {
+  expectNotShutDown()
+  expect(GdprForgetDevice.destroy).not.toHaveBeenCalled()
+  expect(Logger.default.log).not.toHaveBeenCalledWith('Adjust SDK instance has been destroyed')
+}
+
+export function expectClearAndDestroy () {
   expect(Identity.clear).toHaveBeenCalled()
   expect(GlobalParams.clear).toHaveBeenCalled()
   expect(Queue.clear).toHaveBeenCalled()
+
+  const promise = flushPromises().then(_expectDestroy)
+
+  return {assertions: 12, promise}
 }
 
-export function expectNotShutDownAndClear () {
-  expectNotShutDown()
-
+export function expectNotClearAndDestroy () {
   expect(Identity.clear).not.toHaveBeenCalled()
   expect(GlobalParams.clear).not.toHaveBeenCalled()
   expect(Queue.clear).not.toHaveBeenCalled()
+
+  const promise = flushPromises().then(_expectNotDestroy)
+
+  return {assertions: 11, promise}
 }
 
 export function expectGdprForgetMeCallback () {
+  const oldState = State.default.disabled
+
   PubSub.publish('sdk:gdpr-forget-me', true)
 
   jest.runOnlyPendingTimers()
 
-  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled due to GDPR-Forget-Me request')
-  expect(Identity.disable).toHaveBeenCalledWith('gdpr')
+  expect(State.default.disabled).not.toEqual(oldState)
+  expect(State.default.disabled).toEqual({reason: 'gdpr', pending: false})
 
-  return flushPromises()
+  return {assertions: 2}
 }
 
 export function expectNotGdprForgetMeCallback () {
+  const oldState = State.default.disabled
+
   PubSub.publish('sdk:gdpr-forget-me', true)
 
   jest.runOnlyPendingTimers()
 
-  expect(Logger.default.log).not.toHaveBeenCalled()
-  expect(Identity.disable).not.toHaveBeenCalled()
+  expect(State.default.disabled).toEqual(oldState)
+
+  return {assertions: 1}
 }
 
 export function expectAllUp (instance) {
@@ -293,6 +348,24 @@ export function expectNotAttributionCallback () {
   expect(config.attributionCallback).not.toHaveBeenCalled()
 }
 
+export function expectGdprRequest () {
+  const lastCall = request.default.mock.calls.length
+
+  jest.runOnlyPendingTimers()
+
+  expect(request.default).toHaveBeenCalled()
+  expect(request.default.mock.calls[lastCall][0]).toMatchObject(gdprConfig)
+}
+
+export function expectNotGdprRequest (logMessage) {
+  const requestCall = ((request.default.mock.calls || [])[0] || [])[0] || {}
+
+  jest.runOnlyPendingTimers()
+
+  expect(requestCall).not.toMatchObject(gdprConfig)
+  expect(Logger.default.log).toHaveBeenCalledWith(logMessage)
+}
+
 export function teardown (instance) {
   instance.destroy()
   localStorage.clear()
@@ -302,5 +375,5 @@ export function teardown (instance) {
 
 export function teardownAndDisable (instance, reason = 'general') {
   teardown(instance)
-  State.default.disabled = reason
+  State.default.disabled = {reason}
 }

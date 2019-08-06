@@ -16,7 +16,8 @@ describe('test low-level localStorage manipulation', () => {
     {key: 'eto', value: 'tako', type: 'callback'},
     {key: 'key1', value: 'value1', type: 'partner'}
   ]
-  const disabledRecord = 'general'
+  const disabledRecord = {reason: 'general', pending: false}
+  const disabledRecordEncoded = {r: 1, p: 0}
 
   beforeAll(() => {
     jest.spyOn(localStorage, 'getItem')
@@ -88,7 +89,7 @@ describe('test low-level localStorage manipulation', () => {
     expect(localStorage.setItem.mock.calls[0][1]).toEqual(JSON.stringify(queueRecords))
     expect(localStorage.setItem.mock.calls[1][1]).toEqual(JSON.stringify(activityStateRecords))
     expect(localStorage.setItem.mock.calls[2][1]).toEqual(JSON.stringify(globalParamsRecords))
-    expect(localStorage.setItem.mock.calls[3][1]).toEqual(JSON.stringify(disabledRecord))
+    expect(localStorage.setItem.mock.calls[3][1]).toEqual(JSON.stringify(disabledRecordEncoded))
 
   })
 
@@ -105,7 +106,7 @@ describe('test low-level localStorage manipulation', () => {
     expect(localStorage.getItem(`adjust-sdk.${storeNames.queue}`)).toEqual(JSON.stringify(queueRecords))
     expect(localStorage.getItem(`adjust-sdk.${storeNames.activityState}`)).toEqual(JSON.stringify(activityStateRecords))
     expect(localStorage.getItem(`adjust-sdk.${storeNames.globalParams}`)).toEqual(JSON.stringify(globalParamsRecords))
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled}`)).toEqual(JSON.stringify(disabledRecord))
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled}`)).toEqual(JSON.stringify(disabledRecordEncoded))
 
     QuickStorage.default.clear()
 
@@ -118,7 +119,7 @@ describe('test low-level localStorage manipulation', () => {
     expect(localStorage.getItem(`adjust-sdk.${storeNames.queue}`)).toBeNull()
     expect(localStorage.getItem(`adjust-sdk.${storeNames.activityState}`)).toBeNull()
     expect(localStorage.getItem(`adjust-sdk.${storeNames.globalParams}`)).toBeNull()
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled}`)).toEqual(JSON.stringify(disabledRecord))
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled}`)).toEqual(JSON.stringify(disabledRecordEncoded))
 
   })
 

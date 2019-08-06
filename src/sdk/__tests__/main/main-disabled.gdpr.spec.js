@@ -10,6 +10,7 @@ import * as StorageManager from '../../storage/storage-manager'
 import * as Attribution from '../../attribution'
 import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
+import * as request from '../../request'
 import AdjustInstance from '../../main.js'
 import {randomInRange} from './../_common'
 
@@ -19,9 +20,9 @@ import {
   expectNotRunningTrackEvent,
   expectNotRunningStatic,
   expectNotGdprForgetMeCallback,
-  expectNotShutDownAndClear,
+  expectNotClearAndDestroy,
   expectNotStart,
-  teardown,
+  expectNotGdprRequest,
   teardownAndDisable
 } from './_main.common'
 
@@ -36,6 +37,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
     jest.spyOn(Date, 'now').mockImplementation(() => now + randomInRange(1000, 9999))
     jest.spyOn(event, 'default')
     jest.spyOn(sdkClick, 'default')
+    jest.spyOn(request, 'default')
     jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'push')
     jest.spyOn(Queue, 'setOffline')
@@ -60,8 +62,9 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
     jest.spyOn(Attribution, 'destroy')
     jest.spyOn(StorageManager.default, 'destroy')
     jest.spyOn(GdprForgetDevice, 'check')
+    jest.spyOn(GdprForgetDevice, 'destroy')
 
-    State.default.disabled = 'general'
+    State.default.disabled = {reason: 'general'}
   })
 
   afterEach(() => {
@@ -80,7 +83,6 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
     })
 
     it('initiates and prevents running all static methods and track event', () => {
-
       AdjustInstance.init(config)
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
@@ -90,12 +92,10 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
       expectNotRunningTrackEvent(AdjustInstance)
     })
 
-    it('fails to push forget-me request to queue', () => {
-
+    it('fails to run forget-me request', () => {
       AdjustInstance.gdprForgetMe()
 
-      expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expectNotGdprRequest('Adjust SDK is already disabled')
     })
 
     it('prevents running all static methods and track event', () => {
@@ -104,8 +104,12 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
     })
 
     it('flush forget-me event but ignores it', () => {
-      expectNotGdprForgetMeCallback()
-      expectNotShutDownAndClear()
+      const a1 = expectNotGdprForgetMeCallback()
+      const a2 = expectNotClearAndDestroy()
+
+      expect.assertions(a1.assertions + a2.assertions)
+
+      return a2.promise
     })
 
     it('enables sdk with restart', () => {
@@ -138,8 +142,12 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
       Logger.default.log.mockClear()
 
-      expectNotGdprForgetMeCallback()
-      expectNotShutDownAndClear()
+      const a1 = expectNotGdprForgetMeCallback()
+      const a2 = expectNotClearAndDestroy()
+
+      expect.assertions(1 + a1.assertions + a2.assertions)
+
+      return a2.promise
     })
 
     it('prevents running all static methods and track event', () => {
@@ -147,12 +155,10 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
       expectNotRunningTrackEvent(AdjustInstance)
     })
 
-    it('fails to push forget-me request to queue', () => {
-
+    it('fails to run forget-me request', () => {
       AdjustInstance.gdprForgetMe()
 
-      expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expectNotGdprRequest('Adjust SDK is already disabled')
     })
   })
 
@@ -161,14 +167,13 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
       teardownAndDisable(AdjustInstance)
     })
 
-    it('does not push forget-me request to queue yet', () => {
+    it('does not run forget-me request', () => {
       AdjustInstance.gdprForgetMe()
 
-      expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expectNotGdprRequest('Adjust SDK is already disabled')
     })
 
-    it('initiates but prevents all static methods and track event and fails to push forget-me request to queue', () => {
+    it('initiates but prevents all static methods and track event and fails to run forget-me request', () => {
 
       AdjustInstance.init(config)
 
@@ -178,34 +183,40 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
       expectNotStart()
       expectNotRunningStatic(AdjustInstance)
       expectNotRunningTrackEvent(AdjustInstance)
-      expect(Queue.push).not.toHaveBeenCalled()
+
+      jest.runOnlyPendingTimers()
+
+      expect(request.default).not.toHaveBeenCalled()
     })
 
     it('flush forget-me event but ignores it', () => {
-      expectNotGdprForgetMeCallback()
-      expectNotShutDownAndClear()
+      const a1 = expectNotGdprForgetMeCallback()
+      const a2 = expectNotClearAndDestroy()
+
+      expect.assertions(a1.assertions + a2.assertions)
+
+      return a2.promise
     })
 
   })
 
   describe('sdk: forget -> flush -> init', () => {
-    afterAll(() => () => {
-      teardown(AdjustInstance)
-    })
-
-    it('does not push forget-me request to queue yet', () => {
+    it('does not run forget-me request yet', () => {
       AdjustInstance.gdprForgetMe()
 
-      expect(Queue.push).not.toHaveBeenCalled()
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expectNotGdprRequest('Adjust SDK is already disabled')
     })
 
     it('flush forget-me event but ignores it', () => {
-      expectNotGdprForgetMeCallback()
-      expectNotShutDownAndClear()
+      const a1 = expectNotGdprForgetMeCallback()
+      const a2 = expectNotClearAndDestroy()
+
+      expect.assertions(a1.assertions + a2.assertions)
+
+      return a2.promise
     })
 
-    it('initiates but prevents all static methods and track event and fails to push forget-me request to queue', () => {
+    it('initiates but prevents all static methods and track event and fails to run forget-me request', () => {
 
       AdjustInstance.init(config)
 
@@ -215,7 +226,10 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
       expectNotStart()
       expectNotRunningStatic(AdjustInstance)
       expectNotRunningTrackEvent(AdjustInstance)
-      expect(Queue.push).not.toHaveBeenCalled()
+
+      jest.runOnlyPendingTimers()
+
+      expect(request.default).not.toHaveBeenCalled()
     })
   })
 

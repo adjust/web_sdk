@@ -310,4 +310,55 @@ describe('test Converter utility', () => {
 
   })
 
+  it('encodes and decodes disabled record', () => {
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'left',
+      record: {reason: 'general', pending: false}
+    })).toEqual({r: 1, p: 0})
+
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'left',
+      record: {reason: 'gdpr', pending: false}
+    })).toEqual({r: 2, p: 0})
+
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'left',
+      record: {reason: 'gdpr', pending: true}
+    })).toEqual({r: 2, p: 1})
+
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'left',
+      record: {reason: 'gdpr'}
+    })).toEqual({r: 2})
+
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'right',
+      record: {r: 1, p: 0}
+    })).toEqual({reason: 'general', pending: false})
+
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'right',
+      record: {r: 2, p: 0}
+    })).toEqual({reason: 'gdpr', pending: false})
+
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'right',
+      record: {r: 2, p: 1}
+    })).toEqual({reason: 'gdpr', pending: true})
+
+    expect(Converter.convertRecord({
+      storeName: 'disabled',
+      dir: 'right',
+      record: {r: 2}
+    })).toEqual({reason: 'gdpr'})
+
+  })
+
 })

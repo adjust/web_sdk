@@ -1,4 +1,5 @@
 import {extend, reducer} from '../utilities'
+import {REASON_GDPR, REASON_GENERAL} from '../constants'
 
 const QUEUE_STORE = 'q'
 const ACTIVITY_STATE_STORE = 'as'
@@ -104,10 +105,46 @@ const _globalParamsScheme = {
   }
 }
 
+const _disabledScheme = {
+  keyPath: ['reason'],
+  fields: {
+    reason: {
+      key: 'r',
+      values: {
+        [REASON_GENERAL]: 1,
+        [REASON_GDPR]: 2
+      }
+    },
+    pending: {
+      key: 'p',
+      values: {
+        false: 0,
+        true: 1
+      }
+    }
+  }
+}
+
 const Base = {
   queue: _queueScheme,
   activityState: _activityStateScheme,
-  globalParams: _globalParamsScheme
+  globalParams: _globalParamsScheme,
+  disabled: _disabledScheme
+}
+
+/**
+ * Cast value into it's original type
+ *
+ * @param {string} value
+ * @returns {*}
+ * @private
+ */
+function _parseValue (value) {
+  try {
+    return JSON.parse(value)
+  } catch (e) {
+    return value
+  }
 }
 
 /**
@@ -132,7 +169,7 @@ function _flipList (keyPath) {
 function _flipObject (obj) {
   return Object
     .entries(obj)
-    .map(([key, value]) => [value, key])
+    .map(([key, value]) => [value, _parseValue(key)])
     .reduce(reducer, {})
 }
 

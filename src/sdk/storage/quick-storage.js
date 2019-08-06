@@ -1,4 +1,5 @@
 import {extend} from '../utilities'
+import {convertRecord} from './converter'
 import Config from '../config'
 import SchemeMap from './scheme-map'
 
@@ -15,7 +16,14 @@ const _storageName = Config.namespace
  * @private
  */
 function _get (key) {
-  return JSON.parse(localStorage.getItem(`${_storageName}.${key}`))
+  const value = JSON.parse(localStorage.getItem(`${_storageName}.${key}`))
+  return (value instanceof Array
+    ? value
+    : convertRecord({
+      storeName: 'disabled',
+      dir: 'right',
+      record: value
+    })) || null
 }
 
 /**
@@ -29,7 +37,15 @@ function _set (key, value) {
   if (!value) {
     localStorage.removeItem(`${_storageName}.${key}`)
   } else {
-    localStorage.setItem(`${_storageName}.${key}`, JSON.stringify(value))
+    localStorage.setItem(`${_storageName}.${key}`, JSON.stringify(
+      value instanceof Array
+        ? value
+        : convertRecord({
+          storeName: 'disabled',
+          dir: 'left',
+          record: value
+        })
+    ))
   }
 }
 

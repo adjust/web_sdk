@@ -1,4 +1,3 @@
-import * as State from '../state'
 import * as QuickStorage from '../storage/quick-storage'
 import * as PubSub from '../pub-sub'
 
@@ -11,7 +10,7 @@ describe('activity state functionality', () => {
   })
 
   afterEach(() => {
-    State.default.disabled = null
+    localStorage.clear()
   })
 
   afterAll(() => {
@@ -19,56 +18,72 @@ describe('activity state functionality', () => {
   })
 
   it('gets disabled state', () => {
+    jest.isolateModules(() => {
+      const State = require('../state').default
 
-    expect(State.default.disabled).toBeNull()
+      expect(State.disabled).toBeNull()
 
-    State.default.disabled = 'gdpr'
+      State.disabled = {reason: 'gdpr', pending: false}
 
-    expect(State.default.disabled).toEqual('gdpr')
+      expect(State.disabled.reason).toEqual('gdpr')
+      expect(State.disabled.pending).toEqual(false)
 
+      State.disabled = null
+
+      expect(State.disabled).toBeNull()
+
+      State.disabled = {reason: 'gdpr', pending: true}
+
+      expect(State.disabled.reason).toEqual('gdpr')
+      expect(State.disabled.pending).toEqual(true)
+    })
   })
 
   it('reloads in-memory variables when storage got changed outside of current tab', () => {
+    jest.isolateModules(() => {
+      const State = require('../state').default
 
-    QuickStorage.default.stores[disabledStoreName] = 1
+      QuickStorage.default.stores[disabledStoreName] = {reason: 'general', pending: false}
 
-    expect(State.default.disabled).toEqual('general')
+      expect(State.disabled.reason).toEqual('general')
 
-    QuickStorage.default.stores[disabledStoreName] = 2
+      QuickStorage.default.stores[disabledStoreName] = {reason: 'gdpr', pending: false}
 
-    expect(State.default.disabled).toEqual('general')
+      expect(State.disabled.reason).toEqual('general')
 
-    State.default.reload()
+      State.reload()
 
-    expect(PubSub.publish).not.toHaveBeenCalled()
+      expect(PubSub.publish).not.toHaveBeenCalled()
 
-    State.default.disabled = null
+      State.disabled = null
 
-    QuickStorage.default.stores[disabledStoreName] = 2
+      QuickStorage.default.stores[disabledStoreName] = {reason: 'gdpr', pending: false}
 
-    State.default.reload()
+      State.reload()
 
-    expect(PubSub.publish).toHaveBeenCalledWith('sdk:shutdown', true)
-    expect(State.default.disabled).toEqual('gdpr')
-
+      expect(PubSub.publish).toHaveBeenCalledWith('sdk:shutdown', true)
+      expect(State.disabled.reason).toEqual('gdpr')
+    })
   })
 
   it('recover storage from memory', () => {
+    jest.isolateModules(() => {
+      const State = require('../state').default
 
-    State.default.disabled = 'gdpr'
+      State.disabled = {reason: 'gdpr', pending: false}
 
-    expect(QuickStorage.default.stores[disabledStoreName]).toEqual(2)
+      expect(QuickStorage.default.stores[disabledStoreName]).toEqual({reason: 'gdpr', pending: false})
 
-    localStorage.clear()
+      localStorage.clear()
 
-    expect(State.default.disabled).toEqual('gdpr')
-    expect(QuickStorage.default.stores[disabledStoreName]).toBeNull()
+      expect(State.disabled.reason).toEqual('gdpr')
+      expect(QuickStorage.default.stores[disabledStoreName]).toBeNull()
 
-    State.default.recover()
+      State.recover()
 
-    expect(State.default.disabled).toEqual('gdpr')
-    expect(QuickStorage.default.stores[disabledStoreName]).toEqual(2)
-
+      expect(State.disabled.reason).toEqual('gdpr')
+      expect(QuickStorage.default.stores[disabledStoreName]).toEqual({reason: 'gdpr', pending: false})
+    })
   })
 
 })

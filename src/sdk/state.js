@@ -1,17 +1,6 @@
 import {publish} from './pub-sub'
+import {extend} from './utilities'
 import QuickStorage from './storage/quick-storage'
-import {REASON_GENERAL, REASON_GDPR} from './constants'
-
-/**
- * Encoded values for each reason
- *
- * @type {Object}
- * @private
- */
-const _reasons = {
-  [REASON_GENERAL]: 1,
-  [REASON_GDPR]: 2
-}
 
 /**
  * Name of the store used by disabled
@@ -27,51 +16,42 @@ let _storeName = QuickStorage.names.disabled
  * @type {Object}
  * @private
  */
-let _disabled = _decodeDisabled()
-
-/**
- * Decode disabled value from storage
- *
- * @returns {string}
- * @private
- */
-function _decodeDisabled () {
-  const reason = QuickStorage.stores[_storeName]
-  return reason === 1 ? REASON_GENERAL : (reason === 2 ? REASON_GDPR : null)
-}
+let _disabled = QuickStorage.stores[_storeName]
 
 /**
  * Get current disabled state
  *
- * @returns {Object}
+ * @returns {Object|null}
  */
 function _disabledGetter () {
   if (!_disabled) {
-    _disabled = _decodeDisabled()
+    _disabled = QuickStorage.stores[_storeName]
   }
 
-  return _disabled
+  return _disabled ? extend({}, _disabled) : null
 }
 
 /**
  * Set current disabled state
  *
- * @param {string|null} reason
+ * @param {Object|null} value
  */
-function _disabledSetter (reason) {
-  QuickStorage.stores[_storeName] = _reasons[reason]
-  _disabled = reason
+function _disabledSetter (value) {
+  QuickStorage.stores[_storeName] = value
+  _disabled = value ? extend({}, value) : null
 }
 
 /**
  * Reload current disabled state from localStorage
  */
 function reload () {
-  if (QuickStorage.stores[_storeName] && !_disabled) {
+  const stored = QuickStorage.stores[_storeName]
+
+  if (stored && !_disabled) {
     publish('sdk:shutdown', true)
   }
 
-  _disabled = _decodeDisabled()
+  _disabled = stored
 }
 
 /**
@@ -79,7 +59,7 @@ function reload () {
  */
 function recover () {
   if (!QuickStorage.stores[_storeName]) {
-    QuickStorage.stores[_storeName] = _reasons[_disabled]
+    QuickStorage.stores[_storeName] = _disabled
   }
 }
 

@@ -97,7 +97,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
 
       expectShutDown()
     })
@@ -145,7 +145,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
       expect(Identity.enable).toHaveBeenCalled()
 
       return flushPromises()
@@ -189,7 +189,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
 
       expectShutDown()
     })
@@ -211,7 +211,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
 
       expectNotShutDown()
     })
@@ -310,7 +310,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
 
       expectShutDown()
     })
@@ -329,7 +329,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already enabled')
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
 
       return flushPromises()
     })
@@ -350,7 +350,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
 
       expectNotShutDown()
     })
@@ -402,7 +402,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalledWith(undefined)
+      expect(Identity.disable).toHaveBeenCalled()
 
       expectNotShutDown()
     })

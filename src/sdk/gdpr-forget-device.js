@@ -1,92 +1,67 @@
-import {push} from './queue'
-import State from './state'
+import Package from './package'
+import ActivityState from './activity-state'
 import Logger from './logger'
 import Config from './config'
-import {REASON_GDPR} from './constants'
+import {status} from './identity'
 
 /**
- * Pending request flag
+ * Package request instance
  *
- * @type {boolean}
+ * @type {Object}
  * @private
  */
-let _pending = false
-
-/**
- * Requested request flag
- *
- * @type {boolean}
- * @private
- */
-let _requested = false
+const _request = Package({
+  url: '/gdpr_forget_device',
+  method: 'POST',
+  strategy: 'short'
+})
 
 /**
  * Request GDPR-Forget-Me in order to disable sdk
  */
-function forget () {
+function forget (force) {
+  const sdkStatus = status()
 
-  if (State.disabled === REASON_GDPR) {
-    Logger.log('Adjust SDK is already GDPR forgotten')
-    return
+  if (!force && sdkStatus !== 'on') {
+    if (sdkStatus === 'paused') {
+      Logger.log('Adjust SDK is already prepared to send GDPR Forget Me request')
+    } else if (sdkStatus === 'off') {
+      Logger.log('Adjust SDK is already disabled')
+    }
+    return false
   }
-
-  if (State.disabled) {
-    Logger.log('Adjust SDK is already disabled')
-    return
-  }
-
-  if (_requested) {
-    Logger.log('Adjust SDK already sent GDPR Forget Me request')
-    return
-  }
-
-  _requested = true
 
   if (!Config.isInitialised()) {
-    _pending = true
     Logger.log('Adjust SDK will run GDPR Forget Me request after initialisation')
-    return
+    return true
   }
 
-  _pending = false
-
-  push({
-    url: '/gdpr_forget_device',
-    method: 'POST'
+  _request.send({
+    params: ActivityState.getParams()
   })
-}
 
-/**
- * Check if GDPR-Forget-Me request is already sent
- *
- * @returns {boolean}
- */
-function requested () {
-  return _requested
+  return true
 }
 
 /**
  * Check if there is pending GDPR-Forget-Me request
  */
 function check () {
-  if (_pending) {
-    _requested = false
+  if (status() === 'paused') {
     Logger.log('Adjust SDK is running pending GDPR Forget Me request')
-    forget()
+    forget(true)
   }
 }
 
 /**
- * Restore initial flags' values
+ * Destroy by clearing running request
  */
 function destroy () {
-  _requested = false
-  _pending = false
+  _request.clear()
 }
 
 export {
   forget,
-  requested,
   check,
   destroy
 }

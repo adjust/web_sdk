@@ -54,28 +54,33 @@ describe('test identity methods', () => {
     it('checks disabled state before initiation', () => {
 
       expect(State.default.disabled).toBeNull()
+      expect(Identity.status()).toBe('on')
 
       Identity.disable()
 
-      expect(State.default.disabled).toBe('general')
+      expect(State.default.disabled).toEqual({reason: 'general', pending: false})
+      expect(Identity.status()).toBe('off')
 
       Identity.disable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expect(Identity.status()).toBe('off')
 
       Identity.enable()
 
       expect(State.default.disabled).toBeNull()
+      expect(Identity.status()).toBe('on')
 
       Identity.enable()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
+      expect(Identity.status()).toBe('on')
 
     })
 
     it('checks disabled state after initiation', () => {
 
-      expect.assertions(2)
+      expect.assertions(3)
 
       return Identity.start()
         .then(() => {
@@ -83,19 +88,21 @@ describe('test identity methods', () => {
 
           Identity.disable()
 
-          expect(State.default.disabled).toBe('general')
+          expect(State.default.disabled).toEqual({reason: 'general', pending: false})
+          expect(Identity.status()).toBe('off')
         })
     })
 
     it('checks disabled state after initiation when initially disabled', () => {
 
-      expect.assertions(2)
+      expect.assertions(3)
 
       Identity.disable()
 
       return Identity.start()
         .then(() => {
-          expect(State.default.disabled).toBe('general')
+          expect(State.default.disabled).toEqual({reason: 'general', pending: false})
+          expect(Identity.status()).toBe('off')
 
           Identity.enable()
 
@@ -109,30 +116,39 @@ describe('test identity methods', () => {
 
       Identity.disable()
 
-      expect(State.default.disabled).toBe('general')
+      expect(State.default.disabled).toEqual({reason: 'general', pending: false})
+      expect(Identity.status()).toBe('off')
 
       localStorage.clear()
 
-      expect(State.default.disabled).toBe('general')
+      expect(State.default.disabled).toEqual({reason: 'general', pending: false})
+      expect(Identity.status()).toBe('off')
 
     })
 
     it('checks if disabled due to GDPR-Forget-Me request', () => {
 
-      Identity.disable('gdpr')
+      Identity.disable({reason: 'gdpr', pending: true})
 
-      expect(State.default.disabled).toBe('gdpr')
+      expect(State.default.disabled).toEqual({reason: 'gdpr', pending: true})
+      expect(Identity.status()).toBe('paused')
 
       Identity.enable()
 
-      expect(State.default.disabled).toBe('gdpr')
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-me request and it can not be re-enabled')
+      expect(State.default.disabled).toEqual({reason: 'gdpr', pending: true})
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled')
+      expect(Identity.status()).toBe('paused')
 
       Identity.disable()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
-      expect(State.default.disabled).toBe('gdpr')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled due to GDPR-Forget-Me request')
+      expect(State.default.disabled).toEqual({reason: 'gdpr', pending: true})
+      expect(Identity.status()).toBe('paused')
 
+      Identity.clear()
+
+      expect(State.default.disabled).toEqual({reason: 'gdpr', pending: false})
+      expect(Identity.status()).toBe('off')
     })
 
   })
@@ -193,8 +209,8 @@ describe('test identity methods', () => {
 
       return Identity.start()
         .then(() => {
-          expect(State.default.disabled).toEqual('general')
-          expect(QuickStorage.default.stores[storeNames.disabled]).toEqual(1)
+          expect(State.default.disabled).toEqual({reason: 'general', pending: false})
+          expect(QuickStorage.default.stores[storeNames.disabled]).toEqual({reason: 'general', pending: false})
         })
     })
 
