@@ -10,6 +10,7 @@ import * as Logger from '../../logger'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
+import {flushPromises, setDocumentProp} from '../_common'
 import {
   config,
   expectStart,
@@ -30,6 +31,7 @@ describe('main entry point - test instance initiation when storage is available'
     jest.spyOn(sdkClick, 'default')
     jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'setOffline')
+    jest.spyOn(Queue, 'push')
     jest.spyOn(Session, 'watch')
     jest.spyOn(GlobalParams, 'get')
     jest.spyOn(GlobalParams, 'add')
@@ -111,6 +113,25 @@ describe('main entry point - test instance initiation when storage is available'
     it('runs track event', () => {
       expectRunningTrackEvent(AdjustInstance)
     })
+  })
+
+  it('runs session first and then sdk-click request', () => {
+    jest.clearAllMocks()
+    teardown(AdjustInstance)
+    setDocumentProp('referrer', 'http://some-site.com')
+    window.history.pushState({}, '', '?adjust_param=value&something=else')
+
+    AdjustInstance.init(config)
+
+    expect.assertions(2)
+
+    return flushPromises()
+      .then(() => {
+        const requests = Queue.push.mock.calls.map(call => call[0].url)
+
+        expect(requests[0]).toEqual('/session')
+        expect(requests[1]).toEqual('/sdk_click')
+      })
   })
 
 })

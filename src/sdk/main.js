@@ -251,9 +251,13 @@ function _continue () {
     return Promise.reject({message: message + ' due to partial async disable'})
   }
 
-  return _isStarted
-    ? Promise.reject({})
-    : true
+  if (_isStarted) {
+    return Promise.reject({})
+  }
+
+  queueRun(true)
+
+  return sessionWatch()
 }
 
 /**
@@ -292,11 +296,9 @@ function _start (params = {}) {
   start()
     .then(_continue)
     .then(() => {
-      queueRun(true)
-      sessionWatch()
-      sdkClick()
-
       _isStarted = true
+
+      sdkClick()
     })
     .catch(error => {
       if (error.message) {
