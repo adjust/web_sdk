@@ -443,13 +443,15 @@ describe('test session functionality', () => {
       let currentLastActive
       let activityState
 
+      ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: null})
+
       Session.watch()
 
       dateNowSpy.mockReturnValue(currentTime)
 
       activityState = ActivityState.default.current
 
-      expect.assertions(66)
+      expect.assertions(68)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
       expect(activityState.timeSpent).toEqual(0)
@@ -553,6 +555,9 @@ describe('test session functionality', () => {
 
           // no session window reached, so request was not sent
           expect(Queue.push).not.toHaveBeenCalled()
+          expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', {})
+
+          PubSub.publish.mockClear()
 
           dateNowSpy.mockReturnValue(currentTime += 4 * MINUTE)
           jest.advanceTimersByTime(4 * MINUTE)
@@ -597,6 +602,8 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 31 * MINUTE)
           jest.advanceTimersByTime(31 * MINUTE)
 
+          ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: {adid: 'bla'}})
+
           return flushPromises()
         })
         .then(() => {
@@ -632,6 +639,7 @@ describe('test session functionality', () => {
             method: 'POST',
             params: {}
           }, true)
+          expect(PubSub.publish).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 

@@ -68,7 +68,7 @@ function watch () {
 
   ActivityState.initParams()
 
-  return _checkSession(true)
+  return _checkSession()
 }
 
 /**
@@ -84,7 +84,6 @@ function isRunning () {
  * Destroy session watch
  */
 function destroy () {
-
   _running = false
 
   ActivityState.toBackground()
@@ -127,7 +126,7 @@ function _handleForeground () {
   ActivityState.updateSessionLength()
   ActivityState.toForeground()
 
-  return sync().then(() => _checkSession())
+  return sync().then(_checkSession)
 }
 
 /**
@@ -136,7 +135,6 @@ function _handleForeground () {
  * @private
  */
 function _handleVisibilityChange () {
-
   clearTimeout(_idTimeout)
 
   const handler = document[_pva.hidden] ? _handleBackground : _handleForeground
@@ -163,7 +161,6 @@ function _checkAttribution () {
  * @private
  */
 function _startTimer () {
-
   _stopTimer()
 
   _idInterval = setInterval(() => {
@@ -190,7 +187,6 @@ function _stopTimer () {
  * @private
  */
 function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
-
   const baseParams = {}
 
   if (globalCallbackParams.length) {
@@ -223,11 +219,9 @@ function _trackSession () {
 /**
  * Check if session needs to be tracked
  *
- * @param {boolean=false} initial
  * @private
  */
-function _checkSession (initial = false) {
-
+function _checkSession () {
   _startTimer()
 
   const lastInterval = (ActivityState.current || {}).lastInterval
@@ -237,9 +231,7 @@ function _checkSession (initial = false) {
     return _trackSession()
   }
 
-  if (initial) {
-    _checkAttribution()
-  }
+  _checkAttribution()
 
   return persist()
 }

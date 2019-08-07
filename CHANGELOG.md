@@ -13,7 +13,7 @@ Here you can find changes for this project. When updating to a new version be su
 - possibility to set the log level on init and optionally specify log container
 - disable/enable sdk
 - GDPR Forget Me ability
-- ability to default tracker through configuration
+- ability to define default tracker through configuration
 
 ### Changed
 - using exposed single instance instead of initiating it manually with the `new` (`Adjust.init(YOUR_CONFIG)`)
