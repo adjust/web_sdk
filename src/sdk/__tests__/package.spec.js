@@ -10,6 +10,7 @@ jest.useFakeTimers()
 
 describe('test package functionality', () => {
 
+  let dateNowSpy
   let createdAtSpy
   const now = Date.now()
   const matchCreatedAt = {
@@ -29,6 +30,7 @@ describe('test package functionality', () => {
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'error')
 
+    dateNowSpy = jest.spyOn(Date, 'now')
     createdAtSpy = jest.spyOn(Time, 'getTimestamp')
   })
 
@@ -642,11 +644,45 @@ describe('test package functionality', () => {
 
     Logger.default.log.mockClear()
 
-    // initiate another request
+    // initiate immediately another request
     someRequest.send()
 
     expect(Logger.default.log.mock.calls[0][0]).toBe('Previous /global-request request attempt canceled')
     expect(Logger.default.log.mock.calls[1][0]).toBe('Trying request /global-request in 150ms')
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+
+    return flushPromises()
+      .then(() => {
+        expect(request.default).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
+      })
+
+  })
+
+  it('skips canceling previously initiated request if less time left', () => {
+
+    dateNowSpy.mockReturnValue(now)
+
+    expect.assertions(7)
+
+    someRequest.send({wait: 1000})
+
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /global-request in 1000ms')
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000)
+
+    Logger.default.log.mockClear()
+
+    dateNowSpy.mockReturnValue(now + 500)
+    jest.advanceTimersByTime(500)
+
+    // initiate another request after 500ms
+    someRequest.send({wait: 2000})
+
+    expect(Logger.default.log).not.toHaveBeenCalledWith('Previous /global-request request attempt canceled')
+    expect(Logger.default.log).not.toHaveBeenCalledWith('Trying request /global-request in 150ms')
 
     jest.runOnlyPendingTimers()
 

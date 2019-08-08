@@ -74,12 +74,12 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   let _wait = DEFAULT_WAIT
 
   /**
-   * Flag which marks if request is about to be sent
+   * Timestamp when the request has been scheduled
    *
-   * @type {boolean}
+   * @type {Date|null}
    * @private
    */
-  let _pending = false
+  let _startAt = null
 
   /**
    * Override current parameters if available
@@ -206,9 +206,13 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    */
   function _request ({wait, retrying}) {
 
-    _pending = true
-
     if (_timeoutId) {
+      const remainingTime = _wait - (Date.now() - _startAt)
+
+      if (remainingTime < wait) {
+        return
+      }
+
       clear()
     }
 
@@ -218,9 +222,11 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
     Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url.current} in ${_wait}ms`)
 
+    _startAt = Date.now()
+
     return new Promise((resolve) => {
       _timeoutId = setTimeout(() => {
-        _pending = false
+        _startAt = null
 
         return request({
           url: _url.current,
@@ -247,13 +253,13 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    */
   function clear () {
 
-    const wasPending = _pending
+    const stillRunning = !!_startAt
 
     clearTimeout(_timeoutId)
     _timeoutId = null
-    _pending = false
+    _startAt = null
 
-    if (wasPending) {
+    if (stillRunning) {
       _wait = DEFAULT_WAIT
       _attempts = DEFAULT_ATTEMPTS
 
