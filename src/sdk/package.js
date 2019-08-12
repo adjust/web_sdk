@@ -8,7 +8,6 @@ const DEFAULT_ATTEMPTS = 0
 const DEFAULT_WAIT = 150
 
 const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
-
   /**
    * Url param per instance or per request
    *
@@ -118,7 +117,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @private
    */
   function _restore () {
-
     _url.current = _url.global
     _method.current = _method.global
     _params.current = extend({}, _params.global)
@@ -137,7 +135,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @returns {Promise}
    */
   function send ({url, method, params = {}, continueCb, wait, retrying} = {}) {
-
     if (!_url.current && !url) {
       Logger.error('You must define url for the request to be sent')
       return Promise.reject({error: 'No url specified'})
@@ -152,7 +149,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * Finish the request by restoring and clearing
    */
   function finish () {
-
     Logger.log(`Request ${_url.current} has been finished`)
 
     _attempts = DEFAULT_ATTEMPTS
@@ -170,7 +166,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @returns {Promise}
    */
   function retry (wait) {
-
     _attempts += 1
     _wait = backOff(_attempts, _strategy)
 
@@ -197,23 +192,37 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   }
 
   /**
+   * Clear previous attempt if new one is about to happen faster
+   *
+   * @param {number} wait
+   * @returns {boolean}
+   * @private
+   */
+  function _skip (wait) {
+    const remainingTime = _wait - (Date.now() - _startAt)
+
+    if (_timeoutId) {
+      if (remainingTime < wait) {
+        return true
+      }
+
+      clear()
+    }
+
+    return false
+  }
+
+  /**
    * Do the timed-out request with retry mechanism
    *
    * @param {number=} wait
    * @param {boolean=false} retrying
-   * @returns {Promise}
+   * @returns {Promise|undefined}
    * @private
    */
   function _request ({wait, retrying}) {
-
-    if (_timeoutId) {
-      const remainingTime = _wait - (Date.now() - _startAt)
-
-      if (remainingTime < wait) {
-        return
-      }
-
-      clear()
+    if (_skip(wait)) {
+      return
     }
 
     if (wait) {
@@ -252,7 +261,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * Clear the current request
    */
   function clear () {
-
     const stillRunning = !!_startAt
 
     clearTimeout(_timeoutId)

@@ -176,14 +176,12 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams) {
  * @private
  */
 function _interceptResponse (result = {}, options) {
-  const isAttributionRequest = isRequest(options.url, 'attribution')
-
   if (result.tracking_state === 'opted_out') {
     publish('sdk:gdpr-forget-me', true)
     return result
   }
 
-  if (!isAttributionRequest && result.ask_in) {
+  if (!isRequest(options.url, 'attribution') && result.ask_in) {
     publish('attribution:check', result)
   }
 
