@@ -38,7 +38,7 @@ function errorResponse () {
   return {response: {message: 'An error', code: 'RETRY'}}
 }
 
-export {
+global.Utils = {
   flushPromises,
   createMockXHR,
   randomInRange,

@@ -3,7 +3,6 @@ import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
 import * as Config from '../config'
-import {flushPromises, setGlobalProp, createMockXHR} from './_common'
 
 jest.mock('../logger')
 jest.useFakeTimers()
@@ -39,9 +38,9 @@ describe('perform api requests', () => {
   beforeAll(() => {
     Config.default.baseParams = appParams
 
-    setGlobalProp(global.window.navigator, 'language')
-    setGlobalProp(global.window.navigator, 'platform')
-    setGlobalProp(global.window.navigator, 'doNotTrack')
+    Utils.setGlobalProp(global.window.navigator, 'language')
+    Utils.setGlobalProp(global.window.navigator, 'platform')
+    Utils.setGlobalProp(global.window.navigator, 'doNotTrack')
 
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     ActivityState.default.current = {uuid: 'some-uuid'}
@@ -64,7 +63,7 @@ describe('perform api requests', () => {
 
   it('rejects when network issue', () => {
 
-    mockXHR = createMockXHR({error: 'connection failed'}, 500, 'Connection failed')
+    mockXHR = Utils.createMockXHR({error: 'connection failed'}, 500, 'Connection failed')
     global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -79,7 +78,7 @@ describe('perform api requests', () => {
       responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
     })
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         mockXHR.onerror()
       })
@@ -87,7 +86,7 @@ describe('perform api requests', () => {
 
   it('rejects when status 0', () => {
 
-    mockXHR = createMockXHR('', 0, 'Network issue')
+    mockXHR = Utils.createMockXHR('', 0, 'Network issue')
     global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -102,7 +101,7 @@ describe('perform api requests', () => {
       responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
     })
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         mockXHR.onreadystatechange()
       })
@@ -110,7 +109,7 @@ describe('perform api requests', () => {
 
   it('resolves error returned from server (because of retry mechanism)', () => {
 
-    mockXHR = createMockXHR({error: 'some error'}, 400, 'Some error')
+    mockXHR = Utils.createMockXHR({error: 'some error'}, 400, 'Some error')
     global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -120,7 +119,7 @@ describe('perform api requests', () => {
       params: {}
     })).resolves.toEqual({error: 'some error'})
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         mockXHR.onreadystatechange()
       })
@@ -128,7 +127,7 @@ describe('perform api requests', () => {
 
   it('reject badly formed json from server', () => {
 
-    mockXHR = createMockXHR('bla bla not json', 200, 'OK')
+    mockXHR = Utils.createMockXHR('bla bla not json', 200, 'OK')
     global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -143,7 +142,7 @@ describe('perform api requests', () => {
       responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
     })
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         mockXHR.onreadystatechange()
       })
@@ -157,7 +156,7 @@ describe('perform api requests', () => {
     }
 
     beforeEach(() => {
-      mockXHR = createMockXHR(response)
+      mockXHR = Utils.createMockXHR(response)
       global.window.XMLHttpRequest = jest.fn(() => mockXHR)
 
       jest.spyOn(mockXHR, 'open')
@@ -179,7 +178,7 @@ describe('perform api requests', () => {
         }
       })).resolves.toEqual(response)
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
 
           expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
@@ -219,7 +218,7 @@ describe('perform api requests', () => {
         }
       })).resolves.toEqual(response)
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
 
           expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-other-url?${defaultParamsWithDefaultTracker}&bla=truc`, true)
@@ -245,7 +244,7 @@ describe('perform api requests', () => {
         }
       })).resolves.toEqual(response)
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
 
           expect(mockXHR.open).toHaveBeenCalledWith('GET', `/sweet-url?${defaultParams}&some=thing`, true)
@@ -276,7 +275,7 @@ describe('perform api requests', () => {
         }
       })).resolves.toEqual(response)
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
 
           expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&some=thing&very=nice&zero=0&bla=ble`, true)
@@ -300,7 +299,7 @@ describe('perform api requests', () => {
         }
       })).resolves.toEqual(response)
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
 
           expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
@@ -316,7 +315,7 @@ describe('perform api requests', () => {
   describe('filter response returned to client', () => {
 
     const prepare = (response) => {
-      mockXHR = createMockXHR(response)
+      mockXHR = Utils.createMockXHR(response)
       global.window.XMLHttpRequest = jest.fn(() => mockXHR)
     }
 
@@ -342,7 +341,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           mockXHR.onreadystatechange()
         })
@@ -372,7 +371,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           mockXHR.onreadystatechange()
         })
@@ -382,7 +381,7 @@ describe('perform api requests', () => {
   describe('response interception', () => {
 
     const prepare = (response) => {
-      mockXHR = createMockXHR(response)
+      mockXHR = Utils.createMockXHR(response)
       global.window.XMLHttpRequest = jest.fn(() => mockXHR)
     }
 
@@ -423,7 +422,7 @@ describe('perform api requests', () => {
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           mockXHR.onreadystatechange()
         })
@@ -451,7 +450,7 @@ describe('perform api requests', () => {
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
       })
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           mockXHR.onreadystatechange()
         })
@@ -480,7 +479,7 @@ describe('perform api requests', () => {
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
       })
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           mockXHR.onreadystatechange()
         })
@@ -507,7 +506,7 @@ describe('perform api requests', () => {
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
       })
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           mockXHR.onreadystatechange()
         })
@@ -537,7 +536,7 @@ describe('perform api requests', () => {
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           mockXHR.onreadystatechange()
         })

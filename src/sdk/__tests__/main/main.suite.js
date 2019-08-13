@@ -13,18 +13,19 @@ import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as request from '../../request'
-import {flushPromises} from '../_common'
 
-export const config = {
+const config = {
   appToken: 'some-app-token',
   environment: 'production',
   attributionCallback: jest.fn()
 }
 
-const gdprConfig = {
+const _gdprConfig = {
   url: '/gdpr_forget_device',
   method: 'POST'
 }
+
+let _instance
 
 function _startFirstPart () {
   expect(Config.default.baseParams.appToken).toEqual('some-app-token')
@@ -38,10 +39,10 @@ function _startFirstPart () {
 
   expect(Identity.start).toHaveBeenCalledTimes(1)
 
-  return flushPromises()
+  return Utils.flushPromises()
 }
 
-export function expectStart () {
+function expectStart () {
   const promise = _startFirstPart()
     .then(() => {
       expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
@@ -54,7 +55,7 @@ export function expectStart () {
   return {assertions: 13, promise}
 }
 
-export function expectPartialStartWithGdprRequest () {
+function expectPartialStartWithGdprRequest () {
   const promise = _startFirstPart()
     .then(() => {
       expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
@@ -67,7 +68,7 @@ export function expectPartialStartWithGdprRequest () {
   return {assertions: 14, promise}
 }
 
-export function expectNotStart (restart) {
+function expectNotStart (restart) {
 
   if (!restart) {
     expect(Config.default.baseParams).toEqual({})
@@ -82,9 +83,9 @@ export function expectNotStart (restart) {
 
 }
 
-export function expectRunningTrackEvent (instance) {
+function expectRunningTrackEvent () {
 
-  instance.trackEvent({eventToken: 'blabla'})
+  _instance.trackEvent({eventToken: 'blabla'})
 
   expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'})
   expect(GlobalParams.get).toHaveBeenCalled()
@@ -93,9 +94,9 @@ export function expectRunningTrackEvent (instance) {
 
 }
 
-export function expectNotRunningTrackEvent (instance, noInstance, noStorage) {
+function expectNotRunningTrackEvent (noInstance, noStorage) {
 
-  instance.trackEvent({eventToken: 'blabla'})
+  _instance.trackEvent({eventToken: 'blabla'})
 
   if (noInstance) {
     if (noStorage) {
@@ -113,82 +114,82 @@ export function expectNotRunningTrackEvent (instance, noInstance, noStorage) {
   return {assertions: noInstance ? 2 : 3}
 }
 
-export function expectRunningStatic (instance) {
+function expectRunningStatic () {
 
   const params = [
     {key: 'key1', value: 'value1'},
     {key: 'key2', value: 'value2'}
   ]
 
-  instance.addGlobalCallbackParameters(params)
+  _instance.addGlobalCallbackParameters(params)
   expect(GlobalParams.add).toHaveBeenCalledWith(params, 'callback')
 
-  instance.addGlobalPartnerParameters(params)
+  _instance.addGlobalPartnerParameters(params)
   expect(GlobalParams.add).toHaveBeenCalledWith(params, 'partner')
 
-  instance.removeGlobalCallbackParameter('some-key')
+  _instance.removeGlobalCallbackParameter('some-key')
   expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'callback')
 
-  instance.removePartnerCallbackParameter('some-key')
+  _instance.removePartnerCallbackParameter('some-key')
   expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'partner')
 
-  instance.removeAllGlobalCallbackParameters('callback')
+  _instance.removeAllGlobalCallbackParameters('callback')
   expect(GlobalParams.removeAll).toHaveBeenCalledWith('callback')
 
-  instance.removeAllGlobalPartnerParameters('partner')
+  _instance.removeAllGlobalPartnerParameters('partner')
   expect(GlobalParams.removeAll).toHaveBeenCalledWith('partner')
 
-  instance.setOfflineMode(true)
+  _instance.setOfflineMode(true)
   expect(Queue.setOffline).toHaveBeenCalledWith(true)
 
   return {assertions: 7}
 }
 
-export function expectNotRunningStatic (instance, noStorage) {
+function expectNotRunningStatic (noStorage) {
 
-  instance.addGlobalCallbackParameters([{key: 'key', value: 'value'}])
+  _instance.addGlobalCallbackParameters([{key: 'key', value: 'value'}])
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not add global callback parameters, no storage available'
     : 'Adjust SDK is disabled, can not add global callback parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
-  instance.addGlobalPartnerParameters([{key: 'key', value: 'value'}])
+  _instance.addGlobalPartnerParameters([{key: 'key', value: 'value'}])
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not add global partner parameters, no storage available'
     : 'Adjust SDK is disabled, can not add global partner parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
-  instance.removeGlobalCallbackParameter('key')
+  _instance.removeGlobalCallbackParameter('key')
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not remove global callback parameter, no storage available'
     : 'Adjust SDK is disabled, can not remove global callback parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
-  instance.removePartnerCallbackParameter('key')
+  _instance.removePartnerCallbackParameter('key')
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not remove global partner parameter, no storage available'
     : 'Adjust SDK is disabled, can not remove global partner parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
-  instance.removeAllGlobalCallbackParameters()
+  _instance.removeAllGlobalCallbackParameters()
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not remove all global callback parameters, no storage available'
     : 'Adjust SDK is disabled, can not remove all global callback parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
-  instance.removeAllGlobalPartnerParameters()
+  _instance.removeAllGlobalPartnerParameters()
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not remove all global partner parameters, no storage available'
     : 'Adjust SDK is disabled, can not remove all global partner parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
-  instance.setOfflineMode(true)
+  _instance.setOfflineMode(true)
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not set offline mode, no storage available'
@@ -198,7 +199,7 @@ export function expectNotRunningStatic (instance, noStorage) {
   return {assertions: 14}
 }
 
-export function expectAttributionCallback () {
+function expectAttributionCallback () {
 
   PubSub.publish('attribution:change', {tracker_token: 'some-token'})
 
@@ -206,7 +207,7 @@ export function expectAttributionCallback () {
 
   expect(config.attributionCallback).toHaveBeenCalledWith('attribution:change', {tracker_token: 'some-token'})
 
-  return flushPromises()
+  return Utils.flushPromises()
 }
 
 function _expectPause () {
@@ -215,7 +216,7 @@ function _expectPause () {
   expect(Attribution.destroy).toHaveBeenCalled()
 }
 
-export function expectShutDown () {
+function expectShutDown () {
   _expectPause()
   expect(PubSub.destroy).toHaveBeenCalled()
   expect(Identity.destroy).toHaveBeenCalled()
@@ -223,7 +224,7 @@ export function expectShutDown () {
   expect(Config.default.baseParams).toEqual({})
 }
 
-export function expectPartialShutDown () {
+function expectPartialShutDown () {
   _expectPause()
   expect(PubSub.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
@@ -236,7 +237,7 @@ function _expectNotPause () {
   expect(Attribution.destroy).not.toHaveBeenCalled()
 }
 
-export function expectNotShutDown () {
+function expectNotShutDown () {
   _expectNotPause()
   expect(PubSub.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
@@ -255,27 +256,27 @@ function _expectNotDestroy () {
   expect(Logger.default.log).not.toHaveBeenCalledWith('Adjust SDK instance has been destroyed')
 }
 
-export function expectClearAndDestroy () {
+function expectClearAndDestroy () {
   expect(Identity.clear).toHaveBeenCalled()
   expect(GlobalParams.clear).toHaveBeenCalled()
   expect(Queue.clear).toHaveBeenCalled()
 
-  const promise = flushPromises().then(_expectDestroy)
+  const promise = Utils.flushPromises().then(_expectDestroy)
 
   return {assertions: 12, promise}
 }
 
-export function expectNotClearAndDestroy () {
+function expectNotClearAndDestroy () {
   expect(Identity.clear).not.toHaveBeenCalled()
   expect(GlobalParams.clear).not.toHaveBeenCalled()
   expect(Queue.clear).not.toHaveBeenCalled()
 
-  const promise = flushPromises().then(_expectNotDestroy)
+  const promise = Utils.flushPromises().then(_expectNotDestroy)
 
   return {assertions: 11, promise}
 }
 
-export function expectGdprForgetMeCallback () {
+function expectGdprForgetMeCallback () {
   const oldState = State.default.disabled
 
   PubSub.publish('sdk:gdpr-forget-me', true)
@@ -288,7 +289,7 @@ export function expectGdprForgetMeCallback () {
   return {assertions: 2}
 }
 
-export function expectNotGdprForgetMeCallback () {
+function expectNotGdprForgetMeCallback () {
   const oldState = State.default.disabled
 
   PubSub.publish('sdk:gdpr-forget-me', true)
@@ -300,7 +301,7 @@ export function expectNotGdprForgetMeCallback () {
   return {assertions: 1}
 }
 
-export function expectAllUp (instance) {
+function expectAllUp () {
   expect(Config.default.baseParams.appToken).toEqual('some-app-token')
   expect(Config.default.baseParams.environment).toEqual('production')
 
@@ -309,26 +310,26 @@ export function expectAllUp (instance) {
   expect(Session.isRunning()).toBeTruthy()
 
   expectAttributionCallback()
-  expectAttributionCheck()
+  _expectAttributionCheck()
 
-  instance.gdprForgetMe()
+  _instance.gdprForgetMe()
   expectGdprForgetMeCallback()
 
-  return flushPromises()
+  return Utils.flushPromises()
 }
 
-export function expectAllDown () {
+function expectAllDown () {
   expect(Config.default.baseParams).toEqual({})
 
   expectNotGdprForgetMeCallback()
-  expectNotAttributionCallback()
+  _expectNotAttributionCallback()
 
   expect(ActivityState.default.current).toBeNull()
   expect(Queue.isRunning()).toBeFalsy()
   expect(Session.isRunning()).toBeFalsy()
 }
 
-export function expectAttributionCheck () {
+function _expectAttributionCheck () {
 
   PubSub.publish('attribution:check', {some: 'result'})
 
@@ -336,10 +337,10 @@ export function expectAttributionCheck () {
 
   expect(Attribution.check).toHaveBeenCalledWith({some: 'result'})
 
-  return flushPromises()
+  return Utils.flushPromises()
 }
 
-export function expectNotAttributionCallback () {
+function _expectNotAttributionCallback () {
 
   PubSub.publish('attribution:change', {tracker_token: 'some-token'})
 
@@ -348,32 +349,61 @@ export function expectNotAttributionCallback () {
   expect(config.attributionCallback).not.toHaveBeenCalled()
 }
 
-export function expectGdprRequest () {
+function expectGdprRequest () {
   const lastCall = request.default.mock.calls.length
 
   jest.runOnlyPendingTimers()
 
   expect(request.default).toHaveBeenCalled()
-  expect(request.default.mock.calls[lastCall][0]).toMatchObject(gdprConfig)
+  expect(request.default.mock.calls[lastCall][0]).toMatchObject(_gdprConfig)
 }
 
-export function expectNotGdprRequest (logMessage) {
+function expectNotGdprRequest (logMessage) {
   const requestCall = ((request.default.mock.calls || [])[0] || [])[0] || {}
 
   jest.runOnlyPendingTimers()
 
-  expect(requestCall).not.toMatchObject(gdprConfig)
+  expect(requestCall).not.toMatchObject(_gdprConfig)
   expect(Logger.default.log).toHaveBeenCalledWith(logMessage)
 }
 
-export function teardown (instance) {
-  instance.destroy()
+function teardown () {
+  _instance.destroy()
   localStorage.clear()
   jest.clearAllMocks()
   State.default.disabled = null
 }
 
-export function teardownAndDisable (instance, reason = 'general') {
-  teardown(instance)
+function teardownAndDisable (reason = 'general') {
+  teardown()
   State.default.disabled = {reason}
+}
+
+export default function Suite (instance) {
+  _instance = instance
+
+  return {
+    config,
+    expectStart,
+    expectPartialStartWithGdprRequest,
+    expectNotStart,
+    expectRunningTrackEvent,
+    expectNotRunningTrackEvent,
+    expectRunningStatic,
+    expectNotRunningStatic,
+    expectAttributionCallback,
+    expectShutDown,
+    expectPartialShutDown,
+    expectNotShutDown,
+    expectClearAndDestroy,
+    expectNotClearAndDestroy,
+    expectGdprForgetMeCallback,
+    expectNotGdprForgetMeCallback,
+    expectAllUp,
+    expectAllDown,
+    expectGdprRequest,
+    expectNotGdprRequest,
+    teardown,
+    teardownAndDisable
+  }
 }

@@ -4,7 +4,6 @@ import * as StorageManager from '../storage/storage-manager'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
 import * as Time from '../time'
-import {errorResponse, flushPromises} from './_common'
 import {MINUTE, SECOND} from '../constants'
 
 jest.mock('../request')
@@ -18,7 +17,7 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
 
   const logMessage = (times === 1 ? 'Trying' : 'Re-trying') + ` request ${config.url} in ${wait}ms`
   const requestAction = success ? 'resolves' : 'rejects'
-  const requestActionResult = success ? {status: 'success'} : errorResponse()
+  const requestActionResult = success ? {status: 'success'} : Utils.errorResponse()
 
   jest.runOnlyPendingTimers()
 
@@ -39,7 +38,7 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
   }
 
   if (flush) {
-    return flushPromises()
+    return Utils.flushPromises()
   }
 }
 
@@ -92,7 +91,7 @@ describe('test request queuing functionality', () => {
 
     Queue.push(config)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledWith('queue', Object.assign({timestamp: currentTime}, Object.assign(config, {params: defaultParams})))
@@ -107,7 +106,7 @@ describe('test request queuing functionality', () => {
         })
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /some-url in 150ms')
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getFirst('queue'))
       .then(pending => {
@@ -131,7 +130,7 @@ describe('test request queuing functionality', () => {
     Queue.push(config2)
     Queue.push(config3)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(3)
@@ -172,7 +171,7 @@ describe('test request queuing functionality', () => {
 
     dateNowSpy.mockReturnValue(currentTime)
 
-    request.default.mockRejectedValue(errorResponse())
+    request.default.mockRejectedValue(Utils.errorResponse())
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
@@ -182,7 +181,7 @@ describe('test request queuing functionality', () => {
     Queue.push(config1)
     Queue.push(config2)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
@@ -205,15 +204,15 @@ describe('test request queuing functionality', () => {
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
         checkExecution({config: config1, times: 4, wait: 300, flush: false, reset: true}) // + 5 assertions
 
         request.default.mockClear()
-        request.default.mockRejectedValue(errorResponse())
+        request.default.mockRejectedValue(Utils.errorResponse())
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
@@ -226,7 +225,7 @@ describe('test request queuing functionality', () => {
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => checkExecution({config: config2, times: 3, wait: 200, reset: true})) // + 5 assertions
       .then(() => {
@@ -245,7 +244,7 @@ describe('test request queuing functionality', () => {
 
     dateNowSpy.mockReturnValue(currentTime)
 
-    request.default.mockRejectedValue(errorResponse())
+    request.default.mockRejectedValue(Utils.errorResponse())
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
@@ -257,7 +256,7 @@ describe('test request queuing functionality', () => {
     Queue.push(config2)
     Queue.push(config3)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(3)
@@ -280,7 +279,7 @@ describe('test request queuing functionality', () => {
         request.default.mockClear()
         request.default.mockResolvedValue({status: 'success'})
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => checkExecution({config: config1, times: 3, wait: 200, reset: true})) // + 5 assertions
       .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
@@ -312,7 +311,7 @@ describe('test request queuing functionality', () => {
     Queue.push(config1)
     Queue.push(config2)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
 
         jest.runOnlyPendingTimers()
@@ -333,7 +332,7 @@ describe('test request queuing functionality', () => {
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => checkExecution({config: config1, times: 1, reset: true})) // + 5 assertions
       .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
@@ -362,7 +361,7 @@ describe('test request queuing functionality', () => {
     Queue.push(config1)
     Queue.push(config2)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
@@ -371,7 +370,7 @@ describe('test request queuing functionality', () => {
 
         request.default.mockClear()
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
 
@@ -391,7 +390,7 @@ describe('test request queuing functionality', () => {
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
       .then(() => StorageManager.default.getFirst('queue'))
@@ -420,7 +419,7 @@ describe('test request queuing functionality', () => {
     Queue.push(config1)
     Queue.push(config2)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
 
         jest.runOnlyPendingTimers()
@@ -441,7 +440,7 @@ describe('test request queuing functionality', () => {
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => checkExecution({config: config1, times: 1, reset: true})) // + 5 assertions
       .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
@@ -456,7 +455,7 @@ describe('test request queuing functionality', () => {
 
     Queue.setOffline(false)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.error).toHaveBeenCalledWith('The app is already in online mode')
         expect(StorageManager.default.getFirst).not.toHaveBeenCalled()
@@ -464,7 +463,7 @@ describe('test request queuing functionality', () => {
 
         Queue.setOffline(true)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
         expect(Logger.default.error).not.toHaveBeenCalled()
@@ -472,7 +471,7 @@ describe('test request queuing functionality', () => {
 
         Queue.setOffline(true)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
         expect(Logger.default.error).toHaveBeenCalledWith('The app is already in offline mode')
@@ -481,7 +480,7 @@ describe('test request queuing functionality', () => {
 
         Queue.setOffline(false)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
         expect(Logger.default.error).not.toHaveBeenCalled()
@@ -490,7 +489,7 @@ describe('test request queuing functionality', () => {
 
         Queue.setOffline(false)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
         expect(Logger.default.error).toHaveBeenCalledWith('The app is already in online mode')
@@ -520,7 +519,7 @@ describe('test request queuing functionality', () => {
 
     Queue.push(config1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getAll('queue'))
       .then(result => {
         expect(result).toEqual(queue = [
@@ -531,7 +530,7 @@ describe('test request queuing functionality', () => {
 
         Queue.push(config2)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(result => {
@@ -551,7 +550,7 @@ describe('test request queuing functionality', () => {
 
         Queue.push(config3)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(result => {
@@ -571,7 +570,7 @@ describe('test request queuing functionality', () => {
 
         Queue.push(config4)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(result => {
@@ -590,7 +589,7 @@ describe('test request queuing functionality', () => {
 
         Queue.push(config5)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(result => {
@@ -658,7 +657,7 @@ describe('test request queuing functionality', () => {
 
         Queue.run(true)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(remained => {
@@ -681,7 +680,7 @@ describe('test request queuing functionality', () => {
     Queue.push(config2)
     Queue.push(config3)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getAll('queue'))
       .then(pending => {
         expect(pending.map(params => params.url)).toEqual(['/url-1', '/url-2', '/url-3'])

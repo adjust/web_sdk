@@ -6,7 +6,6 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
 import * as StorageManager from '../storage/storage-manager'
-import {errorResponse, flushPromises} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -80,7 +79,7 @@ describe('test attribution functionality', () => {
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
@@ -113,7 +112,7 @@ describe('test attribution functionality', () => {
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(1)
@@ -142,7 +141,7 @@ describe('test attribution functionality', () => {
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
@@ -172,7 +171,7 @@ describe('test attribution functionality', () => {
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
@@ -201,7 +200,7 @@ describe('test attribution functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(Identity.persist).toHaveBeenCalledTimes(2)
@@ -230,7 +229,7 @@ describe('test attribution functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(PubSub.publish).not.toHaveBeenCalled()
@@ -242,7 +241,7 @@ describe('test attribution functionality', () => {
 
         expect(request.default).toHaveBeenCalledTimes(2)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
@@ -259,7 +258,7 @@ describe('test attribution functionality', () => {
 
         expect(request.default).toHaveBeenCalledTimes(1)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
@@ -279,7 +278,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}
 
     ActivityState.default.current = {}
-    request.default.mockRejectedValue(errorResponse())
+    request.default.mockRejectedValue(Utils.errorResponse())
 
     expect.assertions(21)
 
@@ -290,7 +289,7 @@ describe('test attribution functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
 
@@ -303,7 +302,7 @@ describe('test attribution functionality', () => {
 
         expect(request.default).toHaveBeenCalledTimes(2)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
@@ -317,7 +316,7 @@ describe('test attribution functionality', () => {
 
         expect(request.default).toHaveBeenCalledTimes(3)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
@@ -334,7 +333,7 @@ describe('test attribution functionality', () => {
 
         expect(request.default).toHaveBeenCalledTimes(1)
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
@@ -362,7 +361,7 @@ describe('test attribution functionality', () => {
     expect(request.default).not.toHaveBeenCalled()
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(activityState.attribution).toBeUndefined()
@@ -392,7 +391,7 @@ describe('test attribution functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(2)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
         expect(request.default).toHaveBeenCalledTimes(1)

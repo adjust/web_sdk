@@ -7,12 +7,7 @@ import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
-import {
-  config,
-  expectNotStart,
-  expectNotRunningTrackEvent,
-  expectNotRunningStatic
-} from './_main.common'
+import Suite from './main.suite'
 
 jest.mock('../../logger')
 
@@ -48,12 +43,14 @@ describe('main entry point - test instance initiation when storage is not availa
 
     const AdjustInstance = require('../../main').default
 
-    AdjustInstance.init(config)
+    const suite = Suite(AdjustInstance)
+
+    AdjustInstance.init(suite.config)
 
     expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK can not start, there is no storage available')
-    expectNotStart()
-    expectNotRunningStatic(AdjustInstance, true)
-    expectNotRunningTrackEvent(AdjustInstance, true, true)
+    suite.expectNotStart()
+    suite.expectNotRunningStatic(true)
+    suite.expectNotRunningTrackEvent(true, true)
 
   })
 

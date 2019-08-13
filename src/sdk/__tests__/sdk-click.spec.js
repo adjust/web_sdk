@@ -3,7 +3,6 @@ import * as request from '../request'
 import * as Time from '../time'
 import * as Queue from '../queue'
 import * as ActivityState from '../activity-state'
-import {flushPromises, setDocumentProp} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -23,20 +22,20 @@ function expectRequest (requestConfig) {
 
   expect(Queue.push).toHaveBeenCalledWith(requestConfig)
 
-  return flushPromises()
+  return Utils.flushPromises()
     .then(() => {
 
       jest.runOnlyPendingTimers()
 
       expect(request.default).toHaveBeenCalledWith(fullConfig)
 
-      return flushPromises()
+      return Utils.flushPromises()
     })
 }
 
 describe('test sdk-click functionality', () => {
 
-  setDocumentProp('referrer', 'http://some-site.com')
+  Utils.setDocumentProp('referrer', 'http://some-site.com')
 
   beforeAll(() => {
     jest.spyOn(request, 'default')
@@ -74,7 +73,7 @@ describe('test sdk-click functionality', () => {
 
   it('does nothing if there are adjust params in the url but no referrer', () => {
 
-    setDocumentProp('referrer', '')
+    Utils.setDocumentProp('referrer', '')
 
     window.history.pushState({}, '', '?adjust_param=value1&param2=value2')
 
@@ -86,13 +85,13 @@ describe('test sdk-click functionality', () => {
 
     expect(request.default).not.toHaveBeenCalled()
 
-    setDocumentProp('referrer', 'http://some-site.com')
+    Utils.setDocumentProp('referrer', 'http://some-site.com')
 
   })
 
   it('does nothing if there are adjust params in the url but same referrer as current url', () => {
 
-    setDocumentProp('referrer', 'http://localhost/test')
+    Utils.setDocumentProp('referrer', 'http://localhost/test')
 
     window.history.pushState({}, '', '?adjust_param=value1&param2=value2')
 
@@ -104,7 +103,7 @@ describe('test sdk-click functionality', () => {
 
     expect(request.default).not.toHaveBeenCalled()
 
-    setDocumentProp('referrer', 'http://some-site.com')
+    Utils.setDocumentProp('referrer', 'http://some-site.com')
 
   })
 

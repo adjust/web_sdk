@@ -3,7 +3,7 @@ import * as StorageManager from '../../storage/storage-manager'
 import * as Identity from '../../identity'
 import * as ActivityState from '../../activity-state'
 import * as Logger from '../../logger'
-import runSuite from './_storage.common'
+import Suite from './storage.suite'
 
 jest.mock('../../logger')
 
@@ -71,7 +71,7 @@ describe('LocalStorage usage', () => {
       expect(StorageManager.default.type).toBe('localStorage')
     })
 
-    runSuite(StorageManager.default)()
+    Suite(StorageManager.default)()
   })
 
 })

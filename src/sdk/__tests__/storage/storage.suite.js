@@ -1,4 +1,4 @@
-export default function runSuite (Storage) {
+export default function Suite (Storage) {
 
   return () => {
     afterEach(() => {

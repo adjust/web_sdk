@@ -6,7 +6,6 @@ import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as request from '../request'
 import * as ActivityState from '../activity-state'
-import {flushPromises} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -30,7 +29,7 @@ function expectRequest (requestConfig) {
     }, requestConfig.params)
   })
 
-  return flushPromises()
+  return Utils.flushPromises()
     .then(() => {
       expect(Queue.push).toHaveBeenCalledWith(requestConfig)
 
@@ -38,7 +37,7 @@ function expectRequest (requestConfig) {
 
       expect(request.default).toHaveBeenCalledWith(fullConfig)
 
-      return flushPromises()
+      return Utils.flushPromises()
     })
 }
 
@@ -73,7 +72,7 @@ describe('event tracking functionality', () => {
 
     expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Queue.push).not.toHaveBeenCalled()
 

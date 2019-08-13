@@ -10,21 +10,15 @@ import * as Logger from '../../logger'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
-import {flushPromises, setDocumentProp} from '../_common'
-import {
-  config,
-  expectStart,
-  expectRunningTrackEvent,
-  expectRunningStatic,
-  expectAttributionCallback,
-  teardown
-} from './_main.common'
+import Suite from './main.suite'
 
 jest.mock('../../request')
 jest.mock('../../logger')
 jest.useFakeTimers()
 
 describe('main entry point - test instance initiation when storage is available', () => {
+
+  const suite = Suite(AdjustInstance)
 
   beforeAll(() => {
     jest.spyOn(event, 'default')
@@ -50,7 +44,7 @@ describe('main entry point - test instance initiation when storage is available'
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    teardown(AdjustInstance)
+    suite.teardown()
   })
 
   describe('uninitiated instance', () => {
@@ -76,12 +70,12 @@ describe('main entry point - test instance initiation when storage is available'
 
   describe('initiated instance', () => {
     beforeAll(() => {
-      AdjustInstance.init(config)
+      AdjustInstance.init(suite.config)
     })
 
     it('sets basic configuration', () => {
 
-      const a = expectStart()
+      const a = suite.expectStart()
 
       expect.assertions(a.assertions)
 
@@ -89,7 +83,7 @@ describe('main entry point - test instance initiation when storage is available'
     })
 
     it('calls client-defined attribution callback when attribution is changed', () => {
-      return expectAttributionCallback()
+      return suite.expectAttributionCallback()
     })
 
     it('tests if single instance is returned', () => {
@@ -107,25 +101,25 @@ describe('main entry point - test instance initiation when storage is available'
     })
 
     it('runs all static methods', () => {
-      expectRunningStatic(AdjustInstance)
+      suite.expectRunningStatic()
     })
 
     it('runs track event', () => {
-      expectRunningTrackEvent(AdjustInstance)
+      suite.expectRunningTrackEvent()
     })
   })
 
   it('runs session first and then sdk-click request', () => {
     jest.clearAllMocks()
-    teardown(AdjustInstance)
-    setDocumentProp('referrer', 'http://some-site.com')
+    suite.teardown()
+    Utils.setDocumentProp('referrer', 'http://some-site.com')
     window.history.pushState({}, '', '?adjust_param=value&something=else')
 
-    AdjustInstance.init(config)
+    AdjustInstance.init(suite.config)
 
     expect.assertions(2)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         const requests = Queue.push.mock.calls.map(call => call[0].url)
 

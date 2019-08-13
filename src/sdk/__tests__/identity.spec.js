@@ -5,7 +5,6 @@ import * as State from '../state'
 import * as Logger from '../logger'
 import * as QuickStorage from '../storage/quick-storage'
 import * as PubSub from '../pub-sub'
-import {flushPromises} from './_common'
 import {extend} from '../utilities'
 
 jest.mock('../logger')
@@ -299,7 +298,7 @@ describe('test identity methods', () => {
 
       Identity.clear()
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           expect(ActivityState.default.current).toEqual({uuid: 'unknown'})
 

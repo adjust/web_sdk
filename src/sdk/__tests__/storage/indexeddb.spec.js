@@ -5,7 +5,7 @@ import * as ActivityState from '../../activity-state'
 import * as QuickStorage from '../../storage/quick-storage'
 import * as Logger from '../../logger'
 import * as SchemeMap from '../../storage/scheme-map'
-import runSuite from './_storage.common'
+import Suite from './storage.suite'
 
 jest.mock('../../logger')
 
@@ -50,7 +50,7 @@ describe('IndexedDB usage', () => {
         expect(StorageManager.type).toBe('indexedDB')
       })
 
-      runSuite(StorageManager)()
+      Suite(StorageManager)()
     })
   })
 

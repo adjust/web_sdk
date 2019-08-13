@@ -2,7 +2,6 @@ import * as Package from '../package'
 import * as request from '../request'
 import * as Time from '../time'
 import * as Logger from '../logger'
-import {errorResponse, flushPromises} from './_common'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -65,7 +64,7 @@ describe('test package functionality', () => {
       }
     })
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
       })
@@ -101,7 +100,7 @@ describe('test package functionality', () => {
       }
     })
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
       })
@@ -135,7 +134,7 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(request.default.mock.calls[0][0]).toMatchObject(matchCreatedAt)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 3000ms')
 
@@ -146,7 +145,7 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledTimes(2)
         expect(request.default.mock.calls[1][0]).toMatchObject(matchCreatedAt)
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         request.default.mockClear()
         request.default.mockResolvedValue({})
@@ -162,7 +161,7 @@ describe('test package functionality', () => {
 
         setTimeout.mockClear()
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         jest.runOnlyPendingTimers()
 
@@ -217,7 +216,7 @@ describe('test package functionality', () => {
       }
     })
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /other-request in 1300ms')
 
@@ -236,7 +235,7 @@ describe('test package functionality', () => {
           }
         })
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         request.default.mockClear()
         request.default.mockResolvedValue({})
@@ -261,7 +260,7 @@ describe('test package functionality', () => {
         setTimeout.mockClear()
         request.default.mockClear()
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         jest.runOnlyPendingTimers()
 
@@ -288,7 +287,7 @@ describe('test package functionality', () => {
           }
         })
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         expect(continueCb).not.toHaveBeenCalled()
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
@@ -305,7 +304,7 @@ describe('test package functionality', () => {
       }
     }
 
-    request.default.mockRejectedValue(errorResponse())
+    request.default.mockRejectedValue(Utils.errorResponse())
 
     expect.assertions(32)
 
@@ -324,7 +323,7 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(request.default.mock.calls[0][0]).toMatchObject(matchOuterCreatedAt)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 100ms')
 
@@ -335,7 +334,7 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 100)
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 200ms')
 
@@ -346,7 +345,7 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(3)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 200)
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 300ms')
 
@@ -357,7 +356,7 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(4)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 300ms')
 
@@ -368,7 +367,7 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(5)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
 
         request.default.mockClear()
@@ -384,7 +383,7 @@ describe('test package functionality', () => {
 
         setTimeout.mockClear()
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
 
         jest.runOnlyPendingTimers()
@@ -402,7 +401,7 @@ describe('test package functionality', () => {
       .mockReturnValueOnce(now)
       .mockReturnValueOnce(newNow)
 
-    request.default.mockRejectedValue(errorResponse())
+    request.default.mockRejectedValue(Utils.errorResponse())
 
     expect.assertions(27)
 
@@ -419,7 +418,7 @@ describe('test package functionality', () => {
       url: '/new-request'
     }, matchCreatedAt))
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /new-request in 100ms')
 
@@ -432,7 +431,7 @@ describe('test package functionality', () => {
           url: '/new-request'
         }, matchCreatedAt))
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /new-request in 200ms')
 
@@ -445,7 +444,7 @@ describe('test package functionality', () => {
           url: '/new-request'
         }, matchCreatedAt))
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
 
         request.default.mockClear()
@@ -463,7 +462,7 @@ describe('test package functionality', () => {
 
         setTimeout.mockClear()
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
 
         jest.runOnlyPendingTimers()
@@ -488,7 +487,7 @@ describe('test package functionality', () => {
           }
         })
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
       })
@@ -509,7 +508,7 @@ describe('test package functionality', () => {
 
     expect(request.default).not.toHaveBeenCalled()
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Previous /global-request request attempt canceled')
       })
@@ -534,7 +533,7 @@ describe('test package functionality', () => {
 
     expect(request.default).not.toHaveBeenCalled()
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Previous /other request attempt canceled')
 
@@ -547,7 +546,7 @@ describe('test package functionality', () => {
 
         expect(request.default).toHaveBeenCalled()
 
-        return flushPromises()
+        return Utils.flushPromises()
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
@@ -563,7 +562,7 @@ describe('test package functionality', () => {
       .mockReturnValueOnce(now)
       .mockReturnValueOnce(newNow)
 
-    request.default.mockRejectedValue(errorResponse())
+    request.default.mockRejectedValue(Utils.errorResponse())
 
     expect.assertions(18)
 
@@ -580,7 +579,7 @@ describe('test package functionality', () => {
       url: '/some-new-request'
     }, matchCreatedAt))
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /some-new-request in 100ms')
 
@@ -593,7 +592,7 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 100)
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
 
         request.default.mockClear()
@@ -627,7 +626,7 @@ describe('test package functionality', () => {
           }
         })
 
-        return flushPromises()
+        return Utils.flushPromises()
       }).then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
       })
@@ -654,7 +653,7 @@ describe('test package functionality', () => {
 
     expect(request.default).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(request.default).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
@@ -688,7 +687,7 @@ describe('test package functionality', () => {
 
     expect(request.default).toHaveBeenCalledTimes(1)
 
-    return flushPromises()
+    return Utils.flushPromises()
       .then(() => {
         expect(request.default).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
@@ -754,7 +753,7 @@ describe('test package functionality', () => {
           }
         })
 
-        return flushPromises()
+        return Utils.flushPromises()
           .then(() => {
             expect(Logger.default.log).toHaveBeenCalledWith('Request /new-url has been finished')
 
@@ -765,7 +764,7 @@ describe('test package functionality', () => {
 
             jest.runOnlyPendingTimers()
 
-            return flushPromises()
+            return Utils.flushPromises()
           }).then(() => {
             expect(Logger.default.log).toHaveBeenCalledWith('Request /another-global-request has been finished')
           })
@@ -805,7 +804,7 @@ describe('test package functionality', () => {
           }
         })
 
-        return flushPromises()
+        return Utils.flushPromises()
           .then(() => {
             expect(continueCb).toHaveBeenCalled()
           })
@@ -840,7 +839,7 @@ describe('test package functionality', () => {
           }
         })
 
-        return flushPromises()
+        return Utils.flushPromises()
           .then(() => {
             expect(newContinueCb).toHaveBeenCalled()
 
@@ -862,7 +861,7 @@ describe('test package functionality', () => {
               }
             })
 
-            return flushPromises()
+            return Utils.flushPromises()
           }).then(() => {
             expect(newContinueCb).not.toHaveBeenCalled()
           })

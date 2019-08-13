@@ -2,7 +2,6 @@ import * as defaultParams from '../default-params'
 import * as ActivityState from '../activity-state'
 import * as Time from '../time'
 import * as QuickStorage from '../storage/quick-storage'
-import {setGlobalProp} from './_common'
 
 jest.mock('../logger')
 
@@ -22,7 +21,7 @@ describe('request default parameters formation', () => {
     let navigatorDNT
 
     beforeEach(() => {
-      setGlobalProp(global.window.navigator, 'doNotTrack')
+      Utils.setGlobalProp(global.window.navigator, 'doNotTrack')
       navigatorDNT = jest.spyOn(global.window.navigator, 'doNotTrack', 'get')
     })
 
@@ -85,7 +84,7 @@ describe('request default parameters formation', () => {
     let navigatorLanguage
 
     beforeAll(() => {
-      setGlobalProp(global.window.navigator, 'language')
+      Utils.setGlobalProp(global.window.navigator, 'language')
       navigatorLanguage = jest.spyOn(global.window.navigator, 'language', 'get')
     })
 
@@ -137,8 +136,8 @@ describe('request default parameters formation', () => {
     let userAgent
 
     beforeAll(() => {
-      setGlobalProp(global.window.navigator, 'platform')
-      setGlobalProp(global.window.navigator, 'userAgent')
+      Utils.setGlobalProp(global.window.navigator, 'platform')
+      Utils.setGlobalProp(global.window.navigator, 'userAgent')
       navigatorPlatform = jest.spyOn(global.window.navigator, 'platform', 'get')
       userAgent = jest.spyOn(global.window.navigator, 'userAgent', 'get')
     })

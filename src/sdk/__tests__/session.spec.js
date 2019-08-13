@@ -11,20 +11,19 @@ import * as request from '../request'
 import * as Time from '../time'
 import * as PubSub from '../pub-sub'
 import {MINUTE, SECOND} from '../constants'
-import {flushPromises, setDocumentProp} from './_common'
 
 jest.mock('../logger')
 jest.mock('../request')
 jest.useFakeTimers()
 
 function goToForeground () {
-  setDocumentProp('hidden', false)
+  Utils.setDocumentProp('hidden', false)
   global.document.dispatchEvent(new Event('visibilitychange'))
   jest.runOnlyPendingTimers()
 }
 
 function goToBackground () {
-  setDocumentProp('hidden', true)
+  Utils.setDocumentProp('hidden', true)
   global.document.dispatchEvent(new Event('visibilitychange'))
   jest.runOnlyPendingTimers()
 }
@@ -124,7 +123,7 @@ describe('test session functionality', () => {
       expect(activityState.sessionLength).toEqual(0)
       expect(activityState.lastInterval).toEqual(-1)
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           Queue.push.mockClear() // clear mock happened when watch started
           Identity.persist.mockClear()
@@ -132,7 +131,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -153,7 +152,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -173,7 +172,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -197,7 +196,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -214,7 +213,7 @@ describe('test session functionality', () => {
           expect(record.lastInterval).toEqual(60)
           expect(activityState.lastInterval).toEqual(60)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
     })
 
@@ -231,7 +230,7 @@ describe('test session functionality', () => {
 
           expect(Utilities.on).toHaveBeenCalled()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(Queue.push).toHaveBeenCalledWith({
@@ -254,7 +253,7 @@ describe('test session functionality', () => {
             }
           })
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(ActivityState.default.current.lastActive).toBeDefined()
@@ -295,7 +294,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 60 * SECOND)
           jest.advanceTimersByTime(60 * SECOND)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
 
@@ -324,7 +323,7 @@ describe('test session functionality', () => {
             }
           })
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(ActivityState.default.current.lastActive).toBeDefined()
@@ -347,7 +346,7 @@ describe('test session functionality', () => {
           expect(Utilities.on).toHaveBeenCalled()
           expect(ActivityState.default.current.lastActive).toBe(currentTime)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
 
@@ -356,7 +355,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += MINUTE)
           jest.advanceTimersByTime(MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           const activityState = ActivityState.default.current
@@ -382,7 +381,7 @@ describe('test session functionality', () => {
 
           Session.watch()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
@@ -404,7 +403,7 @@ describe('test session functionality', () => {
 
           Session.watch()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
@@ -458,7 +457,7 @@ describe('test session functionality', () => {
       expect(activityState.sessionLength).toEqual(0)
       expect(activityState.lastInterval).toEqual(-1)
 
-      return flushPromises()
+      return Utils.flushPromises()
         .then(() => {
           Queue.push.mockClear() // clear mock happened when watch started
           Identity.persist.mockClear()
@@ -466,7 +465,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 2 * MINUTE)
           jest.advanceTimersByTime(2 * MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -488,7 +487,7 @@ describe('test session functionality', () => {
 
           expect(clearInterval).toHaveBeenCalledTimes(2)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -506,7 +505,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 5 * MINUTE)
           jest.advanceTimersByTime(5 * MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -525,7 +524,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 10 * MINUTE)
           jest.advanceTimersByTime(10 * MINUTE)
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -546,7 +545,7 @@ describe('test session functionality', () => {
 
           goToForeground() // after 5 + 10 + 14 = 29m
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
 
@@ -569,7 +568,7 @@ describe('test session functionality', () => {
           expect(activityState.timeSpent).toEqual(360) // 2m + 4m
           expect(activityState.sessionLength).toEqual(2100) // 2m + (5m + 10m + 14m) + 4m
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -587,7 +586,7 @@ describe('test session functionality', () => {
           expect(activityState.timeSpent).toEqual(720) // 2m + 4m + 6m
           expect(activityState.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -604,7 +603,7 @@ describe('test session functionality', () => {
 
           ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: {adid: 'bla'}})
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           goToForeground()
@@ -616,7 +615,7 @@ describe('test session functionality', () => {
           expect(activityState.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
           expect(activityState.lastInterval).toEqual(1860) // 31m
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(record => {
@@ -664,7 +663,7 @@ describe('test session functionality', () => {
           expect(activityState.timeSpent).toEqual(600) // 10m
           expect(activityState.sessionLength).toEqual(600) // 10m
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
     })
 
@@ -686,7 +685,7 @@ describe('test session functionality', () => {
 
           goToBackground()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
 
@@ -696,7 +695,7 @@ describe('test session functionality', () => {
 
           goToForeground()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(Queue.push).toHaveBeenCalledTimes(1)
@@ -720,7 +719,7 @@ describe('test session functionality', () => {
             }
           })
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
     })
 
@@ -742,7 +741,7 @@ describe('test session functionality', () => {
 
           goToBackground()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
 
@@ -752,7 +751,7 @@ describe('test session functionality', () => {
 
           goToForeground()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
@@ -778,7 +777,7 @@ describe('test session functionality', () => {
           goToBackground()
           Session.destroy()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
 
@@ -791,7 +790,7 @@ describe('test session functionality', () => {
 
           expect(Queue.push).not.toHaveBeenCalled()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(Queue.push).toHaveBeenCalledTimes(1)
@@ -815,7 +814,7 @@ describe('test session functionality', () => {
             }
           })
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
     })
 
@@ -838,7 +837,7 @@ describe('test session functionality', () => {
           goToBackground()
           Session.destroy()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
 
@@ -849,7 +848,7 @@ describe('test session functionality', () => {
 
           expect(Queue.push).not.toHaveBeenCalled()
 
-          return flushPromises()
+          return Utils.flushPromises()
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
