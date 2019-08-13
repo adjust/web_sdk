@@ -123,6 +123,35 @@ describe('test Logger functionality', () => {
 
   })
 
+  describe('error log level by default in unknown environment', () => {
+
+    beforeAll(() => {
+      global.__ADJUST__ENV = 'unknown-env'
+      Logger.default.setLogLevel()
+    })
+
+    afterAll(() => {
+      global.__ADJUST__ENV = 'test'
+    })
+
+    it('does not print verbose messages', () => {
+      Logger.default.log('Some message with looooong explanation')
+      expect(console.log).not.toHaveBeenCalled()
+
+    })
+
+    it('does not print info messages', () => {
+      Logger.default.info('Some message')
+      expect(console.info).not.toHaveBeenCalled()
+    })
+
+    it('prints error messages', () => {
+      Logger.default.error('Some error message')
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
+    })
+
+  })
+
   describe('explicit verbose log level', () => {
 
     beforeAll(() => {
@@ -215,6 +244,50 @@ describe('test Logger functionality', () => {
     it('prints error messages', () => {
       Logger.default.error('Some error message')
       expect(console.error).not.toHaveBeenCalled()
+    })
+
+  })
+
+  describe('output logs into specified container container', () => {
+    let logContainer
+    let history = []
+
+    beforeAll(() => {
+      logContainer = document.createElement('div')
+      logContainer.setAttribute('id', 'log')
+      document.getElementsByTagName('body')[0].appendChild(logContainer)
+
+      Logger.default.setLogLevel('verbose', '#log')
+
+      history.push('[adjust-sdk] INFO:  Log level set to verbose')
+    })
+
+    it('prints verbose messages', () => {
+      Logger.default.log('Some message with looooong explanation')
+
+      history.push('[adjust-sdk] LOG:   Some message with looooong explanation')
+
+      expect(console.log).toHaveBeenCalledWith('[adjust-sdk]', 'LOG:', 'Some message with looooong explanation')
+      expect(logContainer.textContent).toEqual(history.join('\n') + '\n')
+
+    })
+
+    it('prints info messages', () => {
+      Logger.default.info('Some message')
+
+      history.push('[adjust-sdk] INFO:  Some message')
+
+      expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', 'INFO:', 'Some message')
+      expect(logContainer.textContent).toEqual(history.join('\n') + '\n')
+    })
+
+    it('prints error messages', () => {
+      Logger.default.error('Some error message')
+
+      history.push('[adjust-sdk] ERROR: Some error message')
+
+      expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
+      expect(logContainer.textContent).toEqual(history.join('\n') + '\n')
     })
 
   })

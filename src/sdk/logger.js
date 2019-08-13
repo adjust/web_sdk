@@ -91,40 +91,22 @@ function setLogLevel (logLevel, logOutput) {
 }
 
 /**
- * Get log method name prefix including prefixes to align messages
- *
- * @param {string} methodName
- * @returns {string}
- * @private
- */
-function _getMethodNamePrefix (methodName) {
-
-  let spaces = ''
-
-  if (methodName === 'log') {
-    spaces = '  '
-  } else if (methodName === 'info') {
-    spaces = ' '
-  }
-
-  return `${methodName.toUpperCase()}:${spaces}`
-}
-
-/**
  * Output the message to the console
  *
  * @param {string} methodName
- * @param {string} message
+ * @param {string} args
  * @private
  */
-function _log (methodName, ...message) {
-
-  console[methodName](`[${Config.namespace}]`, `${methodName.toUpperCase()}:`, ...message) // eslint-disable-line
-
+function _log (methodName, ...args) {
+  const message = [`[${Config.namespace}]`, `${methodName.toUpperCase()}:`, ...args]
   const outputContainer = _output ? document.querySelector(_output) : null
 
+  console[methodName].apply(null, message) // eslint-disable-line
+
   if (outputContainer) {
-    outputContainer.textContent += [`[${Config.namespace}]`, _getMethodNamePrefix(methodName), ...message].join(' ') + '\n'
+    const [namespace, prefix, ...rest] = message
+    const spaces = methodName === 'log' ? '  ' : (methodName === 'info' ? ' ' : '')
+    outputContainer.textContent += `${namespace} ${prefix}${spaces} ${rest.join(' ')}\n`
     outputContainer.scrollTop = outputContainer.scrollHeight
   }
 
