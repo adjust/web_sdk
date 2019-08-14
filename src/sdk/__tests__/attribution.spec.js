@@ -67,7 +67,7 @@ describe('test attribution functionality', () => {
 
     expect.assertions(8)
 
-    Attribution.check({some: 'thing'})
+    Attribution.check()
 
     jest.runOnlyPendingTimers()
 
@@ -86,6 +86,66 @@ describe('test attribution functionality', () => {
         expect(activityState.attribution).toEqual(formatted)
         expect(ActivityState.default.current.attribution).toEqual(formatted)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
+      })
+
+  })
+
+  it('ignores empty attribution result even if there is no stored attribution at the moment', () => {
+
+    ActivityState.default.current = {}
+    request.default.mockResolvedValue(null)
+
+    expect.assertions(8)
+
+    Attribution.check({ask_in: 200})
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default.mock.calls[0][0]).toMatchObject({
+      url: '/attribution',
+      params: {initiatedBy: 'backend'}
+    })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
+
+    return Utils.flushPromises()
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
+        expect(PubSub.publish).not.toHaveBeenCalled()
+      })
+
+  })
+
+  it('ignores attribution result with unknown parameters', () => {
+
+    ActivityState.default.current = {}
+    request.default.mockResolvedValue({some: 'thing', totally: 'unknown'})
+
+    expect.assertions(8)
+
+    Attribution.check({ask_in: 2000})
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default.mock.calls[0][0]).toMatchObject({
+      url: '/attribution',
+      params: {initiatedBy: 'backend'}
+    })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
+
+    return Utils.flushPromises()
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
+        expect(PubSub.publish).not.toHaveBeenCalled()
       })
 
   })

@@ -1,5 +1,5 @@
 import {publish} from './pub-sub'
-import {extend} from './utilities'
+import {extend, intersection, isEmpty} from './utilities'
 import {persist} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
@@ -18,6 +18,22 @@ const _request = Package({
 })
 
 /**
+ * List of valid attribution parameters
+ *
+ * @type {string[]}
+ * @private
+ */
+const _whitelist = [
+  'tracker_token',
+  'tracker_name',
+  'network',
+  'campaign',
+  'adgroup',
+  'creative',
+  'click_label'
+]
+
+/**
  * Check if new attribution is the same as old one
  *
  * @param {string} adid
@@ -25,24 +41,23 @@ const _request = Package({
  * @returns {boolean}
  * @private
  */
-function _isSame ({adid = '', attribution = {}}) {
-
-  const check = [
-    'tracker_token',
-    'tracker_name',
-    'network',
-    'campaign',
-    'adgroup',
-    'creative',
-    'click_label'
-  ]
-
+function _isSame ({adid, attribution}) {
   const oldAttribution = ActivityState.current.attribution || {}
-  const anyDifferent = check.some(key => {
-    return oldAttribution[key] !== attribution[key]
-  })
+  const anyDifferent = _whitelist.some(k => oldAttribution[k] !== attribution[k])
 
   return !anyDifferent && adid === oldAttribution.adid
+}
+
+/**
+ * Check if attribution result is valid
+ *
+ * @param {string} adid
+ * @param {Object} attribution
+ * @returns {boolean}
+ * @private
+ */
+function _isValid ({adid = '', attribution = {}}) {
+  return adid && !!intersection(_whitelist, Object.keys(attribution)).length
 }
 
 /**
@@ -51,9 +66,9 @@ function _isSame ({adid = '', attribution = {}}) {
  * @param {Object} result
  * @private
  */
-function _setAttribution (result = {}) {
+function _setAttribution (result) {
 
-  if (_isSame(result)) {
+  if (isEmpty(result) || !_isValid(result) || _isSame(result)) {
     return Promise.resolve(result)
   }
 
@@ -76,7 +91,8 @@ function _setAttribution (result = {}) {
  * @returns {Promise}
  * @private
  */
-function _continue (result = {}) {
+function _continue (result) {
+  result = result || {}
 
   if (!result.ask_in) {
     _request.finish()
