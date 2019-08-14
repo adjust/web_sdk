@@ -19,16 +19,13 @@ describe('request default parameters formation', () => {
   describe('test tracking enabled', () => {
 
     let navigatorDNT
-    let windowDNT
     let msDNT
 
     beforeEach(() => {
       Utils.setGlobalProp(global.navigator, 'doNotTrack')
-      Utils.setGlobalProp(global, 'doNotTrack')
       Utils.setGlobalProp(global.navigator, 'msDoNotTrack')
 
       navigatorDNT = jest.spyOn(global.navigator, 'doNotTrack', 'get')
-      windowDNT = jest.spyOn(global, 'doNotTrack', 'get')
       msDNT = jest.spyOn(global.navigator, 'msDoNotTrack', 'get')
     })
 
@@ -77,44 +74,6 @@ describe('request default parameters formation', () => {
 
     })
 
-    it('reads track_enabled from window.doNotTrack', () => {
-
-      expect.assertions(5)
-
-      return defaultParams.default()
-        .then(params => {
-          expect(params.trackingEnabled).toBeUndefined()
-
-          windowDNT.mockReturnValue(0)
-
-          return defaultParams.default()
-        })
-        .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
-
-          windowDNT.mockReturnValue(1)
-
-          return defaultParams.default()
-        })
-        .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
-
-          windowDNT.mockReturnValue('no')
-
-          return defaultParams.default()
-        })
-        .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
-
-          windowDNT.mockReturnValue('yes')
-
-          return defaultParams.default()
-        })
-        .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
-        })
-    })
-
     it('reads track_enabled from window.navigator.msDoNotTrack', () => {
 
       expect.assertions(5)
@@ -145,6 +104,44 @@ describe('request default parameters formation', () => {
           expect(params.trackingEnabled).toEqual(true)
 
           msDNT.mockReturnValue('yes')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+        })
+    })
+
+    it('reads track_enabled from window.doNotTrack', () => {
+
+      expect.assertions(5)
+
+      return defaultParams.default()
+        .then(params => {
+          expect(params.trackingEnabled).toBeUndefined()
+
+          global.doNotTrack = 0
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
+
+          global.doNotTrack = 1
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+
+          global.doNotTrack = 'no'
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
+
+          global.doNotTrack = 'yes'
 
           return defaultParams.default()
         })
