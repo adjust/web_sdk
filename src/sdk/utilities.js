@@ -65,8 +65,6 @@ function isValidJson (string) {
 function on (element, eventName, func) {
   if (element.addEventListener) {
     element.addEventListener(eventName, func, false)
-  } else if (element.attachEvent)  {
-    element.attachEvent(`on${eventName}`, func)
   }
 }
 
@@ -80,8 +78,6 @@ function on (element, eventName, func) {
 function off (element, eventName, func) {
   if (element.removeEventListener) {
     element.removeEventListener(eventName, func, false)
-  } else if (element.detachEvent)  {
-    element.detachEvent(`on${eventName}`, func)
   }
 }
 
@@ -92,7 +88,6 @@ function off (element, eventName, func) {
  * @private
  */
 function getVisibilityApiAccess () {
-
   if (typeof document.hidden !== 'undefined') {
     return {
       hidden: 'hidden',
@@ -103,10 +98,11 @@ function getVisibilityApiAccess () {
   const prefixes = ['moz', 'ms', 'o', 'webkit']
 
   for (let i = 0; i <= prefixes.length; i += 1) {
-    if (typeof document[`${prefixes[i]}Hidden`] !== 'undefined') {
+    const prefix = prefixes[i]
+    if (typeof document[`${prefix}Hidden`] !== 'undefined') {
       return {
-        hidden: `${prefixes[i]}Hidden`,
-        visibilityChange: `${prefixes[i]}visibilitychange`
+        hidden: `${prefix}Hidden`,
+        visibilityChange: `${prefix}visibilitychange`
       }
     }
   }

@@ -159,6 +159,7 @@ describe('test for utility methods', () => {
       expect(Utilities.intersection([1,2,3], [4,5,6])).toEqual([])
       expect(Utilities.intersection([1,2,3], [2])).toEqual([2])
       expect(Utilities.intersection([], [4,5,6])).toEqual([])
+      expect(Utilities.intersection()).toEqual([])
     })
   })
 
@@ -187,5 +188,154 @@ describe('test for utility methods', () => {
       expect(Utilities.getHostName('https://test.com:8080/bla/truc?some=thing')).toBe('test.com:8080')
       expect(Utilities.getHostName()).toBe('')
     })
+  })
+
+  describe('test for global event listener', () => {
+
+    const clickCallback = jest.fn()
+    const originalAddEventListener = global.document.addEventListener
+    const originalRemoveEventListener = global.document.removeEventListener
+    let addEventListenerSpy
+    let removeEventListenerSpy
+
+    beforeAll(() => {
+      addEventListenerSpy = jest.spyOn(global.document, 'addEventListener')
+      removeEventListenerSpy = jest.spyOn(global.document, 'removeEventListener')
+    })
+
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    afterAll(() => {
+      jest.restoreAllMocks()
+      global.document.addEventListener = originalAddEventListener
+      global.document.removeEventListener = originalRemoveEventListener
+    })
+
+    it('subscribes to particular global event', () => {
+
+      Utilities.on(global.document, 'click', clickCallback)
+      expect(addEventListenerSpy).toHaveBeenCalledWith('click', clickCallback, false)
+
+      global.document.dispatchEvent(new Event('click'))
+
+      expect(clickCallback).toHaveBeenCalledTimes(1)
+
+      Utilities.off(global.document, 'click', clickCallback)
+    })
+
+    it('unsubscribes from particular global event', () => {
+
+      Utilities.on(global.document, 'click', clickCallback)
+
+      Utilities.off(global.document, 'click', clickCallback)
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('click', clickCallback, false)
+
+      global.document.dispatchEvent(new Event('click'))
+
+      expect(clickCallback).not.toHaveBeenCalled()
+    })
+
+    it('ignores global event when event listening not supported', () => {
+
+      Utils.setGlobalProp(global.document, 'addEventListener')
+      Utils.setGlobalProp(global.document, 'removeEventListener')
+
+      Utilities.on(global.document, 'click', clickCallback)
+      expect(addEventListenerSpy).not.toHaveBeenCalled()
+
+      global.document.dispatchEvent(new Event('click'))
+
+      expect(clickCallback).not.toHaveBeenCalled()
+
+      Utilities.off(global.document, 'click', clickCallback)
+      expect(removeEventListenerSpy).not.toHaveBeenCalled()
+    })
+
+  })
+
+  describe('test for Page Visibility API access', () => {
+
+    const origHidden = global.document.hidden
+    let hSpy
+    let mozSpy
+    let msSpy
+    let oSpy
+    let webkitSpy
+
+    beforeAll(() => {
+      Utils.setGlobalProp(global.document, 'hidden')
+      Utils.setGlobalProp(global.document, 'mozHidden')
+      Utils.setGlobalProp(global.document, 'msHidden')
+      Utils.setGlobalProp(global.document, 'oHidden')
+      Utils.setGlobalProp(global.document, 'webkitHidden')
+
+      hSpy = jest.spyOn(global.document, 'hidden', 'get')
+      mozSpy = jest.spyOn(global.document, 'mozHidden', 'get')
+      msSpy = jest.spyOn(global.document, 'msHidden', 'get')
+      oSpy = jest.spyOn(global.document, 'oHidden', 'get')
+      webkitSpy = jest.spyOn(global.document, 'webkitHidden', 'get')
+    })
+
+    afterAll(() => {
+      jest.restoreAllMocks()
+
+      global.document.hidden = origHidden
+      delete global.document.mozHidden
+      delete global.document.msHidden
+      delete global.document.oHidden
+      delete global.document.webkitHidden
+    })
+
+    it('check access when hidden prop is available', () => {
+      hSpy.mockReturnValueOnce(true)
+
+      expect(Utilities.getVisibilityApiAccess()).toEqual({
+        hidden: 'hidden',
+        visibilityChange: 'visibilitychange'
+      })
+    })
+
+    it('check access when mozHidden prop is available', () => {
+      mozSpy.mockReturnValueOnce(true)
+
+      expect(Utilities.getVisibilityApiAccess()).toEqual({
+        hidden: 'mozHidden',
+        visibilityChange: 'mozvisibilitychange'
+      })
+    })
+
+    it('check access when msHidden prop is available', () => {
+      msSpy.mockReturnValueOnce(true)
+
+      expect(Utilities.getVisibilityApiAccess()).toEqual({
+        hidden: 'msHidden',
+        visibilityChange: 'msvisibilitychange'
+      })
+    })
+
+    it('check access when oHidden prop is available', () => {
+      oSpy.mockReturnValueOnce(true)
+
+      expect(Utilities.getVisibilityApiAccess()).toEqual({
+        hidden: 'oHidden',
+        visibilityChange: 'ovisibilitychange'
+      })
+    })
+
+    it('check access when webkitHidden prop is available', () => {
+      webkitSpy.mockReturnValueOnce(true)
+
+      expect(Utilities.getVisibilityApiAccess()).toEqual({
+        hidden: 'webkitHidden',
+        visibilityChange: 'webkitvisibilitychange'
+      })
+    })
+
+    it('returns null when no access available', () => {
+      expect(Utilities.getVisibilityApiAccess()).toBeNull()
+    })
+
   })
 })
