@@ -166,19 +166,51 @@ describe('request default parameters formation', () => {
 
     const oldLocale = global.navigator.language
     let navigatorLanguage
+    let navigatorUserLanguage
 
     beforeAll(() => {
       Utils.setGlobalProp(global.navigator, 'language')
+      Utils.setGlobalProp(global.navigator, 'userLanguage')
+
       navigatorLanguage = jest.spyOn(global.navigator, 'language', 'get')
+      navigatorUserLanguage = jest.spyOn(global.navigator, 'userLanguage', 'get')
     })
 
     afterAll(() => {
       global.navigator.language = oldLocale
+      delete global.navigator.userLanguage
     })
 
     it('reads only language from locale', () => {
 
-      navigatorLanguage.mockReturnValue('en')
+      navigatorLanguage.mockReturnValueOnce('sr')
+
+      expect.assertions(2)
+
+      return defaultParams.default()
+        .then(params => {
+          expect(params.language).toEqual('sr')
+          expect(params.country).toBeUndefined()
+        })
+
+    })
+
+    it('reads userLanguage from locale', () => {
+
+      navigatorUserLanguage.mockReturnValueOnce('fr')
+
+      expect.assertions(2)
+
+      return defaultParams.default()
+        .then(params => {
+          expect(params.language).toEqual('fr')
+          expect(params.country).toBeUndefined()
+          delete global.navigator.userLanguage
+        })
+
+    })
+
+    it('falls back to en when no locale available', () => {
 
       expect.assertions(2)
 
@@ -194,14 +226,14 @@ describe('request default parameters formation', () => {
 
       expect.assertions(4)
 
-      navigatorLanguage.mockReturnValue('fr-FR')
+      navigatorLanguage.mockReturnValueOnce('fr-FR')
 
       return defaultParams.default()
         .then(params => {
           expect(params.language).toEqual('fr')
           expect(params.country).toEqual('fr')
 
-          navigatorLanguage.mockReturnValue('en-US')
+          navigatorLanguage.mockReturnValueOnce('en-US')
 
           return defaultParams.default()
         })
@@ -217,13 +249,13 @@ describe('request default parameters formation', () => {
     const oldPlatform = global.navigator.platform
     const oldUserAgent = global.navigator.userAgent
     let navigatorPlatform
-    let userAgent
+    let navigatorUserAgent
 
     beforeAll(() => {
       Utils.setGlobalProp(global.navigator, 'platform')
       Utils.setGlobalProp(global.navigator, 'userAgent')
       navigatorPlatform = jest.spyOn(global.navigator, 'platform', 'get')
-      userAgent = jest.spyOn(global.navigator, 'userAgent', 'get')
+      navigatorUserAgent = jest.spyOn(global.navigator, 'userAgent', 'get')
     })
 
     afterAll(() => {
@@ -248,18 +280,29 @@ describe('request default parameters formation', () => {
         })
     })
 
-    it('reads machine_type on 64-bit window machine and corrects it if necessary', () => {
+    it('reads machine_type on window machine and corrects it if user agent states that it is 64-bit machine', () => {
 
-      expect.assertions(1)
+      expect.assertions(3)
 
       navigatorPlatform.mockReturnValue('Win32')
-      userAgent.mockReturnValue('Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36')
+      navigatorUserAgent
+        .mockReturnValueOnce('Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36')
+        .mockReturnValueOnce('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36')
 
       return defaultParams.default()
         .then(params => {
           expect(params.machineType).toBe('Win64')
-        })
 
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.machineType).toBe('Win64')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.machineType).toBe('Win32')
+        })
     })
   })
 

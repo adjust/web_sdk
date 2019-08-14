@@ -83,7 +83,7 @@ function _getPlatform () {
  * @private
  */
 function _getLanguage () {
-  const [language, country] = (navigator.language || navigator.userLanguage || '').split('-')
+  const [language, country] = (navigator.language || navigator.userLanguage || 'en').split('-')
   return {language, country: (country ? '' + country.toLowerCase() : undefined)}
 }
 
@@ -93,7 +93,7 @@ function _getLanguage () {
  * @returns {{machineType: (string|undefined)}}
  */
 function _getMachineType () {
-  const ua = navigator.userAgent || navigator.vendor || window.opera
+  const ua = navigator.userAgent || navigator.vendor
   const overrideWin32 = navigator.platform === 'Win32' && (ua.indexOf('WOW64') !== -1 || ua.indexOf('Win64') !== -1)
 
   return {machineType: (overrideWin32 ? 'Win64' : navigator.platform) || undefined}
