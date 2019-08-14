@@ -262,6 +262,41 @@ describe('activity state functionality', () => {
     expect(params.timeSpent).toBeUndefined()
     expect(params.sessionLength).toBeUndefined()
     expect(params.sessionCount).toBeUndefined()
+    expect(ActivityState.default.getParams()).toEqual({})
+
+  })
+
+  it('ignores everything if activity state not initiated', () => {
+
+    ActivityState.default.destroy()
+
+    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.current).toBeNull()
+
+    ActivityState.default.updateParams('/session')
+
+    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.current).toBeNull()
+
+    ActivityState.default.updateSessionOffset()
+
+    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.current).toBeNull()
+
+    ActivityState.default.updateSessionLength()
+
+    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.current).toBeNull()
+
+    ActivityState.default.resetSessionOffset()
+
+    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.current).toBeNull()
+
+    ActivityState.default.updateLastActive()
+
+    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.current).toBeNull()
 
   })
 

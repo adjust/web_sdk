@@ -43,6 +43,10 @@ function currentSetter (params) {
  * @private
  */
 function updateLastActive () {
+  if (_activityState === null) {
+    return
+  }
+
   _activityState.lastInterval = _getLastInterval()
   _activityState.lastActive = Date.now()
 }
@@ -54,7 +58,7 @@ function updateLastActive () {
  * @private
  */
 function _update (params) {
-  _activityState = extend(_activityState || {}, params)
+  _activityState = extend(_activityState, params)
 }
 
 /**
@@ -78,7 +82,7 @@ function toBackground () {
  * @private
  */
 function _getOffset () {
-  const lastActive = (_activityState || {}).lastActive
+  const lastActive = _activityState.lastActive
   return Math.round(timePassed(lastActive, Date.now()) / SECOND)
 }
 
@@ -99,7 +103,7 @@ function _getTimeSpent () {
  * @private
  */
 function _getSessionLength () {
-  const lastActive = (_activityState || {}).lastActive
+  const lastActive = _activityState.lastActive
   const withinWindow = timePassed(lastActive, Date.now()) < Config.sessionWindow
   const withOffset = _active || !_active && withinWindow
 
@@ -113,7 +117,7 @@ function _getSessionLength () {
  * @private
  */
 function _getSessionCount () {
-  return (_activityState || {}).sessionCount || 0
+  return _activityState.sessionCount || 0
 }
 
 /**
@@ -123,7 +127,7 @@ function _getSessionCount () {
  * @private
  */
 function _getEventCount () {
-  return (_activityState || {}).eventCount || 0
+  return _activityState.eventCount || 0
 }
 
 /**
@@ -133,7 +137,7 @@ function _getEventCount () {
  * @private
  */
 function _getLastInterval () {
-  const lastActive = (_activityState || {}).lastActive
+  const lastActive = _activityState.lastActive
 
   if (lastActive) {
     return Math.round(timePassed(lastActive, Date.now()) / SECOND)
