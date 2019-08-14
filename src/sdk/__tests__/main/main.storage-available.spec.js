@@ -113,7 +113,7 @@ describe('main entry point - test instance initiation when storage is available'
     jest.clearAllMocks()
     suite.teardown()
     Utils.setDocumentProp('referrer', 'http://some-site.com')
-    window.history.pushState({}, '', '?adjust_param=value&something=else')
+    global.history.pushState({}, '', '?adjust_param=value&something=else')
 
     AdjustInstance.init(suite.config)
 

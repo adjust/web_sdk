@@ -13,8 +13,8 @@ describe('IndexedDB usage', () => {
 
   const storeNames = SchemeMap.default.storeNames.left
 
-  window.indexedDB = fakeIDB
-  window.IDBKeyRange = IDBKeyRange
+  global.indexedDB = fakeIDB
+  global.IDBKeyRange = IDBKeyRange
 
   beforeAll(() => {
     jest.spyOn(Logger.default, 'error')
@@ -31,14 +31,14 @@ describe('IndexedDB usage', () => {
     expect(supported).toBeTruthy()
     expect(Logger.default.error).not.toHaveBeenCalled()
 
-    delete window.indexedDB
+    delete global.indexedDB
 
     supported = IndexedDB.isSupported()
 
     expect(supported).toBeFalsy()
     expect(Logger.default.error).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
 
-    window.indexedDB = fakeIDB
+    global.indexedDB = fakeIDB
 
   })
 

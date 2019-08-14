@@ -19,20 +19,20 @@ describe('LocalStorage usage', () => {
 
   it('checks if localStorage is supported', () => {
 
-    const original = window.localStorage
+    const original = global.localStorage
     let supported = LocalStorage.isSupported()
 
     expect(supported).toBeTruthy()
     expect(Logger.default.error).not.toHaveBeenCalled()
 
-    delete window.localStorage
+    delete global.localStorage
 
     supported = LocalStorage.isSupported()
 
     expect(supported).toBeFalsy()
     expect(Logger.default.error).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
 
-    window.localStorage = original
+    global.localStorage = original
   })
 
 

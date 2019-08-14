@@ -29,42 +29,42 @@ describe('perform api requests', () => {
     'queue_size=0'
   ].join('&')
 
-  const oldXMLHttpRequest = global.window.XMLHttpRequest
-  const oldLocale = global.window.navigator.language
-  const oldPlatform = global.window.navigator.platform
-  const oldDNT = global.window.navigator.doNotTrack
+  const oldXMLHttpRequest = global.XMLHttpRequest
+  const oldLocale = global.navigator.language
+  const oldPlatform = global.navigator.platform
+  const oldDNT = global.navigator.doNotTrack
   let mockXHR = null
 
   beforeAll(() => {
     Config.default.baseParams = appParams
 
-    Utils.setGlobalProp(global.window.navigator, 'language')
-    Utils.setGlobalProp(global.window.navigator, 'platform')
-    Utils.setGlobalProp(global.window.navigator, 'doNotTrack')
+    Utils.setGlobalProp(global.navigator, 'language')
+    Utils.setGlobalProp(global.navigator, 'platform')
+    Utils.setGlobalProp(global.navigator, 'doNotTrack')
 
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     ActivityState.default.current = {uuid: 'some-uuid'}
 
-    jest.spyOn(global.window.navigator, 'language', 'get').mockReturnValue('en-GB')
-    jest.spyOn(global.window.navigator, 'platform', 'get').mockReturnValue('macos')
-    jest.spyOn(global.window.navigator, 'doNotTrack', 'get').mockReturnValue(0)
+    jest.spyOn(global.navigator, 'language', 'get').mockReturnValue('en-GB')
+    jest.spyOn(global.navigator, 'platform', 'get').mockReturnValue('macos')
+    jest.spyOn(global.navigator, 'doNotTrack', 'get').mockReturnValue(0)
   })
   afterEach(() => {
-    global.window.XMLHttpRequest = oldXMLHttpRequest
+    global.XMLHttpRequest = oldXMLHttpRequest
     jest.clearAllMocks()
   })
   afterAll(() => {
     jest.restoreAllMocks()
-    global.window.navigator.language = oldLocale
-    global.window.navigator.language = oldPlatform
-    global.window.navigator.doNotTrack = oldDNT
+    global.navigator.language = oldLocale
+    global.navigator.language = oldPlatform
+    global.navigator.doNotTrack = oldDNT
     Config.default.destroy()
   })
 
   it('rejects when network issue', () => {
 
     mockXHR = Utils.createMockXHR({error: 'connection failed'}, 500, 'Connection failed')
-    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -87,7 +87,7 @@ describe('perform api requests', () => {
   it('rejects when status 0', () => {
 
     mockXHR = Utils.createMockXHR('', 0, 'Network issue')
-    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -110,7 +110,7 @@ describe('perform api requests', () => {
   it('resolves error returned from server (because of retry mechanism)', () => {
 
     mockXHR = Utils.createMockXHR({error: 'some error'}, 400, 'Some error')
-    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -128,7 +128,7 @@ describe('perform api requests', () => {
   it('reject badly formed json from server', () => {
 
     mockXHR = Utils.createMockXHR('bla bla not json', 200, 'OK')
-    global.window.XMLHttpRequest = jest.fn(() => mockXHR)
+    global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
 
@@ -157,7 +157,7 @@ describe('perform api requests', () => {
 
     beforeEach(() => {
       mockXHR = Utils.createMockXHR(response)
-      global.window.XMLHttpRequest = jest.fn(() => mockXHR)
+      global.XMLHttpRequest = jest.fn(() => mockXHR)
 
       jest.spyOn(mockXHR, 'open')
       jest.spyOn(mockXHR, 'setRequestHeader')
@@ -316,7 +316,7 @@ describe('perform api requests', () => {
 
     const prepare = (response) => {
       mockXHR = Utils.createMockXHR(response)
-      global.window.XMLHttpRequest = jest.fn(() => mockXHR)
+      global.XMLHttpRequest = jest.fn(() => mockXHR)
     }
 
     it('returns response with whitelisted attributes when not attribution endpoint', () => {
@@ -382,7 +382,7 @@ describe('perform api requests', () => {
 
     const prepare = (response) => {
       mockXHR = Utils.createMockXHR(response)
-      global.window.XMLHttpRequest = jest.fn(() => mockXHR)
+      global.XMLHttpRequest = jest.fn(() => mockXHR)
     }
 
     beforeAll(() => {

@@ -59,7 +59,7 @@ describe('test sdk-click functionality', () => {
 
   it('does nothing if there are no adjust params in the url', () => {
 
-    window.history.pushState({}, '', '?param1=value1&param2=value2')
+    global.history.pushState({}, '', '?param1=value1&param2=value2')
 
     sdkClick.default()
 
@@ -75,7 +75,7 @@ describe('test sdk-click functionality', () => {
 
     Utils.setDocumentProp('referrer', '')
 
-    window.history.pushState({}, '', '?adjust_param=value1&param2=value2')
+    global.history.pushState({}, '', '?adjust_param=value1&param2=value2')
 
     sdkClick.default()
 
@@ -93,7 +93,7 @@ describe('test sdk-click functionality', () => {
 
     Utils.setDocumentProp('referrer', 'http://localhost/test')
 
-    window.history.pushState({}, '', '?adjust_param=value1&param2=value2')
+    global.history.pushState({}, '', '?adjust_param=value1&param2=value2')
 
     sdkClick.default()
 
@@ -111,7 +111,7 @@ describe('test sdk-click functionality', () => {
 
     expect.assertions(2)
 
-    window.history.pushState({}, '', '?adjust_param=value&something=else')
+    global.history.pushState({}, '', '?adjust_param=value&something=else')
 
     sdkClick.default()
 
@@ -130,7 +130,7 @@ describe('test sdk-click functionality', () => {
 
     expect.assertions(2)
 
-    window.history.pushState({}, '', '?adj_param1=value&bla=truc&adj_param2=bla')
+    global.history.pushState({}, '', '?adj_param1=value&bla=truc&adj_param2=bla')
 
     sdkClick.default()
 
@@ -149,7 +149,7 @@ describe('test sdk-click functionality', () => {
 
     expect.assertions(2)
 
-    window.history.pushState({}, '', '?adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada')
+    global.history.pushState({}, '', '?adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada')
 
     sdkClick.default()
 
