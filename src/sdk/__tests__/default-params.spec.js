@@ -19,14 +19,23 @@ describe('request default parameters formation', () => {
   describe('test tracking enabled', () => {
 
     let navigatorDNT
+    let windowDNT
+    let msDNT
 
     beforeEach(() => {
-      Utils.setGlobalProp(global.window.navigator, 'doNotTrack')
-      navigatorDNT = jest.spyOn(global.window.navigator, 'doNotTrack', 'get')
+      Utils.setGlobalProp(global.navigator, 'doNotTrack')
+      Utils.setGlobalProp(global, 'doNotTrack')
+      Utils.setGlobalProp(global.navigator, 'msDoNotTrack')
+
+      navigatorDNT = jest.spyOn(global.navigator, 'doNotTrack', 'get')
+      windowDNT = jest.spyOn(global, 'doNotTrack', 'get')
+      msDNT = jest.spyOn(global.navigator, 'msDoNotTrack', 'get')
     })
 
     afterEach(() => {
-      delete global.window.navigator.doNotTrack
+      delete global.navigator.doNotTrack
+      delete global.navigator.msDoNotTrack
+      delete global.doNotTrack
     })
 
     it('reads track_enabled from window.navigator.doNotTrack', () => {
@@ -67,6 +76,84 @@ describe('request default parameters formation', () => {
         })
 
     })
+
+    it('reads track_enabled from window.doNotTrack', () => {
+
+      expect.assertions(5)
+
+      return defaultParams.default()
+        .then(params => {
+          expect(params.trackingEnabled).toBeUndefined()
+
+          windowDNT.mockReturnValue(0)
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
+
+          windowDNT.mockReturnValue(1)
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+
+          windowDNT.mockReturnValue('no')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
+
+          windowDNT.mockReturnValue('yes')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+        })
+    })
+
+    it('reads track_enabled from window.navigator.msDoNotTrack', () => {
+
+      expect.assertions(5)
+
+      return defaultParams.default()
+        .then(params => {
+          expect(params.trackingEnabled).toBeUndefined()
+
+          msDNT.mockReturnValue(0)
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
+
+          msDNT.mockReturnValue(1)
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+
+          msDNT.mockReturnValue('no')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(true)
+
+          msDNT.mockReturnValue('yes')
+
+          return defaultParams.default()
+        })
+        .then(params => {
+          expect(params.trackingEnabled).toEqual(false)
+        })
+    })
+
+
   })
 
   it('test platform parameter - hardcoded to web', () => {
@@ -80,16 +167,16 @@ describe('request default parameters formation', () => {
 
   describe('test locale preferences', () => {
 
-    const oldLocale = global.window.navigator.language
+    const oldLocale = global.navigator.language
     let navigatorLanguage
 
     beforeAll(() => {
-      Utils.setGlobalProp(global.window.navigator, 'language')
-      navigatorLanguage = jest.spyOn(global.window.navigator, 'language', 'get')
+      Utils.setGlobalProp(global.navigator, 'language')
+      navigatorLanguage = jest.spyOn(global.navigator, 'language', 'get')
     })
 
     afterAll(() => {
-      global.window.navigator.language = oldLocale
+      global.navigator.language = oldLocale
     })
 
     it('reads only language from locale', () => {
@@ -130,21 +217,21 @@ describe('request default parameters formation', () => {
   })
 
   describe('test navigator platform value', () => {
-    const oldPlatform = global.window.navigator.platform
-    const oldUserAgent = global.window.navigator.userAgent
+    const oldPlatform = global.navigator.platform
+    const oldUserAgent = global.navigator.userAgent
     let navigatorPlatform
     let userAgent
 
     beforeAll(() => {
-      Utils.setGlobalProp(global.window.navigator, 'platform')
-      Utils.setGlobalProp(global.window.navigator, 'userAgent')
-      navigatorPlatform = jest.spyOn(global.window.navigator, 'platform', 'get')
-      userAgent = jest.spyOn(global.window.navigator, 'userAgent', 'get')
+      Utils.setGlobalProp(global.navigator, 'platform')
+      Utils.setGlobalProp(global.navigator, 'userAgent')
+      navigatorPlatform = jest.spyOn(global.navigator, 'platform', 'get')
+      userAgent = jest.spyOn(global.navigator, 'userAgent', 'get')
     })
 
     afterAll(() => {
-      global.window.navigator.language = oldPlatform
-      global.window.navigator.userAgent = oldUserAgent
+      global.navigator.language = oldPlatform
+      global.navigator.userAgent = oldUserAgent
     })
 
     it('reads machine_type - by default is undefined', () => {
