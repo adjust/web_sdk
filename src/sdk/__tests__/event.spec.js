@@ -71,6 +71,7 @@ describe('event tracking functionality', () => {
     event.default({})
 
     expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
+    expect(Logger.default.error).toHaveBeenCalledTimes(1)
 
     return Utils.flushPromises()
       .then(() => {
@@ -79,6 +80,10 @@ describe('event tracking functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(request.default).not.toHaveBeenCalled()
+
+        event.default()
+        expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
+        expect(Logger.default.error).toHaveBeenCalledTimes(2)
       })
   })
 

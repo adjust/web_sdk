@@ -294,6 +294,17 @@ describe('test request queuing functionality', () => {
 
   })
 
+  it('ignores set offline when explicit state not provided', () => {
+    expect.assertions(2)
+
+    Queue.setOffline()
+
+    return Utils.flushPromises()
+      .then(() => {
+        expect(Logger.default.error).toHaveBeenLastCalledWith('State not provided, true or false has to be defined')
+        expect(StorageManager.default.getFirst).not.toHaveBeenCalled()
+      })
+  })
 
   it('does not execute the queue in offline mode and then run the queue when set back to online mode', () => {
 
@@ -452,6 +463,8 @@ describe('test request queuing functionality', () => {
   })
 
   it('prevents re-setting offline/online mode if already online/offline', () => {
+
+    expect.assertions(10)
 
     Queue.setOffline(false)
 

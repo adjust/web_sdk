@@ -20,13 +20,13 @@ describe('test identity methods', () => {
     jest.spyOn(StorageManager.default, 'updateItem')
     jest.spyOn(ActivityState.default, 'destroy')
     jest.spyOn(Logger.default, 'log')
+    jest.spyOn(State.default, 'reload')
   })
 
   afterEach(() => {
     jest.clearAllMocks()
     localStorage.clear()
     Identity.destroy()
-    State.default.session = null
     State.default.disabled = null
   })
 
@@ -262,8 +262,6 @@ describe('test identity methods', () => {
 
     it('syncs in-memory activity state with updated stored version', () => {
 
-      jest.spyOn(State.default, 'reload')
-
       let compareActivityState
 
       expect.assertions(4)
@@ -292,13 +290,58 @@ describe('test identity methods', () => {
 
     })
 
-    it('clears activity state', () => {
+    it('ignores sync in-memory activity state when sdk is disabled', () => {
+
+      const cachedActivityState = ActivityState.default.current
 
       expect.assertions(3)
+
+      return Identity.start()
+        .then(activityState => {
+
+          Identity.disable()
+
+          expect(activityState).toEqual(ActivityState.default.current)
+
+          return Identity.sync()
+        })
+        .then(() => {
+          expect(State.default.reload).not.toHaveBeenCalled()
+          expect(ActivityState.default.current).toEqual(cachedActivityState)
+        })
+
+    })
+
+    it('clears activity state', () => {
+
+      expect.assertions(4)
 
       Identity.clear()
 
       return Utils.flushPromises()
+        .then(() => {
+          expect(ActivityState.default.current).toEqual({uuid: 'unknown'})
+
+          return StorageManager.default.getAll('activityState')
+        })
+        .then(records => {
+          const activityState = records[0]
+          expect(records.length).toBe(1)
+          expect(activityState).toEqual({uuid: 'unknown'})
+          expect(ActivityState.default.current).toEqual(activityState)
+        })
+    })
+
+    it('clears activity state even when persisted data has been lost', () => {
+
+      expect.assertions(3)
+
+      return StorageManager.default.clear('activityState')
+        .then(() => {
+          Identity.clear()
+
+          return Utils.flushPromises()
+        })
         .then(() => {
           expect(ActivityState.default.current).toEqual({uuid: 'unknown'})
 
@@ -332,6 +375,25 @@ describe('test identity methods', () => {
         })
     })
 
+    it('interrupt start if sdk already gdpr forgotten but persisted state got lost', () => {
+
+      expect.assertions(2)
+
+      Identity.disable({reason: 'gdpr'})
+      Identity.clear()
+
+      return Utils.flushPromises()
+        .then(() => {
+          State.default.disabled = null
+
+          return Identity.start()
+        })
+        .then(activityState => {
+          expect(activityState).toBeNull()
+          expect(ActivityState.default.current).toBeNull()
+        })
+    })
+
     it('updates activity state', () => {
 
       expect.assertions(3)
@@ -346,6 +408,20 @@ describe('test identity methods', () => {
           expect(activityState).toEqual(cachedActivityState)
           expect(activityState).toMatchObject({lastActive: 456})
           expect(StorageManager.default.updateItem).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    it('ignores persist when sdk is disabled', () => {
+
+      expect.assertions(3)
+
+      Identity.disable()
+
+      return Identity.persist()
+        .then(activityState => {
+          expect(activityState).toBeNull()
+          expect(ActivityState.default.current).toBeNull()
+          expect(StorageManager.default.updateItem).not.toHaveBeenCalled()
         })
     })
   })

@@ -70,9 +70,9 @@ function _continue () {
  * @private
  */
 function _prepareParams (url, params) {
-  const baseParams = isRequest(url, 'event')
-    ? {eventCount: ActivityState.current.eventCount || 1}
-    : {}
+  const baseParams = isRequest(url, 'event') ? {
+    eventCount: ActivityState.current.eventCount
+  } : {}
 
   return extend(baseParams, ActivityState.getParams(), params)
 }
@@ -186,9 +186,13 @@ function run (cleanUp) {
  * - if on then all requests are queued
  * - if off then run all pending requests
  *
- * @param {boolean=false} state
+ * @param {boolean} state
  */
-function setOffline (state = false) {
+function setOffline (state) {
+  if (state === undefined) {
+    Logger.error('State not provided, true or false has to be defined')
+    return
+  }
 
   if (state === _isOffline) {
     Logger.error(`The app is already in ${(state ? 'offline' : 'online')} mode`)

@@ -35,12 +35,12 @@ function _getRevenue (revenue, currency) {
  * @param {string=} params.currency
  * @param {Array=} params.callbackParams
  * @param {Array=} params.partnerParams
- * @param {Array=} [globalCallbackParams=[]]
- * @param {Array} [globalPartnerParams=[]]
+ * @param {Array} globalCallbackParams
+ * @param {Array} globalPartnerParams
  * @returns {Object}
  * @private
  */
-function _prepareParams (params, globalCallbackParams = [], globalPartnerParams = []) {
+function _prepareParams (params, globalCallbackParams, globalPartnerParams) {
 
   const globalParams = {}
   const baseParams = extend({

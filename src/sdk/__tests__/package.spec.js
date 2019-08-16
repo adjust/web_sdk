@@ -632,6 +632,67 @@ describe('test package functionality', () => {
       })
   })
 
+  it('clears unsuccessful request when no retry flag recognized', () => {
+
+    const newNow = Date.now()
+
+    createdAtSpy
+      .mockReturnValueOnce(now)
+      .mockReturnValueOnce(newNow)
+
+    request.default.mockRejectedValue({error: 'Unknown error'})
+
+    expect.assertions(13)
+
+    someRequest.send({url: '/failed-request'})
+
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /failed-request in 150ms')
+    expect(setTimeout).toHaveBeenCalledTimes(1)
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default.mock.calls[0][0]).toMatchObject(Object.assign({
+      url: '/failed-request'
+    }, matchCreatedAt))
+
+    return Utils.flushPromises()
+      .then(() => {
+        expect(someRequest.isRunning()).toBeFalsy()
+        expect(clearTimeout).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Request /failed-request failed')
+
+        request.default.mockRejectedValue(undefined)
+        request.default.mockClear()
+        clearTimeout.mockClear()
+
+        someRequest.send({url: '/another-failed-request'})
+
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /another-failed-request in 150ms')
+
+        jest.runOnlyPendingTimers()
+
+        expect(request.default).toHaveBeenCalledWith({
+          url: '/another-failed-request',
+          method: 'GET',
+          params: {
+            createdAt: newNow,
+            some: 'param'
+          }
+        })
+
+        return Utils.flushPromises()
+      })
+      .then(() => {
+        expect(someRequest.isRunning()).toBeFalsy()
+        expect(clearTimeout).toHaveBeenCalledTimes(1)
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Request /another-failed-request failed')
+
+        request.default.mockResolvedValue({})
+      })
+  })
+
   it('cancels previously initiated request with another one', () => {
 
     expect.assertions(7)

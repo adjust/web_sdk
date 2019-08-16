@@ -17,22 +17,31 @@ const _request = Package({
 })
 
 /**
+ * Log messages used in different scenarios
+ *
+ * @type {Object}
+ * @private
+ */
+const _logMessages = {
+  running: 'Adjust SDK is running pending GDPR Forget Me request',
+  pending: 'Adjust SDK will run GDPR Forget Me request after initialisation',
+  paused: 'Adjust SDK is already prepared to send GDPR Forget Me request',
+  off: 'Adjust SDK is already disabled'
+}
+
+/**
  * Request GDPR-Forget-Me in order to disable sdk
  */
 function forget (force) {
   const sdkStatus = status()
 
   if (!force && sdkStatus !== 'on') {
-    if (sdkStatus === 'paused') {
-      Logger.log('Adjust SDK is already prepared to send GDPR Forget Me request')
-    } else if (sdkStatus === 'off') {
-      Logger.log('Adjust SDK is already disabled')
-    }
+    Logger.log(_logMessages[sdkStatus])
     return false
   }
 
   if (!Config.isInitialised()) {
-    Logger.log('Adjust SDK will run GDPR Forget Me request after initialisation')
+    Logger.log(_logMessages.pending)
     return true
   }
 
@@ -48,7 +57,7 @@ function forget (force) {
  */
 function check () {
   if (status() === 'paused') {
-    Logger.log('Adjust SDK is running pending GDPR Forget Me request')
+    Logger.log(_logMessages.running)
     forget(true)
   }
 }

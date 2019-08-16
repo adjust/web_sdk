@@ -30,6 +30,7 @@ function goToBackground () {
 
 describe('test session functionality', () => {
 
+  let pvaSpy
   const _reset = () => {
     Session.destroy()
     Identity.destroy()
@@ -48,6 +49,8 @@ describe('test session functionality', () => {
     jest.spyOn(Logger.default, 'error')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(PubSub, 'publish')
+
+    pvaSpy = jest.spyOn(Utilities, 'getVisibilityApiAccess')
   })
 
   beforeEach(() => {
@@ -84,6 +87,40 @@ describe('test session functionality', () => {
       Session.watch()
 
       expect(Logger.default.error).toHaveBeenCalledWith('Session watch already initiated')
+
+      return Utils.flushPromises()
+    })
+
+    it('subscribes on visibility change event when Page Visibility Api is available', () => {
+
+      // by default Page Visibility is available
+      Session.watch()
+
+      expect(Utilities.on).toHaveBeenCalled()
+
+      Session.destroy()
+
+      expect(Utilities.off).toHaveBeenCalled()
+      expect(clearTimeout).toHaveBeenCalled()
+
+      // clear mocks
+      Utilities.on.mockClear()
+      Utilities.off.mockClear()
+      clearTimeout.mockClear()
+
+      // when Page Visibility Api is not available
+      pvaSpy.mockReturnValueOnce(null)
+
+      Session.watch()
+
+      expect(Utilities.on).not.toHaveBeenCalled()
+
+      Session.destroy()
+
+      expect(Utilities.off).not.toHaveBeenCalled()
+      expect(clearTimeout).not.toHaveBeenCalled()
+
+      return Utils.flushPromises()
     })
 
     it('destroys session watch', () => {
@@ -103,6 +140,8 @@ describe('test session functionality', () => {
       Session.watch()
 
       expect(Logger.default.error).not.toHaveBeenCalled()
+
+      return Utils.flushPromises()
     })
 
     it('updates last active timestamp every n seconds', () => {

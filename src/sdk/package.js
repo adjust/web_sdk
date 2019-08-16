@@ -89,7 +89,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @param {Function=} continueCb
    * @private
    */
-  function _prepare ({url, method, params = {}, continueCb}) {
+  function _prepare ({url, method, params, continueCb}) {
     if (url) {
       _url.current = url
     }
@@ -147,9 +147,11 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
   /**
    * Finish the request by restoring and clearing
+   *
+   * @param {boolean=false} failed
    */
-  function finish () {
-    Logger.log(`Request ${_url.current} has been finished`)
+  function finish (failed) {
+    Logger.log(`Request ${_url.current} ${failed ? 'failed' : 'has been finished'}`)
 
     _attempts = DEFAULT_ATTEMPTS
     _wait = DEFAULT_WAIT
@@ -243,7 +245,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
           params: extend({}, _params.current)
         })
           .then(result => _continue(result, resolve))
-          .catch(({response = {}} = {}) => response.code === 'RETRY' ? retry() : clear())
+          .catch(({response = {}} = {}) => response.code === 'RETRY' ? retry() : finish(true))
       }, _wait)
     })
   }

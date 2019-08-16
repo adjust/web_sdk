@@ -38,7 +38,7 @@ let _idTimeout
  * @type {{hidden, visibilityChange}}
  * @private
  */
-const _pva = getVisibilityApiAccess()
+let _pva
 
 /**
  * Initiate session watch:
@@ -50,6 +50,7 @@ const _pva = getVisibilityApiAccess()
  * @returns {Promise}
  */
 function watch () {
+  _pva = getVisibilityApiAccess()
 
   if (_running) {
     Logger.error('Session watch already initiated')
@@ -148,7 +149,7 @@ function _handleVisibilityChange () {
  * @private
  */
 function _checkAttribution () {
-  if (!(ActivityState.current || {}).attribution) {
+  if (!ActivityState.current.attribution) {
     publish('attribution:check', {})
   }
 }
@@ -181,12 +182,12 @@ function _stopTimer () {
 /**
  * Prepare parameters for the session tracking
  *
- * @param {Array=} [globalCallbackParams=[]]
- * @param {Array} [globalPartnerParams=[]]
+ * @param {Array} globalCallbackParams
+ * @param {Array} globalPartnerParams
  * @returns {Object}
  * @private
  */
-function _prepareParams (globalCallbackParams = [], globalPartnerParams = []) {
+function _prepareParams (globalCallbackParams, globalPartnerParams) {
   const baseParams = {}
 
   if (globalCallbackParams.length) {
@@ -224,7 +225,7 @@ function _trackSession () {
 function _checkSession () {
   _startTimer()
 
-  const lastInterval = (ActivityState.current || {}).lastInterval
+  const lastInterval = ActivityState.current.lastInterval
   const currentWindow = lastInterval * SECOND
 
   if (lastInterval === -1 || currentWindow >= Config.sessionWindow) {

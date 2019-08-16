@@ -1,4 +1,5 @@
 import * as request from '../request'
+import * as defaultParams from '../default-params'
 import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
@@ -14,7 +15,7 @@ describe('perform api requests', () => {
     environment: 'sandbox'
   }
 
-  const defaultParams = [
+  const defaultParamsString = [
     'app_token=123abc',
     'environment=sandbox',
     'created_at=some-time',
@@ -34,9 +35,11 @@ describe('perform api requests', () => {
   const oldPlatform = global.navigator.platform
   const oldDNT = global.navigator.doNotTrack
   let mockXHR = null
+  let defaultParamsSpy
 
   beforeAll(() => {
     Config.default.baseParams = appParams
+    Config.default.baseUrl = {app: 'app', gdpr: 'gdpr'}
 
     Utils.setGlobalProp(global.navigator, 'language')
     Utils.setGlobalProp(global.navigator, 'platform')
@@ -48,6 +51,7 @@ describe('perform api requests', () => {
     jest.spyOn(global.navigator, 'language', 'get').mockReturnValue('en-GB')
     jest.spyOn(global.navigator, 'platform', 'get').mockReturnValue('macos')
     jest.spyOn(global.navigator, 'doNotTrack', 'get').mockReturnValue(0)
+    defaultParamsSpy = jest.spyOn(defaultParams, 'default')
   })
   afterEach(() => {
     global.XMLHttpRequest = oldXMLHttpRequest
@@ -63,7 +67,7 @@ describe('perform api requests', () => {
 
   it('rejects when network issue', () => {
 
-    mockXHR = Utils.createMockXHR({error: 'connection failed'}, 500, 'Connection failed')
+    mockXHR = Utils.createMockXHR({error: 'connection failed'}, 4, 500, 'Connection failed')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -86,7 +90,7 @@ describe('perform api requests', () => {
 
   it('rejects when status 0', () => {
 
-    mockXHR = Utils.createMockXHR('', 0, 'Network issue')
+    mockXHR = Utils.createMockXHR('', 4, 0, 'Network issue')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -109,7 +113,7 @@ describe('perform api requests', () => {
 
   it('resolves error returned from server (because of retry mechanism)', () => {
 
-    mockXHR = Utils.createMockXHR({error: 'some error'}, 400, 'Some error')
+    mockXHR = Utils.createMockXHR({error: 'some error'}, 4, 400, 'Some error')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -125,9 +129,27 @@ describe('perform api requests', () => {
       })
   })
 
+  it('resolves UNKNOWN error returned from server', () => {
+
+    mockXHR = Utils.createMockXHR('', 4, 400, 'Some error')
+    global.XMLHttpRequest = jest.fn(() => mockXHR)
+
+    expect.assertions(1)
+
+    expect(request.default({
+      url: '/some-url',
+      params: {}
+    })).resolves.toEqual({message: 'Unknown error from server', code: 'UNKNOWN'})
+
+    return Utils.flushPromises()
+      .then(() => {
+        mockXHR.onreadystatechange()
+      })
+  })
+
   it('reject badly formed json from server', () => {
 
-    mockXHR = Utils.createMockXHR('bla bla not json', 200, 'OK')
+    mockXHR = Utils.createMockXHR('bla bla not json', 4, 200, 'OK')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -141,6 +163,23 @@ describe('perform api requests', () => {
       response: {message: 'Unknown error, retry will follow', code: 'RETRY'},
       responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
     })
+
+    return Utils.flushPromises()
+      .then(() => {
+        mockXHR.onreadystatechange()
+      })
+  })
+
+  it('ignores readyState other then 4', () => {
+
+    mockXHR = Utils.createMockXHR({}, 2)
+    global.XMLHttpRequest = jest.fn(() => mockXHR)
+
+    expect.assertions(0)
+
+    expect(request.default({
+      url: '/not-resolve-request'
+    })).resolves.toEqual({})
 
     return Utils.flushPromises()
       .then(() => {
@@ -181,7 +220,36 @@ describe('perform api requests', () => {
       return Utils.flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/some-url?${defaultParamsString}&event_token=567abc&some=thing&very=nice&and=%7B%22test%22%3A%22object%22%7D`, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+        })
+    })
+
+    it('performs GET request without any default params besides base params', () => {
+
+      const baseParamsString = [
+        'app_token=123abc',
+        'environment=sandbox'
+      ].join('&')
+
+      defaultParamsSpy.mockResolvedValueOnce(undefined)
+
+      expect.assertions(4)
+
+      expect(request.default({
+        url: '/some-url',
+        params: {
+          eventToken: '567abc'
+        }
+      })).resolves.toEqual(response)
+
+      return Utils.flushPromises()
+        .then(() => {
+
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/some-url?${baseParamsString}&event_token=567abc`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -193,7 +261,7 @@ describe('perform api requests', () => {
 
       Config.default.baseParams = Object.assign({defaultTracker: 'blatruc'}, appParams)
 
-      const defaultParamsWithDefaultTracker = [
+      const defaultParamsStringWithDefaultTracker = [
         'app_token=123abc',
         'environment=sandbox',
         'default_tracker=blatruc',
@@ -221,13 +289,31 @@ describe('perform api requests', () => {
       return Utils.flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-other-url?${defaultParamsWithDefaultTracker}&bla=truc`, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/some-other-url?${defaultParamsStringWithDefaultTracker}&bla=truc`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
           mockXHR.onreadystatechange()
 
           Config.default.baseParams = appParams
+        })
+    })
+
+    it('performs gdpr_forget_device request', () => {
+      expect.assertions(4)
+
+      expect(request.default({
+        url: '/gdpr_forget_device',
+        method: 'POST'
+      })).resolves.toEqual(response)
+
+      return Utils.flushPromises()
+        .then(() => {
+          expect(mockXHR.open).toHaveBeenCalledWith('POST', 'gdpr/gdpr_forget_device', true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(`${defaultParamsString}`)
+
+          mockXHR.onreadystatechange()
         })
     })
 
@@ -247,7 +333,7 @@ describe('perform api requests', () => {
       return Utils.flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/sweet-url?${defaultParams}&some=thing`, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/sweet-url?${defaultParamsString}&some=thing`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -278,7 +364,7 @@ describe('perform api requests', () => {
       return Utils.flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', `/some-url?${defaultParams}&some=thing&very=nice&zero=0&bla=ble`, true)
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/some-url?${defaultParamsString}&some=thing&very=nice&zero=0&bla=ble`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 
@@ -302,10 +388,10 @@ describe('perform api requests', () => {
       return Utils.flushPromises()
         .then(() => {
 
-          expect(mockXHR.open).toHaveBeenCalledWith('POST', '/some-url', true)
+          expect(mockXHR.open).toHaveBeenCalledWith('POST', 'app/some-url', true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
-          expect(mockXHR.send).toHaveBeenCalledWith(`${defaultParams}&some=thing&very=nice`)
+          expect(mockXHR.send).toHaveBeenCalledWith(`${defaultParamsString}&some=thing&very=nice`)
 
           mockXHR.onreadystatechange()
         })

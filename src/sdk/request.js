@@ -12,8 +12,7 @@ import defaultParams from './default-params'
  * @private
  */
 function _getSuccessObject (xhr, url) {
-
-  const response = xhr.response ? JSON.parse(xhr.response) : {}
+  const response = JSON.parse(xhr.response)
   const append = isRequest(url, 'attribution') ? [
     'attribution',
     'message'
@@ -38,9 +37,10 @@ function _getSuccessObject (xhr, url) {
  * @private
  */
 function _getErrorObject (xhr, onlyResponse) {
-
   if (onlyResponse) {
-    return JSON.parse(xhr.response)
+    return isValidJson(xhr.response)
+      ? JSON.parse(xhr.response)
+      : {message: 'Unknown error from server', code: 'UNKNOWN'}
   }
 
   const error = {message: 'Unknown error, retry will follow', code: 'RETRY'}
@@ -95,8 +95,9 @@ function _encodeParams (params, defaultParams) {
  * @private
  */
 function _handleReadyStateChange (reject, resolve, {xhr, url}) {
-
-  if (xhr.readyState !== 4) return
+  if (xhr.readyState !== 4) {
+    return
+  }
 
   if (xhr.status >= 200 && xhr.status < 300) {
     if (isValidJson(xhr.response)) {
@@ -122,10 +123,10 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
  * @returns {{encodedParams: string, fullUrl: string}}
  * @private
  */
-function _prepareUrlAndParams (url, method = 'GET', params = {}, defaultParams = {}) {
+function _prepareUrlAndParams (url, method, params, defaultParams) {
   const encodedParams = _encodeParams(params, defaultParams)
   const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
-  const baseUrl = __ADJUST__ENV === 'test' ? '' : Config.baseUrl[base]
+  const baseUrl = Config.baseUrl[base]
 
   return {
     fullUrl: baseUrl + url + (method === 'GET' ? `?${encodedParams}` : ''),
@@ -142,7 +143,7 @@ function _prepareUrlAndParams (url, method = 'GET', params = {}, defaultParams =
  * @param {Object} defaultParams
  * @returns {Promise}
  */
-function _buildXhr ({url, method = 'GET', params = {}}, defaultParams) {
+function _buildXhr ({url, method = 'GET', params = {}}, defaultParams = {}) {
   const {fullUrl, encodedParams} = _prepareUrlAndParams(url, method, params, defaultParams)
 
   return new Promise((resolve, reject) => {
@@ -175,7 +176,7 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams) {
  * @returns {Object}
  * @private
  */
-function _interceptResponse (result = {}, options) {
+function _interceptResponse (result, options) {
   if (result.tracking_state === 'opted_out') {
     publish('sdk:gdpr-forget-me', true)
     return result

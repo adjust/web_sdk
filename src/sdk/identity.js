@@ -29,6 +29,29 @@ function _generateUuid () {
 }
 
 /**
+ * Inspect stored activity state and check if disable needs to be repeated
+ *
+ * @param {Object=} stored
+ * @returns {Object}
+ * @private
+ */
+function _intercept (stored) {
+  if (!stored) {
+    return {continue: true}
+  }
+
+  if (stored.uuid === 'unknown') {
+    disable({reason: REASON_GDPR})
+    ActivityState.destroy()
+    return {continue: false, activityState: null}
+  }
+
+  ActivityState.current = stored
+
+  return {continue: false, activityState: stored}
+}
+
+/**
  * Cache stored activity state into running memory
  *
  * @returns {Promise}
@@ -36,8 +59,10 @@ function _generateUuid () {
 function start () {
   return StorageManager.getFirst(_storeName)
     .then(stored => {
-      if (stored) {
-        return stored.uuid === 'unknown' ? disable({reason: REASON_GDPR}) : stored
+      const intercepted = _intercept(stored)
+
+      if (!intercepted.continue) {
+        return intercepted.activityState
       }
 
       const activityState = ActivityState.current || {uuid: _generateUuid()}
@@ -48,7 +73,6 @@ function start () {
           return ActivityState.current = activityState
         })
     })
-    .then(stored => ActivityState.current = stored)
 }
 
 /**
@@ -58,7 +82,7 @@ function start () {
  */
 function persist () {
   if (status() === 'off') {
-    return Promise.resolve({})
+    return Promise.resolve(null)
   }
 
   const activityState = extend({}, ActivityState.current, {lastActive: Date.now()})
@@ -74,7 +98,7 @@ function persist () {
  */
 function sync () {
   return StorageManager.getFirst(_storeName)
-    .then((activityState = {}) => {
+    .then((activityState) => {
       const lastActive = ActivityState.current.lastActive || 0
 
       if (status() !== 'off' && lastActive < activityState.lastActive) {
