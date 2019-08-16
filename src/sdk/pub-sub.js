@@ -4,7 +4,7 @@
  * @type {Object}
  * @private
  */
-const _list = {}
+let _list = {}
 
 /**
  * Reference to timeout ids so they can be cleared on destroy
@@ -32,7 +32,6 @@ function _getId () {
  * @returns {string}
  */
 function subscribe (name, cb) {
-
   const id = _getId()
 
   if (!_list[name]) {
@@ -53,19 +52,16 @@ function subscribe (name, cb) {
  * @param {string} id
  */
 function unsubscribe (id) {
-
   if (!id) { return }
 
-  for (const name in _list) {
-    if (_list.hasOwnProperty(name) && _list[name]) {
-      _list[name].forEach((item, j) => {
-        if (item.id === id) {
-          _list[name].splice(j, 1)
+  Object.entries(_list)
+    .some(([, callbacks]) => callbacks
+      .some((callback, i) => {
+        if (callback.id === id) {
+          callbacks.splice(i, 1)
+          return true
         }
-      })
-    }
-  }
-
+      }))
 }
 
 /**
@@ -76,7 +72,6 @@ function unsubscribe (id) {
  * @returns {Array}
  */
 function publish (name, args) {
-
   if (!_list[name]) {
     return []
   }
@@ -94,12 +89,7 @@ function publish (name, args) {
 function destroy () {
   _timeoutIds.forEach(clearTimeout)
   _timeoutIds = []
-
-  for (const name in _list) {
-    if (_list.hasOwnProperty(name)) {
-      delete _list[name]
-    }
-  }
+  _list = {}
 }
 
 export {

@@ -96,6 +96,29 @@ describe('test publish-subscribe pattern', () => {
 
   })
 
+  it('ignores unsubscribe when id not provided', () => {
+
+    const callback = jest.fn()
+
+    PubSub.subscribe('some-event', callback)
+    PubSub.publish('some-event', 'something')
+
+    jest.runAllTimers()
+
+    expect(callback).toHaveBeenCalledWith('some-event', 'something')
+    expect(callback).toHaveBeenCalledTimes(1)
+
+    PubSub.unsubscribe()
+
+    PubSub.publish('some-event', 'something-else')
+
+    jest.runAllTimers()
+
+    expect(callback).toHaveBeenCalledWith('some-event', 'something-else')
+    expect(callback).toHaveBeenCalledTimes(2)
+
+  })
+
   it('calls callback multiple times when subscribes to multiple events', () => {
 
     const callback = {cb: jest.fn(), id: null}
@@ -146,6 +169,60 @@ describe('test publish-subscribe pattern', () => {
 
     expect(callback1).not.toHaveBeenCalled()
     expect(callback2).not.toHaveBeenCalled()
+
+  })
+
+  it('subscribes to many events', () => {
+
+    const ids = []
+    const callbacks = []
+    const callback1 = jest.fn()
+    const callback2 = jest.fn()
+    const callback3 = jest.fn()
+    const callback4 = 'not-a-function'
+    let randomId
+
+    for (let i = 0; i < 30; i += 1) {
+      const callback = jest.fn()
+      callbacks.push(callback)
+      ids.push(PubSub.subscribe(`event-${i}`, callback))
+
+      if (i === 5) {
+        PubSub.subscribe(`event-${i}`, callback1)
+        randomId = PubSub.subscribe(`event-${i}`, callback2)
+        PubSub.subscribe(`event-${i}`, callback3)
+        PubSub.subscribe(`event-${i}`, callback4)
+      }
+    }
+
+    PubSub.publish('event-5', {})
+
+    jest.runAllTimers()
+
+    expect(callbacks[5]).toHaveBeenCalledWith('event-5', {})
+    expect(callback1).toHaveBeenCalledWith('event-5', {})
+    expect(callback2).toHaveBeenCalledWith('event-5', {})
+    expect(callback3).toHaveBeenCalledWith('event-5', {})
+    expect(setTimeout).toHaveBeenCalledTimes(4)
+
+    callbacks[5].mockClear()
+    callback1.mockClear()
+    callback2.mockClear()
+    callback3.mockClear()
+    setTimeout.mockClear()
+
+    PubSub.unsubscribe(ids[5])
+    PubSub.unsubscribe(randomId)
+
+    PubSub.publish('event-5', {})
+
+    jest.runAllTimers()
+
+    expect(callbacks[5]).not.toHaveBeenCalled()
+    expect(callback1).toHaveBeenCalledWith('event-5', {})
+    expect(callback2).not.toHaveBeenCalled()
+    expect(callback3).toHaveBeenCalledWith('event-5', {})
+    expect(setTimeout).toHaveBeenCalledTimes(2)
 
   })
 
