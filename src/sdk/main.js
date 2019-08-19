@@ -239,21 +239,23 @@ function _continue () {
   gdprForgetCheck()
 
   const sdkStatus = status()
-  let message = 'Adjust SDK start has been interrupted'
+  let message = (rest) => `Adjust SDK start has been interrupted ${rest}`
 
   if (sdkStatus === 'off') {
     _shutdown()
-    return Promise.reject({message: message + ' due to complete async disable'})
+    return Promise.reject({message: message('due to complete async disable')})
   }
 
   if (sdkStatus === 'paused') {
     _pause()
-    return Promise.reject({message: message + ' due to partial async disable'})
+    return Promise.reject({message: message('due to partial async disable')})
   }
 
   if (_isStarted) {
-    return Promise.reject({})
+    return Promise.reject({message: message('due to multiple synchronous start attempt')})
   }
+
+  _isStarted = true
 
   queueRun(true)
 
@@ -276,7 +278,7 @@ function _continue () {
  * @param {Function=} params.attributionCallback
  * @private
  */
-function _start (params = {}) {
+function _start (params) {
 
   if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
@@ -295,14 +297,13 @@ function _start (params = {}) {
 
   start()
     .then(_continue)
-    .then(() => {
-      _isStarted = true
-
-      sdkClick()
-    })
+    .then(sdkClick)
     .catch(error => {
-      if (error.message) {
+      if (error && error.message) {
         Logger.log(error.message)
+      } else {
+        _shutdown()
+        Logger.error('Adjust SDK start has been canceled due to an error', error)
       }
     })
 }

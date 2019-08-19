@@ -125,6 +125,7 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('initiates, disables and enables one after another', () => {
+      expect.assertions(5)
 
       AdjustInstance.init(suite.config)
       AdjustInstance.disable()
@@ -135,7 +136,11 @@ describe('main entry point - test enable/disable when in initially enabled state
       expect(Identity.disable).toHaveBeenCalled()
       expect(Identity.enable).toHaveBeenCalled()
 
+
       return Utils.flushPromises()
+        .then(() => {
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start has been interrupted due to multiple synchronous start attempt')
+        })
     })
 
     it('ensures that everything is up', () => {

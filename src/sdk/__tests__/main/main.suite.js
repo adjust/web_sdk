@@ -139,10 +139,13 @@ function expectRunningStatic () {
   _instance.removeAllGlobalPartnerParameters('partner')
   expect(GlobalParams.removeAll).toHaveBeenCalledWith('partner')
 
+  _instance.setOfflineMode(false)
+  expect(Queue.setOffline).toHaveBeenCalledWith(false)
+
   _instance.setOfflineMode(true)
   expect(Queue.setOffline).toHaveBeenCalledWith(true)
 
-  return {assertions: 7}
+  return {assertions: 8}
 }
 
 function expectNotRunningStatic (noStorage) {
@@ -210,13 +213,26 @@ function expectAttributionCallback () {
   return Utils.flushPromises()
 }
 
+function expectNotAttributionCallback () {
+
+  PubSub.publish('attribution:change', {tracker_token: 'some-token'})
+
+  jest.runOnlyPendingTimers()
+
+  expect(config.attributionCallback).not.toHaveBeenCalled()
+}
+
 function _expectPause () {
   expect(Queue.destroy).toHaveBeenCalled()
   expect(Session.destroy).toHaveBeenCalled()
   expect(Attribution.destroy).toHaveBeenCalled()
 }
 
-function expectShutDown () {
+function expectShutDown (onlyNumOfAssertions) {
+  if (onlyNumOfAssertions) {
+    return {assertions: 7}
+  }
+
   _expectPause()
   expect(PubSub.destroy).toHaveBeenCalled()
   expect(Identity.destroy).toHaveBeenCalled()
@@ -318,11 +334,15 @@ function expectAllUp () {
   return Utils.flushPromises()
 }
 
-function expectAllDown () {
+function expectAllDown (onlyNumOfAssertions) {
+  if (onlyNumOfAssertions) {
+    return {assertions: 6}
+  }
+
   expect(Config.default.baseParams).toEqual({})
 
   expectNotGdprForgetMeCallback()
-  _expectNotAttributionCallback()
+  expectNotAttributionCallback()
 
   expect(ActivityState.default.current).toBeNull()
   expect(Queue.isRunning()).toBeFalsy()
@@ -338,15 +358,6 @@ function _expectAttributionCheck () {
   expect(Attribution.check).toHaveBeenCalledWith({some: 'result'})
 
   return Utils.flushPromises()
-}
-
-function _expectNotAttributionCallback () {
-
-  PubSub.publish('attribution:change', {tracker_token: 'some-token'})
-
-  jest.runOnlyPendingTimers()
-
-  expect(config.attributionCallback).not.toHaveBeenCalled()
 }
 
 function expectGdprRequest () {
@@ -392,6 +403,7 @@ export default function Suite (instance) {
     expectRunningStatic,
     expectNotRunningStatic,
     expectAttributionCallback,
+    expectNotAttributionCallback,
     expectShutDown,
     expectPartialShutDown,
     expectNotShutDown,
