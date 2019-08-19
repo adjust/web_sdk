@@ -1,4 +1,5 @@
 import Config from './config'
+import {isObject} from './utilities'
 
 const LEVEL_NONE = 'none'
 const LEVEL_ERROR = 'error'
@@ -106,7 +107,7 @@ function _log (methodName, ...args) {
   if (outputContainer) {
     const [namespace, prefix, ...rest] = message
     const spaces = methodName === 'log' ? '  ' : (methodName === 'info' ? ' ' : '')
-    outputContainer.textContent += `${namespace} ${prefix}${spaces} ${rest.join(' ')}\n`
+    outputContainer.textContent += `${namespace} ${prefix}${spaces} ${rest.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`
     outputContainer.scrollTop = outputContainer.scrollHeight
   }
 

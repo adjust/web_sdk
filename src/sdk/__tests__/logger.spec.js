@@ -248,7 +248,7 @@ describe('test Logger functionality', () => {
 
   })
 
-  describe('output logs into specified container container', () => {
+  describe('output logs into specified container', () => {
     let logContainer
     let history = []
 
@@ -288,6 +288,18 @@ describe('test Logger functionality', () => {
 
       expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', 'ERROR:', 'Some error message')
       expect(logContainer.textContent).toEqual(history.join('\n') + '\n')
+    })
+
+    it('prints multiple messages that might be json', () => {
+      const json = {info: 'look at the info'}
+
+      Logger.default.log('Some info', json)
+
+      history.push('[adjust-sdk] LOG:   Some info ' + JSON.stringify(json))
+
+      expect(console.log).toHaveBeenCalledWith('[adjust-sdk]', 'LOG:', 'Some info', json)
+      expect(logContainer.textContent).toEqual(history.join('\n') + '\n')
+
     })
 
   })
