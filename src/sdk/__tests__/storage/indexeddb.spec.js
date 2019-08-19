@@ -42,6 +42,26 @@ describe('IndexedDB usage', () => {
 
   })
 
+  it('forces no-support of indexedDB on iOS devices', () => {
+
+    expect.assertions(4)
+
+    Utils.setGlobalProp(global.navigator, 'platform')
+    const platformSpy = jest.spyOn(global.navigator, 'platform', 'get')
+    platformSpy.mockReturnValue('iPhone')
+
+    expect(IndexedDB.isSupported()).toBeFalsy()
+    expect(Logger.default.error).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
+
+    IndexedDB.getAll('activityState')
+      .catch(error => {
+        expect(error.name).toEqual('IDBNotSupported')
+        expect(error.message).toEqual('IndexedDB is not supported')
+      })
+
+    platformSpy.mockRestore()
+  })
+
   describe('run common tests for IndexedDB implementation', () => {
     jest.isolateModules(() => {
       const StorageManager = require('../../storage/storage-manager').default
@@ -218,6 +238,12 @@ describe('IndexedDB usage', () => {
                 {key: 'key-3', value: 'value-3', type: 'partner'}
               ])
             })
+        })
+
+        it('ignores db close if there is no db instance', () => {
+          expect(() => {
+            StorageManager.destroy()
+          }).not.toThrow()
         })
 
       })

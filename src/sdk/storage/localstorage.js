@@ -38,7 +38,7 @@ function isSupported () {
 function _open () {
 
   if (!isSupported()) {
-    return
+    return {status: 'error', error: {name: 'LSNotSupported', message: 'LocalStorage is not supported'}}
   }
 
   const storeNames = Object.values(SchemeMap.storeNames.left)
@@ -56,6 +56,8 @@ function _open () {
   })
 
   State.recover()
+
+  return {status: 'success'}
 }
 
 /**
@@ -84,7 +86,11 @@ function _getKeys (storeName) {
  */
 function _initRequest ({storeName, id, item}, action) {
 
-  _open()
+  const open = _open()
+
+  if (open.status === 'error') {
+    return Promise.reject(open.error)
+  }
 
   return new Promise((resolve, reject) => {
 
@@ -150,7 +156,11 @@ function _sort (items, keys, force) {
  */
 function getAll (storeName, firstOnly) {
 
-  _open()
+  const open = _open()
+
+  if (open.status === 'error') {
+    return Promise.reject(open.error)
+  }
 
   return new Promise((resolve, reject) => {
 
@@ -360,11 +370,6 @@ function deleteBulk (storeName, condition) {
       const key = Scheme[storeName].index || keys[0]
       const bound = isObject(condition) ? condition.upperBound : condition
       const force = isObject(condition) ? null : condition
-      const first = items[0]
-
-      if (!first) {
-        return []
-      }
 
       _sort(items, keys, force)
 
@@ -390,7 +395,11 @@ function deleteBulk (storeName, condition) {
  */
 function clear (storeName) {
 
-  _open()
+  const open = _open()
+
+  if (open.status === 'error') {
+    return Promise.reject(open.error)
+  }
 
   return new Promise(resolve => {
     QuickStorage.stores[storeName] = []

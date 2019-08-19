@@ -116,7 +116,7 @@ function convertStoreName ({storeName, dir}) {
  * Decode error message by replacing short store name with long readable one
  *
  * @param {string} storeName
- * @param Object{} error
+ * @param {Object} error
  * @returns {{name: string, message: string}}
  */
 function decodeErrorMessage ({storeName, error}) {

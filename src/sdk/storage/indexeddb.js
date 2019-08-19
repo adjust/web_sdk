@@ -107,7 +107,7 @@ function _open () {
   const indexedDB = _getIDB()
 
   if (!isSupported()) {
-    return Promise.reject({})
+    return Promise.reject({name: 'IDBNotSupported', message: 'IndexedDB is not supported'})
   }
 
   return new Promise((resolve, reject) => {
@@ -129,12 +129,12 @@ function _open () {
  * Get transaction and the store
  *
  * @param {string} storeName
- * @param {string} [mode=readonly]
+ * @param {string} mode
  * @param {Function} reject
  * @returns {{transaction, store: IDBObjectStore, index: IDBIndex}}
  * @private
  */
-function _getTranStore ({storeName, mode = 'readonly'}, reject) {
+function _getTranStore ({storeName, mode}, reject) {
 
   const transaction = _db.transaction([storeName], mode)
   const store = transaction.objectStore(storeName)
@@ -160,11 +160,8 @@ function _getTranStore ({storeName, mode = 'readonly'}, reject) {
  * @private
  */
 function _overrideError (reject, error) {
-  const target = error.target.error || error.target._error || {}
-  return reject({
-    name: target.name || 'UnknownError',
-    message: target.message || ''
-  })
+  const {name, message} = error.target.error
+  return reject({name, message})
 }
 
 /**
@@ -203,11 +200,11 @@ function _initRequest ({storeName, target, action, mode = 'readonly'}) {
  * @param {string} storeName
  * @param {Array} target
  * @param {string} action
- * @param {string} [mode=readonly]
+ * @param {string} mode
  * @returns {Promise}
  * @private
  */
-function _initBulkRequest ({storeName, target, action, mode = 'readonly'}) {
+function _initBulkRequest ({storeName, target, action, mode}) {
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {

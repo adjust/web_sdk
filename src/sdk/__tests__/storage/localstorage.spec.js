@@ -19,6 +19,8 @@ describe('LocalStorage usage', () => {
 
   it('checks if localStorage is supported', () => {
 
+    expect.assertions(10)
+
     const original = global.localStorage
     let supported = LocalStorage.isSupported()
 
@@ -32,7 +34,25 @@ describe('LocalStorage usage', () => {
     expect(supported).toBeFalsy()
     expect(Logger.default.error).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
 
-    global.localStorage = original
+    return StorageManager.default.getItem('activityState')
+      .catch(error => {
+        expect(error.name).toEqual('LSNotSupported')
+        expect(error.message).toEqual('LocalStorage is not supported')
+
+        return StorageManager.default.getAll('activityState')
+      })
+      .catch(error => {
+        expect(error.name).toEqual('LSNotSupported')
+        expect(error.message).toEqual('LocalStorage is not supported')
+
+        return StorageManager.default.clear('activityState')
+      })
+      .catch(error => {
+        expect(error.name).toEqual('LSNotSupported')
+        expect(error.message).toEqual('LocalStorage is not supported')
+
+        global.localStorage = original
+      })
   })
 
 

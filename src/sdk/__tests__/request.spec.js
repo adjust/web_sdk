@@ -60,7 +60,7 @@ describe('perform api requests', () => {
   afterAll(() => {
     jest.restoreAllMocks()
     global.navigator.language = oldLocale
-    global.navigator.language = oldPlatform
+    global.navigator.platform = oldPlatform
     global.navigator.doNotTrack = oldDNT
     Config.default.destroy()
   })

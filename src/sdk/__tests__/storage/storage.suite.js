@@ -529,7 +529,7 @@ export default function Suite (Storage) {
 
     })
 
-    it ('deletes items in bulk by type from the globalParams store - with composite key', () => {
+    it('deletes items in bulk by type from the globalParams store - with composite key', () => {
 
       // prepare some rows manually
       const globalParamsSet = [
@@ -589,6 +589,32 @@ export default function Suite (Storage) {
           expect(result).toEqual([])
         })
 
+    })
+
+    it('deletes items in bulk from activityState store', () => {
+      expect.assertions(2)
+
+      const activityStateSet = [
+        {uuid: 'abcd1'},
+        {uuid: 'abcd2'},
+        {uuid: 'abcd3'},
+        {uuid: 'abcd4'}
+      ]
+
+      return Storage.addBulk('activityState', activityStateSet)
+        .then(() => Storage.deleteBulk('activityState', {upperBound: 'abcd3'}))
+        .then(result => {
+          expect(result).toEqual([
+            {uuid: 'abcd1'},
+            {uuid: 'abcd2'},
+            {uuid: 'abcd3'}
+          ])
+
+          return Storage.getAll('activityState')
+        })
+        .then(result => {
+          expect(result).toEqual([{uuid: 'abcd4'}])
+        })
     })
 
     it('clears items from the queue store', () => {
