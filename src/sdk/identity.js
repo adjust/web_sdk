@@ -14,6 +14,14 @@ import {extend} from './utilities'
 const _storeName = 'activityState'
 
 /**
+ * Boolean used in start in order to avoid duplicated activity state
+ *
+ * @type {boolean}
+ * @private
+ */
+let _starting = false
+
+/**
  * Generate random  uuid v4
  *
  * @returns {string}
@@ -57,11 +65,17 @@ function _intercept (stored) {
  * @returns {Promise}
  */
 function start () {
+  if (_starting) {
+    return Promise.reject({message: 'Adjust SDK start already in progress'})
+  }
+  _starting = true
+
   return StorageManager.getFirst(_storeName)
     .then(stored => {
       const intercepted = _intercept(stored)
 
       if (!intercepted.continue) {
+        _starting = false
         return intercepted.activityState
       }
 
@@ -70,6 +84,7 @@ function start () {
       return StorageManager.addItem(_storeName, activityState)
         .then(() => {
           State.reload()
+          _starting = false
           return ActivityState.current = activityState
         })
     })
@@ -191,8 +206,7 @@ function clear () {
     pending: false
   }
 
-  return StorageManager.getFirst(_storeName)
-    .then(current => current ? StorageManager.deleteItem(_storeName, current.uuid) : null)
+  return StorageManager.clear(_storeName)
     .then(() => StorageManager.addItem(_storeName, newActivityState))
 }
 

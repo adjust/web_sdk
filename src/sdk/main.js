@@ -279,7 +279,6 @@ function _continue () {
  * @private
  */
 function _start (params) {
-
   if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
     return

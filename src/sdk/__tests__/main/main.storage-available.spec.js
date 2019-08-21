@@ -111,17 +111,26 @@ describe('main entry point - test instance initiation when storage is available'
 
     it('shuts down asynchronously', () => {
 
+      const shutDownNumOfAssertions = suite.expectShutDown(true).assertions
+      const allDownNumOfAssertions = suite.expectAllDown(true).assertions
+
+      expect.assertions(2 + shutDownNumOfAssertions + allDownNumOfAssertions)
+
       AdjustInstance.init(suite.config)
 
-      // for example disable has been done in another tab
-      PubSub.publish('sdk:shutdown')
+      return Utils.flushPromises()
+        .then(() => {
+          // for example disable has been done in another tab
+          PubSub.publish('sdk:shutdown')
 
-      jest.runOnlyPendingTimers()
+          jest.runOnlyPendingTimers()
 
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been shutdown due to asynchronous disable')
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start has been interrupted due to multiple synchronous start attempt')
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been shutdown due to asynchronous disable')
 
-      suite.expectShutDown()
-      suite.expectAllDown()
+          suite.expectShutDown()
+          suite.expectAllDown()
+        })
     })
 
     it('cancels sdk start due to some error happened in the chain', () => {

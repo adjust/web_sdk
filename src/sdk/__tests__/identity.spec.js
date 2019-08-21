@@ -50,6 +50,30 @@ describe('test identity methods', () => {
       Identity.destroy()
     })
 
+    it('prevents identity start multiple times', () => {
+
+      expect.assertions(3)
+
+      let activityState
+      const promise = Identity.start()
+
+      Identity.start()
+        .catch(error => {
+          expect(error).toEqual({message: 'Adjust SDK start already in progress'})
+        })
+
+      return promise
+        .then(as => {
+          activityState = as
+          return StorageManager.default.getAll('activityState')
+        })
+        .then(records => {
+          expect(records.length).toEqual(1)
+          expect(records[0]).toEqual(activityState)
+        })
+
+    })
+
     it('checks disabled state before initiation', () => {
 
       expect(State.default.disabled).toBeNull()

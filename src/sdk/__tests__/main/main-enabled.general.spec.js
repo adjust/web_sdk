@@ -139,7 +139,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       return Utils.flushPromises()
         .then(() => {
-          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start has been interrupted due to multiple synchronous start attempt')
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start already in progress')
         })
     })
 
