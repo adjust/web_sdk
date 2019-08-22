@@ -280,7 +280,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {attribution: oldAttribution}
     request.default.mockResolvedValue({ask_in: 3000})
 
-    expect.assertions(16)
+    expect.assertions(22)
 
     Attribution.check({ask_in: 2000})
 
@@ -288,6 +288,8 @@ describe('test attribution functionality', () => {
 
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
+    expect(setTimeout).toHaveBeenCalledTimes(1)
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
 
     return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
@@ -296,6 +298,8 @@ describe('test attribution functionality', () => {
         expect(Identity.persist).toHaveBeenCalledTimes(1)
         expect(activityState.attribution).toEqual(oldAttribution)
         expect(ActivityState.default.current.attribution).toEqual(oldAttribution)
+        expect(setTimeout).toHaveBeenCalledTimes(2)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
 
         jest.runOnlyPendingTimers()
 
@@ -310,6 +314,8 @@ describe('test attribution functionality', () => {
         expect(Identity.persist).toHaveBeenCalledTimes(1)
         expect(activityState.attribution).toEqual(oldAttribution)
         expect(ActivityState.default.current.attribution).toEqual(oldAttribution)
+        expect(setTimeout).toHaveBeenCalledTimes(3)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
 
         request.default.mockClear()
         request.default.mockResolvedValue(newAttribution)

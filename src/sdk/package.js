@@ -169,7 +169,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    */
   function retry (wait) {
     _attempts += 1
-    _wait = backOff(_attempts, _strategy)
+    _wait = wait || backOff(_attempts, _strategy)
 
     clear()
 
