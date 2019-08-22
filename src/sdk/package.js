@@ -169,21 +169,31 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    */
   function retry (wait) {
     _attempts += 1
-    _wait = wait || backOff(_attempts, _strategy)
 
     clear()
 
-    return _request({wait, retrying: true})
+    return _request({
+      wait: wait || backOff(_attempts, _strategy),
+      retrying: true
+    })
   }
 
   /**
-   * Calls custom success callback or finish request when callback not provided
+   * Decide how to continue, either:
+   * - retry if requested
+   * - call custom success callback
+   * - or finish the request by default
    *
    * @param {Object} result
+   * @param {number} result.retry_in
    * @param {Function} resolve
    * @private
    */
   function _continue (result, resolve) {
+    if (result.retry_in) {
+      return retry(result.retry_in)
+    }
+
     if (typeof _continueCb.current === 'function') {
       _continueCb.current(result)
     } else {

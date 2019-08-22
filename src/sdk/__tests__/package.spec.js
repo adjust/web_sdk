@@ -295,6 +295,116 @@ describe('test package functionality', () => {
 
   })
 
+  it('retries successful request on backend demand', () => {
+
+    const newNow = Date.now()
+
+    createdAtSpy.mockClear()
+
+    createdAtSpy
+      .mockReturnValueOnce(now)
+      .mockReturnValueOnce(newNow)
+
+    request.default.mockResolvedValue({retry_in: 666})
+
+    someRequest.send({
+      url: '/some-request',
+      method: 'POST'
+    })
+
+    expect.assertions(22)
+
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /some-request in 150ms')
+    expect(setTimeout).toHaveBeenCalledTimes(1)
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default).toHaveBeenLastCalledWith({
+      url: '/some-request',
+      method: 'POST',
+      params: {
+        createdAt: now,
+        some: 'param'
+      }
+    })
+
+    return Utils.flushPromises()
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /some-request in 666ms')
+
+        request.default.mockResolvedValue({retry_in: 777})
+
+        jest.runOnlyPendingTimers()
+
+        expect(setTimeout).toHaveBeenCalledTimes(2)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 666)
+        expect(request.default).toHaveBeenCalledTimes(2)
+        expect(request.default).toHaveBeenLastCalledWith({
+          url: '/some-request',
+          method: 'POST',
+          params: {
+            createdAt: now,
+            some: 'param'
+          }
+        })
+
+        return Utils.flushPromises()
+      }).then(() => {
+        request.default.mockClear()
+        request.default.mockResolvedValue({})
+
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /some-request in 777ms')
+
+        jest.runOnlyPendingTimers()
+
+        expect(setTimeout).toHaveBeenCalledTimes(3)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 777)
+        expect(request.default).toHaveBeenCalledTimes(1)
+        expect(request.default).toHaveBeenLastCalledWith({
+          url: '/some-request',
+          method: 'POST',
+          params: {
+            createdAt: now,
+            some: 'param'
+          }
+        })
+
+        setTimeout.mockClear()
+        request.default.mockClear()
+
+        return Utils.flushPromises()
+      }).then(() => {
+        jest.runOnlyPendingTimers()
+
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-request has been finished')
+        expect(setTimeout).not.toHaveBeenCalled()
+
+        someRequest.send()
+
+        expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /global-request in 150ms')
+        expect(setTimeout).toHaveBeenCalledTimes(1)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
+
+        jest.runOnlyPendingTimers()
+
+        expect(request.default).toHaveBeenCalledWith({
+          url: '/global-request',
+          method: 'GET',
+          params: {
+            createdAt: newNow,
+            some: 'param'
+          }
+        })
+
+        return Utils.flushPromises()
+      }).then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
+      })
+
+  })
+
   it('retires unsuccessful request', () => {
 
     const newNow = Date.now()

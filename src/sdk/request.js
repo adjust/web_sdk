@@ -22,6 +22,7 @@ function _getSuccessObject (xhr, url) {
     'adid',
     'timestamp',
     'ask_in',
+    'retry_in',
     'tracking_state',
     ...append
   ].filter(key => response[key])
