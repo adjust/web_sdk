@@ -10,7 +10,7 @@ jest.mock('../request')
 jest.mock('../logger')
 jest.useFakeTimers()
 
-const currentTime = Date.now()
+let currentTime = Date.now()
 let dateNowSpy
 
 function checkExecution ({config, times, success = true, successResult, wait = 150, flush = true, reset = false}) {
@@ -231,13 +231,16 @@ describe('test request queuing functionality', () => {
       })
   })
 
-  it('pushes one request and then several subsequent ones but ignores continue_in from first response of the first request', () => {
+  it('pushes one request and then several subsequent ones and still obeys continue_in from first response of the first request', () => {
 
     dateNowSpy.mockReturnValue(currentTime)
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
+
+
+    expect.assertions(22)
 
     request.default.mockResolvedValue({continue_in: 3000})
 
@@ -258,7 +261,8 @@ describe('test request queuing functionality', () => {
         return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 3000}, flush: true}) // + 5 assertions
       })
       .then(() => {
-        dateNowSpy.mockReturnValue(currentTime + 1)
+        dateNowSpy.mockReturnValue(currentTime += 400)
+        jest.advanceTimersByTime(400)
 
         Queue.push(config2)
         Queue.push(config3)
@@ -268,8 +272,77 @@ describe('test request queuing functionality', () => {
       .then(() => StorageManager.default.getAll('queue'))
       .then(result => {
         expect(result).toEqual([
-          {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams},
-          {timestamp: currentTime+2, url: '/some-url-3', params: defaultParams}
+          {timestamp: currentTime, url: '/some-url-2', params: defaultParams},
+          {timestamp: currentTime+1, url: '/some-url-3', params: defaultParams}
+        ])
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
+
+        request.default.mockResolvedValue({status: 'success'})
+
+        return checkExecution({config: config2, times: 1, reset: true, wait: 2600}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
+
+        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
+
+        return StorageManager.default.getFirst('queue')
+      })
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+  })
+
+  it('pushes one request which returns continue_in and then several subsequent ones which will continue executing normally when time passed is bigger then previously returned continue_in', () => {
+
+    dateNowSpy.mockReturnValue(currentTime)
+
+    const config1 = {url: '/some-url-1'}
+    const config2 = {url: '/some-url-2'}
+    const config3 = {url: '/some-url-3'}
+
+    expect.assertions(22)
+
+    request.default.mockResolvedValue({continue_in: 500})
+
+    Queue.push(config1)
+
+    return Utils.flushPromises()
+      .then(() => {
+
+        expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
+
+        return StorageManager.default.getAll('queue')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {timestamp: currentTime, url: '/some-url-1', params: defaultParams}
+        ])
+
+        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 500}, flush: true}) // + 5 assertions
+      })
+      .then(() => {
+        dateNowSpy.mockReturnValue(currentTime += 600)
+        jest.advanceTimersByTime(600)
+
+        Queue.push(config2)
+        Queue.push(config3)
+
+        return Utils.flushPromises()
+      })
+      .then(() => StorageManager.default.getAll('queue'))
+      .then(result => {
+        const defaultParamsUpdated = Object.assign({}, defaultParams, {
+          timeSpent: 1,
+          sessionLength: 1
+        })
+
+        expect(result).toEqual([
+          {timestamp: currentTime, url: '/some-url-2', params: Object.assign({}, defaultParamsUpdated, {lastInterval: 1})},
+          {timestamp: currentTime+1, url: '/some-url-3', params: defaultParamsUpdated}
         ])
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
@@ -308,7 +381,6 @@ describe('test request queuing functionality', () => {
 
     return Utils.flushPromises()
       .then(() => {
-
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
 
         return StorageManager.default.getAll('queue')

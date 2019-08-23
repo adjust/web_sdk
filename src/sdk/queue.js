@@ -37,12 +37,13 @@ const _storeName = 'queue'
 /**
  * Current running state and task timestamp
  *
- * @type {{running: boolean, timestamp: null|number}}
+ * @type {{running: boolean, timestamp: null|number, pause: Object}}
  * @private
  */
 const _current = {
   running: false,
-  timestamp: null
+  timestamp: null,
+  pause: null
 }
 
 /**
@@ -53,6 +54,12 @@ const _current = {
  */
 function _continue (result) {
   const wait = result && result.continue_in || null
+
+  _current.pause = wait ? {
+    timestamp: Date.now(),
+    wait
+  } : null
+
   return StorageManager.getFirst(_storeName)
     .then(pending => pending ? StorageManager.deleteItem(_storeName, pending.timestamp) : null)
     .then(() => {
@@ -166,8 +173,26 @@ function _prepareToSend ({timestamp, url, method, params} = {}, wait) {
     params: extend({}, params, {
       createdAt: getTimestamp(timestamp)
     }),
-    wait
+    wait: wait || _checkWait()
   })
+}
+
+/**
+ * Check if there is waiting period required
+ *
+ * @returns {null|*}
+ * @private
+ */
+function _checkWait () {
+  if (!_current.pause) {
+    return null
+  }
+
+  const rest = Date.now() - _current.pause.timestamp
+
+  return rest < _current.pause.wait
+    ? (_current.pause.wait - rest)
+    : null
 }
 
 /**
@@ -255,6 +280,7 @@ function destroy () {
   _request.clear()
   _current.running = false
   _current.timestamp = null
+  _current.pause = null
 }
 
 export {
