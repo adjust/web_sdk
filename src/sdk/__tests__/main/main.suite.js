@@ -47,7 +47,7 @@ function expectStart () {
     .then(() => {
       expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
       expect(Queue.run).toHaveBeenCalledTimes(1)
-      expect(Queue.run).toHaveBeenCalledWith(true)
+      expect(Queue.run).toHaveBeenCalledWith({cleanUp: true})
       expect(Session.watch).toHaveBeenCalledTimes(1)
       expect(sdkClick.default).toHaveBeenCalledTimes(1)
     })

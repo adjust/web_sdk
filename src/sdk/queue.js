@@ -51,13 +51,14 @@ const _current = {
  * @returns {Promise}
  * @private
  */
-function _continue () {
+function _continue (result) {
+  const wait = result && result.continue_in || null
   return StorageManager.getFirst(_storeName)
     .then(pending => pending ? StorageManager.deleteItem(_storeName, pending.timestamp) : null)
     .then(() => {
       _request.finish()
       _current.running = false
-      return run()
+      return run({wait})
     })
 }
 
@@ -145,10 +146,11 @@ function push ({url, method, params}, auto) {
  * @param {string=} url
  * @param {string=} method
  * @param {Object=} params
+ * @param {number=} wait
  * @returns {Promise}
  * @private
  */
-function _prepareToSend ({timestamp, url, method, params} = {}) {
+function _prepareToSend ({timestamp, url, method, params} = {}, wait) {
   const activityState = ActivityState.current || {}
   const firstSession = url === '/session' && !activityState.attribution
   const noPending = !url && !method && !params
@@ -158,16 +160,24 @@ function _prepareToSend ({timestamp, url, method, params} = {}) {
     return Promise.resolve({})
   }
 
-  return _request.send({url, method, params: extend({}, params, {createdAt: getTimestamp(timestamp)})})
+  return _request.send({
+    url,
+    method,
+    params: extend({}, params, {
+      createdAt: getTimestamp(timestamp)
+    }),
+    wait
+  })
 }
 
 /**
  * Run all pending requests
  *
  * @param {boolean=false} cleanUp
+ * @param {number=} wait
  * @returns {Promise}
  */
-function run (cleanUp) {
+function run ({cleanUp, wait} = {}) {
   _current.running = true
 
   let chain = Promise.resolve({})
@@ -178,7 +188,7 @@ function run (cleanUp) {
 
   return chain
     .then(() => StorageManager.getFirst(_storeName))
-    .then(_prepareToSend)
+    .then(pending => _prepareToSend(pending, wait))
 }
 
 /**

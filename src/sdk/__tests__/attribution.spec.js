@@ -90,6 +90,75 @@ describe('test attribution functionality', () => {
 
   })
 
+  it('request attribution but retries request if retry_in was returned by backend', () => {
+
+    ActivityState.default.current = {}
+    request.default.mockResolvedValue({retry_in: 2500})
+
+    expect.assertions(24)
+
+    Attribution.check()
+
+    jest.runOnlyPendingTimers()
+
+    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(request.default.mock.calls[0][0]).toMatchObject({
+      url: '/attribution',
+      params: {initiatedBy: 'sdk'}
+    })
+    expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
+    expect(Identity.persist).toHaveBeenCalledTimes(1)
+    expect(setTimeout).toHaveBeenCalledTimes(1)
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
+
+    return Utils.flushPromises()
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
+        expect(PubSub.publish).not.toHaveBeenCalled()
+        expect(setTimeout).toHaveBeenCalledTimes(2)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2500)
+
+        request.default.mockResolvedValue({retry_in: 3500})
+
+        jest.runOnlyPendingTimers()
+
+        expect(request.default).toHaveBeenCalledTimes(2)
+
+        return Utils.flushPromises()
+      })
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
+        expect(PubSub.publish).not.toHaveBeenCalled()
+        expect(setTimeout).toHaveBeenCalledTimes(3)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3500)
+
+        request.default.mockClear()
+        request.default.mockResolvedValue('')
+
+        jest.runOnlyPendingTimers()
+
+        expect(request.default).toHaveBeenCalledTimes(1)
+
+        return Utils.flushPromises()
+      })
+      .then(() => StorageManager.default.getFirst('activityState'))
+      .then(activityState => {
+
+        jest.runOnlyPendingTimers()
+
+        expect(activityState.attribution).toBeUndefined()
+        expect(ActivityState.default.current.attribution).toBeUndefined()
+        expect(Identity.persist).toHaveBeenCalledTimes(1)
+        expect(PubSub.publish).not.toHaveBeenCalled()
+      })
+  })
+
   it('ignores empty attribution result even if there is no stored attribution at the moment', () => {
 
     ActivityState.default.current = {}

@@ -257,7 +257,7 @@ function _continue () {
 
   _isStarted = true
 
-  queueRun(true)
+  queueRun({cleanUp: true})
 
   return sessionWatch()
 }

@@ -13,11 +13,11 @@ jest.useFakeTimers()
 const currentTime = Date.now()
 let dateNowSpy
 
-function checkExecution ({config, times, success = true, wait = 150, flush = true, reset = false}) {
+function checkExecution ({config, times, success = true, successResult, wait = 150, flush = true, reset = false}) {
 
   const logMessage = (times === 1 ? 'Trying' : 'Re-trying') + ` request ${config.url} in ${wait}ms`
   const requestAction = success ? 'resolves' : 'rejects'
-  const requestActionResult = success ? {status: 'success'} : Utils.errorResponse()
+  const requestActionResult = success ? (successResult || {status: 'success'}) : Utils.errorResponse()
 
   jest.runOnlyPendingTimers()
 
@@ -30,7 +30,7 @@ function checkExecution ({config, times, success = true, wait = 150, flush = tru
     method: 'GET',
     params: {createdAt: 'some-time'}
   })
-  expect(request.default.mock.results[0].value)[requestAction].toEqual(requestActionResult)
+  expect(request.default.mock.results[lastRequest].value)[requestAction].toEqual(requestActionResult)
   expect(Logger.default.log).toHaveBeenLastCalledWith(logMessage)
 
   if (reset) {
@@ -149,6 +149,131 @@ describe('test request queuing functionality', () => {
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
+
+        return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
+
+        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
+
+        return StorageManager.default.getFirst('queue')
+      })
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+  })
+
+  it('pushes multiple requests to the queue and executes them with some delay requested from backend', () => {
+
+    dateNowSpy.mockReturnValue(currentTime)
+
+    const config1 = {url: '/some-url-1'}
+    const config2 = {url: '/some-url-2'}
+    const config3 = {url: '/some-url-3'}
+    const config4 = {url: '/some-url-4'}
+
+    expect.assertions(27)
+
+    Queue.push(config1)
+    Queue.push(config2)
+    Queue.push(config3)
+    Queue.push(config4)
+
+    return Utils.flushPromises()
+      .then(() => {
+
+        expect(StorageManager.default.addItem).toHaveBeenCalledTimes(4)
+
+        return StorageManager.default.getAll('queue')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {timestamp: currentTime, url: '/some-url-1', params: defaultParams},
+          {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams},
+          {timestamp: currentTime+2, url: '/some-url-3', params: defaultParams},
+          {timestamp: currentTime+3, url: '/some-url-4', params: defaultParams}
+        ])
+
+        request.default.mockResolvedValue({continue_in: 2000})
+
+        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 2000}}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
+
+        request.default.mockResolvedValue({continue_in: 3000})
+
+        return checkExecution({config: config2, times: 1, reset: true, wait: 2000, successResult: {continue_in: 3000}}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
+
+        request.default.mockResolvedValue({status: 'success'})
+
+        return checkExecution({config: config3, times: 1, reset: true, wait: 3000}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
+
+        return checkExecution({config: config4, times: 1, reset: true}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-4 has been finished')
+
+        return StorageManager.default.getFirst('queue')
+      })
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+  })
+
+  it('pushes one request and then several subsequent ones but ignores continue_in from first response of the first request', () => {
+
+    dateNowSpy.mockReturnValue(currentTime)
+
+    const config1 = {url: '/some-url-1'}
+    const config2 = {url: '/some-url-2'}
+    const config3 = {url: '/some-url-3'}
+
+    request.default.mockResolvedValue({continue_in: 3000})
+
+    Queue.push(config1)
+
+    return Utils.flushPromises()
+      .then(() => {
+
+        expect(StorageManager.default.addItem).toHaveBeenCalledTimes(1)
+
+        return StorageManager.default.getAll('queue')
+      })
+      .then(result => {
+        expect(result).toEqual([
+          {timestamp: currentTime, url: '/some-url-1', params: defaultParams}
+        ])
+
+        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 3000}, flush: true}) // + 5 assertions
+      })
+      .then(() => {
+        dateNowSpy.mockReturnValue(currentTime + 1)
+
+        Queue.push(config2)
+        Queue.push(config3)
+
+        return Utils.flushPromises()
+      })
+      .then(() => StorageManager.default.getAll('queue'))
+      .then(result => {
+        expect(result).toEqual([
+          {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams},
+          {timestamp: currentTime+2, url: '/some-url-3', params: defaultParams}
+        ])
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
+
+        request.default.mockResolvedValue({status: 'success'})
 
         return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
       })
@@ -668,7 +793,7 @@ describe('test request queuing functionality', () => {
       .then(() => {
         dateNowSpy.mockReturnValue(new Date('2019-03-03').getTime())
 
-        Queue.run(true)
+        Queue.run({cleanUp: true})
 
         return Utils.flushPromises()
       })

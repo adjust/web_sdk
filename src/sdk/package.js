@@ -131,10 +131,9 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @param {Object=} params
    * @param {Function=} continueCb
    * @param {number=} wait
-   * @param {boolean=false} retrying
    * @returns {Promise}
    */
-  function send ({url, method, params = {}, continueCb, wait, retrying} = {}) {
+  function send ({url, method, params = {}, continueCb, wait} = {}) {
     if (!_url.current && !url) {
       Logger.error('You must define url for the request to be sent')
       return Promise.reject({error: 'No url specified'})
@@ -142,7 +141,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
     _prepare({url, method, params, continueCb})
 
-    return _request({wait, retrying})
+    return _request({wait})
   }
 
   /**
