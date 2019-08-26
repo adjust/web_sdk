@@ -405,6 +405,51 @@ describe('test package functionality', () => {
 
   })
 
+  it('limit wait to maximum 32 bit integer', () => {
+
+    const newNow = Date.now()
+    const max32Int = 2147483647
+
+    createdAtSpy.mockClear()
+
+    createdAtSpy
+      .mockReturnValueOnce(now)
+      .mockReturnValueOnce(newNow)
+
+    request.default.mockResolvedValue({retry_in: 2592000000})
+
+    someRequest.send({
+      url: '/some-request'
+    })
+
+    expect.assertions(6)
+
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /some-request in 150ms')
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
+
+    jest.runOnlyPendingTimers()
+
+    return Utils.flushPromises()
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenLastCalledWith(`Re-trying request /some-request in ${max32Int}ms`)
+
+        request.default.mockResolvedValue({})
+
+        jest.runOnlyPendingTimers()
+
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), max32Int)
+
+        setTimeout.mockClear()
+
+        return Utils.flushPromises()
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-request has been finished')
+        expect(setTimeout).not.toHaveBeenCalled()
+      })
+
+  })
+
   it('retires unsuccessful request', () => {
 
     const newNow = Date.now()
