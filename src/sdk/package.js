@@ -3,9 +3,11 @@ import {extend, isEmpty} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
 import backOff from './backoff'
+import {DAY} from './constants'
 
 const DEFAULT_ATTEMPTS = 0
 const DEFAULT_WAIT = 150
+const MAX_WAIT = DAY/2
 
 const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   /**
@@ -237,7 +239,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
     }
 
     if (wait) {
-      _wait = wait
+      _wait = wait > MAX_WAIT ? MAX_WAIT : wait
     }
 
     Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url.current} in ${_wait}ms`)
