@@ -3,11 +3,10 @@ import {extend, isEmpty} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
 import backOff from './backoff'
-import {DAY} from './constants'
 
 const DEFAULT_ATTEMPTS = 0
 const DEFAULT_WAIT = 150
-const MAX_WAIT = DAY/2
+const MAX_WAIT = 0x7FFFFFFF // 2^31 - 1
 
 const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   /**
