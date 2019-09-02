@@ -4,11 +4,13 @@
     "node": true,
     "jest": true
   },
+  "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
   },
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended"],
+  "plugins": ["flowtype"],
   "globals": {
     "Promise": true,
     "__ADJUST__NAMESPACE": true,
