@@ -1,18 +1,32 @@
+// @flow
 import {extend, isEmpty, convertToMap} from './utilities'
 import {push} from './queue'
-import {get} from './global-params'
+import {type GlobalParamsT, type GlobalParamsObjectT, get} from './global-params'
 import Logger from './logger'
 import Config from './config'
+
+export type EventParamsT = {|
+  eventToken: string,
+  revenue?: number,
+  currency?: string,
+  callbackParams?: Array<GlobalParamsT>,
+  partnerParams?: Array<GlobalParamsT>
+|}
+
+type RevenueT = {
+  revenue: string,
+  currency: string
+}
 
 /**
  * Get revenue value if positive and limit to 5 decimal places
  *
- * @param {number} revenue
- * @param {string} currency
+ * @param {number=} revenue
+ * @param {string=} currency
  * @returns {Object}
  * @private
  */
-function _getRevenue (revenue, currency) {
+function _getRevenue (revenue: number | void, currency: string | void): RevenueT {
   if (isNaN(revenue)) {
     return {}
   }
@@ -38,33 +52,33 @@ function _getRevenue (revenue, currency) {
  * @param {string=} params.currency
  * @param {Array=} params.callbackParams
  * @param {Array=} params.partnerParams
- * @param {Array} globalCallbackParams
- * @param {Array} globalPartnerParams
+ * @param {Array} callbackParams
+ * @param {Array} partnerParams
  * @returns {Object}
  * @private
  */
-function _prepareParams (params, globalCallbackParams, globalPartnerParams) {
-
+function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: GlobalParamsObjectT): EventParamsT {
+  type keyValueT = {[key: string]: string}
   const globalParams = {}
   const baseParams = extend({
     eventToken: params.eventToken,
   }, _getRevenue(params.revenue, params.currency))
 
-  const callbackParams = extend(
-    convertToMap(globalCallbackParams),
+  const eventCallbackParams: keyValueT = extend(
+    convertToMap(callbackParams),
     convertToMap(params.callbackParams)
   )
-  const partnerParams = extend(
-    convertToMap(globalPartnerParams),
+  const eventPartnerParams: keyValueT = extend(
+    convertToMap(partnerParams),
     convertToMap(params.partnerParams)
   )
 
-  if (!isEmpty(callbackParams)) {
-    globalParams.callbackParams = callbackParams
+  if (!isEmpty(eventCallbackParams)) {
+    globalParams.callbackParams = eventCallbackParams
   }
 
-  if (!isEmpty(partnerParams)) {
-    globalParams.partnerParams = partnerParams
+  if (!isEmpty(eventPartnerParams)) {
+    globalParams.partnerParams = eventPartnerParams
   }
 
   return extend(baseParams, globalParams)
@@ -74,25 +88,25 @@ function _prepareParams (params, globalCallbackParams, globalPartnerParams) {
  * Track event by sending the request to the server
  *
  * @param {Object} params
+ * @return Promise
  */
-export default function event (params = {}) {
-
+export default function event (params: EventParamsT): void | Promise<void> {
   if (!Config.isInitialised()) {
     Logger.error('Adjust SDK is not initiated, can not track event')
     return
   }
 
-  if (isEmpty(params) || !params.eventToken) {
+  if (!params || (params && (isEmpty(params) || !params.eventToken))) {
     Logger.error('You must provide event token in order to track event')
     return
   }
 
   return get()
-    .then(({callbackParams, partnerParams}) => {
+    .then(globalParams => {
       push({
         url: '/event',
         method: 'POST',
-        params: _prepareParams(params, callbackParams, partnerParams)
+        params: _prepareParams(params, globalParams)
       })
     })
 }

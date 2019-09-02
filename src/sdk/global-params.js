@@ -1,6 +1,19 @@
+// @flow
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
 import {convertToMap, intersection} from './utilities'
+
+export type GlobalParamsT = {|
+  key: string,
+  value: string
+|}
+export type GlobalParamsObjectT = {
+  callbackParams: Array<GlobalParamsT>,
+  partnerParams: Array<GlobalParamsT>
+}
+type TypeT = 'callback' | 'partner'
+type KeysT = [string, TypeT]
+type KeysArrayT = Array<KeysT>
 
 /**
  * Name of the store used by global params
@@ -28,16 +41,16 @@ const _error = {
  * @returns {Array}
  * @private
  */
-function _omitType (params) {
+function _omitType (params): Array<GlobalParamsT> {
   return (params || []).map(({key, value}) => ({key, value}))
 }
 
 /**
  * Get callback and partner global parameters
  *
- * @returns {Promise<{callbackParams: Array, partnerParams: Array}>}
+ * @returns {Promise}
  */
-function get () {
+function get (): Promise<GlobalParamsObjectT> {
   return Promise.all([
     StorageManager.filterBy(_storeName, 'callback'),
     StorageManager.filterBy(_storeName, 'partner')
@@ -56,14 +69,15 @@ function get () {
  * @param {string} type
  * @returns {Promise}
  */
-function add (params, type) {
+function add (params: Array<GlobalParamsT>, type: TypeT): void | Promise<KeysArrayT> {
   if (type === undefined) {
     Logger.error(_error.long)
     return Promise.reject({message: _error.short})
   }
 
-  const map = convertToMap(params)
-  const prepared = Object
+  type GlobalParamsWithTypeT = {|...GlobalParamsT, type: string|}
+  const map: {[key: string]: string} = convertToMap(params)
+  const prepared: Array<GlobalParamsWithTypeT> = Object
     .keys(map)
     .map(key => ({key, value: map[key], type}))
 
@@ -71,8 +85,7 @@ function add (params, type) {
     StorageManager.filterBy(_storeName, type),
     StorageManager.addBulk(_storeName, prepared, true)
   ]).then(([oldParams, newParams]) => {
-
-    const intersecting = intersection(
+    const intersecting: Array<string> = intersection(
       oldParams.map(param => param.key),
       newParams.map(param => param[0])
     )
@@ -95,7 +108,7 @@ function add (params, type) {
  * @param {string} type
  * @returns {Promise}
  */
-function remove (key, type) {
+function remove (key: string, type: TypeT): void | Promise<KeysT> {
   if (type === undefined) {
     Logger.error(_error.long)
     return Promise.reject({message: _error.short})
@@ -113,7 +126,7 @@ function remove (key, type) {
  * @param {string} type
  * @returns {Promise}
  */
-function removeAll (type) {
+function removeAll (type: TypeT): void | Promise<KeysArrayT> {
   if (type === undefined) {
     Logger.error(_error.long)
     return Promise.reject({message: _error.short})
@@ -129,7 +142,7 @@ function removeAll (type) {
 /**
  * Clear globalParams store
  */
-function clear () {
+function clear (): void {
   return StorageManager.clear(_storeName)
 }
 

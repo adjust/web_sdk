@@ -1,3 +1,4 @@
+// @flow
 import Config from './config'
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
@@ -6,12 +7,24 @@ import {extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {start, status, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
-import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
+import {type GlobalParamsT, add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
-import event from './event'
+import event, {type EventParamsT} from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
+
+type LogT = {|
+  logLevel?: 'none' | 'error' | 'info' | 'verbose',
+  logOutput?: string
+|}
+type ParamsT = {|
+  appToken: string,
+  environment: 'production' | 'sandbox',
+  defaultTracker?: string,
+  attributionCallback?: (string, Object) => mixed
+|}
+type LogParamsT = {|...LogT, ...ParamsT|}
 
 /**
  * In-memory parameters to be used if restarting
@@ -19,7 +32,7 @@ import {REASON_GDPR} from './constants'
  * @type {Object}
  * @private
  */
-let _params = null
+let _params: ParamsT|null = null
 
 /**
  * Flag to mark if sdk is started
@@ -27,16 +40,18 @@ let _params = null
  * @type {boolean}
  * @private
  */
-let _isStarted = false
+let _isStarted: boolean = false
 
 /**
  * Initiate the instance with parameters
  *
+ * @param {string} logLevel
+ * @param {string} logOutput
  * @param {Object} params
  */
-function init (params = {}) {
+function init ({logLevel, logOutput, ...params}: LogParamsT = {}) : void {
 
-  Logger.setLogLevel(params.logLevel, params.logOutput)
+  Logger.setLogLevel(logLevel, logOutput)
 
   if (!StorageManager) {
     Logger.error('Adjust SDK can not start, there is no storage available')
@@ -64,7 +79,7 @@ function init (params = {}) {
  *
  * @param {Object} params
  */
-function trackEvent (params = {}) {
+function trackEvent (params: EventParamsT): void {
   _run('track event', event, params)
 }
 
@@ -73,7 +88,7 @@ function trackEvent (params = {}) {
  *
  * @param {Array} params
  */
-function addGlobalCallbackParameters (params) {
+function addGlobalCallbackParameters (params: Array<GlobalParamsT>): void {
   _run('add global callback parameters', add, params, 'callback')
 }
 
@@ -82,7 +97,7 @@ function addGlobalCallbackParameters (params) {
  *
  * @param {Array} params
  */
-function addGlobalPartnerParameters (params) {
+function addGlobalPartnerParameters (params: Array<GlobalParamsT>): void {
   _run('add global partner parameters', add, params, 'partner')
 }
 
@@ -91,7 +106,7 @@ function addGlobalPartnerParameters (params) {
  *
  * @param {string} key
  */
-function removeGlobalCallbackParameter (key) {
+function removeGlobalCallbackParameter (key: string): void {
   _run('remove global callback parameter', remove, key, 'callback')
 }
 
@@ -100,21 +115,21 @@ function removeGlobalCallbackParameter (key) {
  *
  * @param {string} key
  */
-function removePartnerCallbackParameter (key) {
+function removePartnerCallbackParameter (key: string): void {
   _run('remove global partner parameter', remove, key, 'partner')
 }
 
 /**
  * Remove all global callback parameters
  */
-function removeAllGlobalCallbackParameters () {
+function removeAllGlobalCallbackParameters (): void {
   _run('remove all global callback parameters', removeAll, 'callback')
 }
 
 /**
  * Remove all global partner parameters
  */
-function removeAllGlobalPartnerParameters () {
+function removeAllGlobalPartnerParameters () : void {
   _run('remove all global partner parameters', removeAll, 'partner')
 }
 
@@ -123,14 +138,14 @@ function removeAllGlobalPartnerParameters () {
  *
  * @param {boolean} state
  */
-function setOfflineMode (state) {
+function setOfflineMode (state: boolean): void {
   _run(`set ${state ? 'offline' : 'online'} mode`, setOffline, state)
 }
 
 /**
  * Disable SDK
  */
-function disable () {
+function disable (): void {
   const done = identityDisable()
 
   if (done && Config.isInitialised()) {
@@ -141,7 +156,7 @@ function disable () {
 /**
  * Enable sdk if not GDPR forgotten
  */
-function enable () {
+function enable (): void {
   const done = identityEnable()
 
   if (done && _params) {
@@ -152,7 +167,7 @@ function enable () {
 /**
  * Disable sdk and send GDPR-Forget-Me request
  */
-function gdprForgetMe () {
+function gdprForgetMe (): void {
   let done = forget()
 
   if (!done) {
@@ -171,7 +186,7 @@ function gdprForgetMe () {
  *
  * @private
  */
-function _handleGdprForgetMe () {
+function _handleGdprForgetMe (): void {
   if (status() !== 'paused') {
     return
   }
@@ -192,7 +207,7 @@ function _handleGdprForgetMe () {
  *
  * @private
  */
-function _pause () {
+function _pause (): void {
   _isStarted = false
 
   queueDestroy()
@@ -204,7 +219,7 @@ function _pause () {
  * Shutdown all dependencies
  * @private
  */
-function _shutdown (async) {
+function _shutdown (async): void {
   if (async) {
     Logger.log('Adjust SDK has been shutdown due to asynchronous disable')
   }
@@ -220,7 +235,7 @@ function _shutdown (async) {
 /**
  * Destroy the instance
  */
-function destroy () {
+function destroy (): void {
   _shutdown()
   gdprForgetDestroy()
 
@@ -235,7 +250,7 @@ function destroy () {
  * @returns {Promise|boolean}
  * @private
  */
-function _continue () {
+function _continue (): Promise<void> {
   gdprForgetCheck()
 
   const sdkStatus = status()
@@ -278,7 +293,7 @@ function _continue () {
  * @param {Function=} params.attributionCallback
  * @private
  */
-function _start (params) {
+function _start (params: ParamsT): void {
   if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
     return
@@ -315,7 +330,7 @@ function _start (params) {
  * @param {...Object} args
  * @private
  */
-function _run (description, method, ...args) {
+function _run (description: string, method: (...args: Array<any>) => mixed, ...args: Array<mixed>): void {
 
   if (!StorageManager) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
