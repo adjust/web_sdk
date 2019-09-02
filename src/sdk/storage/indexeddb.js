@@ -148,7 +148,7 @@ function _getTranStore ({storeName, mode}, reject) {
   transaction.onerror = reject
   transaction.onabort = reject
 
-  return {transaction, store, index}
+  return {transaction, store, index, options: storeInfo.options}
 }
 
 /**
@@ -251,7 +251,8 @@ function _openCursor ({storeName, action = 'list', range, firstOnly, mode = 'rea
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
-        const {transaction, store, index} = _getTranStore({storeName, mode}, reject)
+        const {transaction, store, index, options} = _getTranStore({storeName, mode}, reject)
+        const keyPath = options.keyPath instanceof Array ? options.keyPath.slice() : [options.keyPath]
         const cursorRequest = (index || store).openCursor(range)
         const items = []
 
@@ -262,10 +263,11 @@ function _openCursor ({storeName, action = 'list', range, firstOnly, mode = 'rea
           const cursor = e.target.result
 
           if (cursor) {
-            items.push(cursor.value)
-
             if (action === 'delete') {
               cursor.delete()
+              items.push(keyPath.map(k => cursor.value[k]))
+            } else {
+              items.push(cursor.value)
             }
 
             if (!firstOnly) {

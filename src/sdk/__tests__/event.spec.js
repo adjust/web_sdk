@@ -138,6 +138,24 @@ describe('event tracking functionality', () => {
       })
     })
 
+    it('resolves event request successfully but ignores malformed revenue', () => {
+
+      expect.assertions(2)
+
+      event.default({
+        eventToken: '123abc',
+        currency: 'EUR'
+      })
+
+      return expectRequest({
+        url: '/event',
+        method: 'POST',
+        params: {
+          eventToken: '123abc'
+        }
+      })
+    })
+
     it('resolves event request successfully with revenue and some map params', () => {
 
       expect.assertions(2)

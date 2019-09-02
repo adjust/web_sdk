@@ -148,7 +148,7 @@ function _deleteItem (storage, storeName, target) {
  */
 function _deleteBulk (storage, storeName, target) {
   return storage.deleteBulk(storeName, isObject(target) ? target : encodeValue(target))
-    .then(records => convertRecords({storeName, dir: 'right', records}))
+    .then(records => records.map(record => convertValues({storeName, dir: 'right', target: record})))
 }
 
 /**

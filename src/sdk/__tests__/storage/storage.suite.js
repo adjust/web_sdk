@@ -515,10 +515,7 @@ export default function Suite (Storage) {
           return Storage.deleteBulk('queue', {upperBound: 1552705208300})
         })
         .then(deleted => {
-          expect(deleted).toEqual([
-            {timestamp: 1552701608300, url: '/url1'},
-            {timestamp: 1552705208300, url: '/url2'},
-          ])
+          expect(deleted).toEqual([1552701608300, 1552705208300])
         })
         .then(() => Storage.getAll('queue'))
         .then(result => {
@@ -559,8 +556,8 @@ export default function Suite (Storage) {
         })
         .then(deleted => {
           expect(deleted).toEqual([
-            {key: 'key1', value: 'value1', type: 'partner'},
-            {key: 'key2', value: 'value2', type: 'partner'}
+            ['key1', 'partner'],
+            ['key2', 'partner']
           ])
 
           return Storage.getAll('globalParams')
@@ -577,10 +574,10 @@ export default function Suite (Storage) {
         })
         .then(deleted => {
           expect(deleted).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'callback'},
-            {key: 'key3', value: 'value3', type: 'callback'},
-            {key: 'key4', value: 'value4', type: 'callback'}
+            ['key1', 'callback'],
+            ['key2', 'callback'],
+            ['key3', 'callback'],
+            ['key4', 'callback']
           ])
 
           return Storage.getAll('globalParams')
@@ -604,11 +601,7 @@ export default function Suite (Storage) {
       return Storage.addBulk('activityState', activityStateSet)
         .then(() => Storage.deleteBulk('activityState', {upperBound: 'abcd3'}))
         .then(result => {
-          expect(result).toEqual([
-            {uuid: 'abcd1'},
-            {uuid: 'abcd2'},
-            {uuid: 'abcd3'}
-          ])
+          expect(result).toEqual(['abcd1', 'abcd2', 'abcd3'])
 
           return Storage.getAll('activityState')
         })

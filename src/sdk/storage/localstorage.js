@@ -380,6 +380,7 @@ function deleteBulk (storeName, condition) {
       }
 
       const deleted = items.splice(0, index + 1)
+        .map(item => keys.map(k => item[k]))
 
       QuickStorage.stores[storeName] = items
 
