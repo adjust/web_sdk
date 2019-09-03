@@ -11,6 +11,28 @@ import {convertToMap, intersection} from './utilities'
 const _storeName = 'globalParams'
 
 /**
+ * Error message for type missing
+ *
+ * @type {Object}
+ * @private
+ */
+const _error = {
+  short: 'No type provided',
+  long: 'Global parameter type not provided, `callback` or `partner` types are available'
+}
+
+/**
+ * Omit type parameter from the collection
+ *
+ * @param {Array} params
+ * @returns {Array}
+ * @private
+ */
+function _omitType (params) {
+  return (params || []).map(({key, value}) => ({key, value}))
+}
+
+/**
  * Get callback and partner global parameters
  *
  * @returns {Promise<{callbackParams: Array, partnerParams: Array}>}
@@ -21,8 +43,8 @@ function get () {
     StorageManager.filterBy(_storeName, 'partner')
   ]).then(([callbackParams, partnerParams]) => {
     return {
-      callbackParams: callbackParams || [],
-      partnerParams: partnerParams || []
+      callbackParams: _omitType(callbackParams),
+      partnerParams: _omitType(partnerParams)
     }
   })
 }
@@ -31,10 +53,15 @@ function get () {
  * Add global parameters, either callback or partner params
  *
  * @param {Array} params
- * @param {string} [type='callback']
+ * @param {string} type
  * @returns {Promise}
  */
-function add (params, type = 'callback') {
+function add (params, type) {
+  if (type === undefined) {
+    Logger.error(_error.long)
+    return Promise.reject({message: _error.short})
+  }
+
   const map = convertToMap(params)
   const prepared = Object
     .keys(map)
@@ -65,10 +92,15 @@ function add (params, type = 'callback') {
  * Remove global parameter by key and type
  *
  * @param {string} key
- * @param {string} [type='callback']
+ * @param {string} type
  * @returns {Promise}
  */
-function remove (key, type = 'callback') {
+function remove (key, type) {
+  if (type === undefined) {
+    Logger.error(_error.long)
+    return Promise.reject({message: _error.short})
+  }
+
   return StorageManager.deleteItem(_storeName, [key, type])
     .then(result => {
       Logger.log(`${key} ${type} parameter has been deleted`)
@@ -78,10 +110,15 @@ function remove (key, type = 'callback') {
 
 /**
  * Remove all global parameters of certain type
- * @param {string} [type='callback']
+ * @param {string} type
  * @returns {Promise}
  */
-function removeAll (type = 'callback') {
+function removeAll (type) {
+  if (type === undefined) {
+    Logger.error(_error.long)
+    return Promise.reject({message: _error.short})
+  }
+
   return StorageManager.deleteBulk(_storeName, type)
     .then(result => {
       Logger.log(`All ${type} parameters have been deleted`)

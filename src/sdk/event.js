@@ -13,6 +13,9 @@ import Config from './config'
  * @private
  */
 function _getRevenue (revenue, currency) {
+  if (isNaN(revenue)) {
+    return {}
+  }
 
   revenue = parseFloat(revenue)
 

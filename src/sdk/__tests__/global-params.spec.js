@@ -8,6 +8,7 @@ describe('global parameters functionality', () => {
 
   beforeAll(() => {
     jest.spyOn(Logger.default, 'log')
+    jest.spyOn(Logger.default, 'error')
   })
 
   afterEach(() => {
@@ -18,6 +19,33 @@ describe('global parameters functionality', () => {
   afterAll(() => {
     jest.restoreAllMocks()
     localStorage.clear()
+  })
+
+  it('throws error when required type not provided', () => {
+
+    expect.assertions(9)
+
+    return GlobalParams.add([{key: 'key1', value: 'value1'}])
+      .catch(error => {
+        expect(error.message).toBe('No type provided')
+        expect(Logger.default.error).toHaveBeenCalledWith('Global parameter type not provided, `callback` or `partner` types are available')
+        expect(Logger.default.error).toHaveBeenCalledTimes(1)
+
+        return GlobalParams.remove('key1')
+      })
+      .catch(error => {
+        expect(error.message).toBe('No type provided')
+        expect(Logger.default.error).toHaveBeenCalledWith('Global parameter type not provided, `callback` or `partner` types are available')
+        expect(Logger.default.error).toHaveBeenCalledTimes(2)
+
+        return GlobalParams.removeAll()
+      })
+      .catch(error => {
+        expect(error.message).toBe('No type provided')
+        expect(Logger.default.error).toHaveBeenCalledWith('Global parameter type not provided, `callback` or `partner` types are available')
+        expect(Logger.default.error).toHaveBeenCalledTimes(3)
+      })
+
   })
 
   it('returns empty arrays if there are no global callback parameters', () => {
