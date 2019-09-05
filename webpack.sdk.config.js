@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
+const FlowWebpackPlugin = require('flow-webpack-plugin')
 
 module.exports = (env, argv) => ({
   mode: 'production',
@@ -26,25 +27,19 @@ module.exports = (env, argv) => ({
       __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
       __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version),
       __ADJUST__ENV: JSON.stringify(argv && argv.mode || 'production')
-    })
+    }),
+    new FlowWebpackPlugin()
   ],
   module: {
     rules: [{
+      use: 'eslint-loader',
+      test: /\.js$/,
       enforce: 'pre',
-      test: /\.js$/,
-      exclude: /node_modules/,
-      use: 'eslint-loader'
+      exclude: /node_modules/
     }, {
+      use: 'babel-loader',
       test: /\.js$/,
-      exclude: /node_modules/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            '@babel/preset-env'
-          ]
-        }
-      }
+      exclude: /node_modules/
     }]
   }
 })

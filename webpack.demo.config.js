@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const FlowWebpackPlugin = require('flow-webpack-plugin')
 const webpack = require('webpack')
 
 module.exports = (env, argv) => ({
@@ -35,7 +36,8 @@ module.exports = (env, argv) => ({
       __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
       __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version),
       __ADJUST__ENV: JSON.stringify(argv && argv.mode || 'production')
-    })
+    }),
+    new FlowWebpackPlugin()
   ],
   module: {
     rules: [{
@@ -46,14 +48,7 @@ module.exports = (env, argv) => ({
     }, {
       test: /\.js$/,
       exclude: /node_modules/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            '@babel/preset-env'
-          ]
-        }
-      }
+      use: 'babel-loader'
     }, {
       test: /(\.css|\.scss)$/,
       use: [

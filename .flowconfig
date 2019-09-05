@@ -1,0 +1,15 @@
+[ignore]
+.*/node_modules/.*
+.*/coverage/.*
+.*/demo/.*
+.*/dist/.*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]

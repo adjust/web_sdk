@@ -85,7 +85,7 @@ function add (params: Array<GlobalParamsT>, type: TypeT): void | Promise<KeysArr
     StorageManager.filterBy(_storeName, type),
     StorageManager.addBulk(_storeName, prepared, true)
   ]).then(([oldParams, newParams]) => {
-    const intersecting: Array<string> = intersection(
+    const intersecting = intersection(
       oldParams.map(param => param.key),
       newParams.map(param => param[0])
     )
