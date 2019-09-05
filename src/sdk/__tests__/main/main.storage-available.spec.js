@@ -194,18 +194,6 @@ describe('main entry point - test instance initiation when storage is available'
       suite.expectRunningTrackEvent()
     })
 
-    it('ignores running non-existing method', () => {
-
-      const originalEventMethod = event.default
-      event.default = null
-
-      AdjustInstance.trackEvent({eventToken: 'bla'})
-
-      expect(originalEventMethod).not.toHaveBeenCalled()
-
-      event.default = originalEventMethod
-
-    })
   })
 })
 

@@ -80,7 +80,7 @@ function init ({logLevel, logOutput, ...params}: LogParamsT = {}) : void {
  * @param {Object} params
  */
 function trackEvent (params: EventParamsT): void {
-  _run('track event', event, params)
+  _preCheck('track event', () => event(params))
 }
 
 /**
@@ -89,7 +89,7 @@ function trackEvent (params: EventParamsT): void {
  * @param {Array} params
  */
 function addGlobalCallbackParameters (params: Array<GlobalParamsT>): void {
-  _run('add global callback parameters', add, params, 'callback')
+  _preCheck('add global callback parameters', () => add(params, 'callback'))
 }
 
 /**
@@ -98,7 +98,7 @@ function addGlobalCallbackParameters (params: Array<GlobalParamsT>): void {
  * @param {Array} params
  */
 function addGlobalPartnerParameters (params: Array<GlobalParamsT>): void {
-  _run('add global partner parameters', add, params, 'partner')
+  _preCheck('add global partner parameters', () => add(params, 'partner'))
 }
 
 /**
@@ -107,7 +107,7 @@ function addGlobalPartnerParameters (params: Array<GlobalParamsT>): void {
  * @param {string} key
  */
 function removeGlobalCallbackParameter (key: string): void {
-  _run('remove global callback parameter', remove, key, 'callback')
+  _preCheck('remove global callback parameter', () => remove(key, 'callback'))
 }
 
 /**
@@ -116,21 +116,21 @@ function removeGlobalCallbackParameter (key: string): void {
  * @param {string} key
  */
 function removePartnerCallbackParameter (key: string): void {
-  _run('remove global partner parameter', remove, key, 'partner')
+  _preCheck('remove global partner parameter', () => remove(key, 'partner'))
 }
 
 /**
  * Remove all global callback parameters
  */
 function removeAllGlobalCallbackParameters (): void {
-  _run('remove all global callback parameters', removeAll, 'callback')
+  _preCheck('remove all global callback parameters', () => removeAll('callback'))
 }
 
 /**
  * Remove all global partner parameters
  */
 function removeAllGlobalPartnerParameters () : void {
-  _run('remove all global partner parameters', removeAll, 'partner')
+  _preCheck('remove all global partner parameters', () => removeAll('partner'))
 }
 
 /**
@@ -139,7 +139,7 @@ function removeAllGlobalPartnerParameters () : void {
  * @param {boolean} state
  */
 function setOfflineMode (state: boolean): void {
-  _run(`set ${state ? 'offline' : 'online'} mode`, setOffline, state)
+  _preCheck(`set ${state ? 'offline' : 'online'} mode`, () => setOffline(state))
 }
 
 /**
@@ -323,15 +323,13 @@ function _start (params: ParamsT): void {
 }
 
 /**
- * Run provided method only if sdk is enabled
+ * Check if it's possible to run provided method
  *
  * @param {string} description
- * @param {Function} method
- * @param {...Object} args
+ * @param {Function} callback
  * @private
  */
-function _run (description: string, method: (...args: Array<any>) => mixed, ...args: Array<mixed>): void {
-
+function _preCheck (description: string, callback: () => mixed) {
   if (!StorageManager) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -342,8 +340,8 @@ function _run (description: string, method: (...args: Array<any>) => mixed, ...a
     return
   }
 
-  if (typeof method === 'function') {
-    method.call(null, ...args)
+  if (typeof callback === 'function') {
+    callback()
   }
 }
 
