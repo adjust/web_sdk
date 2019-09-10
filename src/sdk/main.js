@@ -32,7 +32,7 @@ type LogParamsT = {|...LogT, ...ParamsT|}
  * @type {Object}
  * @private
  */
-let _params: ParamsT|null = null
+let _params: ?ParamsT = null
 
 /**
  * Flag to mark if sdk is started
@@ -49,7 +49,7 @@ let _isStarted: boolean = false
  * @param {string} logOutput
  * @param {Object} params
  */
-function init ({logLevel, logOutput, ...params}: LogParamsT = {}) : void {
+function init ({logLevel, logOutput, ...params}: LogParamsT = {}): void {
 
   Logger.setLogLevel(logLevel, logOutput)
 
@@ -129,7 +129,7 @@ function removeAllGlobalCallbackParameters (): void {
 /**
  * Remove all global partner parameters
  */
-function removeAllGlobalPartnerParameters () : void {
+function removeAllGlobalPartnerParameters (): void {
   _preCheck('remove all global partner parameters', () => removeAll('partner'))
 }
 

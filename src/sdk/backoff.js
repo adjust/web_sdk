@@ -1,4 +1,7 @@
+// @flow
 import {MINUTE, HOUR, DAY} from './constants'
+
+export type StrategyT = 'long' | 'short' | 'test'
 
 /**
  * Options for the back-off strategy for different environments
@@ -40,12 +43,17 @@ function _randomInRange (min, max) {
  * Calculate exponential back-off with optional jitter factor applied
  *
  * @param {number} attempts
- * @param {string} [strategy='long']
+ * @param {string} strategy
  * @returns {number}
  */
-export default function backOff (attempts, strategy = 'long') {
+export default function backOff (attempts: number, strategy: ?StrategyT): number {
+  strategy = strategy || 'long'
 
-  let options = __ADJUST__ENV === 'test' ? _options.test : _options[strategy]
+  // $FlowFixMe: global __ADJUST__ENV defined in webpack is not recognized as global
+  const isTest = __ADJUST__ENV === 'test'
+  const options = isTest
+    ? _options.test
+    : _options[strategy]
   let delay = options.delay * Math.pow(2, attempts - 1)
 
   delay = Math.min(delay, options.maxDelay)

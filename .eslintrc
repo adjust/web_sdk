@@ -9,7 +9,10 @@
     "ecmaVersion": 6,
     "sourceType": "module"
   },
-  "extends": ["eslint:recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:flowtype/recommended"
+  ],
   "plugins": ["flowtype"],
   "globals": {
     "Promise": true,

@@ -1,9 +1,21 @@
+// @flow
 import StorageManager from './storage/storage-manager'
 import ActivityState from './activity-state'
 import State from './state'
 import Logger from './logger'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
 import {extend} from './utilities'
+
+type StatusT = 'on' | 'off' | 'paused'
+type ReasonT = {|
+  reason: REASON_GDPR | REASON_GENERAL,
+  pending?: boolean
+|}
+type ActivityStateObjT = {[key: string]: mixed} // TODO precise type will be derived from activity-state module
+type InterceptT = {|
+  continue: boolean,
+  activityState?: ?ActivityStateObjT
+|}
 
 /**
  * Name of the store used by activityState
@@ -19,7 +31,7 @@ const _storeName = 'activityState'
  * @type {boolean}
  * @private
  */
-let _starting = false
+let _starting: boolean = false
 
 /**
  * Generate random  uuid v4
@@ -27,7 +39,7 @@ let _starting = false
  * @returns {string}
  * @private
  */
-function _generateUuid () {
+function _generateUuid (): string {
   let seed = Date.now()
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (seed + Math.random() * 16) % 16 | 0
@@ -43,7 +55,7 @@ function _generateUuid () {
  * @returns {Object}
  * @private
  */
-function _intercept (stored) {
+function _intercept (stored: ActivityStateObjT): InterceptT {
   if (!stored) {
     return {continue: true}
   }
@@ -64,7 +76,7 @@ function _intercept (stored) {
  *
  * @returns {Promise}
  */
-function start () {
+function start (): Promise<?ActivityStateObjT> {
   if (_starting) {
     return Promise.reject({message: 'Adjust SDK start already in progress'})
   }
@@ -95,7 +107,7 @@ function start () {
  *
  * @returns {Promise}
  */
-function persist () {
+function persist (): Promise<?ActivityStateObjT> {
   if (status() === 'off') {
     return Promise.resolve(null)
   }
@@ -111,9 +123,9 @@ function persist () {
  *
  * @returns {Promise}
  */
-function sync () {
+function sync (): Promise<ActivityStateObjT> {
   return StorageManager.getFirst(_storeName)
-    .then((activityState) => {
+    .then(activityState => {
       const lastActive = ActivityState.current.lastActive || 0
 
       if (status() !== 'off' && lastActive < activityState.lastActive) {
@@ -132,7 +144,7 @@ function sync () {
  * @param {boolean=} pending
  * @private
  */
-function disable ({reason, pending = false} = {}) {
+function disable ({reason, pending = false}: ReasonT = {}): boolean {
   const logReason = (reason) => reason === REASON_GDPR ? ' due to GDPR-Forget-Me request' : ''
   const disabled = State.disabled || {}
 
@@ -154,7 +166,7 @@ function disable ({reason, pending = false} = {}) {
 /**
  * Enable sdk if not GDPR forgotten
  */
-function enable () {
+function enable (): boolean {
   const disabled = State.disabled || {}
 
   if (disabled.reason === REASON_GDPR) {
@@ -182,7 +194,7 @@ function enable () {
  *
  * @returns {string}
  */
-function status () {
+function status (): StatusT {
   const disabled = State.disabled || {}
 
   if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
@@ -197,7 +209,7 @@ function status () {
 /**
  * Clear activity state store - set uuid to be unknown
  */
-function clear () {
+function clear (): void {
   const newActivityState = {uuid: 'unknown'}
 
   ActivityState.current = newActivityState
@@ -213,7 +225,7 @@ function clear () {
 /**
  * Destroy current activity state
  */
-function destroy () {
+function destroy (): void {
   ActivityState.destroy()
 }
 
