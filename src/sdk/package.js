@@ -1,21 +1,59 @@
+// @flow
 import request from './request'
 import {extend, isEmpty} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
-import backOff from './backoff'
+import backOff, {type StrategyT} from './backoff'
 
-const DEFAULT_ATTEMPTS = 0
-const DEFAULT_WAIT = 150
-const MAX_WAIT = 0x7FFFFFFF // 2^31 - 1
+type ResultT = $ReadOnly<{
+  continue_in: number,
+  retry_in: number,
+  ask_in: number
+}> // TODO precise result type will be derived from request module
+type UrlT = string
+type MethodT ='GET' | 'POST' | 'PUT' | 'DELETE'
+type ParamsT = {[key: string]: mixed}
+type ContinueCbT = (ResultT, () => mixed, (number) => mixed) => mixed
+type WaitT = number
+type PackageParamsT = {|
+  url?: UrlT,
+  method?: MethodT,
+  params?: ParamsT,
+  continueCb?: ?ContinueCbT,
+  strategy?: StrategyT,
+  wait?: WaitT
+|}
+type UrlObjT = {
+  current: ?UrlT,
+  global: ?UrlT
+}
+type MethodObjT = {
+  current: MethodT,
+  global: MethodT
+}
+type ParamsObjT = {
+  current: ParamsT,
+  global: ParamsT
+}
+type ContinueCbObjT = {
+  current: ?ContinueCbT,
+  global: ?ContinueCbT
+}
+type AttemptsT = number
+type StartAtT = number
 
-const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
+const DEFAULT_ATTEMPTS: AttemptsT = 0
+const DEFAULT_WAIT: WaitT = 150
+const MAX_WAIT: WaitT = 0x7FFFFFFF // 2^31 - 1
+
+const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}: PackageParamsT = {}) => {
   /**
    * Url param per instance or per request
    *
    * @type {{current: string, global: string}}
    * @private
    */
-  let _url = {current: url, global: url}
+  let _url: UrlObjT = {current: url, global: url}
 
   /**
    * Method param per instance or per request, defaults to `GET`
@@ -23,7 +61,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {{current: string, global: string}}
    * @private
    */
-  let _method = {current: method, global: method}
+  let _method: MethodObjT = {current: method, global: method}
 
   /**
    * Request params per instance or per request
@@ -31,7 +69,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {{current: Object, global: Object}}
    * @private
    */
-  let _params = {current: extend({}, params), global: extend({}, params)}
+  let _params: ParamsObjT = {current: extend({}, params), global: extend({}, params)}
 
   /**
    * Optional continue callback per instance or per request
@@ -39,7 +77,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {{current: Function, global: Function}}
    * @private
    */
-  let _continueCb = {current: continueCb, global: continueCb}
+  let _continueCb: ContinueCbObjT = {current: continueCb, global: continueCb}
 
   /**
    * Back-off strategy
@@ -47,7 +85,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {string|null}
    * @private
    */
-  const _strategy = strategy
+  const _strategy: ?StrategyT = strategy
 
   /**
    * Timeout id to be used for clearing
@@ -55,7 +93,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {number|null}
    * @private
    */
-  let _timeoutId = null
+  let _timeoutId: ?TimeoutID = null
 
   /**
    * Number of request attempts
@@ -63,7 +101,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {number}
    * @private
    */
-  let _attempts = DEFAULT_ATTEMPTS
+  let _attempts: AttemptsT = DEFAULT_ATTEMPTS
 
   /**
    * Waiting time for the request to be sent
@@ -71,7 +109,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {number}
    * @private
    */
-  let _wait = DEFAULT_WAIT
+  let _wait: WaitT = _prepareWait(wait)
 
   /**
    * Timestamp when the request has been scheduled
@@ -79,7 +117,20 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @type {Date|null}
    * @private
    */
-  let _startAt = null
+  let _startAt: ?StartAtT = null
+
+  /**
+   * Ensure that wait is not more than maximum 32int so it does not cause overflow in setTimeout
+   *
+   * @param {number} wait
+   * @returns {number}
+   * @private
+   */
+  function _prepareWait (wait?: WaitT): WaitT {
+    wait = wait || DEFAULT_WAIT
+
+    return wait > MAX_WAIT ? MAX_WAIT : wait
+  }
 
   /**
    * Override current parameters if available
@@ -90,7 +141,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @param {Function=} continueCb
    * @private
    */
-  function _prepare ({url, method, params, continueCb}) {
+  function _prepareParams ({url, method, params, continueCb}: PackageParamsT): void {
     if (url) {
       _url.current = url
     }
@@ -113,11 +164,85 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   }
 
   /**
+   * Clear previous attempt if new one is about to happen faster
+   *
+   * @param {number} wait
+   * @returns {boolean}
+   * @private
+   */
+  function _skip (wait: ?WaitT): boolean {
+    if (!_startAt) {
+      return false
+    }
+
+    if (_timeoutId) {
+      const remainingTime = _wait - (Date.now() - _startAt)
+
+      if (wait && remainingTime < wait) {
+        return true
+      }
+
+      clear()
+    }
+
+    return false
+  }
+
+  /**
+   * Prepare request to be sent away
+   *
+   * @param {number=} wait
+   * @param {boolean=false} retrying
+   * @returns {Promise}
+   * @private
+   */
+  function _prepareRequest ({wait, retrying}: {wait?: WaitT, retrying?: boolean}): Promise<ResultT> {
+    _wait = wait ? _prepareWait(wait) : _wait
+
+    if (_skip(wait)) {
+      return Promise.resolve({})
+    }
+
+    if (!_url.current) {
+      Logger.error('You must define url for the request to be sent')
+      return Promise.reject({error: 'No url specified'})
+    }
+
+    Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url.current} in ${_wait}ms`)
+
+    _startAt = Date.now()
+
+    return _request()
+  }
+
+  /**
+   * Do the timed-out request with retry mechanism
+   *
+   * @returns {Promise}
+   * @private
+   */
+  function _request (): Promise<ResultT> {
+    return new Promise(resolve => {
+      _timeoutId = setTimeout(() => {
+        _startAt = null
+
+        return request({
+          url: _url.current,
+          method: _method.current,
+          params: extend({}, _params.current)
+        })
+          .then(result => _continue(result, resolve))
+          .catch(({response = {}} = {}) => response.code === 'RETRY' ? _retry() : _finish(true))
+      }, _wait)
+    })
+  }
+
+  /**
    * Restore to global parameters
    *
    * @private
    */
-  function _restore () {
+  function _restore (): void {
     _url.current = _url.global
     _method.current = _method.global
     _params.current = extend({}, _params.global)
@@ -125,33 +250,13 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
   }
 
   /**
-   * Send the request after specified or default waiting period
-   *
-   * @param {string=} url
-   * @param {string=} method
-   * @param {Object=} params
-   * @param {Function=} continueCb
-   * @param {number=} wait
-   * @returns {Promise}
-   */
-  function send ({url, method, params = {}, continueCb, wait} = {}) {
-    if (!_url.current && !url) {
-      Logger.error('You must define url for the request to be sent')
-      return Promise.reject({error: 'No url specified'})
-    }
-
-    _prepare({url, method, params, continueCb})
-
-    return _request({wait})
-  }
-
-  /**
    * Finish the request by restoring and clearing
    *
    * @param {boolean=false} failed
+   * @private
    */
-  function finish (failed) {
-    Logger.log(`Request ${_url.current} ${failed ? 'failed' : 'has been finished'}`)
+  function _finish (failed?: boolean): void {
+    Logger.log(`Request ${_url.current || 'unknown'} ${failed ? 'failed' : 'has been finished'}`)
 
     _attempts = DEFAULT_ATTEMPTS
     _wait = DEFAULT_WAIT
@@ -166,13 +271,14 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    *
    * @param {number=} wait
    * @returns {Promise}
+   * @private
    */
-  function retry (wait) {
+  function _retry (wait?: WaitT): Promise<ResultT> {
     _attempts += 1
 
     clear()
 
-    return _request({
+    return _prepareRequest({
       wait: wait || backOff(_attempts, _strategy),
       retrying: true
     })
@@ -189,75 +295,38 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    * @param {Function} resolve
    * @private
    */
-  function _continue (result, resolve) {
+  function _continue (result: ResultT, resolve: (ResultT) => mixed): ?Promise<ResultT> {
     if (result.retry_in) {
-      return retry(result.retry_in)
+      return _retry(result.retry_in)
+    }
+
+    const finishAndResolve = () => {
+      _finish()
+      resolve(result)
     }
 
     if (typeof _continueCb.current === 'function') {
-      _continueCb.current(result)
+      _continueCb.current(result, finishAndResolve, _retry)
     } else {
-      finish()
+      finishAndResolve()
     }
 
-    resolve(result)
   }
 
   /**
-   * Clear previous attempt if new one is about to happen faster
+   * Send the request after specified or default waiting period
    *
-   * @param {number} wait
-   * @returns {boolean}
-   * @private
-   */
-  function _skip (wait) {
-    const remainingTime = _wait - (Date.now() - _startAt)
-
-    if (_timeoutId) {
-      if (remainingTime < wait) {
-        return true
-      }
-
-      clear()
-    }
-
-    return false
-  }
-
-  /**
-   * Do the timed-out request with retry mechanism
-   *
+   * @param {string=} url
+   * @param {string=} method
+   * @param {Object=} params
+   * @param {Function=} continueCb
    * @param {number=} wait
-   * @param {boolean=false} retrying
-   * @returns {Promise|undefined}
-   * @private
+   * @returns {Promise}
    */
-  function _request ({wait, retrying}) {
-    if (_skip(wait)) {
-      return
-    }
+  function send ({url, method, params = {}, continueCb, wait}: PackageParamsT = {}): Promise<ResultT> {
+    _prepareParams({url, method, params, continueCb})
 
-    if (wait) {
-      _wait = wait > MAX_WAIT ? MAX_WAIT : wait
-    }
-
-    Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url.current} in ${_wait}ms`)
-
-    _startAt = Date.now()
-
-    return new Promise((resolve) => {
-      _timeoutId = setTimeout(() => {
-        _startAt = null
-
-        return request({
-          url: _url.current,
-          method: _method.current,
-          params: extend({}, _params.current)
-        })
-          .then(result => _continue(result, resolve))
-          .catch(({response = {}} = {}) => response.code === 'RETRY' ? retry() : finish(true))
-      }, _wait)
-    })
+    return _prepareRequest({wait})
   }
 
   /**
@@ -265,17 +334,20 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
    *
    * @returns {boolean}
    */
-  function isRunning () {
+  function isRunning (): boolean {
     return !!_timeoutId
   }
 
   /**
    * Clear the current request
    */
-  function clear () {
+  function clear (): void {
     const stillRunning = !!_startAt
 
-    clearTimeout(_timeoutId)
+    if (_timeoutId) {
+      clearTimeout(_timeoutId)
+    }
+
     _timeoutId = null
     _startAt = null
 
@@ -283,7 +355,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
       _wait = DEFAULT_WAIT
       _attempts = DEFAULT_ATTEMPTS
 
-      Logger.log(`Previous ${_url.current} request attempt canceled`)
+      Logger.log(`Previous ${_url.current || 'unknown'} request attempt canceled`)
 
       _restore()
     }
@@ -291,8 +363,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy}) => {
 
   return {
     send,
-    finish,
-    retry,
     isRunning,
     clear
   }

@@ -49,10 +49,12 @@ const _current = {
 /**
  * Remove from the top and continue running pending requests
  *
+ * @param {Object} result
+ * @param {Function} finish
  * @returns {Promise}
  * @private
  */
-function _continue (result) {
+function _continue (result, finish) {
   const wait = result && result.continue_in || null
 
   _current.pause = wait ? {
@@ -63,7 +65,7 @@ function _continue (result) {
   return StorageManager.getFirst(_storeName)
     .then(pending => pending ? StorageManager.deleteItem(_storeName, pending.timestamp) : null)
     .then(() => {
-      _request.finish()
+      finish()
       _current.running = false
       return run({wait})
     })

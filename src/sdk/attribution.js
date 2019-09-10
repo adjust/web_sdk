@@ -88,19 +88,20 @@ function _setAttribution (result) {
  * Store attribution or make another request if attribution not yet available
  *
  * @param {Object} result
+ * @param {Function} finish
+ * @param {Function} retry
  * @returns {Promise}
  * @private
  */
-function _continue (result) {
+function _continue (result, finish, retry) {
   result = result || {}
 
   if (!result.ask_in) {
-    _request.finish()
-
+    finish()
     return _setAttribution(result)
   }
 
-  return _request.retry(result.ask_in)
+  return retry(result.ask_in)
 }
 
 /**

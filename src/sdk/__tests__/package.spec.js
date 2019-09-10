@@ -114,12 +114,11 @@ describe('test package functionality', () => {
     request.default.mockResolvedValue({wait: 3000})
 
     someRequest.send({
-      continueCb (result) {
+      continueCb (result, finish, retry) {
         if (result.wait) {
-          return someRequest.retry(result.wait)
+          return retry(result.wait)
         }
-
-        someRequest.finish()
+        finish()
       }
     })
 
@@ -181,12 +180,11 @@ describe('test package functionality', () => {
       .mockReturnValueOnce(now)
       .mockReturnValueOnce(newNow)
 
-    const continueCb = jest.fn((result) => {
+    const continueCb = jest.fn((result, finish, retry) => {
       if (result.wait) {
-        return someRequest.retry(result.wait)
+        return retry(result.wait)
       }
-
-      someRequest.finish()
+      finish()
     })
 
     request.default.mockResolvedValue({wait: 1300})
@@ -991,7 +989,7 @@ describe('test package functionality', () => {
 
     describe('passes custom parameters', () => {
 
-      const continueCb = jest.fn(() => req.finish())
+      const continueCb = jest.fn((_, finish) => finish())
       const req = Package.default({
         url: '/another-global-request',
         params: {
