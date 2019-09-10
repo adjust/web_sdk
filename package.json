@@ -1,6 +1,6 @@
 {
   "name": "adjust-sdk",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "",
   "scripts": {
     "build:demo": "webpack --mode production --config webpack.demo.config.js",
