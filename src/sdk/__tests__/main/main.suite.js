@@ -226,6 +226,8 @@ function _expectPause () {
   expect(Queue.destroy).toHaveBeenCalled()
   expect(Session.destroy).toHaveBeenCalled()
   expect(Attribution.destroy).toHaveBeenCalled()
+
+  return {assertions: 3}
 }
 
 function expectShutDown (onlyNumOfAssertions) {
@@ -241,10 +243,13 @@ function expectShutDown (onlyNumOfAssertions) {
 }
 
 function expectPartialShutDown () {
-  _expectPause()
+  const a = _expectPause()
+
   expect(PubSub.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
   expect(StorageManager.default.destroy).not.toHaveBeenCalled()
+
+  return {assertions: a.assertions + 3}
 }
 
 function _expectNotPause () {
@@ -272,14 +277,20 @@ function _expectNotDestroy () {
   expect(Logger.default.log).not.toHaveBeenCalledWith('Adjust SDK instance has been destroyed')
 }
 
-function expectClearAndDestroy () {
+function expectClearAndDestroy (onlyNumOfAssertions) {
+  const assertions = 12
+
+  if (onlyNumOfAssertions) {
+    return {assertions}
+  }
+
   expect(Identity.clear).toHaveBeenCalled()
   expect(GlobalParams.clear).toHaveBeenCalled()
   expect(Queue.clear).toHaveBeenCalled()
 
   const promise = Utils.flushPromises().then(_expectDestroy)
 
-  return {assertions: 12, promise}
+  return {assertions, promise}
 }
 
 function expectNotClearAndDestroy () {
@@ -292,17 +303,25 @@ function expectNotClearAndDestroy () {
   return {assertions: 11, promise}
 }
 
-function expectGdprForgetMeCallback () {
+function expectGdprForgetMeCallback (onlyNumOfAssertions, asyncPublish) {
+  const assertions = 2
+
+  if (onlyNumOfAssertions) {
+    return {assertions}
+  }
+
   const oldState = State.default.disabled
 
-  PubSub.publish('sdk:gdpr-forget-me', true)
+  if (asyncPublish) {
+    PubSub.publish('sdk:gdpr-forget-me', true)
+  }
 
   jest.runOnlyPendingTimers()
 
   expect(State.default.disabled).not.toEqual(oldState)
   expect(State.default.disabled).toEqual({reason: 'gdpr', pending: false})
 
-  return {assertions: 2}
+  return {assertions}
 }
 
 function expectNotGdprForgetMeCallback () {
@@ -325,13 +344,19 @@ function expectAllUp () {
   expect(Queue.isRunning()).toBeTruthy()
   expect(Session.isRunning()).toBeTruthy()
 
-  expectAttributionCallback()
-  _expectAttributionCheck()
+  const a = expectGdprForgetMeCallback(true)
+  const promise = expectAttributionCallback()
+    .then(_expectAttributionCheck)
+    .then(() => {
+      _instance.gdprForgetMe()
 
-  _instance.gdprForgetMe()
-  expectGdprForgetMeCallback()
+      jest.runOnlyPendingTimers()
 
-  return Utils.flushPromises()
+      return Utils.flushPromises()
+    })
+    .then(expectGdprForgetMeCallback)
+
+  return {assertions: a.assertions + 7, promise}
 }
 
 function expectAllDown (onlyNumOfAssertions) {
@@ -367,6 +392,8 @@ function expectGdprRequest () {
 
   expect(request.default).toHaveBeenCalled()
   expect(request.default.mock.calls[lastCall][0]).toMatchObject(_gdprConfig)
+
+  return {assertions: 2}
 }
 
 function expectNotGdprRequest (logMessage) {

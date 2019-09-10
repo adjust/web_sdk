@@ -5,6 +5,7 @@ import * as Time from '../time'
 import * as Logger from '../logger'
 import * as ActivityState from '../activity-state'
 import * as State from '../state'
+import * as PubSub from '../pub-sub'
 
 jest.mock('../request')
 jest.mock('../logger')
@@ -47,6 +48,7 @@ describe('GDPR forget device functionality', () => {
     jest.spyOn(request, 'default')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'log')
+    jest.spyOn(PubSub, 'publish')
 
     ActivityState.default.current = {uuid: 'some-uuid'}
   })
@@ -79,6 +81,8 @@ describe('GDPR forget device functionality', () => {
 
     expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending GDPR Forget Me request')
     expectRequest()
+
+    return Utils.flushPromises()
   })
 
   it('runs forget request and prevents subsequent one', () => {
@@ -92,6 +96,11 @@ describe('GDPR forget device functionality', () => {
 
     expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already prepared to send GDPR Forget Me request')
     expectNotRequest()
+
+    return Utils.flushPromises()
+      .then(() => {
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+      })
   })
 
   it('prevents running forget request if sdk already disabled', () => {

@@ -598,7 +598,7 @@ describe('perform api requests', () => {
         })
     })
 
-    it('checks GDPR-Forget-Me state on any request', () => {
+    it('handles GDPR-Forget-Me finish state on random request', () => {
 
       prepare({
         message: 'bla',
@@ -620,6 +620,31 @@ describe('perform api requests', () => {
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+      })
+
+      return Utils.flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
+    })
+
+    it('does not handle GDPR-Forget-Me finish state on gdpr_forget_device request', () => {
+
+      prepare({
+        ask_in: 2500,
+        tracking_state: 'opted_out'
+      })
+
+      expect.assertions(2)
+
+      request.default({
+        url: '/gdpr_forget_device'
+      }).then(result => {
+        expect(result).toEqual({
+          ask_in: 2500,
+          tracking_state: 'opted_out'
+        })
+        expect(PubSub.publish.mock.calls.length).toBe(0)
       })
 
       return Utils.flushPromises()

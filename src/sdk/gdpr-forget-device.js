@@ -1,8 +1,10 @@
+// @flow
 import Package from './package'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Config from './config'
 import {status} from './identity'
+import {publish} from './pub-sub'
 
 /**
  * Package request instance
@@ -31,8 +33,11 @@ const _logMessages = {
 
 /**
  * Request GDPR-Forget-Me in order to disable sdk
+ *
+ * @param {boolean} force
+ * @returns {boolean}
  */
-function forget (force) {
+function forget (force?: boolean): boolean {
   const sdkStatus = status()
 
   if (!force && sdkStatus !== 'on') {
@@ -47,6 +52,8 @@ function forget (force) {
 
   _request.send({
     params: ActivityState.getParams()
+  }).then(() => {
+    publish('sdk:gdpr-forget-me', true)
   })
 
   return true
@@ -55,7 +62,7 @@ function forget (force) {
 /**
  * Check if there is pending GDPR-Forget-Me request
  */
-function check () {
+function check (): void {
   if (status() === 'paused') {
     Logger.log(_logMessages.running)
     forget(true)
@@ -65,7 +72,7 @@ function check () {
 /**
  * Destroy by clearing running request
  */
-function destroy () {
+function destroy (): void {
   _request.clear()
 }
 

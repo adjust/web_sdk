@@ -47,6 +47,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     jest.spyOn(Identity, 'enable')
     jest.spyOn(Identity, 'destroy')
     jest.spyOn(Identity, 'clear')
+    jest.spyOn(PubSub, 'publish')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(Attribution, 'check')
@@ -88,33 +89,33 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
       return a3.promise
     })
 
-    it('runs forget-me request', () => {
+    it('runs forget-me request and flush', () => {
+
       AdjustInstance.gdprForgetMe()
 
-      suite.expectPartialShutDown()
-      suite.expectGdprRequest()
+      const a1 = suite.expectPartialShutDown()
+      const a2 = suite.expectGdprRequest()
+      const a3 = suite.expectGdprForgetMeCallback(true)
+      const a4 = suite.expectClearAndDestroy(true)
+
+      expect.assertions(a1.assertions + a2.assertions + a3.assertions + a4.assertions)
 
       return Utils.flushPromises()
+        .then(() => {
+          suite.expectGdprForgetMeCallback()
+          return suite.expectClearAndDestroy().promise
+        })
     })
 
     it('fails to run forget-me request again', () => {
       AdjustInstance.gdprForgetMe()
 
-      suite.expectNotGdprRequest('Adjust SDK is already prepared to send GDPR Forget Me request')
+      suite.expectNotGdprRequest('Adjust SDK is already disabled')
     })
 
     it('prevents running all static methods and track event', () => {
       suite.expectNotRunningStatic()
       suite.expectNotRunningTrackEvent()
-    })
-
-    it('flush forget-me event does clear and instance destroy', () => {
-      const a1 = suite.expectGdprForgetMeCallback()
-      const a2 = suite.expectClearAndDestroy()
-
-      expect.assertions(a1.assertions + a2.assertions)
-
-      return a2.promise
     })
 
     it('fails to enable sdk after GDPR-Forget-Me has taken effect', () => {
@@ -144,22 +145,21 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
       return a2.promise
     })
 
-    it('runs forget-me request', () => {
+    it('runs forget-me request and flush', () => {
       AdjustInstance.gdprForgetMe()
 
-      suite.expectPartialShutDown()
-      suite.expectGdprRequest()
+      const a1 = suite.expectPartialShutDown()
+      const a2 = suite.expectGdprRequest()
+      const a3 = suite.expectGdprForgetMeCallback(true)
+      const a4 = suite.expectClearAndDestroy(true)
+
+      expect.assertions(a1.assertions + a2.assertions + a3.assertions + a4.assertions)
 
       return Utils.flushPromises()
-    })
-
-    it('flush forget-me event does clear and instance destroy', () => {
-      const a1 = suite.expectGdprForgetMeCallback()
-      const a2 = suite.expectClearAndDestroy()
-
-      expect.assertions(a1.assertions + a2.assertions)
-
-      return a2.promise
+        .then(() => {
+          suite.expectGdprForgetMeCallback()
+          return suite.expectClearAndDestroy().promise
+        })
     })
   })
 
@@ -194,7 +194,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     })
 
     it('flush forget-me event does clear and instance destroy', () => {
-      const a1 = suite.expectGdprForgetMeCallback()
+      const a1 = suite.expectGdprForgetMeCallback(false, true)
       const a2 = suite.expectClearAndDestroy()
 
       expect.assertions(a1.assertions + a2.assertions)

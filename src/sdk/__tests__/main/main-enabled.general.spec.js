@@ -136,7 +136,6 @@ describe('main entry point - test enable/disable when in initially enabled state
       expect(Identity.disable).toHaveBeenCalled()
       expect(Identity.enable).toHaveBeenCalled()
 
-
       return Utils.flushPromises()
         .then(() => {
           expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start already in progress')
@@ -144,7 +143,11 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('ensures that everything is up', () => {
-      return suite.expectAllUp()
+      const a = suite.expectAllUp()
+
+      expect.assertions(a.assertions)
+
+      return a.promise
     })
   })
 
