@@ -222,7 +222,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   function _request (): Promise<ResultT> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       _timeoutId = setTimeout(() => {
         _startAt = null
 
@@ -232,7 +232,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
           params: extend({}, _params.current)
         })
           .then(result => _continue(result, resolve))
-          .catch(({response = {}} = {}) => response.code === 'RETRY' ? _retry() : _finish(true))
+          .catch(({response = {}} = {}) => _error(response, resolve, reject))
       }, _wait)
     })
   }
@@ -295,22 +295,39 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {Function} resolve
    * @private
    */
-  function _continue (result: ResultT, resolve: (ResultT) => mixed): ?Promise<ResultT> {
-    if (result.retry_in) {
-      return _retry(result.retry_in)
-    }
+  function _continue (result: ResultT, resolve): void {
+    result = result || {}
 
-    const finishAndResolve = () => {
-      _finish()
-      resolve(result)
+    if (result.retry_in) {
+      resolve(_retry(result.retry_in))
+      return
     }
 
     if (typeof _continueCb.current === 'function') {
-      _continueCb.current(result, finishAndResolve, _retry)
+      _continueCb.current(result, _finish, _retry)
     } else {
-      finishAndResolve()
+      _finish()
     }
 
+    resolve(result)
+  }
+
+  /**
+   * Ensure to resolve on retry and finish request when unknown error
+   *
+   * @param {Object} response
+   * @param {Function} resolve
+   * @param {Function} reject
+   * @private
+   */
+  function _error (response: ParamsT, resolve, reject): void {
+    if (response.code === 'RETRY') {
+      resolve(_retry())
+      return
+    }
+
+    _finish(true)
+    reject(response)
   }
 
   /**

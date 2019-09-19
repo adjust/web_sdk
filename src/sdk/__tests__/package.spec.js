@@ -793,11 +793,11 @@ describe('test package functionality', () => {
       .mockReturnValueOnce(now)
       .mockReturnValueOnce(newNow)
 
-    request.default.mockRejectedValue({error: 'Unknown error'})
+    request.default.mockRejectedValue({response: {message: 'Unknown error'}})
 
-    expect.assertions(13)
+    expect.assertions(15)
 
-    someRequest.send({url: '/failed-request'})
+    let promise = someRequest.send({url: '/failed-request'})
 
     expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /failed-request in 150ms')
     expect(setTimeout).toHaveBeenCalledTimes(1)
@@ -810,8 +810,9 @@ describe('test package functionality', () => {
       url: '/failed-request'
     }, matchCreatedAt))
 
-    return Utils.flushPromises()
-      .then(() => {
+    return promise
+      .catch(error => {
+        expect(error).toEqual({message: 'Unknown error'})
         expect(someRequest.isRunning()).toBeFalsy()
         expect(clearTimeout).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenLastCalledWith('Request /failed-request failed')
@@ -820,7 +821,7 @@ describe('test package functionality', () => {
         request.default.mockClear()
         clearTimeout.mockClear()
 
-        someRequest.send({url: '/another-failed-request'})
+        promise = someRequest.send({url: '/another-failed-request'})
 
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /another-failed-request in 150ms')
 
@@ -835,9 +836,10 @@ describe('test package functionality', () => {
           }
         })
 
-        return Utils.flushPromises()
+        return promise
       })
-      .then(() => {
+      .catch(error => {
+        expect(error).toEqual({})
         expect(someRequest.isRunning()).toBeFalsy()
         expect(clearTimeout).toHaveBeenCalledTimes(1)
         expect(Logger.default.log).toHaveBeenLastCalledWith('Request /another-failed-request failed')
@@ -1026,7 +1028,7 @@ describe('test package functionality', () => {
 
       it('does a successful request with overriding params and continue callback per request and restores', () => {
 
-        const newContinueCb = jest.fn(() => req.finish())
+        const newContinueCb = jest.fn((_, finish) => finish())
 
         req.send({
           wait: 300,
