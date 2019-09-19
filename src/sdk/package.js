@@ -23,22 +23,12 @@ type PackageParamsT = {|
   strategy?: StrategyT,
   wait?: WaitT
 |}
-type UrlObjT = {
-  current: ?UrlT,
-  global: ?UrlT
-}
-type MethodObjT = {
-  current: MethodT,
-  global: MethodT
-}
-type ParamsObjT = {
-  current: ParamsT,
-  global: ParamsT
-}
-type ContinueCbObjT = {
-  current: ?ContinueCbT,
-  global: ?ContinueCbT
-}
+type GlobalParamsT = {|
+  url: ?UrlT,
+  method: MethodT,
+  params: ?ParamsT,
+  continueCb: ?ContinueCbT
+|}
 type AttemptsT = number
 type StartAtT = number
 
@@ -48,36 +38,44 @@ const MAX_WAIT: WaitT = 0x7FFFFFFF // 2^31 - 1
 
 const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}: PackageParamsT = {}) => {
   /**
-   * Url param per instance or per request
+   * Global param values set on package instantiation and later used for restore
    *
-   * @type {{current: string, global: string}}
+   * @type {{url: string, method: string, params: Object, continueCb: Function}}
    * @private
    */
-  let _url: UrlObjT = {current: url, global: url}
+  let _global: GlobalParamsT = {url, method, params, continueCb}
+
+  /**
+   * Url param per instance or per request
+   *
+   * @type {string}
+   * @private
+   */
+  let _url: ?UrlT = url
 
   /**
    * Method param per instance or per request, defaults to `GET`
    *
-   * @type {{current: string, global: string}}
+   * @type {string}
    * @private
    */
-  let _method: MethodObjT = {current: method, global: method}
+  let _method: MethodT = method
 
   /**
    * Request params per instance or per request
    *
-   * @type {{current: Object, global: Object}}
+   * @type {Object}
    * @private
    */
-  let _params: ParamsObjT = {current: extend({}, params), global: extend({}, params)}
+  let _params: ParamsT = extend({}, params)
 
   /**
    * Optional continue callback per instance or per request
    *
-   * @type {{current: Function, global: Function}}
+   * @type {Function}
    * @private
    */
-  let _continueCb: ContinueCbObjT = {current: continueCb, global: continueCb}
+  let _continueCb: ?ContinueCbT = continueCb
 
   /**
    * Back-off strategy
@@ -143,23 +141,23 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    */
   function _prepareParams ({url, method, params, continueCb}: PackageParamsT): void {
     if (url) {
-      _url.current = url
+      _url = url
     }
 
     if (method) {
-      _method.current = method
+      _method = method
     }
 
     if (!isEmpty(params)) {
-      _params.current = extend({}, params)
+      _params = extend({}, params)
     }
 
-    _params.current = extend({
+    _params = extend({
       createdAt: getTimestamp()
-    }, _params.current)
+    }, _params)
 
     if (typeof continueCb === 'function') {
-      _continueCb.current = continueCb
+      _continueCb = continueCb
     }
   }
 
@@ -203,12 +201,12 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       return Promise.resolve({})
     }
 
-    if (!_url.current) {
+    if (!_url) {
       Logger.error('You must define url for the request to be sent')
       return Promise.reject({error: 'No url specified'})
     }
 
-    Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url.current} in ${_wait}ms`)
+    Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url} in ${_wait}ms`)
 
     _startAt = Date.now()
 
@@ -227,9 +225,9 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
         _startAt = null
 
         return request({
-          url: _url.current,
-          method: _method.current,
-          params: extend({}, _params.current)
+          url: _url,
+          method: _method,
+          params: extend({}, _params)
         })
           .then(result => _continue(result, resolve))
           .catch(({response = {}} = {}) => _error(response, resolve, reject))
@@ -243,10 +241,10 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   function _restore (): void {
-    _url.current = _url.global
-    _method.current = _method.global
-    _params.current = extend({}, _params.global)
-    _continueCb.current = _continueCb.global
+    _url = _global.url
+    _method = _global.method
+    _params = extend({}, _global.params)
+    _continueCb = _global.continueCb
   }
 
   /**
@@ -256,7 +254,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   function _finish (failed?: boolean): void {
-    Logger.log(`Request ${_url.current || 'unknown'} ${failed ? 'failed' : 'has been finished'}`)
+    Logger.log(`Request ${_url || 'unknown'} ${failed ? 'failed' : 'has been finished'}`)
 
     _attempts = DEFAULT_ATTEMPTS
     _wait = DEFAULT_WAIT
@@ -303,8 +301,8 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       return
     }
 
-    if (typeof _continueCb.current === 'function') {
-      _continueCb.current(result, _finish, _retry)
+    if (typeof _continueCb === 'function') {
+      _continueCb(result, _finish, _retry)
     } else {
       _finish()
     }
@@ -372,7 +370,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       _wait = DEFAULT_WAIT
       _attempts = DEFAULT_ATTEMPTS
 
-      Logger.log(`Previous ${_url.current || 'unknown'} request attempt canceled`)
+      Logger.log(`Previous ${_url || 'unknown'} request attempt canceled`)
 
       _restore()
     }
