@@ -87,6 +87,8 @@ describe('GDPR forget device functionality', () => {
 
   it('runs forget request and prevents subsequent one', () => {
 
+    expect.assertions(4)
+
     GdprForgetDevice.forget()
     State.default.disabled = {reason: 'gdpr', pending: true}
 
