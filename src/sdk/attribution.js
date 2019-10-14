@@ -111,7 +111,9 @@ function _continue (result, finish, retry) {
  * @param {number=} sessionResult.ask_in
  */
 function check (sessionResult = {}) {
-  if (!sessionResult.ask_in && ActivityState.current.attribution) {
+  const activityState = ActivityState.current
+
+  if (!sessionResult.ask_in && activityState.attribution || !activityState.sessionCount) {
     return Promise.resolve(sessionResult)
   }
 
