@@ -99,15 +99,16 @@ function setLogLevel (logLevel, logOutput) {
  * @private
  */
 function _log (methodName, ...args) {
-  const message = [`[${Config.namespace}]`, `${methodName.toUpperCase()}:`, ...args]
+  const now = (new Date()).toISOString()
+  const message = [`[${Config.namespace}]`, now, `${methodName.toUpperCase()}:`, ...args]
   const outputContainer = _output ? document.querySelector(_output) : null
 
   console[methodName].apply(null, message) // eslint-disable-line
 
   if (outputContainer) {
-    const [namespace, prefix, ...rest] = message
+    const [namespace, time, prefix, ...rest] = message
     const spaces = methodName === 'log' ? '  ' : (methodName === 'info' ? ' ' : '')
-    outputContainer.textContent += `${namespace} ${prefix}${spaces} ${rest.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`
+    outputContainer.textContent += `${namespace} ${time} ${prefix}${spaces} ${rest.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`
     outputContainer.scrollTop = outputContainer.scrollHeight
   }
 

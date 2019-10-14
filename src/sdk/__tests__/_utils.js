@@ -38,11 +38,21 @@ function errorResponse () {
   return {response: {message: 'An error', code: 'RETRY'}}
 }
 
+function mockDate (date) {
+  global.Date = class extends global.Date {
+    constructor () {
+      super()
+      return date
+    }
+  }
+}
+
 global.Utils = {
   flushPromises,
   createMockXHR,
   randomInRange,
   setDocumentProp,
   setGlobalProp,
-  errorResponse
+  errorResponse,
+  mockDate
 }

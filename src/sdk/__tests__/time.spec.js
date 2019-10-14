@@ -3,15 +3,6 @@ import * as Constants from '../constants'
 
 const _origDate = global.Date
 
-const mockDate = date => {
-  global.Date = class extends global.Date {
-    constructor () {
-      super()
-      return date
-    }
-  }
-}
-
 describe('test for time methods', () => {
 
   afterEach(() => {
@@ -24,7 +15,7 @@ describe('test for time methods', () => {
 
     jest.spyOn(date, 'getTimezoneOffset').mockReturnValue(-330)
 
-    mockDate(date)
+    Utils.mockDate(date)
 
     expect(Time.getTimestamp()).toEqual('2018-04-15T13:08:30.000Z+0530')
 
@@ -36,7 +27,7 @@ describe('test for time methods', () => {
 
     jest.spyOn(date, 'getTimezoneOffset').mockReturnValue(60)
 
-    mockDate(date)
+    Utils.mockDate(date)
 
     expect(Time.getTimestamp()).toEqual('2017-11-06T09:40:04.045Z-0100')
 
@@ -48,7 +39,7 @@ describe('test for time methods', () => {
 
     jest.spyOn(date, 'getTimezoneOffset').mockReturnValue(0)
 
-    mockDate(date)
+    Utils.mockDate(date)
 
     expect(Time.getTimestamp()).toEqual('2018-02-05T12:09:00.301Z+0000')
 
@@ -61,7 +52,7 @@ describe('test for time methods', () => {
 
     jest.spyOn(date, 'getTimezoneOffset').mockReturnValue(0)
 
-    mockDate(date)
+    Utils.mockDate(date)
 
     expect(Time.getTimestamp()).toEqual('2018-06-25T00:00:00.000Z+0000')
 
