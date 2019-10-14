@@ -1,4 +1,5 @@
-import {getHostName} from './utilities'
+// @flow
+import {getHostName, reducer} from './utilities'
 import {getTimestamp} from './time'
 import {push} from './queue'
 
@@ -8,41 +9,45 @@ import {push} from './queue'
  * @returns {boolean}
  * @private
  */
-function _wasRedirected () {
+function _wasRedirected (): boolean {
   const currentUrl = getHostName(window.location.href)
   const referrerUrl = getHostName(document.referrer)
 
-  return document.referrer && currentUrl !== referrerUrl
+  return !!document.referrer && currentUrl !== referrerUrl
 }
 
 /**
  * Check the following:
  * - redirected from somewhere other then client's website
- * - there are query params which are prefixed with `adj_` or `adjust_`
+ * - there is adjust_referrer query param
  *
  * @returns {boolean}
  * @private
  */
-function _shouldSendClick () {
-  return _wasRedirected() && window.location.search
-    .substring(1)
-    .split('&')
-    .map(pair => pair.split('='))
-    .some(([key]) => /^(adjust|adj)_/.test(key))
+function _getReferrer (): ?string {
+  return _wasRedirected()
+    ? window.location.search
+      .substring(1)
+      .split('&')
+      .map(pair => pair.split('='))
+      .reduce(reducer, {})['adjust_referrer']
+    : null
 }
 
 /**
  * Check if there are parameters to send through sdk_click request
  */
-export default function sdkClick () {
-  if (_shouldSendClick()) {
+export default function sdkClick (): void {
+  const referrer = _getReferrer()
+
+  if (referrer) {
     push({
       url: '/sdk_click',
       method: 'POST',
       params: {
+        clickTime: getTimestamp(),
         source: 'web_referrer',
-        referrer: window.location.search.substring(1),
-        clickTime: getTimestamp()
+        referrer: decodeURIComponent(referrer)
       }
     })
   }

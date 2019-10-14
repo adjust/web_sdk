@@ -57,7 +57,7 @@ describe('test sdk-click functionality', () => {
     jest.restoreAllMocks()
   })
 
-  it('does nothing if there are no adjust params in the url', () => {
+  it('does nothing if there is no adjust referrer param in the url', () => {
 
     global.history.pushState({}, '', '?param1=value1&param2=value2')
 
@@ -71,11 +71,11 @@ describe('test sdk-click functionality', () => {
 
   })
 
-  it('does nothing if there are adjust params in the url but no referrer', () => {
+  it('does nothing if there is adjust referrer param in the url but no document referrer', () => {
 
     Utils.setDocumentProp('referrer', '')
 
-    global.history.pushState({}, '', '?adjust_param=value1&param2=value2')
+    global.history.pushState({}, '', '?adjust_referrer=param1%3Dbla%26param2%3Dtruc&param=value')
 
     sdkClick.default()
 
@@ -89,11 +89,11 @@ describe('test sdk-click functionality', () => {
 
   })
 
-  it('does nothing if there are adjust params in the url but same referrer as current url', () => {
+  it('does nothing if there is adjust referrer param in the url but document referrer is same as current url', () => {
 
     Utils.setDocumentProp('referrer', 'http://localhost/test')
 
-    global.history.pushState({}, '', '?adjust_param=value1&param2=value2')
+    global.history.pushState({}, '', '?adjust_referrer=param1%3Dbla%26param2%3Dtruc&param=value')
 
     sdkClick.default()
 
@@ -107,11 +107,11 @@ describe('test sdk-click functionality', () => {
 
   })
 
-  it('requests sdk_click if there are params prefixed with "adjust_" in the url', () => {
+  it('requests sdk_click if there is adjust referrer param in the url', () => {
 
     expect.assertions(2)
 
-    global.history.pushState({}, '', '?adjust_param=value&something=else')
+    global.history.pushState({}, '', '?adjust_referrer=param1%3Dbla%26param2%3Dtruc&param=value')
 
     sdkClick.default()
 
@@ -121,45 +121,7 @@ describe('test sdk-click functionality', () => {
       params: {
         clickTime: 'some-time',
         source: 'web_referrer',
-        referrer: 'adjust_param=value&something=else'
-      }
-    })
-  })
-
-  it('requests sdk_click if there are params prefixed with "adj_" in the url', () => {
-
-    expect.assertions(2)
-
-    global.history.pushState({}, '', '?adj_param1=value&bla=truc&adj_param2=bla')
-
-    sdkClick.default()
-
-    return expectRequest({
-      url: '/sdk_click',
-      method: 'POST',
-      params: {
-        clickTime: 'some-time',
-        source: 'web_referrer',
-        referrer: 'adj_param1=value&bla=truc&adj_param2=bla'
-      }
-    })
-  })
-
-  it('requests sdk_click if there are params prefixed with "adj_" or "adjust_" in the url', () => {
-
-    expect.assertions(2)
-
-    global.history.pushState({}, '', '?adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada')
-
-    sdkClick.default()
-
-    return expectRequest({
-      url: '/sdk_click',
-      method: 'POST',
-      params: {
-        clickTime: 'some-time',
-        source: 'web_referrer',
-        referrer: 'adj_param1=value&bla=truc&adj_param2=bla&adjust_param=tada',
+        referrer: 'param1=bla&param2=truc'
       }
     })
   })

@@ -85,7 +85,7 @@ describe('main entry point - test instance initiation when storage is available'
 
     it('runs session first and then sdk-click request', () => {
       Utils.setDocumentProp('referrer', 'http://some-site.com')
-      global.history.pushState({}, '', '?adjust_param=value&something=else')
+      global.history.pushState({}, '', '?adjust_referrer=param%3Dvalue&something=else')
 
       AdjustInstance.init(suite.config)
 
