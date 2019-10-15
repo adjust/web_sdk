@@ -4,7 +4,7 @@ import QuickStorage from '../storage/quick-storage'
 import SchemeMap from './scheme-map'
 import Scheme from './scheme'
 import Logger from '../logger'
-import {findIndex, isEmpty, isObject} from '../utilities'
+import {findIndex, isEmpty, isObject, values} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
 /**
@@ -41,7 +41,7 @@ function _open () {
     return {status: 'error', error: {name: 'LSNotSupported', message: 'LocalStorage is not supported'}}
   }
 
-  const storeNames = Object.values(SchemeMap.storeNames.left)
+  const storeNames = values(SchemeMap.storeNames.left)
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 

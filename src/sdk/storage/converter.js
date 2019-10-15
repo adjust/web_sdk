@@ -1,5 +1,5 @@
 import SchemeMap from './scheme-map'
-import {isObject} from '../utilities'
+import {isObject, entries} from '../utilities'
 
 /**
  * Get value from the map if available
@@ -54,8 +54,7 @@ function convertRecord ({storeName, dir, record, scheme}) {
 
   scheme = scheme || SchemeMap[dir][convertStoreName({storeName, dir: 'right'})].fields
 
-  return Object
-    .entries(record)
+  return entries(record)
     .map(([key, value]) => _convert({storeName, scheme: scheme[key], dir, key, value}))
     .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
 }

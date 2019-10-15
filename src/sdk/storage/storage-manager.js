@@ -1,7 +1,7 @@
 import * as IndexedDB from './indexeddb'
 import * as LocalStorage from './localstorage'
 import Logger from '../logger'
-import {isObject, reducer} from '../utilities'
+import {isObject, reducer, entries} from '../utilities'
 import {convertRecord, convertRecords, convertValues, encodeValue, convertStoreName, decodeErrorMessage} from './converter'
 
 /**
@@ -171,8 +171,7 @@ function _clear (storage, storeName) {
  * @private
  */
 function _augment (storage) {
-  return Object
-    .entries(_methods)
+  return entries(_methods)
     .map(([methodName, method]) => {
       return [methodName, (storeName, ...args) => {
         return method.call(null, storage, convertStoreName({storeName, dir: 'left'}), ...args)

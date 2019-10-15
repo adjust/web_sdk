@@ -164,6 +164,54 @@ describe('test for utility methods', () => {
     })
   })
 
+  describe('test reducer method', () => {
+    it('transforms array key,value pairs into object key:value pairs', () => {
+      expect([
+        ['key', 'value'],
+        ['some', 'thing'],
+        ['very', 'nice']
+      ].reduce(Utilities.reducer, {})).toEqual({
+        key: 'value',
+        some: 'thing',
+        very: 'nice'
+      })
+    })
+  })
+
+  describe('test for entries', () => {
+    it('tests native implementation', () => {
+      const objectEntries = Object.entries
+      Object.entries = null
+
+      expect(Utilities.entries({})).toEqual([])
+      expect(Utilities.entries({bla: 'truc', run: 'fast'})).toEqual([['bla', 'truc'], ['run', 'fast']])
+
+      Object.entries = objectEntries
+    })
+
+    it('test custom solution which produces same output as Object.entries', () => {
+      expect(Utilities.entries({})).toEqual([])
+      expect(Utilities.entries({bla: 'truc', run: 'fast'})).toEqual([['bla', 'truc'], ['run', 'fast']])
+    })
+  })
+
+  describe('test for values', () => {
+    it('tests native implementation', () => {
+      const objectValues = Object.values
+      Object.values = null
+
+      expect(Utilities.values({})).toEqual([])
+      expect(Utilities.values({bla: 'truc', run: 'fast'})).toEqual(['truc', 'fast'])
+
+      Object.values = objectValues
+    })
+
+    it('test custom solution which produces same output as Object.values', () => {
+      expect(Utilities.values({})).toEqual([])
+      expect(Utilities.values({bla: 'truc', run: 'fast'})).toEqual(['truc', 'fast'])
+    })
+  })
+
   describe('test for global event listener', () => {
 
     const clickCallback = jest.fn()

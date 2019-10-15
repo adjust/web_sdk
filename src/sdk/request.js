@@ -1,5 +1,5 @@
 import Config from './config'
-import {isEmpty, isObject, isValidJson, isRequest} from './utilities'
+import {isEmpty, isObject, isValidJson, isRequest, entries} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
 
@@ -65,8 +65,7 @@ function _getErrorObject (xhr, onlyResponse) {
 function _encodeParams (params, defaultParams) {
   params = {...Config.baseParams, ...defaultParams, ...params}
 
-  return Object
-    .entries(params)
+  return entries(params)
     .filter(([, value]) => {
       if (isObject(value)) {
         return !isEmpty(value)

@@ -1,9 +1,10 @@
 import {convertRecord} from './converter'
 import Config from '../config'
 import SchemeMap from './scheme-map'
+import {values} from '../utilities'
 
 const _disabledName = 'd'
-const _schemeKeys = Object.values(SchemeMap.storeNames.left)
+const _schemeKeys = values(SchemeMap.storeNames.left)
 const _storageFields = [_disabledName,  ..._schemeKeys]
 const _storageName = Config.namespace
 

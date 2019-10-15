@@ -190,6 +190,46 @@ function reducer (acc, [key, value]) {
   return {...acc, [key]: value}
 }
 
+/**
+ * Extract enumerable properties in requested format from the object
+ * or use built-in if available
+ *
+ * @param {Object} object
+ * @param {string} what
+ * @returns {Array}
+ * @private
+ */
+function _objectExtract (object, what) {
+  const extractMap = {
+    entries: key => [key, object[key]],
+    values: key => object[key]
+  }
+
+  return Object[what]
+    ? Object[what](object)
+    : Object.keys(object).map(extractMap[what])
+}
+
+/**
+ * Extracts object entries in the [key, value] format
+ *
+ * @param {Object} object
+ * @returns {Array}
+ */
+function entries (object) {
+  return _objectExtract(object, 'entries')
+}
+
+/**
+ * Extracts object values
+ *
+ * @param {Object} object
+ * @returns {Array}
+ */
+function values (object) {
+  return _objectExtract(object, 'values')
+}
+
 export {
   buildList,
   isEmpty,
@@ -203,5 +243,7 @@ export {
   intersection,
   isRequest,
   getHostName,
-  reducer
+  reducer,
+  entries,
+  values
 }

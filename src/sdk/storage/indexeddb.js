@@ -5,7 +5,7 @@ import ActivityState from '../activity-state'
 import State from '../state'
 import QuickStorage from '../storage/quick-storage'
 import Logger from '../logger'
-import {isEmpty, isObject} from '../utilities'
+import {isEmpty, isObject, values} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
 const _dbName = Config.namespace
@@ -55,7 +55,7 @@ function _handleUpgradeNeeded (e, reject) {
   e.target.transaction.onerror = reject
   e.target.transaction.onabort = reject
 
-  const storeNames = Object.values(SchemeMap.storeNames.left)
+  const storeNames = values(SchemeMap.storeNames.left)
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 

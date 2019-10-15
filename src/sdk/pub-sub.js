@@ -1,3 +1,5 @@
+import {entries} from './utilities'
+
 /**
  * List of events with subscribed callbacks
  *
@@ -54,7 +56,7 @@ function subscribe (name, cb) {
 function unsubscribe (id) {
   if (!id) { return }
 
-  Object.entries(_list)
+  entries(_list)
     .some(([, callbacks]) => callbacks
       .some((callback, i) => {
         if (callback.id === id) {

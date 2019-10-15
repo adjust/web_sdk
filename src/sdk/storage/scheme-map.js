@@ -1,4 +1,4 @@
-import {reducer} from '../utilities'
+import {reducer, entries} from '../utilities'
 import SchemeDef from './scheme-def'
 
 const QUEUE_STORE = 'q'
@@ -46,8 +46,7 @@ function _flipList (keyPath) {
  * @private
  */
 function _flipObject (obj) {
-  return Object
-    .entries(obj)
+  return entries(obj)
     .map(([key, value]) => [value, _parseValue(key)])
     .reduce(reducer, {})
 }
@@ -75,8 +74,7 @@ function _flipStoreScheme (key, scheme) {
  * @private
  */
 function _flipScheme (scheme) {
-  return Object
-    .entries(scheme)
+  return entries(scheme)
     .map(([key, scheme]) => scheme.key
       ? [scheme.key, _flipStoreScheme(key, scheme)]
       : [scheme, key])
@@ -104,8 +102,7 @@ function _getKeyPathMap (storeName, keyPath) {
  * @private
  */
 function _prepareLeft () {
-  return Object
-    .entries(SchemeDef)
+  return entries(SchemeDef)
     .map(([storeName, storeScheme]) => {
       return [
         storeName,
@@ -125,8 +122,7 @@ function _prepareLeft () {
  * @private
  */
 function _prepareRight () {
-  return Object
-    .entries(Left)
+  return entries(Left)
     .map(([storeName, storeScheme]) => [
       storeName,
       {
@@ -144,13 +140,11 @@ function _prepareRight () {
  * @private
  */
 function _getValuesMap () {
-  return Object
-    .entries(SchemeDef)
+  return entries(SchemeDef)
     .reduce((acc, [, scheme]) => acc.concat(scheme.fields), [])
-    .map(scheme => Object
-      .entries(scheme)
+    .map(scheme => entries(scheme)
       .filter(([, map]) => map.values)
-      .map(([, map]) => Object.entries(map.values))
+      .map(([, map]) => entries(map.values))
       .reduce((acc, map) => acc.concat(map), []))
     .reduce((acc, map) => acc.concat(map), [])
     .reduce(reducer, {})
