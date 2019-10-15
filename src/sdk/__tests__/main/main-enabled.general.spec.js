@@ -67,7 +67,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and runs all static methods and track event', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       const a1 = suite.expectRunningStatic()
       const a2 = suite.expectRunningTrackEvent()
@@ -80,7 +80,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk with shutdown', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -96,7 +96,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails to disable already disabled sdk', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
 
@@ -105,7 +105,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('enables sdk with restart', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       const a = suite.expectStart()
 
@@ -127,9 +127,9 @@ describe('main entry point - test enable/disable when in initially enabled state
     it('initiates, disables and enables one after another', () => {
       expect.assertions(5)
 
-      AdjustInstance.init(suite.config)
-      AdjustInstance.disable()
-      AdjustInstance.enable()
+      AdjustInstance.initSdk(suite.config)
+      AdjustInstance.stop()
+      AdjustInstance.restart()
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
@@ -158,7 +158,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and runs all static methods and track event', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       const a1 = suite.expectRunningStatic()
       const a2 = suite.expectRunningTrackEvent()
@@ -171,7 +171,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails to enable already enabled sdk', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -180,7 +180,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk with shutdown', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -202,7 +202,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk without shutdown', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -218,7 +218,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and still prevents running all static methods and track event', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 
@@ -229,7 +229,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails to disable already disabled sdk', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
 
@@ -238,7 +238,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('enables sdk with restart', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       const a = suite.expectStart()
 
@@ -268,7 +268,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails to enable already enabled sdk', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -277,7 +277,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and runs all static methods and track event', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect.assertions(19)
 
@@ -292,7 +292,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails again to enable already enabled sdk', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -301,7 +301,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk with shutdown', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -318,9 +318,9 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('enables, initiates and disable one after another', () => {
 
-      AdjustInstance.enable()
-      AdjustInstance.init(suite.config)
-      AdjustInstance.disable()
+      AdjustInstance.restart()
+      AdjustInstance.initSdk(suite.config)
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already enabled')
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -341,7 +341,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk without shutdown', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -352,7 +352,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('enables sdk without restart', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
@@ -363,7 +363,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and runs all static methods and track event', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect.assertions(19)
 
@@ -384,7 +384,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('fails to enable already enabled sdk', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
 
@@ -393,7 +393,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('disables sdk without shutdown', () => {
 
-      AdjustInstance.disable()
+      AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
@@ -404,7 +404,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
     it('initiates and prevents running all static methods and track event', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 

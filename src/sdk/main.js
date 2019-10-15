@@ -5,7 +5,7 @@ import Logger from './logger'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
-import {start, status, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
+import {start, status, disable, enable, clear as identityClear, destroy as identityDestroy} from './identity'
 import {type GlobalParamsT, add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
@@ -48,7 +48,7 @@ let _isStarted: boolean = false
  * @param {string} logOutput
  * @param {Object} params
  */
-function init ({logLevel, logOutput, ...params}: LogParamsT = {}): void {
+function initSdk ({logLevel, logOutput, ...params}: LogParamsT = {}): void {
 
   Logger.setLogLevel(logLevel, logOutput)
 
@@ -121,31 +121,36 @@ function removePartnerCallbackParameter (key: string): void {
 /**
  * Remove all global callback parameters
  */
-function removeAllGlobalCallbackParameters (): void {
+function clearGlobalCallbackParameters (): void {
   _preCheck('remove all global callback parameters', () => removeAll('callback'))
 }
 
 /**
  * Remove all global partner parameters
  */
-function removeAllGlobalPartnerParameters (): void {
+function clearGlobalPartnerParameters (): void {
   _preCheck('remove all global partner parameters', () => removeAll('partner'))
 }
 
 /**
- * Set offline mode to on or off
- *
- * @param {boolean} state
+ * Switch offline mode
  */
-function setOfflineMode (state: boolean): void {
-  _preCheck(`set ${state ? 'offline' : 'online'} mode`, () => setOffline(state))
+function switchToOfflineMode (): void {
+  _preCheck('set offline mode', () => setOffline(true))
 }
 
 /**
- * Disable SDK
+ * Switch online mode
  */
-function disable (): void {
-  const done = identityDisable()
+function switchBackToOnlineMode (): void {
+  _preCheck('set online mode', () => setOffline(false))
+}
+
+/**
+ * Stop SDK
+ */
+function stop (): void {
+  const done = disable()
 
   if (done && Config.isInitialised()) {
     _shutdown()
@@ -153,10 +158,10 @@ function disable (): void {
 }
 
 /**
- * Enable sdk if not GDPR forgotten
+ * Restart sdk if not GDPR forgotten
  */
-function enable (): void {
-  const done = identityEnable()
+function restart (): void {
+  const done = enable()
 
   if (done && _params) {
     _start(_params)
@@ -173,7 +178,7 @@ function gdprForgetMe (): void {
     return
   }
 
-  done = identityDisable({reason: REASON_GDPR, pending: true})
+  done = disable({reason: REASON_GDPR, pending: true})
 
   if (done && Config.isInitialised()) {
     _pause()
@@ -345,17 +350,18 @@ function _preCheck (description: string, callback: () => mixed) {
 }
 
 const Adjust = {
-  init,
+  initSdk,
   trackEvent,
   addGlobalCallbackParameters,
   addGlobalPartnerParameters,
   removeGlobalCallbackParameter,
   removePartnerCallbackParameter,
-  removeAllGlobalCallbackParameters,
-  removeAllGlobalPartnerParameters,
-  setOfflineMode,
-  disable,
-  enable,
+  clearGlobalCallbackParameters,
+  clearGlobalPartnerParameters,
+  switchToOfflineMode,
+  switchBackToOnlineMode,
+  stop,
+  restart,
   gdprForgetMe,
   destroy
 }

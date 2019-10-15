@@ -133,16 +133,16 @@ function expectRunningStatic () {
   _instance.removePartnerCallbackParameter('some-key')
   expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'partner')
 
-  _instance.removeAllGlobalCallbackParameters('callback')
+  _instance.clearGlobalCallbackParameters('callback')
   expect(GlobalParams.removeAll).toHaveBeenCalledWith('callback')
 
-  _instance.removeAllGlobalPartnerParameters('partner')
+  _instance.clearGlobalPartnerParameters('partner')
   expect(GlobalParams.removeAll).toHaveBeenCalledWith('partner')
 
-  _instance.setOfflineMode(false)
+  _instance.switchBackToOnlineMode()
   expect(Queue.setOffline).toHaveBeenCalledWith(false)
 
-  _instance.setOfflineMode(true)
+  _instance.switchToOfflineMode()
   expect(Queue.setOffline).toHaveBeenCalledWith(true)
 
   return {assertions: 8}
@@ -178,21 +178,21 @@ function expectNotRunningStatic (noStorage) {
     : 'Adjust SDK is disabled, can not remove global partner parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
-  _instance.removeAllGlobalCallbackParameters()
+  _instance.clearGlobalCallbackParameters()
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not remove all global callback parameters, no storage available'
     : 'Adjust SDK is disabled, can not remove all global callback parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
-  _instance.removeAllGlobalPartnerParameters()
+  _instance.clearGlobalPartnerParameters()
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not remove all global partner parameters, no storage available'
     : 'Adjust SDK is disabled, can not remove all global partner parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
-  _instance.setOfflineMode(true)
+  _instance.switchToOfflineMode()
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not set offline mode, no storage available'

@@ -45,7 +45,7 @@ describe('main entry point - test instance initiation when storage is not availa
 
     const suite = Suite(AdjustInstance)
 
-    AdjustInstance.init(suite.config)
+    AdjustInstance.initSdk(suite.config)
 
     expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK can not start, there is no storage available')
     suite.expectNotStart()

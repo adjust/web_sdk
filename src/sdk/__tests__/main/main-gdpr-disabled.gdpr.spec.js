@@ -73,7 +73,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
     it('initiates and prevents running all static methods and track event', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
 
@@ -104,7 +104,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
     it('fails to enable sdk', () => {
 
-      AdjustInstance.enable()
+      AdjustInstance.restart()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled')
 
@@ -118,7 +118,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
     it('initiates and flush forget-me event but ignores it', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
 
@@ -157,7 +157,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
     it('initiates but prevents all static methods and track event and fails to run forget-me request', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
@@ -200,7 +200,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
     it('initiates but prevents all static methods and track event and fails to run forget-me request', () => {
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')

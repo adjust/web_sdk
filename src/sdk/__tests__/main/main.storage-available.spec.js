@@ -67,11 +67,11 @@ describe('main entry point - test instance initiation when storage is available'
 
     it('logs an error and return when not all parameters provided', () => {
 
-      AdjustInstance.init()
+      AdjustInstance.initSdk()
 
       expect(Logger.default.error).toHaveBeenLastCalledWith('You must define appToken and environment')
 
-      AdjustInstance.init({appToken: 'a-token'})
+      AdjustInstance.initSdk({appToken: 'a-token'})
 
       expect(Logger.default.error).toHaveBeenLastCalledWith('You must define environment')
     })
@@ -87,7 +87,7 @@ describe('main entry point - test instance initiation when storage is available'
       Utils.setDocumentProp('referrer', 'http://some-site.com')
       global.history.pushState({}, '', '?adjust_referrer=param%3Dvalue&something=else')
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       expect.assertions(2)
 
@@ -104,7 +104,7 @@ describe('main entry point - test instance initiation when storage is available'
 
       const newConfig = {...suite.config, attributionCallback: null}
 
-      AdjustInstance.init(newConfig)
+      AdjustInstance.initSdk(newConfig)
 
       suite.expectNotAttributionCallback()
     })
@@ -116,7 +116,7 @@ describe('main entry point - test instance initiation when storage is available'
 
       expect.assertions(2 + shutDownNumOfAssertions + allDownNumOfAssertions)
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       return Utils.flushPromises()
         .then(() => {
@@ -142,7 +142,7 @@ describe('main entry point - test instance initiation when storage is available'
 
       sessionWatchSpy.mockRejectedValueOnce({error: 'An error!'})
 
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
 
       return Utils.flushPromises()
         .then(() => {
@@ -156,7 +156,7 @@ describe('main entry point - test instance initiation when storage is available'
   describe('initiated instance', () => {
     beforeAll(() => {
       suite.teardown()
-      AdjustInstance.init(suite.config)
+      AdjustInstance.initSdk(suite.config)
     })
 
     it('sets basic configuration', () => {
@@ -174,7 +174,7 @@ describe('main entry point - test instance initiation when storage is available'
 
     it('tests if single instance is returned', () => {
 
-      OtherInstance.init({
+      OtherInstance.initSdk({
         appToken: 'some-other-app-token',
         environment: 'sandbox'
       })

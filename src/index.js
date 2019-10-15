@@ -49,7 +49,7 @@ function attributionCallback (e, attribution) {
 }
 
 // INIT: Initiate adjust sdk with specified configuration
-Adjust.init(appConfig)
+Adjust.initSdk(appConfig)
 
 // NOTE: this is custom demo app implementation
 app.start({
@@ -59,13 +59,13 @@ app.start({
   addgpp: () => Adjust.addGlobalPartnerParameters(globalPartnerParams),
   removegcp: () => Adjust.removeGlobalCallbackParameter('key1'),
   removegpp: () => Adjust.removePartnerCallbackParameter('key-1'),
-  removeallgcp: Adjust.removeAllGlobalCallbackParameters,
-  removeallgpp: Adjust.removeAllGlobalPartnerParameters,
-  gooffline: () => Adjust.setOfflineMode(true),
-  goonline: () => Adjust.setOfflineMode(false),
-  disable: Adjust.disable,
-  enable: Adjust.enable,
+  cleargcp: Adjust.clearGlobalCallbackParameters,
+  cleargpp: Adjust.clearGlobalPartnerParameters,
+  gooffline: () => Adjust.switchToOfflineMode(),
+  goonline: () => Adjust.switchBackToOnlineMode(),
+  stop: Adjust.stop,
+  restart: Adjust.restart,
   gdpr: Adjust.gdprForgetMe,
   destroy: Adjust.destroy,
-  reinit: () => Adjust.init(appConfig)
+  reinit: () => Adjust.initSdk(appConfig)
 })
