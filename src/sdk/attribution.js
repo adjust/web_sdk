@@ -1,5 +1,5 @@
 import {publish} from './pub-sub'
-import {extend, intersection, isEmpty} from './utilities'
+import {intersection, isEmpty} from './utilities'
 import {persist} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
@@ -72,9 +72,9 @@ function _setAttribution (result) {
     return Promise.resolve(result)
   }
 
-  const attribution = extend({adid: result.adid}, result.attribution)
+  const attribution = {adid: result.adid, ...result.attribution}
 
-  ActivityState.current = extend(ActivityState.current, {attribution})
+  ActivityState.current = {...ActivityState.current, attribution}
 
   return persist()
     .then(() => {
@@ -118,9 +118,10 @@ function check (sessionResult = {}) {
   }
 
   _request.send({
-    params: extend({
-      initiatedBy: !sessionResult.ask_in ? 'sdk' : 'backend'
-    }, ActivityState.getParams()),
+    params: {
+      initiatedBy: !sessionResult.ask_in ? 'sdk' : 'backend',
+      ...ActivityState.getParams()
+    },
     wait: sessionResult.ask_in
   })
 

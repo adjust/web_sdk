@@ -1,5 +1,5 @@
 import SchemeMap from './scheme-map'
-import {extend, isObject} from '../utilities'
+import {isObject} from '../utilities'
 
 /**
  * Get value from the map if available
@@ -57,7 +57,7 @@ function convertRecord ({storeName, dir, record, scheme}) {
   return Object
     .entries(record)
     .map(([key, value]) => _convert({storeName, scheme: scheme[key], dir, key, value}))
-    .reduce((acc, [key, value]) => extend(acc, {[key]: value}), {})
+    .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
 }
 
 /**

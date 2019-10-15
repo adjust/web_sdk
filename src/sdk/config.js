@@ -1,5 +1,5 @@
 import {MINUTE, SECOND, DAY} from './constants'
-import {extend, buildList} from './utilities'
+import {buildList} from './utilities'
 import Logger from './logger'
 
 /**
@@ -76,7 +76,7 @@ function isInitialised () {
  * @private
  */
 function _getParams () {
-  return extend({}, _baseParams)
+  return {..._baseParams}
 }
 
 /**
@@ -92,7 +92,7 @@ function _setParams (params) {
   }
 
   _fields.forEach(key => {
-    extend(_baseParams, {[key]: params[key]})
+    _baseParams[key] = params[key]
   })
 }
 
@@ -122,11 +122,12 @@ function destroy () {
   _baseParams = {}
 }
 
-const Config = extend(_baseConfig, {
+const Config = {
+  ..._baseConfig,
   isInitialised,
   hasMissing,
   destroy
-})
+}
 
 Object.defineProperty(Config, 'baseParams', {
   get () { return _getParams() },

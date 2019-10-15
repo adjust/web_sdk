@@ -18,16 +18,18 @@ const appConfig = {
 
 function expectRequest (requestConfig) {
 
-  const fullConfig = Object.assign({}, requestConfig, {
-    params: Object.assign({
+  const fullConfig = {
+    ...requestConfig,
+    params: {
       createdAt: 'some-time',
       timeSpent: 0,
       sessionLength: 0,
       sessionCount: 1,
       eventCount: 1,
-      lastInterval: 0
-    }, requestConfig.params)
-  })
+      lastInterval: 0,
+      ...requestConfig.params
+    }
+  }
 
   return Utils.flushPromises()
     .then(() => {
@@ -53,7 +55,7 @@ describe('event tracking functionality', () => {
   })
 
   afterEach(() => {
-    ActivityState.default.current = Object.assign(ActivityState.default.current, {eventCount: 0})
+    ActivityState.default.current = {...ActivityState.default.current, eventCount: 0}
     localStorage.clear()
     jest.clearAllMocks()
   })

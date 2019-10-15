@@ -1,4 +1,3 @@
-import {extend} from './utilities'
 import {getTimestamp} from './time'
 import ActivityState from './activity-state'
 import StorageManager from './storage/storage-manager'
@@ -112,14 +111,14 @@ function _getQueueSize () {
 
 export default function defaultParams () {
   return _getQueueSize()
-    .then(queueSize => extend({},
-      _getCreatedAt(),
-      _getSentAt(),
-      _getWebUuid(),
-      _getTrackEnabled(),
-      _getPlatform(),
-      _getLanguage(),
-      _getMachineType(),
-      queueSize
-    ))
+    .then(queueSize => ({
+      ..._getCreatedAt(),
+      ..._getSentAt(),
+      ..._getWebUuid(),
+      ..._getTrackEnabled(),
+      ..._getPlatform(),
+      ..._getLanguage(),
+      ..._getMachineType(),
+      ...queueSize
+    }))
 }

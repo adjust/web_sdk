@@ -1,6 +1,6 @@
 import {SECOND} from './constants'
 import {timePassed} from './time'
-import {extend, isRequest} from './utilities'
+import {isRequest} from './utilities'
 import Config from './config'
 
 /**
@@ -25,7 +25,7 @@ let _active = false
  * @returns {Object|null}
  */
 function currentGetter () {
-  return _activityState ? extend({}, _activityState) : null
+  return _activityState ? {..._activityState} : null
 }
 
 /**
@@ -34,7 +34,7 @@ function currentGetter () {
  * @param {Object} params
  */
 function currentSetter (params) {
-  _activityState = extend({}, params)
+  _activityState = {...params}
 }
 
 /**
@@ -58,7 +58,7 @@ function updateLastActive () {
  * @private
  */
 function _update (params) {
-  _activityState = extend(_activityState, params)
+  _activityState = {..._activityState, ...params}
 }
 
 /**

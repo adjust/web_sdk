@@ -4,7 +4,6 @@ import ActivityState from './activity-state'
 import State from './state'
 import Logger from './logger'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
-import {extend} from './utilities'
 
 type StatusT = 'on' | 'off' | 'paused'
 type ReasonT = {|
@@ -112,7 +111,7 @@ function persist (): Promise<?ActivityStateObjT> {
     return Promise.resolve(null)
   }
 
-  const activityState = extend({}, ActivityState.current, {lastActive: Date.now()})
+  const activityState = {...ActivityState.current, lastActive: Date.now()}
   return StorageManager.updateItem(_storeName, activityState)
     .then(() => ActivityState.current = activityState)
 }

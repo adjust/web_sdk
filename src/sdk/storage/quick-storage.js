@@ -1,4 +1,3 @@
-import {extend} from '../utilities'
 import {convertRecord} from './converter'
 import Config from '../config'
 import SchemeMap from './scheme-map'
@@ -59,7 +58,7 @@ function clear () {
 }
 
 const QuickStorage = {
-  names: extend({disabled: _disabledName}, SchemeMap.storeNames.left),
+  names: {disabled: _disabledName, ...SchemeMap.storeNames.left},
   stores: {},
   clear
 }

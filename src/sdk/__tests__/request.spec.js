@@ -259,7 +259,7 @@ describe('perform api requests', () => {
 
     it('performs GET request with defaultTracker parameter', () => {
 
-      Config.default.baseParams = Object.assign({defaultTracker: 'blatruc'}, appParams)
+      Config.default.baseParams = {defaultTracker: 'blatruc', ...appParams}
 
       const defaultParamsStringWithDefaultTracker = [
         'app_token=123abc',
@@ -319,7 +319,7 @@ describe('perform api requests', () => {
 
     it('tries to inject unknown parameter through configuration', () => {
 
-      Config.default.baseParams = Object.assign({something: 'strange'}, appParams)
+      Config.default.baseParams = {something: 'strange', ...appParams}
 
       expect.assertions(4)
 

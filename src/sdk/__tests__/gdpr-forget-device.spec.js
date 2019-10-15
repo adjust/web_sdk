@@ -22,15 +22,17 @@ function expectRequest () {
     method: 'POST'
   }
 
-  const fullConfig = Object.assign({}, requestConfig, {
-    params: Object.assign({
+  const fullConfig = {
+    ...requestConfig,
+    params: {
       createdAt: 'some-time',
       timeSpent: 0,
       sessionLength: 0,
       sessionCount: 1,
-      lastInterval: 0
-    }, requestConfig.params)
-  })
+      lastInterval: 0,
+      ...requestConfig.params
+    }
+  }
 
   jest.runOnlyPendingTimers()
   expect(request.default).toHaveBeenCalledWith(fullConfig)

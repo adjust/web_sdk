@@ -3,7 +3,7 @@ import StorageManager from './storage/storage-manager'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Package from './package'
-import {extend, isRequest} from './utilities'
+import {isRequest} from './utilities'
 import {persist} from './identity'
 import {getTimestamp} from './time'
 
@@ -84,7 +84,7 @@ function _prepareParams (url, params) {
     eventCount: ActivityState.current.eventCount
   } : {}
 
-  return extend(baseParams, ActivityState.getParams(), params)
+  return {...baseParams, ...ActivityState.getParams(), ...params}
 }
 
 /**
@@ -141,7 +141,7 @@ function push ({url, method, params}, auto) {
 
   params = _prepareParams(url, params)
 
-  const pending = extend({timestamp: _prepareTimestamp()}, {url, method, params})
+  const pending = {timestamp: _prepareTimestamp(), url, method, params}
 
   return StorageManager.addItem(_storeName, pending)
     .then(() => _persist(url))
@@ -172,9 +172,10 @@ function _prepareToSend ({timestamp, url, method, params} = {}, wait) {
   return _request.send({
     url,
     method,
-    params: extend({}, params, {
+    params: {
+      ...params,
       createdAt: getTimestamp(timestamp)
-    }),
+    },
     wait: wait || _checkWait()
   })
 }

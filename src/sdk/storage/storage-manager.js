@@ -1,7 +1,7 @@
 import * as IndexedDB from './indexeddb'
 import * as LocalStorage from './localstorage'
 import Logger from '../logger'
-import {extend, isObject, reducer} from '../utilities'
+import {isObject, reducer} from '../utilities'
 import {convertRecord, convertRecords, convertValues, encodeValue, convertStoreName, decodeErrorMessage} from './converter'
 
 /**
@@ -213,11 +213,12 @@ function init () {
   }
 
   if (type) {
-    return extend({
+    return {
       type,
       isSupported: storage.isSupported,
-      destroy: storage.destroy
-    }, _augment(storage))
+      destroy: storage.destroy,
+      ..._augment(storage)
+    }
   }
 
   Logger.error('There is no storage available, app will run with minimum set of features')

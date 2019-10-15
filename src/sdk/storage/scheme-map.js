@@ -1,4 +1,4 @@
-import {extend, reducer} from '../utilities'
+import {reducer} from '../utilities'
 import SchemeDef from './scheme-def'
 
 const QUEUE_STORE = 'q'
@@ -64,7 +64,7 @@ function _flipStoreScheme (key, scheme) {
   const values = scheme.values ? {values: _flipObject(scheme.values)} : {}
   const keys = scheme.keys ? {keys: _flipScheme(scheme.keys)} : {}
 
-  return extend({key}, values, keys)
+  return {key, ...values, ...keys}
 }
 
 /**

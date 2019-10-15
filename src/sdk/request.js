@@ -1,5 +1,5 @@
 import Config from './config'
-import {extend, isEmpty, isObject, isValidJson, isRequest} from './utilities'
+import {isEmpty, isObject, isValidJson, isRequest} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
 
@@ -26,7 +26,7 @@ function _getSuccessObject (xhr, url) {
     'tracking_state',
     ...append
   ].filter(key => response[key])
-    .reduce((acc, key) => extend(acc, {[key]: response[key]}), {})
+    .reduce((acc, key) => ({...acc, [key]: response[key]}), {})
 }
 
 /**
@@ -63,7 +63,7 @@ function _getErrorObject (xhr, onlyResponse) {
  * @private
  */
 function _encodeParams (params, defaultParams) {
-  params = extend(Config.baseParams, defaultParams, params)
+  params = {...Config.baseParams, ...defaultParams, ...params}
 
   return Object
     .entries(params)

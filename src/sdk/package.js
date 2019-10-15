@@ -1,6 +1,6 @@
 // @flow
 import request from './request'
-import {extend, isEmpty} from './utilities'
+import {isEmpty} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
 import backOff, {type StrategyT} from './backoff'
@@ -67,7 +67,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @type {Object}
    * @private
    */
-  let _params: ParamsT = extend({}, params)
+  let _params: ParamsT = {...params}
 
   /**
    * Optional continue callback per instance or per request
@@ -149,12 +149,13 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
     }
 
     if (!isEmpty(params)) {
-      _params = extend({}, params)
+      _params = {...params}
     }
 
-    _params = extend({
-      createdAt: getTimestamp()
-    }, _params)
+    _params = {
+      createdAt: getTimestamp(),
+      ..._params
+    }
 
     if (typeof continueCb === 'function') {
       _continueCb = continueCb
@@ -227,7 +228,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
         return request({
           url: _url,
           method: _method,
-          params: extend({}, _params)
+          params: {..._params}
         })
           .then(result => _continue(result, resolve))
           .catch(({response = {}} = {}) => _error(response, resolve, reject))
@@ -243,7 +244,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   function _restore (): void {
     _url = _global.url
     _method = _global.method
-    _params = extend({}, _global.params)
+    _params = {..._global.params}
     _continueCb = _global.continueCb
   }
 

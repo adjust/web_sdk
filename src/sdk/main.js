@@ -3,7 +3,6 @@ import Config from './config'
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
-import {extend} from './utilities'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {start, status, disable as identityDisable, enable as identityEnable, clear as identityClear, destroy as identityDestroy} from './identity'
@@ -69,7 +68,7 @@ function init ({logLevel, logOutput, ...params}: LogParamsT = {}): void {
     return
   }
 
-  _params = extend({}, params)
+  _params = {...params}
 
   _start(params)
 }

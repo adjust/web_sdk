@@ -1,9 +1,11 @@
 // @flow
-import {extend, isEmpty, convertToMap} from './utilities'
+import {isEmpty, convertToMap} from './utilities'
 import {push} from './queue'
 import {type GlobalParamsT, type GlobalParamsObjectT, get} from './global-params'
 import Logger from './logger'
 import Config from './config'
+
+type keyValueT = {[key: string]: string}
 
 export type EventParamsT = {|
   eventToken: string,
@@ -11,6 +13,14 @@ export type EventParamsT = {|
   currency?: string,
   callbackParams?: Array<GlobalParamsT>,
   partnerParams?: Array<GlobalParamsT>
+|}
+
+type EventParamsTransformedT = {|
+  eventToken: string,
+  revenue?: string,
+  currency?: string,
+  callbackParams?: keyValueT,
+  partnerParams?: keyValueT
 |}
 
 type RevenueT = {
@@ -57,21 +67,21 @@ function _getRevenue (revenue: number | void, currency: string | void): RevenueT
  * @returns {Object}
  * @private
  */
-function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: GlobalParamsObjectT): EventParamsT {
-  type keyValueT = {[key: string]: string}
+function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: GlobalParamsObjectT): EventParamsTransformedT {
   const globalParams = {}
-  const baseParams = extend({
+  const baseParams = {
     eventToken: params.eventToken,
-  }, _getRevenue(params.revenue, params.currency))
+    ..._getRevenue(params.revenue, params.currency)
+  }
 
-  const eventCallbackParams: keyValueT = extend(
-    convertToMap(callbackParams),
-    convertToMap(params.callbackParams)
-  )
-  const eventPartnerParams: keyValueT = extend(
-    convertToMap(partnerParams),
-    convertToMap(params.partnerParams)
-  )
+  const eventCallbackParams: keyValueT = {
+    ...convertToMap(callbackParams),
+    ...convertToMap(params.callbackParams)
+  }
+  const eventPartnerParams: keyValueT = {
+    ...convertToMap(partnerParams),
+    ...convertToMap(params.partnerParams)
+  }
 
   if (!isEmpty(eventCallbackParams)) {
     globalParams.callbackParams = eventCallbackParams
@@ -81,7 +91,7 @@ function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: 
     globalParams.partnerParams = eventPartnerParams
   }
 
-  return extend(baseParams, globalParams)
+  return {...baseParams, ...globalParams}
 }
 
 /**

@@ -136,23 +136,13 @@ function findIndex (array, key, value) {
 }
 
 /**
- * Wraps the Object.assign method which is later replaced with polyfill for IE
- *
- * @param {Object} args
- * @returns {Object}
- */
-function extend (...args) {
-  return Object.assign(...args)
-}
-
-/**
  * Convert array with key/value item structure into key/value pairs object
  *
  * @param {Array} array
  * @return {Array} array
  */
 function convertToMap (array = []) {
-  return array.reduce((acc, o) => extend(acc, {[o.key]: o.value}), {})
+  return array.reduce((acc, o) => ({...acc, [o.key]: o.value}), {})
 }
 
 /**
@@ -197,7 +187,7 @@ function getHostName (url = '') {
  * @returns {Object}
  */
 function reducer (acc, [key, value]) {
-  return extend(acc, {[key]: value})
+  return {...acc, [key]: value}
 }
 
 export {
@@ -209,7 +199,6 @@ export {
   on,
   off,
   findIndex,
-  extend,
   convertToMap,
   intersection,
   isRequest,

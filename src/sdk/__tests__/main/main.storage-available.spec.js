@@ -102,7 +102,7 @@ describe('main entry point - test instance initiation when storage is available'
 
     it('ignores attribution change event when no attribution callback provided', () => {
 
-      const newConfig = Object.assign({}, suite.config, {attributionCallback: null})
+      const newConfig = {...suite.config, attributionCallback: null}
 
       AdjustInstance.init(newConfig)
 

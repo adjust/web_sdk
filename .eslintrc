@@ -25,6 +25,7 @@
     "semi": ["error", "never"],
     "space-before-function-paren": ["error", "always"],
     "quotes": ["error", "single"],
-    "prefer-arrow-callback": "error"
+    "prefer-arrow-callback": "error",
+    "prefer-object-spread": "error"
   }
 }

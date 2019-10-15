@@ -243,7 +243,7 @@ describe('test attribution functionality', () => {
   it('requests timed-out attribution which returns the same as existing one', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
-    const cachedActivityState = {attribution: Object.assign({adid: '123'}, currentAttribution.attribution), sessionCount: 1}
+    const cachedActivityState = {attribution: {adid: '123', ...currentAttribution.attribution}, sessionCount: 1}
 
     ActivityState.default.current = cachedActivityState
     request.default.mockResolvedValue(currentAttribution)

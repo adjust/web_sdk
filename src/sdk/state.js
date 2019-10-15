@@ -1,5 +1,4 @@
 import {publish} from './pub-sub'
-import {extend} from './utilities'
 import QuickStorage from './storage/quick-storage'
 
 /**
@@ -28,7 +27,7 @@ function _disabledGetter () {
     _disabled = QuickStorage.stores[_storeName]
   }
 
-  return _disabled ? extend({}, _disabled) : null
+  return _disabled ? {..._disabled} : null
 }
 
 /**
@@ -38,7 +37,7 @@ function _disabledGetter () {
  */
 function _disabledSetter (value) {
   QuickStorage.stores[_storeName] = value
-  _disabled = value ? extend({}, value) : null
+  _disabled = value ? {...value} : null
 }
 
 /**

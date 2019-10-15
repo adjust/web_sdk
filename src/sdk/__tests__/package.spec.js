@@ -567,9 +567,10 @@ describe('test package functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject(Object.assign({
-      url: '/new-request'
-    }, matchCreatedAt))
+    expect(request.default.mock.calls[0][0]).toMatchObject({
+      url: '/new-request',
+      ...matchCreatedAt
+    })
 
     return Utils.flushPromises()
       .then(() => {
@@ -580,9 +581,10 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 100)
         expect(request.default).toHaveBeenCalledTimes(2)
-        expect(request.default.mock.calls[1][0]).toMatchObject(Object.assign({
-          url: '/new-request'
-        }, matchCreatedAt))
+        expect(request.default.mock.calls[1][0]).toMatchObject({
+          url: '/new-request',
+          ...matchCreatedAt
+        })
 
         return Utils.flushPromises()
       }).then(() => {
@@ -593,9 +595,10 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(3)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 200)
         expect(request.default).toHaveBeenCalledTimes(3)
-        expect(request.default.mock.calls[2][0]).toMatchObject(Object.assign({
-          url: '/new-request'
-        }, matchCreatedAt))
+        expect(request.default.mock.calls[2][0]).toMatchObject({
+          url: '/new-request',
+          ...matchCreatedAt
+        })
 
         return Utils.flushPromises()
       }).then(() => {
@@ -609,9 +612,10 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(4)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
         expect(request.default).toHaveBeenCalledTimes(1)
-        expect(request.default.mock.calls[0][0]).toMatchObject(Object.assign({
-          url: '/new-request'
-        }, matchCreatedAt))
+        expect(request.default.mock.calls[0][0]).toMatchObject({
+          url: '/new-request',
+          ...matchCreatedAt
+        })
 
         setTimeout.mockClear()
 
@@ -728,9 +732,10 @@ describe('test package functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject(Object.assign({
-      url: '/some-new-request'
-    }, matchCreatedAt))
+    expect(request.default.mock.calls[0][0]).toMatchObject({
+      url: '/some-new-request',
+      ...matchCreatedAt
+    })
 
     return Utils.flushPromises()
       .then(() => {
@@ -739,9 +744,10 @@ describe('test package functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(2)
-        expect(request.default.mock.calls[1][0]).toMatchObject(Object.assign({
-          url: '/some-new-request'
-        }, matchCreatedAt))
+        expect(request.default.mock.calls[1][0]).toMatchObject({
+          url: '/some-new-request',
+          ...matchCreatedAt
+        })
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 100)
 
@@ -806,9 +812,10 @@ describe('test package functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject(Object.assign({
-      url: '/failed-request'
-    }, matchCreatedAt))
+    expect(request.default.mock.calls[0][0]).toMatchObject({
+      url: '/failed-request',
+      ...matchCreatedAt
+    })
 
     return promise
       .catch(error => {

@@ -6,7 +6,7 @@ const FlowWebpackPlugin = require('flow-webpack-plugin')
 module.exports = (env, argv) => ({
   mode: 'production',
   entry: {
-    sdk: path.resolve(__dirname, 'src/sdk/main.js'),
+    'sdk': path.resolve(__dirname, 'src/sdk/main.js'),
     'sdk.min': path.resolve(__dirname, 'src/sdk/main.js')
   },
   output: {

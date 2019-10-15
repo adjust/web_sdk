@@ -416,7 +416,7 @@ describe('test session functionality', () => {
 
       return Identity.persist()
         .then(() => {
-          ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: null})
+          ActivityState.default.current = {...ActivityState.default.current, attribution: null}
 
           Session.watch()
 
@@ -438,7 +438,7 @@ describe('test session functionality', () => {
 
       return Identity.persist()
         .then(() => {
-          ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: {adid: 'bla'}})
+          ActivityState.default.current = {...ActivityState.default.current, attribution: {adid: 'bla'}}
 
           Session.watch()
 
@@ -481,7 +481,7 @@ describe('test session functionality', () => {
       let currentLastActive
       let activityState
 
-      ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: null})
+      ActivityState.default.current = {...ActivityState.default.current, attribution: null}
 
       Session.watch()
 
@@ -640,7 +640,7 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += 31 * MINUTE)
           jest.advanceTimersByTime(31 * MINUTE)
 
-          ActivityState.default.current = Object.assign(ActivityState.default.current, {attribution: {adid: 'bla'}})
+          ActivityState.default.current = {...ActivityState.default.current, attribution: {adid: 'bla'}}
 
           return Utils.flushPromises()
         })

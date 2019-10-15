@@ -5,7 +5,6 @@ import * as State from '../state'
 import * as Logger from '../logger'
 import * as QuickStorage from '../storage/quick-storage'
 import * as PubSub from '../pub-sub'
-import {extend} from '../utilities'
 
 jest.mock('../logger')
 
@@ -274,7 +273,7 @@ describe('test identity methods', () => {
       expect.assertions(2)
 
       jest.spyOn(Date, 'now').mockReturnValueOnce(123456)
-      ActivityState.default.current = extend(ActivityState.default.current, {attribution: {adid: 'bla'}})
+      ActivityState.default.current = {...ActivityState.default.current, attribution: {adid: 'bla'}}
 
       return Identity.persist()
         .then(activityState => {
@@ -296,12 +295,12 @@ describe('test identity methods', () => {
           expect(activityState).toEqual(ActivityState.default.current)
 
           // update happens in another tab
-          return StorageManager.default.updateItem('activityState', Object.assign({}, activityState, {lastActive: 123}))
+          return StorageManager.default.updateItem('activityState', {...activityState, lastActive: 123})
         })
         .then(() => StorageManager.default.getFirst('activityState'))
         .then(activityState => {
 
-          compareActivityState = Object.assign({}, activityState)
+          compareActivityState = {...activityState}
 
           expect(compareActivityState).not.toEqual(ActivityState.default.current)
 

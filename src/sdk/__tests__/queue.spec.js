@@ -94,7 +94,7 @@ describe('test request queuing functionality', () => {
     return Utils.flushPromises()
       .then(() => {
 
-        expect(StorageManager.default.addItem).toHaveBeenCalledWith('queue', Object.assign({timestamp: currentTime}, Object.assign(config, {params: defaultParams})))
+        expect(StorageManager.default.addItem).toHaveBeenCalledWith('queue', {...config, timestamp: currentTime, params: defaultParams})
 
         jest.runOnlyPendingTimers()
 
@@ -335,13 +335,14 @@ describe('test request queuing functionality', () => {
       })
       .then(() => StorageManager.default.getAll('queue'))
       .then(result => {
-        const defaultParamsUpdated = Object.assign({}, defaultParams, {
+        const defaultParamsUpdated = {
+          ...defaultParams,
           timeSpent: 1,
           sessionLength: 1
-        })
+        }
 
         expect(result).toEqual([
-          {timestamp: currentTime, url: '/some-url-2', params: Object.assign({}, defaultParamsUpdated, {lastInterval: 1})},
+          {timestamp: currentTime, url: '/some-url-2', params: {...defaultParamsUpdated, lastInterval: 1}},
           {timestamp: currentTime+1, url: '/some-url-3', params: defaultParamsUpdated}
         ])
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
@@ -591,7 +592,7 @@ describe('test request queuing functionality', () => {
       })
       .then(result => {
         expect(result).toEqual([
-          {timestamp: currentTime+1, url: '/event', params: Object.assign({}, defaultParams, {eventCount: 1})}
+          {timestamp: currentTime+1, url: '/event', params: {...defaultParams, eventCount: 1}}
         ])
 
         Queue.setOffline(false)
@@ -641,7 +642,7 @@ describe('test request queuing functionality', () => {
       .then(result => {
         expect(result).toEqual([
           {timestamp: currentTime, url: '/session', params: defaultParams},
-          {timestamp: currentTime+1, url: '/event', params: Object.assign({}, defaultParams, {eventCount: 1})}
+          {timestamp: currentTime+1, url: '/event', params: {...defaultParams, eventCount: 1}}
         ])
 
         Queue.setOffline(false)
@@ -746,13 +747,17 @@ describe('test request queuing functionality', () => {
       .then(result => {
         expect(result).toEqual(queue = [
           ...queue,
-          {timestamp: timestamp2, url: '/event', params: Object.assign({}, defaultParams, {
+          {
+            timestamp: timestamp2,
+            url: '/event',
+            params: {
+              ...defaultParams,
               eventToken: 'token1',
               timeSpent: 180,
               sessionLength: 180,
               eventCount: 1,
               lastInterval: 180
-            })
+            }
           }
         ])
 
@@ -766,13 +771,17 @@ describe('test request queuing functionality', () => {
       .then(result => {
         expect(result).toEqual(queue = [
           ...queue,
-          {timestamp: timestamp3, url: '/event', params: Object.assign({}, defaultParams, {
+          {
+            timestamp: timestamp3,
+            url: '/event',
+            params: {
+              ...defaultParams,
               eventToken: 'token2',
               timeSpent: 240,
               sessionLength: 240,
               eventCount: 2,
               lastInterval: 60
-            })
+            }
           }
         ])
 
@@ -786,12 +795,16 @@ describe('test request queuing functionality', () => {
       .then(result => {
         expect(result).toEqual(queue = [
           ...queue,
-          {timestamp: timestamp4, url: '/session', params: Object.assign({}, defaultParams, {
+          {
+            timestamp: timestamp4,
+            url: '/session',
+            params: {
+              ...defaultParams,
               timeSpent: 540,
               sessionLength: 540,
               sessionCount: 2,
               lastInterval: 300
-            })
+            }
           }
         ])
 
@@ -805,14 +818,18 @@ describe('test request queuing functionality', () => {
       .then(result => {
         expect(result).toEqual(queue = [
           ...queue,
-          {timestamp: timestamp5, url: '/event', params: Object.assign({}, defaultParams, {
+          {
+            timestamp: timestamp5,
+            url: '/event',
+            params: {
+              ...defaultParams,
               eventToken: 'token3',
               timeSpent: 23,
               sessionLength: 23,
               eventCount: 3,
               sessionCount: 2,
               lastInterval: 23
-            })
+            }
           }
         ])
 
