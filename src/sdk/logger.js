@@ -67,7 +67,7 @@ let _output = ''
  * @private
  */
 function _getDefaultLogLevel () {
-  return _envLogLevels[__ADJUST__ENV] || LEVEL_ERROR
+  return _envLogLevels[process.env.NODE_ENV] || LEVEL_ERROR
 }
 
 /**

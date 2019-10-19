@@ -51,7 +51,7 @@ const _fields = [
 const _baseConfig = {
   namespace: __ADJUST__NAMESPACE,
   version: `js${__ADJUST__SDK_VERSION}`,
-  baseUrl: __ADJUST__ENV === 'test' ? {} : {
+  baseUrl: process.env.NODE_ENV === 'test' ? {} : {
     app: 'https://app.adjust.com',
     gdpr: 'https://gdpr.adjust.com'
   },

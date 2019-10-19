@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
 
-module.exports = (env, argv) => ({
+module.exports = () => ({
   mode: 'production',
   entry: {
     'sdk': path.resolve(__dirname, 'src/sdk/main.js'),
@@ -25,8 +25,7 @@ module.exports = (env, argv) => ({
   plugins: [
     new webpack.DefinePlugin({
       __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
-      __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version),
-      __ADJUST__ENV: JSON.stringify(argv && argv.mode || 'production')
+      __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version)
     }),
     new FlowWebpackPlugin()
   ],

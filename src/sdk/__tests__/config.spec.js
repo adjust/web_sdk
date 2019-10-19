@@ -93,7 +93,7 @@ describe('test global config', () => {
 
   describe('development environment', () => {
     jest.isolateModules(() => {
-      global.__ADJUST__ENV = 'development'
+      global.process.env.NODE_ENV = 'development'
       const Config = require('../config')
 
       it('sets base urls for env other then test', () => {

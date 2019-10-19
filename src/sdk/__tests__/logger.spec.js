@@ -20,7 +20,7 @@ describe('test Logger functionality', () => {
   })
 
   afterAll(() => {
-    global.__ADJUST__ENV = 'test'
+    global.process.env.NODE_ENV = 'test'
     global.Date = _origDate
     Logger.default.setLogLevel()
   })
@@ -75,12 +75,12 @@ describe('test Logger functionality', () => {
   describe('verbose log level by default in development environment', () => {
 
     beforeAll(() => {
-      global.__ADJUST__ENV = 'development'
+      global.process.env.NODE_ENV = 'development'
       Logger.default.setLogLevel()
     })
 
     afterAll(() => {
-      global.__ADJUST__ENV = 'test'
+      global.process.env.NODE_ENV = 'test'
     })
 
     it('prints verbose messages', () => {
@@ -104,12 +104,12 @@ describe('test Logger functionality', () => {
   describe('error log level by default in production environment', () => {
 
     beforeAll(() => {
-      global.__ADJUST__ENV = 'production'
+      global.process.env.NODE_ENV = 'production'
       Logger.default.setLogLevel()
     })
 
     afterAll(() => {
-      global.__ADJUST__ENV = 'test'
+      global.process.env.NODE_ENV = 'test'
     })
 
     it('does not print verbose messages', () => {
@@ -133,12 +133,12 @@ describe('test Logger functionality', () => {
   describe('error log level by default in unknown environment', () => {
 
     beforeAll(() => {
-      global.__ADJUST__ENV = 'unknown-env'
+      global.process.env.NODE_ENV = 'unknown-env'
       Logger.default.setLogLevel()
     })
 
     afterAll(() => {
-      global.__ADJUST__ENV = 'test'
+      global.process.env.NODE_ENV = 'test'
     })
 
     it('does not print verbose messages', () => {

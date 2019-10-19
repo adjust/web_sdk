@@ -49,11 +49,7 @@ function _randomInRange (min, max) {
 export default function backOff (attempts: number, strategy: ?StrategyT): number {
   strategy = strategy || 'long'
 
-  // $FlowFixMe: global __ADJUST__ENV defined in webpack is not recognized as global
-  const isTest = __ADJUST__ENV === 'test'
-  const options = isTest
-    ? _options.test
-    : _options[strategy]
+  const options = process.env.NODE_ENV === 'test' ? _options.test : _options[strategy]
   let delay = options.delay * Math.pow(2, attempts - 1)
 
   delay = Math.min(delay, options.maxDelay)

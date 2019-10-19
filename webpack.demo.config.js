@@ -6,7 +6,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
 const webpack = require('webpack')
 
-module.exports = (env, argv) => ({
+module.exports = () => ({
   devServer: {
     host: '0.0.0.0'
   },
@@ -34,8 +34,7 @@ module.exports = (env, argv) => ({
     }),
     new webpack.DefinePlugin({
       __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
-      __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version),
-      __ADJUST__ENV: JSON.stringify(argv && argv.mode || 'production')
+      __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version)
     }),
     new FlowWebpackPlugin()
   ],

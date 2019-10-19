@@ -2,17 +2,17 @@ import * as backOff from '../backoff'
 
 describe('backOff strategy functionality', () => {
 
-  const oldEnv = global.__ADJUST__ENV
+  const oldEnv = global.process.env.NODE_ENV
   let mathRandomSpy
 
   beforeAll(() => {
-    global.__ADJUST__ENV = 'development'
+    global.process.env.NODE_ENV = 'development'
 
     mathRandomSpy = jest.spyOn(Math, 'random')
   })
 
   afterAll(() => {
-    global.__ADJUST__ENV = oldEnv
+    global.process.env.NODE_ENV = oldEnv
     jest.restoreAllMocks()
   })
 
