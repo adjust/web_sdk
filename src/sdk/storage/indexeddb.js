@@ -174,7 +174,7 @@ function _overrideError (reject, error) {
  * @returns {Promise}
  * @private
  */
-function _initRequest ({storeName, target, action, mode = 'readonly'}) {
+function _initRequest ({storeName, target = null, action, mode = 'readonly'}) {
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
@@ -247,7 +247,7 @@ function _initBulkRequest ({storeName, target, action, mode}) {
  * @returns {Promise}
  * @private
  */
-function _openCursor ({storeName, action = 'list', range, firstOnly, mode = 'readonly'}) {
+function _openCursor ({storeName, action = 'list', range = null, firstOnly, mode = 'readonly'}) {
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
