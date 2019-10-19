@@ -65,7 +65,5 @@ app.start({
   goonline: () => Adjust.switchBackToOnlineMode(),
   stop: Adjust.stop,
   restart: Adjust.restart,
-  gdpr: Adjust.gdprForgetMe,
-  destroy: Adjust.destroy,
-  reinit: () => Adjust.initSdk(appConfig)
+  gdpr: Adjust.gdprForgetMe
 })

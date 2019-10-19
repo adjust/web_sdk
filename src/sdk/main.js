@@ -199,7 +199,7 @@ function _handleGdprForgetMe (): void {
     identityClear(),
     globalParamsClear(),
     queueClear()
-  ]).then(destroy)
+  ]).then(_destroy)
 
 }
 
@@ -238,8 +238,10 @@ function _shutdown (async): void {
 
 /**
  * Destroy the instance
+ *
+ * @private
  */
-function destroy (): void {
+function _destroy (): void {
   _shutdown()
   gdprForgetDestroy()
 
@@ -363,7 +365,9 @@ const Adjust = {
   stop,
   restart,
   gdprForgetMe,
-  destroy
+  __testonly__: {
+    destroy: _destroy
+  }
 }
 
 export default Adjust

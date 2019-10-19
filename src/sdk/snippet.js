@@ -41,8 +41,7 @@
     'switchBackToOnlineMode',
     'stop',
     'restart',
-    'gdprForgetMe',
-    'destroy'
+    'gdprForgetMe'
   ],
   function (context, queue, methodName) {
     context[methodName] = function () {

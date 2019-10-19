@@ -406,7 +406,7 @@ function expectNotGdprRequest (logMessage) {
 }
 
 function teardown () {
-  _instance.destroy()
+  _instance.__testonly__.destroy()
   localStorage.clear()
   jest.clearAllMocks()
   State.default.disabled = null
