@@ -118,9 +118,9 @@ describe('IndexedDB usage', () => {
           {u: 1, la: 12345, at: {a: 'blabla', tt: '123abc', tn: 'tracker', nt: 'bla'}}
         ]
         const globalParamsSet = [
-          {k: 'key-1', v: 'value-1', t: 1},
-          {k: 'key-2', v: 'value-2', t: 1},
-          {k: 'key-3', v: 'value-3', t: 2}
+          {kt: 'key-11', k: 'key-1', v: 'value-1', t: 1},
+          {kt: 'key-21', k: 'key-2', v: 'value-2', t: 1},
+          {kt: 'key-32', k: 'key-3', v: 'value-3', t: 2}
         ]
 
         beforeEach(() => {
@@ -183,14 +183,14 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {key: 'key-1', value: 'value-1', type: 'callback'},
-                {key: 'key-2', value: 'value-2', type: 'callback'},
-                {key: 'key-3', value: 'value-3', type: 'partner'}
+                {keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback'},
+                {keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback'},
+                {keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner'}
               ])
             })
         })
 
-        it('returns result migrated from localStorage for queue and globalParams when upgraded in the middle of the window session', () => {
+        it('returns result migrated from the localStorage for queue and globalParams when upgraded in the middle of the window session', () => {
 
           expect.assertions(8)
 
@@ -233,9 +233,9 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {key: 'key-1', value: 'value-1', type: 'callback'},
-                {key: 'key-2', value: 'value-2', type: 'callback'},
-                {key: 'key-3', value: 'value-3', type: 'partner'}
+                {keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback'},
+                {keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback'},
+                {keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner'}
               ])
             })
         })

@@ -4,7 +4,7 @@ import QuickStorage from '../storage/quick-storage'
 import SchemeMap from './scheme-map'
 import Scheme from './scheme'
 import Logger from '../logger'
-import {findIndex, isEmpty, isObject, values} from '../utilities'
+import {findIndex, isEmpty, isObject, reducer, values} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
 /**
@@ -61,17 +61,16 @@ function _open () {
 }
 
 /**
- * Get primary keys for particular store
+ * Get composite keys when defined or fallback to primary key for particular store
  *
  * @param {string} storeName
  * @returns {Array}
  * @private
  */
 function _getKeys (storeName) {
+  const options = Scheme[storeName].options
 
-  const keyPath = Scheme[storeName].options.keyPath
-
-  return keyPath instanceof Array ? keyPath.slice() : [keyPath]
+  return options.composite || [options.keyPath]
 }
 
 /**
@@ -85,29 +84,27 @@ function _getKeys (storeName) {
  * @private
  */
 function _initRequest ({storeName, id, item}, action) {
-
   const open = _open()
+  const options = Scheme[storeName].options
 
   if (open.status === 'error') {
     return Promise.reject(open.error)
   }
 
   return new Promise((resolve, reject) => {
-
     const items = QuickStorage.stores[storeName]
     const keys = _getKeys(storeName)
+    const ids = id instanceof Array ? id.slice() : [id]
+    const target = id
+      ? keys
+        .map((key, index) => [key, ids[index]])
+        .reduce(reducer, {})
+      : {...item}
 
-    if (id) {
-      const ids = id instanceof Array ? id.slice() : [id]
-      item = keys.reduce((acc, key, index) => {
-        acc[key] = ids[index]
-        return acc
-      }, {})
-    }
 
-    const index = item ? findIndex(items, keys, item) : null
+    const index = target ? findIndex(items, keys, target) : null
 
-    return action(resolve, reject, {keys, items, index})
+    return action(resolve, reject, {keys, items, index, options})
   })
 }
 
@@ -116,35 +113,56 @@ function _initRequest ({storeName, id, item}, action) {
  * - by default sorts in ascending order by primary keys
  * - force order by provided value
  *
- * @param {array} items
- * @param {array} keys
+ * @param {Array} items
+ * @param {Array} keys
  * @param {string} force
  * @param {string=} force
- * @returns {array}
+ * @returns {Array}
  * @private
  */
 function _sort (items, keys, force) {
-
+  const clone = [...items]
   const reversed = keys.slice().reverse()
 
   function compare (a, b, key) {
     const expr1 = force ? force === a[key] : a[key] < b[key]
     const expr2 = force ? force > a[key] : a[key] > b[key]
 
-    if (expr1) {
-      return -1
-    } else if (expr2) {
-      return 1
-    } else {
-      return 0
-    }
+    return expr1 ? -1 : (expr2 ? 1 : 0)
   }
 
-  return items.sort((a, b) => {
-    return reversed.reduce((acc, key) => {
+  return clone.sort((a, b) => reversed
+    .reduce((acc, key) => {
       return acc || compare(a, b, key)
-    }, 0)
-  })
+    }, 0))
+}
+
+/**
+ * Prepare the target to be queried depending on the composite key if defined
+ *
+ * @param {Object} options
+ * @param {*} target
+ * @returns {*}
+ * @private
+ */
+function _prepareTarget (options, target) {
+  return options.composite
+    ? {[options.keyPath]: options.composite.map(key => target[key]).join(''), ...target}
+    : target
+}
+
+/**
+ * Prepare the result to be return depending on the composite key definition
+ *
+ * @param {Object} options
+ * @param {Object} target
+ * @returns {*}
+ * @private
+ */
+function _prepareResult (options, target) {
+  return options.composite && isObject(target)
+    ? options.composite.map(key => target[key])
+    : (target[options.keyPath] || target)
 }
 
 /**
@@ -155,7 +173,6 @@ function _sort (items, keys, force) {
  * @returns {Promise}
  */
 function getAll (storeName, firstOnly) {
-
   const open = _open()
 
   if (open.status === 'error') {
@@ -163,7 +180,6 @@ function getAll (storeName, firstOnly) {
   }
 
   return new Promise((resolve, reject) => {
-
     const value = QuickStorage.stores[storeName]
 
     if (value instanceof Array) {
@@ -192,11 +208,11 @@ function getFirst (storeName) {
  * @returns {Promise}
  */
 function getItem (storeName, id) {
-  return _initRequest({storeName, id}, (resolve, reject, {items, index}) => {
+  return _initRequest({storeName, id}, (resolve, reject, {items, index, options}) => {
     if (index === -1) {
       reject({name: 'NotRecordFoundError', message: `Requested record not found in "${storeName}" store`})
     } else {
-      resolve(items[index])
+      resolve(_prepareTarget(options, items[index]))
     }
   })
 }
@@ -210,23 +226,10 @@ function getItem (storeName, id) {
  */
 function filterBy (storeName, by) {
   return getAll(storeName)
-    .then(result => {
-      return result.filter(item => {
+    .then(result => result
+      .filter(item => {
         return item[Scheme[storeName].index] === by
-      })
-    })
-}
-
-/**
- * Return values for primary keys of particular item
- *
- * @param {Array} keys
- * @param {Object} item
- * @returns {*}
- * @private
- */
-function _return (keys, item) {
-  return keys.length === 1 ? item[keys[0]] : keys.map((key) => item[key])
+      }))
 }
 
 /**
@@ -237,13 +240,13 @@ function _return (keys, item) {
  * @returns {Promise}
  */
 function addItem (storeName, item) {
-  return _initRequest({storeName, item}, (resolve, reject, {keys, items, index}) => {
+  return _initRequest({storeName, item}, (resolve, reject, {items, index, options}) => {
     if (index !== -1) {
       reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing item into "${storeName}" store`})
     } else {
-      items.push(item)
+      items.push(_prepareTarget(options, item))
       QuickStorage.stores[storeName] = items
-      resolve(_return(keys, item))
+      resolve(_prepareResult(options, item))
     }
   })
 }
@@ -257,31 +260,25 @@ function addItem (storeName, item) {
  * @returns {Promise}
  */
 function addBulk (storeName, target, overwrite) {
-  return _initRequest({storeName}, (resolve, reject, {keys, items}) => {
-
+  return _initRequest({storeName}, (resolve, reject, {keys, items, options}) => {
     if (!target || target && !target.length) {
       return reject({name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into "${storeName}" store`})
     }
 
-    let existing = []
+    const newItems = target
+      .map(item => _prepareTarget(options, item))
 
-    target.forEach(item => {
-      const index = findIndex(items, keys, item)
-      if (index !== -1) {
-        existing.push({target: item, index})
-      }
-    })
+    const overlapping = newItems
+      .filter(item => findIndex(items, keys, item) !== -1)
+      .map(item => item[options.keyPath])
 
-    if (overwrite) {
-      const indexes = existing.map(i => i.index).sort((a, b) => { return b - a })
-      indexes.forEach(index => items.splice(index, 1))
-    }
+    const currentItems = overwrite ? items.filter(item => overlapping.indexOf(item[options.keyPath]) === -1) : [...items]
 
-    if (existing.length && !overwrite) {
+    if (overlapping.length && !overwrite) {
       reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing items into "${storeName}" store`})
     } else {
-      QuickStorage.stores[storeName] = _sort([...items, ...target], keys)
-      resolve(target.map((item) => keys.map(k => item[k])))
+      QuickStorage.stores[storeName] = _sort([...currentItems, ...newItems], keys)
+      resolve(target.map(item => _prepareResult(options, item)))
     }
   })
 }
@@ -294,15 +291,17 @@ function addBulk (storeName, target, overwrite) {
  * @returns {Promise}
  */
 function updateItem (storeName, item) {
-  return _initRequest({storeName, item}, (resolve, _, {keys, items, index}) => {
+  return _initRequest({storeName, item}, (resolve, _, {items, index, options}) => {
+    const target = _prepareTarget(options, item)
+
     if (index === -1) {
-      items.push(item)
+      items.push(target)
     } else {
-      items.splice(index, 1, item)
+      items.splice(index, 1, target)
     }
 
     QuickStorage.stores[storeName] = items
-    resolve(_return(keys, item))
+    resolve(_prepareResult(options, item))
   })
 }
 
@@ -370,19 +369,18 @@ function deleteBulk (storeName, condition) {
       const key = Scheme[storeName].index || keys[0]
       const bound = isObject(condition) ? condition.upperBound : condition
       const force = isObject(condition) ? null : condition
-
-      _sort(items, keys, force)
-
-      const index = _findMax(items, key, bound)
+      const sorted = _sort(items, keys, force)
+      const index = _findMax(sorted, key, bound)
 
       if (index === -1) {
         return []
       }
 
-      const deleted = items.splice(0, index + 1)
+      const deleted = sorted
+        .splice(0, index + 1)
         .map(item => keys.map(k => item[k]))
 
-      QuickStorage.stores[storeName] = items
+      QuickStorage.stores[storeName] = sorted
 
       return deleted
     })

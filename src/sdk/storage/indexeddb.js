@@ -165,10 +165,41 @@ function _overrideError (reject, error) {
 }
 
 /**
+ * Prepare the target to be queried depending on the composite key if defined
+ *
+ * @param {Object} options
+ * @param {*} target
+ * @param {string} action
+ * @returns {*}
+ * @private
+ */
+function _prepareTarget (options, target, action) {
+  const addOrPut = ['add', 'put'].indexOf(action) !== -1
+
+  return options.composite
+    ? addOrPut
+      ? {[options.keyPath]: options.composite.map(key => target[key]).join(''), ...target}
+      : target ? target.join('') : null
+    : target
+}
+
+/**
+ * Prepare the result to be return depending on the composite key definition
+ *
+ * @param {Object} options
+ * @param {Object} target
+ * @returns {Array|null}
+ * @private
+ */
+function _prepareResult (options, target) {
+  return options.composite && isObject(target) ? options.composite.map(key => target[key]) : null
+}
+
+/**
  * Initiate the database request
  *
  * @param {string} storeName
- * @param {Object=} target
+ * @param {*=} target
  * @param {string} action
  * @param {string} [mode=readonly]
  * @returns {Promise}
@@ -178,14 +209,15 @@ function _initRequest ({storeName, target = null, action, mode = 'readonly'}) {
   return _open()
     .then(() => {
       return new Promise((resolve, reject) => {
-        const {store} = _getTranStore({storeName, mode}, reject)
-        const request = store[action](target)
+        const {store, options} = _getTranStore({storeName, mode}, reject)
+        const request = store[action](_prepareTarget(options, target, action))
+        const result = _prepareResult(options, target)
 
         request.onsuccess = () => {
           if (action === 'get' && !request.result) {
             reject({name: 'NotRecordFoundError', message: `Requested record not found in "${storeName}" store`})
           } else {
-            resolve(request.result || target)
+            resolve(result || request.result || target)
           }
         }
 
@@ -212,23 +244,23 @@ function _initBulkRequest ({storeName, target, action, mode}) {
           return reject({name: 'NoTargetDefined', message: `No array provided to perform ${action} bulk operation into "${storeName}" store`})
         }
 
-        const {transaction, store} = _getTranStore({storeName, mode}, reject)
+        const {transaction, store, options} = _getTranStore({storeName, mode}, reject)
         let result = []
         let current = target[0]
 
         transaction.oncomplete = () => resolve(result)
 
-        request(store[action](current))
+        request(store[action](_prepareTarget(options, current, action)))
 
         function request (req) {
           req.onerror = error => _overrideError(reject, error)
           req.onsuccess = () => {
-            result.push(req.result)
+            result.push(_prepareResult(options, current) || req.result)
 
             current = target[result.length]
 
             if (result.length < target.length) {
-              request(store[action](current))
+              request(store[action](_prepareTarget(options, current, action)))
             }
           }
         }
@@ -252,7 +284,6 @@ function _openCursor ({storeName, action = 'list', range = null, firstOnly, mode
     .then(() => {
       return new Promise((resolve, reject) => {
         const {transaction, store, index, options} = _getTranStore({storeName, mode}, reject)
-        const keyPath = options.keyPath instanceof Array ? options.keyPath.slice() : [options.keyPath]
         const cursorRequest = (index || store).openCursor(range)
         const items = []
 
@@ -265,7 +296,7 @@ function _openCursor ({storeName, action = 'list', range = null, firstOnly, mode
           if (cursor) {
             if (action === 'delete') {
               cursor.delete()
-              items.push(keyPath.map(k => cursor.value[k]))
+              items.push(_prepareResult(options, cursor.value) || cursor.value[options.keyPath])
             } else {
               items.push(cursor.value)
             }

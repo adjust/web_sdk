@@ -27,18 +27,6 @@ function _parseValue (value) {
 }
 
 /**
- * Flip keyPath list according to defined map
- *
- * @param {Object} keyPath
- * @returns {Array}
- * @private
- */
-function _flipList (keyPath) {
-  return keyPath.list
-    .map(key => keyPath.map[key])
-}
-
-/**
  * Flip key/value pairs
  *
  * @param {Object} obj
@@ -54,44 +42,33 @@ function _flipObject (obj) {
 /**
  * Flip store scheme values
  *
+ * @param {string} storeName
  * @param {string} key
  * @param {Object} scheme
  * @returns {Object}
  * @private
  */
-function _flipStoreScheme (key, scheme) {
+function _flipStoreScheme (storeName, key, scheme) {
   const values = scheme.values ? {values: _flipObject(scheme.values)} : {}
-  const keys = scheme.keys ? {keys: _flipScheme(scheme.keys)} : {}
+  const keys = scheme.keys ? {keys: _flipScheme(storeName, scheme.keys)} : {}
+  const composite = scheme.composite ? {composite: scheme.composite.map(key => _getShortKey(storeName, key))} : {}
 
-  return {key, ...values, ...keys}
+  return {key, ...values, ...keys, ...composite}
 }
 
 /**
  * Flip general scheme recursivelly
  *
- * @param {Object} scheme
- * @returns {Object}
- * @private
- */
-function _flipScheme (scheme) {
-  return entries(scheme)
-    .map(([key, scheme]) => scheme.key
-      ? [scheme.key, _flipStoreScheme(key, scheme)]
-      : [scheme, key])
-    .reduce(reducer, {})
-}
-
-/**
- * Get keyPath map for encoding
- *
  * @param {string} storeName
- * @param {Array} keyPath
+ * @param {Object} fieldsScheme
  * @returns {Object}
  * @private
  */
-function _getKeyPathMap (storeName, keyPath) {
-  return keyPath
-    .map(key => [key, getShortKey(storeName, key)])
+function _flipScheme (storeName, fieldsScheme) {
+  return entries(fieldsScheme)
+    .map(([key, scheme]) => scheme.key
+      ? [scheme.key, _flipStoreScheme(storeName, key, scheme)]
+      : [scheme, key])
     .reduce(reducer, {})
 }
 
@@ -103,15 +80,14 @@ function _getKeyPathMap (storeName, keyPath) {
  */
 function _prepareLeft () {
   return entries(SchemeDef)
-    .map(([storeName, storeScheme]) => {
-      return [
-        storeName,
-        {
-          keyPath: {list: storeScheme.keyPath, map: _getKeyPathMap(storeName, storeScheme.keyPath)},
-          fields: storeScheme.fields
-        }
-      ]
-    })
+    .map(([storeName, storeScheme]) => [
+      storeName,
+      {
+        keyPath: storeScheme.keyPath,
+        index: storeScheme.index,
+        fields: storeScheme.fields
+      }
+    ])
     .reduce(reducer, {})
 }
 
@@ -126,8 +102,9 @@ function _prepareRight () {
     .map(([storeName, storeScheme]) => [
       storeName,
       {
-        keyPath: {list: _flipList(storeScheme.keyPath), map: _flipObject(storeScheme.keyPath.map)},
-        fields: _flipScheme(storeScheme.fields)
+        keyPath: _getShortKey(storeName, storeScheme.keyPath),
+        index: _getShortKey(storeName, storeScheme.index),
+        fields: _flipScheme(storeName, storeScheme.fields)
       }
     ])
     .reduce(reducer, {})
@@ -156,8 +133,9 @@ function _getValuesMap () {
  * @param {string} storeName
  * @param {string} key
  * @returns {string}
+ * @private
  */
-function getShortKey (storeName, key) {
+function _getShortKey (storeName, key) {
   const map = SchemeDef[storeName].fields[key]
   return map ? (map.key || map) : key
 }
@@ -173,6 +151,5 @@ export default {
   storeNames: {
     left: StoreNames,
     right: _flipObject(StoreNames)
-  },
-  getShortKey
+  }
 }

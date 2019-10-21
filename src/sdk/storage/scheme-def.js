@@ -1,7 +1,7 @@
 import {REASON_GDPR, REASON_GENERAL} from '../constants'
 
 const _queueScheme = {
-  keyPath: ['timestamp'],
+  keyPath: 'timestamp',
   fields: {
     url: {
       key: 'u',
@@ -44,7 +44,7 @@ const _queueScheme = {
 }
 
 const _activityStateScheme = {
-  keyPath: ['uuid'],
+  keyPath: 'uuid',
   fields: {
     uuid: {
       key: 'u',
@@ -76,16 +76,18 @@ const _activityStateScheme = {
 }
 
 const _globalParamsScheme = {
-  keyPath: ['key', 'type'],
+  keyPath: 'keyType',
+  index: 'type',
   fields: {
-    key: {
-      key: 'k',
-      primary: true
+    keyType: {
+      key: 'kt',
+      primary: true,
+      composite: ['key', 'type']
     },
+    key: 'k',
     value: 'v',
     type: {
       key: 't',
-      primary: true,
       values: {
         callback: 1,
         partner: 2
@@ -95,7 +97,7 @@ const _globalParamsScheme = {
 }
 
 const _disabledScheme = {
-  keyPath: ['reason'],
+  keyPath: 'reason',
   fields: {
     reason: {
       key: 'r',

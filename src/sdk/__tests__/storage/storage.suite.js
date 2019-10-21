@@ -21,7 +21,7 @@ export default function Suite (Storage) {
         {timestamp: 3, url: '/url3'}
       ]
 
-      expect.assertions(4)
+      expect.assertions(5)
 
       return Storage.getAll('test')
         .catch(error => {
@@ -37,7 +37,11 @@ export default function Suite (Storage) {
 
           return Storage.addBulk('queue', queueSet)
         })
-        .then(() => Storage.getAll('queue'))
+        .then(result => {
+          expect(result).toEqual([1, 2, 3])
+
+          return Storage.getAll('queue')
+        })
         .then(result => {
           expect(result).toEqual([
             {timestamp: 1, url: '/url1'},
@@ -111,7 +115,7 @@ export default function Suite (Storage) {
         })
     })
 
-    it('gets item from the globalParams store - with composite key', () => {
+    it('gets item from the globalParams store - with (quasi)composite key', () => {
 
       // prepare some rows manually
       const globalParamsSet = [
@@ -125,7 +129,7 @@ export default function Suite (Storage) {
       return Storage.addBulk('globalParams', globalParamsSet)
         .then(() => Storage.getItem('globalParams', ['key1', 'callback']))
         .then(result => {
-          expect(result).toEqual({key: 'key1', value: 'cvalue1', type: 'callback'})
+          expect(result).toEqual({keyType: 'key11', key: 'key1', value: 'cvalue1', type: 'callback'})
 
           return Storage.getItem('globalParams', ['key3', 'callback'])
         })
@@ -176,12 +180,12 @@ export default function Suite (Storage) {
 
     })
 
-    it('adds items to the globalParams store - with composite key', () => {
+    it('adds items to the globalParams store - with (quasi)composite key', () => {
 
       expect.assertions(7)
 
       return Storage.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
-        .then((id) => {
+        .then(id => {
 
           expect(id).toEqual(['key1', 'callback'])
 
@@ -190,7 +194,7 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'}
           ])
 
           return Storage.addItem('globalParams', {key: 'key2', value: 'value2', type: 'callback'})
@@ -204,8 +208,8 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'callback'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+            {keyType: 'key21', key: 'key2', value: 'value2', type: 'callback'}
           ])
 
           return Storage.addItem('globalParams', {key: 'key1', value: 'value1', type: 'partner'})
@@ -219,9 +223,9 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'callback'},
-            {key: 'key1', value: 'value1', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+            {keyType: 'key21', key: 'key2', value: 'value2', type: 'callback'},
+            {keyType: 'key12', key: 'key1', value: 'value1', type: 'partner'}
           ])
 
           return Storage.addItem('globalParams', {key: 'key1', value: 'value1', type: 'callback'})
@@ -303,7 +307,7 @@ export default function Suite (Storage) {
 
     })
 
-    it('updates items in the globalParams store - with composite key', () => {
+    it('updates items in the globalParams store - with (quasi)composite key', () => {
 
       // prepare some rows manually
       const globalParamsSet = [
@@ -325,9 +329,9 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'updated value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'callback'},
-            {key: 'key1', value: 'value1', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'updated value1', type: 'callback'},
+            {keyType: 'key21', key: 'key2', value: 'value2', type: 'callback'},
+            {keyType: 'key12', key: 'key1', value: 'value1', type: 'partner'}
           ])
 
           return Storage.updateItem('globalParams', {key: 'key2', value: 'updated value2', type: 'callback'})
@@ -341,9 +345,9 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'updated value1', type: 'callback'},
-            {key: 'key2', value: 'updated value2', type: 'callback'},
-            {key: 'key1', value: 'value1', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'updated value1', type: 'callback'},
+            {keyType: 'key21', key: 'key2', value: 'updated value2', type: 'callback'},
+            {keyType: 'key12', key: 'key1', value: 'value1', type: 'partner'}
           ])
 
           return Storage.updateItem('globalParams', {key: 'key2', value: 'value2', type: 'partner'})
@@ -356,10 +360,10 @@ export default function Suite (Storage) {
         })
         .then(result => {
           expect(result).toEqual([
-            {key: 'key1', value: 'updated value1', type: 'callback'},
-            {key: 'key2', value: 'updated value2', type: 'callback'},
-            {key: 'key1', value: 'value1', type: 'partner'},
-            {key: 'key2', value: 'value2', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'updated value1', type: 'callback'},
+            {keyType: 'key21', key: 'key2', value: 'updated value2', type: 'callback'},
+            {keyType: 'key12', key: 'key1', value: 'value1', type: 'partner'},
+            {keyType: 'key22', key: 'key2', value: 'value2', type: 'partner'}
           ])
         })
 
@@ -430,7 +434,7 @@ export default function Suite (Storage) {
         })
     })
 
-    it('deletes item by item in the globalParams store - with composite key', () => {
+    it('deletes item by item in the globalParams store - with (quasi)composite key', () => {
 
       // prepare some rows manually
       const globalParamsSet = [
@@ -453,9 +457,9 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key1', value: 'value1', type: 'partner'},
-            {key: 'key2', value: 'value2', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+            {keyType: 'key12', key: 'key1', value: 'value1', type: 'partner'},
+            {keyType: 'key22', key: 'key2', value: 'value2', type: 'partner'}
           ])
 
           return Storage.deleteItem('globalParams', ['key1', 'partner'])
@@ -469,8 +473,8 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+            {keyType: 'key22', key: 'key2', value: 'value2', type: 'partner'}
           ])
 
           return Storage.deleteItem('globalParams', ['key5', 'callback'])
@@ -484,8 +488,8 @@ export default function Suite (Storage) {
         .then(result => {
 
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+            {keyType: 'key22', key: 'key2', value: 'value2', type: 'partner'}
           ])
         })
 
@@ -526,7 +530,7 @@ export default function Suite (Storage) {
 
     })
 
-    it('deletes items in bulk by type from the globalParams store - with composite key', () => {
+    it('deletes items in bulk by type from the globalParams store - with (quasi)composite key', () => {
 
       // prepare some rows manually
       const globalParamsSet = [
@@ -544,12 +548,12 @@ export default function Suite (Storage) {
         .then(() => Storage.getAll('globalParams'))
         .then(result => {
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'callback'},
-            {key: 'key3', value: 'value3', type: 'callback'},
-            {key: 'key4', value: 'value4', type: 'callback'},
-            {key: 'key1', value: 'value1', type: 'partner'},
-            {key: 'key2', value: 'value2', type: 'partner'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+            {keyType: 'key21', key: 'key2', value: 'value2', type: 'callback'},
+            {keyType: 'key31', key: 'key3', value: 'value3', type: 'callback'},
+            {keyType: 'key41', key: 'key4', value: 'value4', type: 'callback'},
+            {keyType: 'key12', key: 'key1', value: 'value1', type: 'partner'},
+            {keyType: 'key22', key: 'key2', value: 'value2', type: 'partner'}
           ])
 
           return Storage.deleteBulk('globalParams', 'partner')
@@ -564,10 +568,10 @@ export default function Suite (Storage) {
         })
         .then(result => {
           expect(result).toEqual([
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'callback'},
-            {key: 'key3', value: 'value3', type: 'callback'},
-            {key: 'key4', value: 'value4', type: 'callback'}
+            {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+            {keyType: 'key21', key: 'key2', value: 'value2', type: 'callback'},
+            {keyType: 'key31', key: 'key3', value: 'value3', type: 'callback'},
+            {keyType: 'key41', key: 'key4', value: 'value4', type: 'callback'}
           ])
 
           return Storage.deleteBulk('globalParams', 'callback')
@@ -675,22 +679,29 @@ export default function Suite (Storage) {
 
         return Storage.addBulk('globalParams', globalParamsSet1)
           .then(result => {
-            expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+            expect(result).toEqual([
+              ['bla', 'callback'],
+              ['key1', 'callback'],
+              ['eto', 'partner']
+            ])
 
             return Storage.addBulk('globalParams', globalParamsSet2)
           })
           .then(result => {
-            expect(result).toEqual([['key2', 'callback'], ['par', 'partner']])
+            expect(result).toEqual([
+              ['key2', 'callback'],
+              ['par', 'partner']
+            ])
 
             return Storage.getAll('globalParams')
           })
           .then(result => {
             expect(result).toEqual([
-              {key: 'bla', value: 'truc', type: 'callback'},
-              {key: 'key1', value: 'value1', type: 'callback'},
-              {key: 'key2', value: 'value2', type: 'callback'},
-              {key: 'eto', value: 'tako', type: 'partner'},
-              {key: 'par', value: 'tner', type: 'partner'}
+              {keyType: 'bla1', key: 'bla', value: 'truc', type: 'callback'},
+              {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+              {keyType: 'key21', key: 'key2', value: 'value2', type: 'callback'},
+              {keyType: 'eto2', key: 'eto', value: 'tako', type: 'partner'},
+              {keyType: 'par2', key: 'par', value: 'tner', type: 'partner'}
             ])
           })
       })
@@ -700,35 +711,48 @@ export default function Suite (Storage) {
         const globalParamsSet1 = [
           {key: 'bla', value: 'truc', type: 'callback'},
           {key: 'key1', value: 'value1', type: 'callback'},
-          {key: 'eto', value: 'tako', type: 'partner'}
+          {key: 'eto', value: 'tako', type: 'partner'},
+          {key: 'key2', value: 'value2', type: 'callback'}
         ]
 
         const globalParamsSet2 = [
           {key: 'key1', value: 'new key1 value', type: 'callback'},
           {key: 'par', value: 'tner', type: 'partner'},
-          {key: 'bla', value: 'truc', type: 'partner'}
+          {key: 'bla', value: 'truc', type: 'partner'},
+          {key: 'eto', value: 'tako new', type: 'partner'}
         ]
 
         expect.assertions(3)
 
         return Storage.addBulk('globalParams', globalParamsSet1)
           .then(result => {
-            expect(result).toEqual([['bla', 'callback'], ['key1', 'callback'], ['eto', 'partner']])
+            expect(result).toEqual([
+              ['bla', 'callback'],
+              ['key1', 'callback'],
+              ['eto', 'partner'],
+              ['key2', 'callback']
+            ])
 
             return Storage.addBulk('globalParams', globalParamsSet2, true)
           })
           .then(result => {
-            expect(result).toEqual([['key1', 'callback'], ['par', 'partner'], ['bla', 'partner']])
+            expect(result).toEqual([
+              ['key1', 'callback'],
+              ['par', 'partner'],
+              ['bla', 'partner'],
+              ['eto', 'partner']
+            ])
 
             return Storage.getAll('globalParams')
           })
           .then(result => {
             expect(result).toEqual([
-              {key: 'bla', value: 'truc', type: 'callback'},
-              {key: 'key1', value: 'new key1 value', type: 'callback'},
-              {key: 'bla', value: 'truc', type: 'partner'},
-              {key: 'eto', value: 'tako', type: 'partner'},
-              {key: 'par', value: 'tner', type: 'partner'}
+              {keyType: 'bla1', key: 'bla', value: 'truc', type: 'callback'},
+              {keyType: 'key11', key: 'key1', value: 'new key1 value', type: 'callback'},
+              {keyType: 'key21', key: 'key2', value: 'value2', type: 'callback'},
+              {keyType: 'bla2', key: 'bla', value: 'truc', type: 'partner'},
+              {keyType: 'eto2', key: 'eto', value: 'tako new', type: 'partner'},
+              {keyType: 'par2', key: 'par', value: 'tner', type: 'partner'}
             ])
           })
       })
@@ -779,13 +803,13 @@ export default function Suite (Storage) {
           ]))
           .then(([callbackParams, partnerParams]) => {
             expect(callbackParams).toEqual([
-              {key: 'key1', value: 'value1', type: 'callback'},
-              {key: 'key4', value: 'value4', type: 'callback'},
-              {key: 'key5', value: 'value5', type: 'callback'},
+              {keyType: 'key11', key: 'key1', value: 'value1', type: 'callback'},
+              {keyType: 'key41', key: 'key4', value: 'value4', type: 'callback'},
+              {keyType: 'key51', key: 'key5', value: 'value5', type: 'callback'},
             ])
             expect(partnerParams).toEqual([
-              {key: 'key2', value: 'value2', type: 'partner'},
-              {key: 'key3', value: 'value3', type: 'partner'}
+              {keyType: 'key22', key: 'key2', value: 'value2', type: 'partner'},
+              {keyType: 'key32', key: 'key3', value: 'value3', type: 'partner'}
             ])
           })
       })

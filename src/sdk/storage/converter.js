@@ -82,8 +82,9 @@ function convertRecords ({storeName, dir, records = []}) {
  */
 function convertValues ({storeName, dir, target}) {
   const scheme = SchemeMap[dir][convertStoreName({storeName, dir: 'right'})]
+  const keyPathScheme = scheme.fields[scheme.keyPath]
   const values = target instanceof Array ? target.slice() : [target]
-  const keys = scheme.keyPath.list
+  const keys = keyPathScheme.composite || [scheme.keyPath]
   const converted = keys
     .map((key, index) => _getValue(scheme.fields[key].values, values[index]))
 
