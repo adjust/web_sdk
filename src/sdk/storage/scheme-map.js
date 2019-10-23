@@ -1,5 +1,5 @@
 import {reducer, entries} from '../utilities'
-import SchemeDef from './scheme-def'
+import Scheme from './scheme'
 
 const QUEUE_STORE = 'q'
 const ACTIVITY_STATE_STORE = 'as'
@@ -79,11 +79,12 @@ function _flipScheme (storeName, fieldsScheme) {
  * @private
  */
 function _prepareLeft () {
-  return entries(SchemeDef)
+  return entries(Scheme)
     .map(([storeName, storeScheme]) => [
       storeName,
       {
         keyPath: storeScheme.keyPath,
+        autoIncrement: storeScheme.autoIncrement,
         index: storeScheme.index,
         fields: storeScheme.fields
       }
@@ -103,6 +104,7 @@ function _prepareRight () {
       storeName,
       {
         keyPath: _getShortKey(storeName, storeScheme.keyPath),
+        autoIncrement: storeScheme.autoIncrement,
         index: _getShortKey(storeName, storeScheme.index),
         fields: _flipScheme(storeName, storeScheme.fields)
       }
@@ -117,7 +119,7 @@ function _prepareRight () {
  * @private
  */
 function _getValuesMap () {
-  return entries(SchemeDef)
+  return entries(Scheme)
     .reduce((acc, [, scheme]) => acc.concat(scheme.fields), [])
     .map(scheme => entries(scheme)
       .filter(([, map]) => map.values)
@@ -136,7 +138,7 @@ function _getValuesMap () {
  * @private
  */
 function _getShortKey (storeName, key) {
-  const map = SchemeDef[storeName].fields[key]
+  const map = Scheme[storeName].fields[key]
   return map ? (map.key || map) : key
 }
 

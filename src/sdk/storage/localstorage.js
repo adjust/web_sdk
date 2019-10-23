@@ -2,7 +2,6 @@ import ActivityState from '../activity-state'
 import State from '../state'
 import QuickStorage from '../storage/quick-storage'
 import SchemeMap from './scheme-map'
-import Scheme from './scheme'
 import Logger from '../logger'
 import {findIndex, isEmpty, isObject, reducer, values} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
@@ -61,6 +60,16 @@ function _open () {
 }
 
 /**
+ * Get list of composite keys if available
+ * @param options
+ * @returns {Array|null}
+ * @private
+ */
+function _getCompositeKeys (options) {
+  return options.fields[options.keyPath].composite || null
+}
+
+/**
  * Get composite keys when defined or fallback to primary key for particular store
  *
  * @param {string} storeName
@@ -68,9 +77,9 @@ function _open () {
  * @private
  */
 function _getKeys (storeName) {
-  const options = Scheme[storeName].options
+  const options = SchemeMap.right[convertStoreName({storeName, dir: 'right'})]
 
-  return options.composite || [options.keyPath]
+  return _getCompositeKeys(options, true) || [options.keyPath]
 }
 
 /**
@@ -85,7 +94,7 @@ function _getKeys (storeName) {
  */
 function _initRequest ({storeName, id, item}, action) {
   const open = _open()
-  const options = Scheme[storeName].options
+  const options = SchemeMap.right[convertStoreName({storeName, dir: 'right'})]
 
   if (open.status === 'error') {
     return Promise.reject(open.error)
@@ -146,8 +155,9 @@ function _sort (items, keys, force) {
  * @private
  */
 function _prepareTarget (options, target) {
-  return options.composite
-    ? {[options.keyPath]: options.composite.map(key => target[key]).join(''), ...target}
+  const composite = _getCompositeKeys(options)
+  return composite
+    ? {[options.keyPath]: composite.map(key => target[key]).join(''), ...target}
     : target
 }
 
@@ -160,8 +170,9 @@ function _prepareTarget (options, target) {
  * @private
  */
 function _prepareResult (options, target) {
-  return options.composite && isObject(target)
-    ? options.composite.map(key => target[key])
+  const composite = _getCompositeKeys(options)
+  return composite && isObject(target)
+    ? composite.map(key => target[key])
     : (target[options.keyPath] || target)
 }
 
@@ -228,7 +239,7 @@ function filterBy (storeName, by) {
   return getAll(storeName)
     .then(result => result
       .filter(item => {
-        return item[Scheme[storeName].index] === by
+        return item[SchemeMap.right[convertStoreName({storeName, dir: 'right'})].index] === by
       }))
 }
 
@@ -366,7 +377,7 @@ function deleteBulk (storeName, condition) {
     .then(items => {
 
       const keys = _getKeys(storeName)
-      const key = Scheme[storeName].index || keys[0]
+      const key = SchemeMap.right[convertStoreName({storeName, dir: 'right'})].index || keys[0]
       const bound = isObject(condition) ? condition.upperBound : condition
       const force = isObject(condition) ? null : condition
       const sorted = _sort(items, keys, force)

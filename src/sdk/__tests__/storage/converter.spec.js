@@ -384,7 +384,7 @@ describe('test Converter utility', () => {
         }
       }
 
-      jest.doMock('../../storage/scheme-def', () => ({
+      jest.doMock('../../storage/scheme', () => ({
         someStore: someStoreScheme
       }))
 

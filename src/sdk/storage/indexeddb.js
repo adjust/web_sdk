@@ -1,5 +1,4 @@
 import Config from '../config'
-import Scheme from './scheme'
 import SchemeMap from './scheme-map'
 import ActivityState from '../activity-state'
 import State from '../state'
@@ -60,11 +59,14 @@ function _handleUpgradeNeeded (e, reject) {
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 
   storeNames.forEach(storeName => {
-    const storeInfo = Scheme[storeName]
-    const objectStore = db.createObjectStore(storeName, storeInfo.options)
+    const options = SchemeMap.right[convertStoreName({storeName, dir: 'right'})]
+    const objectStore = db.createObjectStore(storeName, {
+      keyPath: options.keyPath,
+      autoIncrement: options.autoIncrement || false
+    })
 
-    if (storeInfo.index) {
-      objectStore.createIndex(`${storeInfo.index}Index`, storeInfo.index)
+    if (options.index) {
+      objectStore.createIndex(`${options.index}Index`, options.index)
     }
 
     if (storeName === SchemeMap.storeNames.left.activityState && inMemoryAvailable) {
@@ -138,17 +140,17 @@ function _getTranStore ({storeName, mode}, reject) {
 
   const transaction = _db.transaction([storeName], mode)
   const store = transaction.objectStore(storeName)
-  const storeInfo = Scheme[storeName]
+  const options = SchemeMap.right[convertStoreName({storeName, dir: 'right'})]
   let index
 
-  if (storeInfo.index) {
-    index = store.index(`${storeInfo.index}Index`)
+  if (options.index) {
+    index = store.index(`${options.index}Index`)
   }
 
   transaction.onerror = reject
   transaction.onabort = reject
 
-  return {transaction, store, index, options: storeInfo.options}
+  return {transaction, store, index, options}
 }
 
 /**
@@ -165,6 +167,16 @@ function _overrideError (reject, error) {
 }
 
 /**
+ * Get list of composite keys if available
+ * @param options
+ * @returns {Array|null}
+ * @private
+ */
+function _getCompositeKeys (options) {
+  return options.fields[options.keyPath].composite || null
+}
+
+/**
  * Prepare the target to be queried depending on the composite key if defined
  *
  * @param {Object} options
@@ -175,10 +187,11 @@ function _overrideError (reject, error) {
  */
 function _prepareTarget (options, target, action) {
   const addOrPut = ['add', 'put'].indexOf(action) !== -1
+  const composite = _getCompositeKeys(options)
 
-  return options.composite
+  return composite
     ? addOrPut
-      ? {[options.keyPath]: options.composite.map(key => target[key]).join(''), ...target}
+      ? {[options.keyPath]: composite.map(key => target[key]).join(''), ...target}
       : target ? target.join('') : null
     : target
 }
@@ -192,7 +205,10 @@ function _prepareTarget (options, target, action) {
  * @private
  */
 function _prepareResult (options, target) {
-  return options.composite && isObject(target) ? options.composite.map(key => target[key]) : null
+  const composite = _getCompositeKeys(options)
+  return composite && isObject(target)
+    ? composite.map(key => target[key])
+    : null
 }
 
 /**
