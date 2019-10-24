@@ -1,20 +1,7 @@
 // @flow
-import {getHostName, reducer} from './utilities'
+import {reducer} from './utilities'
 import {getTimestamp} from './time'
 import {push} from './queue'
-
-/**
- * Check if user got redirected from another domain
- *
- * @returns {boolean}
- * @private
- */
-function _wasRedirected (): boolean {
-  const currentUrl = getHostName(window.location.href)
-  const referrerUrl = getHostName(document.referrer)
-
-  return !!document.referrer && currentUrl !== referrerUrl
-}
 
 /**
  * Check the following:
@@ -25,13 +12,11 @@ function _wasRedirected (): boolean {
  * @private
  */
 function _getReferrer (): ?string {
-  return _wasRedirected()
-    ? window.location.search
-      .substring(1)
-      .split('&')
-      .map(pair => pair.split('='))
-      .reduce(reducer, {})['adjust_referrer']
-    : null
+  return window.location.search
+    .substring(1)
+    .split('&')
+    .map(pair => pair.split('='))
+    .reduce(reducer, {})['adjust_referrer']
 }
 
 /**
