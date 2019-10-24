@@ -29,16 +29,11 @@ function _getSentAt () {
 /**
  * Read uuid from the activity state
  *
- * @returns {{webUuid: string, gpsAdid: string}}
+ * @returns {{webUuid: string}}
  * @private
  */
 function _getWebUuid () {
-  const webUuid = ActivityState.current.uuid
-
-  return {
-    webUuid: webUuid,
-    gpsAdid: webUuid // TODO this will be remove once backend fully supports web_sdk
-  }
+  return {webUuid: ActivityState.current.uuid}
 }
 
 /**
