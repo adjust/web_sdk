@@ -284,6 +284,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {
+              attempts: 1,
               createdAt: 'some-time',
               lastInterval: 0,
               timeSpent: 0,
@@ -352,6 +353,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {
+              attempts: 1,
               createdAt: 'some-time',
               lastInterval: 60,
               timeSpent: 60,
@@ -685,6 +687,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {
+              attempts: 1,
               createdAt: 'some-time',
               sessionCount: 2,
               timeSpent: 720,
@@ -750,6 +753,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {
+              attempts: 1,
               createdAt: 'some-time',
               sessionCount: 1,
               timeSpent: 120,
@@ -845,6 +849,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {
+              attempts: 1,
               createdAt: 'some-time',
               sessionCount: 1,
               timeSpent: 40,

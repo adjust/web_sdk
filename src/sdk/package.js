@@ -192,10 +192,11 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    *
    * @param {number=} wait
    * @param {boolean=false} retrying
+   * @param {number=} attempts
    * @returns {Promise}
    * @private
    */
-  function _prepareRequest ({wait, retrying}: {wait?: WaitT, retrying?: boolean}): Promise<ResultT> {
+  function _prepareRequest ({wait, retrying, attempts}: {wait?: WaitT, retrying?: boolean, attempts?: ?number}): Promise<ResultT> {
     _wait = wait ? _prepareWait(wait) : _wait
 
     if (_skip(wait)) {
@@ -211,16 +212,19 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
 
     _startAt = Date.now()
 
-    return _request()
+    return _request(attempts)
   }
 
   /**
    * Do the timed-out request with retry mechanism
    *
+   * @param {number=} attempts
    * @returns {Promise}
    * @private
    */
-  function _request (): Promise<ResultT> {
+  function _request (attempts?: ?number): Promise<ResultT> {
+    attempts = attempts ? (attempts + 1) : 1
+
     return new Promise((resolve, reject) => {
       _timeoutId = setTimeout(() => {
         _startAt = null
@@ -228,7 +232,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
         return request({
           url: _url,
           method: _method,
-          params: {..._params}
+          params: {attempts, ..._params},
         })
           .then(result => _continue(result, resolve))
           .catch(({response = {}} = {}) => _error(response, resolve, reject))
@@ -279,7 +283,8 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
 
     return _prepareRequest({
       wait: wait || backOff(_attempts, _strategy),
-      retrying: true
+      retrying: true,
+      attempts: _attempts
     })
   }
 

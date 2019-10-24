@@ -25,6 +25,7 @@ function expectRequest () {
   const fullConfig = {
     ...requestConfig,
     params: {
+      attempts: 1,
       createdAt: 'some-time',
       timeSpent: 0,
       sessionLength: 0,

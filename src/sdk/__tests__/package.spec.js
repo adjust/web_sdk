@@ -12,11 +12,12 @@ describe('test package functionality', () => {
   let dateNowSpy
   let createdAtSpy
   const now = Date.now()
-  const matchCreatedAt = {
+  const matchCreatedAt = (attempts) => ({
     params: {
+      attempts,
       createdAt: now
     }
-  }
+  })
   const someRequest = Package.default({
     url: '/global-request',
     params: {
@@ -59,6 +60,7 @@ describe('test package functionality', () => {
       url: '/global-request',
       method: 'GET',
       params: {
+        attempts: 1,
         createdAt: now,
         some: 'param'
       }
@@ -94,6 +96,7 @@ describe('test package functionality', () => {
       url: '/global-request',
       method: 'GET',
       params: {
+        attempts: 1,
         createdAt: now,
         more: 'params',
         and: 'more-fun'
@@ -131,7 +134,7 @@ describe('test package functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject(matchCreatedAt)
+    expect(request.default.mock.calls[0][0]).toMatchObject(matchCreatedAt(1))
 
     return Utils.flushPromises()
       .then(() => {
@@ -142,7 +145,7 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
         expect(request.default).toHaveBeenCalledTimes(2)
-        expect(request.default.mock.calls[1][0]).toMatchObject(matchCreatedAt)
+        expect(request.default.mock.calls[1][0]).toMatchObject(matchCreatedAt(2))
 
         return Utils.flushPromises()
       }).then(() => {
@@ -156,7 +159,7 @@ describe('test package functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(3)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
         expect(request.default).toHaveBeenCalledTimes(1)
-        expect(request.default.mock.calls[0][0]).toMatchObject(matchCreatedAt)
+        expect(request.default.mock.calls[0][0]).toMatchObject(matchCreatedAt(3))
 
         setTimeout.mockClear()
 
@@ -209,6 +212,7 @@ describe('test package functionality', () => {
       url: '/other-request',
       method: 'POST',
       params: {
+        attempts: 1,
         createdAt: now,
         something: 'else'
       }
@@ -228,6 +232,7 @@ describe('test package functionality', () => {
           url: '/other-request',
           method: 'POST',
           params: {
+            attempts: 2,
             createdAt: now,
             something: 'else'
           }
@@ -250,6 +255,7 @@ describe('test package functionality', () => {
           url: '/other-request',
           method: 'POST',
           params: {
+            attempts: 3,
             createdAt: now,
             something: 'else'
           }
@@ -280,6 +286,7 @@ describe('test package functionality', () => {
           url: '/global-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: newNow,
             some: 'param'
           }
@@ -323,6 +330,7 @@ describe('test package functionality', () => {
       url: '/some-request',
       method: 'POST',
       params: {
+        attempts: 1,
         createdAt: now,
         some: 'param'
       }
@@ -343,6 +351,7 @@ describe('test package functionality', () => {
           url: '/some-request',
           method: 'POST',
           params: {
+            attempts: 2,
             createdAt: now,
             some: 'param'
           }
@@ -364,6 +373,7 @@ describe('test package functionality', () => {
           url: '/some-request',
           method: 'POST',
           params: {
+            attempts: 3,
             createdAt: now,
             some: 'param'
           }
@@ -391,6 +401,7 @@ describe('test package functionality', () => {
           url: '/global-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: newNow,
             some: 'param'
           }
@@ -451,11 +462,12 @@ describe('test package functionality', () => {
   it('retires unsuccessful request', () => {
 
     const newNow = Date.now()
-    const matchOuterCreatedAt = {
+    const matchLocalCreatedAt = (attempts) => ({
       params: {
+        attempts,
         createdAt: newNow
       }
-    }
+    })
 
     request.default.mockRejectedValue(Utils.errorResponse())
 
@@ -474,7 +486,7 @@ describe('test package functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject(matchOuterCreatedAt)
+    expect(request.default.mock.calls[0][0]).toMatchObject(matchLocalCreatedAt(1))
 
     return Utils.flushPromises()
       .then(() => {
@@ -483,7 +495,7 @@ describe('test package functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(2)
-        expect(request.default.mock.calls[1][0]).toMatchObject(matchOuterCreatedAt)
+        expect(request.default.mock.calls[1][0]).toMatchObject(matchLocalCreatedAt(2))
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 100)
 
@@ -494,7 +506,7 @@ describe('test package functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(3)
-        expect(request.default.mock.calls[2][0]).toMatchObject(matchOuterCreatedAt)
+        expect(request.default.mock.calls[2][0]).toMatchObject(matchLocalCreatedAt(3))
         expect(setTimeout).toHaveBeenCalledTimes(3)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 200)
 
@@ -505,7 +517,7 @@ describe('test package functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(4)
-        expect(request.default.mock.calls[3][0]).toMatchObject(matchOuterCreatedAt)
+        expect(request.default.mock.calls[3][0]).toMatchObject(matchLocalCreatedAt(4))
         expect(setTimeout).toHaveBeenCalledTimes(4)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
 
@@ -516,7 +528,7 @@ describe('test package functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(5)
-        expect(request.default.mock.calls[4][0]).toMatchObject(matchOuterCreatedAt)
+        expect(request.default.mock.calls[4][0]).toMatchObject(matchLocalCreatedAt(5))
         expect(setTimeout).toHaveBeenCalledTimes(5)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
 
@@ -530,7 +542,7 @@ describe('test package functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(request.default).toHaveBeenCalledTimes(1)
-        expect(request.default.mock.calls[0][0]).toMatchObject(matchOuterCreatedAt)
+        expect(request.default.mock.calls[0][0]).toMatchObject(matchLocalCreatedAt(6))
         expect(setTimeout).toHaveBeenCalledTimes(6)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 300)
 
@@ -569,7 +581,7 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(request.default.mock.calls[0][0]).toMatchObject({
       url: '/new-request',
-      ...matchCreatedAt
+      ...matchCreatedAt(1)
     })
 
     return Utils.flushPromises()
@@ -583,7 +595,7 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledTimes(2)
         expect(request.default.mock.calls[1][0]).toMatchObject({
           url: '/new-request',
-          ...matchCreatedAt
+          ...matchCreatedAt(2)
         })
 
         return Utils.flushPromises()
@@ -597,7 +609,7 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledTimes(3)
         expect(request.default.mock.calls[2][0]).toMatchObject({
           url: '/new-request',
-          ...matchCreatedAt
+          ...matchCreatedAt(3)
         })
 
         return Utils.flushPromises()
@@ -614,7 +626,7 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledTimes(1)
         expect(request.default.mock.calls[0][0]).toMatchObject({
           url: '/new-request',
-          ...matchCreatedAt
+          ...matchCreatedAt(4)
         })
 
         setTimeout.mockClear()
@@ -639,6 +651,7 @@ describe('test package functionality', () => {
           url: '/global-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: newNow,
             some: 'param'
           }
@@ -734,7 +747,7 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(request.default.mock.calls[0][0]).toMatchObject({
       url: '/some-new-request',
-      ...matchCreatedAt
+      ...matchCreatedAt(1)
     })
 
     return Utils.flushPromises()
@@ -746,7 +759,7 @@ describe('test package functionality', () => {
         expect(request.default).toHaveBeenCalledTimes(2)
         expect(request.default.mock.calls[1][0]).toMatchObject({
           url: '/some-new-request',
-          ...matchCreatedAt
+          ...matchCreatedAt(2)
         })
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 100)
@@ -780,6 +793,7 @@ describe('test package functionality', () => {
           url: '/global-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: newNow,
             some: 'param'
           }
@@ -814,7 +828,7 @@ describe('test package functionality', () => {
     expect(request.default).toHaveBeenCalledTimes(1)
     expect(request.default.mock.calls[0][0]).toMatchObject({
       url: '/failed-request',
-      ...matchCreatedAt
+      ...matchCreatedAt(1)
     })
 
     return promise
@@ -838,6 +852,7 @@ describe('test package functionality', () => {
           url: '/another-failed-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: newNow,
             some: 'param'
           }
@@ -943,6 +958,7 @@ describe('test package functionality', () => {
           url: '/another-global-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: now,
           }
         })
@@ -970,6 +986,7 @@ describe('test package functionality', () => {
           url: '/new-url',
           method: 'POST',
           params: {
+            attempts: 1,
             createdAt: now,
             trc: 'prc',
             bla: 'truc'
@@ -1022,6 +1039,7 @@ describe('test package functionality', () => {
           url: '/another-global-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: now,
             some: 'param'
           }
@@ -1056,6 +1074,7 @@ describe('test package functionality', () => {
           url: '/another-global-request',
           method: 'GET',
           params: {
+            attempts: 1,
             createdAt: now,
             bla: 'ble',
             blu: 'bli'
@@ -1079,6 +1098,7 @@ describe('test package functionality', () => {
               url: '/another-global-request',
               method: 'GET',
               params: {
+                attempts: 1,
                 createdAt: now,
                 some: 'param'
               }
