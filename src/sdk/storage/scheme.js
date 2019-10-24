@@ -71,7 +71,14 @@ const _activityStateScheme = {
         campaign: 'cm',
         adgroup: 'ag',
         creative: 'cr',
-        click_label: 'cl'
+        click_label: 'cl',
+        state: {
+          key: 'st',
+          values: {
+            installed: 1,
+            reattributed: 2
+          }
+        }
       }
     }
   }

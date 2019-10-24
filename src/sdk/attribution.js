@@ -1,5 +1,5 @@
 import {publish} from './pub-sub'
-import {intersection, isEmpty} from './utilities'
+import {entries, intersection, isEmpty, reducer} from './utilities'
 import {persist} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
@@ -30,7 +30,8 @@ const _whitelist = [
   'campaign',
   'adgroup',
   'creative',
-  'click_label'
+  'click_label',
+  'state'
 ]
 
 /**
@@ -72,7 +73,10 @@ function _setAttribution (result) {
     return Promise.resolve(result)
   }
 
-  const attribution = {adid: result.adid, ...result.attribution}
+  const filtered = entries(result.attribution)
+    .filter(([key]) => _whitelist.indexOf(key) !== -1)
+    .reduce(reducer, {})
+  const attribution = {adid: result.adid, ...filtered}
 
   ActivityState.current = {...ActivityState.current, attribution}
 

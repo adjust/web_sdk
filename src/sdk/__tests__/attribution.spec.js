@@ -59,7 +59,7 @@ describe('test attribution functionality', () => {
 
   it('does self-initiated attribution call after initial session', () => {
 
-    const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
+    const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new', something: 'wrong'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
     ActivityState.default.current = {sessionCount: 1}
@@ -275,8 +275,8 @@ describe('test attribution functionality', () => {
 
   it('requests timed-out attribution which returns new attribution', () => {
 
-    const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
-    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
+    const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new', state: 'installed'}}
+    const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new', state: 'installed'}
 
     ActivityState.default.current = {sessionCount: 1}
     request.default.mockResolvedValue(newAttribution)

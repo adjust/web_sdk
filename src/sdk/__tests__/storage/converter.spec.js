@@ -156,7 +156,8 @@ describe('test Converter utility', () => {
               campaign: 'campaign1',
               adgroup: 'adgroup1',
               creative: 'creative1',
-              click_label: 'clicklabel1'
+              click_label: 'clicklabel1',
+              state: 'installed'
             }
           }
         })).toEqual({
@@ -175,7 +176,8 @@ describe('test Converter utility', () => {
             cm: 'campaign1',
             ag: 'adgroup1',
             cr: 'creative1',
-            cl: 'clicklabel1'
+            cl: 'clicklabel1',
+            st: 1
           }
         })
 
@@ -194,7 +196,8 @@ describe('test Converter utility', () => {
               a: 'asdfasdf',
               tt: 'token2',
               tn: 'tracker2',
-              cr: 'creative3'
+              cr: 'creative3',
+              st: 2
             }
           }
         })).toEqual({
@@ -209,7 +212,8 @@ describe('test Converter utility', () => {
             adid: 'asdfasdf',
             tracker_token: 'token2',
             tracker_name: 'tracker2',
-            creative: 'creative3'
+            creative: 'creative3',
+            state: 'reattributed'
           }
         })
       })
