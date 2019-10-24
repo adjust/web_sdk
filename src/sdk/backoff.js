@@ -1,7 +1,6 @@
 // @flow
+import {type BackOffStrategyT} from './types'
 import {MINUTE, HOUR, DAY} from './constants'
-
-export type StrategyT = 'long' | 'short' | 'test'
 
 /**
  * Options for the back-off strategy for different environments
@@ -46,7 +45,7 @@ function _randomInRange (min, max) {
  * @param {string} strategy
  * @returns {number}
  */
-export default function backOff (attempts: number, strategy: ?StrategyT): number {
+export default function backOff (attempts: number, strategy: ?BackOffStrategyT): number {
   strategy = strategy || 'long'
 
   const options = process.env.NODE_ENV === 'test' ? _options.test : _options[strategy]

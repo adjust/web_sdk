@@ -1,33 +1,32 @@
 // @flow
+import {
+  type HttpResultT,
+  type HttpContinueCbT,
+  type BackOffStrategyT
+} from './types'
 import request from './request'
 import {isEmpty} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
-import backOff, {type StrategyT} from './backoff'
+import backOff from './backoff'
 
-type ResultT = $ReadOnly<{
-  continue_in: number,
-  retry_in: number,
-  ask_in: number
-}> // TODO precise result type will be derived from request module
-type UrlT = string
+type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'
 type MethodT ='GET' | 'POST' | 'PUT' | 'DELETE'
 type ParamsT = {[key: string]: mixed}
-type ContinueCbT = (ResultT, () => mixed, (number) => mixed) => mixed
 type WaitT = number
 type PackageParamsT = {|
   url?: UrlT,
   method?: MethodT,
   params?: ParamsT,
-  continueCb?: ?ContinueCbT,
-  strategy?: StrategyT,
+  continueCb?: HttpContinueCbT,
+  strategy?: BackOffStrategyT,
   wait?: WaitT
 |}
-type GlobalParamsT = {|
-  url: ?UrlT,
+type DefaultParamsT = {|
+  url?: UrlT,
   method: MethodT,
-  params: ?ParamsT,
-  continueCb: ?ContinueCbT
+  params?: ParamsT,
+  continueCb?: HttpContinueCbT
 |}
 type AttemptsT = number
 type StartAtT = number
@@ -43,7 +42,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @type {{url: string, method: string, params: Object, continueCb: Function}}
    * @private
    */
-  let _global: GlobalParamsT = {url, method, params, continueCb}
+  let _default: DefaultParamsT = {url, method, params, continueCb}
 
   /**
    * Url param per instance or per request
@@ -75,7 +74,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @type {Function}
    * @private
    */
-  let _continueCb: ?ContinueCbT = continueCb
+  let _continueCb: ?HttpContinueCbT = continueCb
 
   /**
    * Back-off strategy
@@ -83,7 +82,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @type {string|null}
    * @private
    */
-  const _strategy: ?StrategyT = strategy
+  const _strategy: ?BackOffStrategyT = strategy
 
   /**
    * Timeout id to be used for clearing
@@ -195,7 +194,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @returns {Promise}
    * @private
    */
-  function _prepareRequest ({wait, retrying}: {wait?: WaitT, retrying?: boolean}): Promise<ResultT> {
+  function _prepareRequest ({wait, retrying}: {wait?: WaitT, retrying?: boolean}): Promise<HttpResultT> {
     _wait = wait ? _prepareWait(wait) : _wait
 
     if (_skip(wait)) {
@@ -220,7 +219,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @returns {Promise}
    * @private
    */
-  function _request (): Promise<ResultT> {
+  function _request (): Promise<HttpResultT> {
     return new Promise((resolve, reject) => {
       _timeoutId = setTimeout(() => {
         _startAt = null
@@ -244,10 +243,10 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   function _restore (): void {
-    _url = _global.url
-    _method = _global.method
-    _params = {..._global.params}
-    _continueCb = _global.continueCb
+    _url = _default.url
+    _method = _default.method
+    _params = {..._default.params}
+    _continueCb = _default.continueCb
   }
 
   /**
@@ -274,7 +273,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @returns {Promise}
    * @private
    */
-  function _retry (wait?: WaitT): Promise<ResultT> {
+  function _retry (wait?: WaitT): Promise<HttpResultT> {
     _attempts += 1
 
     clear()
@@ -296,7 +295,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {Function} resolve
    * @private
    */
-  function _continue (result: ResultT, resolve): void {
+  function _continue (result: HttpResultT, resolve): void {
     result = result || {}
 
     if (result.retry_in) {
@@ -341,7 +340,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {number=} wait
    * @returns {Promise}
    */
-  function send ({url, method, params = {}, continueCb, wait}: PackageParamsT = {}): Promise<ResultT> {
+  function send ({url, method, params = {}, continueCb, wait}: PackageParamsT = {}): Promise<HttpResultT> {
     _prepareParams({url, method, params, continueCb})
 
     return _prepareRequest({wait})

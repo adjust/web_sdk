@@ -1,3 +1,10 @@
+// @flow
+import {
+  type HttpResultT,
+  type AttributionStateT,
+  type AttributionWhiteListT,
+  type ActivityStateMapT
+} from './types'
 import {publish} from './pub-sub'
 import {entries, intersection, isEmpty, reducer} from './utilities'
 import {persist} from './identity'
@@ -23,7 +30,7 @@ const _request = Package({
  * @type {string[]}
  * @private
  */
-const _whitelist = [
+const _whitelist: AttributionWhiteListT = [
   'tracker_token',
   'tracker_name',
   'network',
@@ -42,7 +49,7 @@ const _whitelist = [
  * @returns {boolean}
  * @private
  */
-function _isSame ({adid, attribution}) {
+function _isSame ({adid, attribution}: HttpResultT): boolean {
   const oldAttribution = ActivityState.current.attribution || {}
   const anyDifferent = _whitelist.some(k => oldAttribution[k] !== attribution[k])
 
@@ -57,8 +64,8 @@ function _isSame ({adid, attribution}) {
  * @returns {boolean}
  * @private
  */
-function _isValid ({adid = '', attribution = {}}) {
-  return adid && !!intersection(_whitelist, Object.keys(attribution)).length
+function _isValid ({adid = '', attribution = {}}: HttpResultT): boolean {
+  return !!adid && !!intersection(_whitelist, Object.keys(attribution)).length
 }
 
 /**
@@ -67,15 +74,16 @@ function _isValid ({adid = '', attribution = {}}) {
  * @param {Object} result
  * @private
  */
-function _setAttribution (result) {
+function _setAttribution (result: HttpResultT): Promise<AttributionStateT> {
 
   if (isEmpty(result) || !_isValid(result) || _isSame(result)) {
-    return Promise.resolve(result)
+    return Promise.resolve({state: 'same'})
   }
 
   const filtered = entries(result.attribution)
     .filter(([key]) => _whitelist.indexOf(key) !== -1)
     .reduce(reducer, {})
+
   const attribution = {adid: result.adid, ...filtered}
 
   ActivityState.current = {...ActivityState.current, attribution}
@@ -84,7 +92,7 @@ function _setAttribution (result) {
     .then(() => {
       publish('attribution:change', attribution)
       Logger.info('Attribution has been updated')
-      return attribution
+      return {state: 'changed'}
     })
 }
 
@@ -97,7 +105,7 @@ function _setAttribution (result) {
  * @returns {Promise}
  * @private
  */
-function _continue (result, finish, retry) {
+function _continue (result: HttpResultT, finish, retry): Promise<HttpResultT | AttributionStateT> {
   result = result || {}
 
   if (!result.ask_in) {
@@ -114,11 +122,11 @@ function _continue (result, finish, retry) {
  * @param {Object} sessionResult
  * @param {number=} sessionResult.ask_in
  */
-function check (sessionResult = {}) {
+function check (sessionResult: HttpResultT = {}): Promise<?ActivityStateMapT> {
   const activityState = ActivityState.current
 
   if (!sessionResult.ask_in && activityState.attribution || !activityState.sessionCount) {
-    return Promise.resolve(sessionResult)
+    return Promise.resolve(activityState)
   }
 
   _request.send({
@@ -137,7 +145,7 @@ function check (sessionResult = {}) {
 /**
  * Destroy attribution by clearing running request
  */
-function destroy () {
+function destroy (): void {
   _request.clear()
 }
 

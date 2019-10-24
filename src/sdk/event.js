@@ -1,21 +1,14 @@
 // @flow
+import {type EventParamsT, type GlobalParamsMapT} from './types'
 import {isEmpty, convertToMap} from './utilities'
 import {push} from './queue'
-import {type GlobalParamsT, type GlobalParamsObjectT, get} from './global-params'
+import {get} from './global-params'
 import Logger from './logger'
 import Config from './config'
 
 type keyValueT = {[key: string]: string}
 
-export type EventParamsT = {|
-  eventToken: string,
-  revenue?: number,
-  currency?: string,
-  callbackParams?: Array<GlobalParamsT>,
-  partnerParams?: Array<GlobalParamsT>
-|}
-
-type EventParamsTransformedT = {|
+type EventRequestParamsT = {|
   eventToken: string,
   revenue?: string,
   currency?: string,
@@ -67,7 +60,7 @@ function _getRevenue (revenue: number | void, currency: string | void): RevenueT
  * @returns {Object}
  * @private
  */
-function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: GlobalParamsObjectT): EventParamsTransformedT {
+function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: GlobalParamsMapT): EventRequestParamsT {
   const globalParams = {}
   const baseParams = {
     eventToken: params.eventToken,

@@ -52,7 +52,7 @@ describe('test attribution functionality', () => {
 
     attributionPromise
       .then(result => {
-        expect(result).toEqual(sessionResult)
+        expect(result).toEqual(ActivityState.default.current)
       })
 
   })

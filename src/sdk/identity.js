@@ -1,4 +1,5 @@
 // @flow
+import {type ActivityStateMapT} from './types'
 import StorageManager from './storage/storage-manager'
 import ActivityState from './activity-state'
 import State from './state'
@@ -10,10 +11,9 @@ type ReasonT = {|
   reason: REASON_GDPR | REASON_GENERAL,
   pending?: boolean
 |}
-type ActivityStateObjT = {[key: string]: mixed} // TODO precise type will be derived from activity-state module
 type InterceptT = {|
   continue: boolean,
-  activityState?: ?ActivityStateObjT
+  activityState?: ?ActivityStateMapT
 |}
 
 /**
@@ -54,7 +54,7 @@ function _generateUuid (): string {
  * @returns {Object}
  * @private
  */
-function _intercept (stored: ActivityStateObjT): InterceptT {
+function _intercept (stored: ActivityStateMapT): InterceptT {
   if (!stored) {
     return {continue: true}
   }
@@ -75,7 +75,7 @@ function _intercept (stored: ActivityStateObjT): InterceptT {
  *
  * @returns {Promise}
  */
-function start (): Promise<?ActivityStateObjT> {
+function start (): Promise<?ActivityStateMapT> {
   if (_starting) {
     return Promise.reject({message: 'Adjust SDK start already in progress'})
   }
@@ -106,7 +106,7 @@ function start (): Promise<?ActivityStateObjT> {
  *
  * @returns {Promise}
  */
-function persist (): Promise<?ActivityStateObjT> {
+function persist (): Promise<?ActivityStateMapT> {
   if (status() === 'off') {
     return Promise.resolve(null)
   }
@@ -122,7 +122,7 @@ function persist (): Promise<?ActivityStateObjT> {
  *
  * @returns {Promise}
  */
-function sync (): Promise<ActivityStateObjT> {
+function sync (): Promise<ActivityStateMapT> {
   return StorageManager.getFirst(_storeName)
     .then(activityState => {
       const lastActive = ActivityState.current.lastActive || 0

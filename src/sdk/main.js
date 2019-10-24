@@ -1,4 +1,5 @@
 // @flow
+import {type EventParamsT, type GlobalParamsT} from './types'
 import Config from './config'
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
@@ -6,10 +7,10 @@ import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestro
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {start, status, disable, enable, clear as identityClear, destroy as identityDestroy} from './identity'
-import {type GlobalParamsT, add, remove, removeAll, clear as globalParamsClear} from './global-params'
+import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
-import event, {type EventParamsT} from './event'
+import event from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
 

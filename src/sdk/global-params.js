@@ -1,16 +1,9 @@
 // @flow
+import {type GlobalParamsT, type GlobalParamsMapT} from './types'
 import StorageManager from './storage/storage-manager'
 import Logger from './logger'
 import {convertToMap, intersection} from './utilities'
 
-export type GlobalParamsT = {|
-  key: string,
-  value: string
-|}
-export type GlobalParamsObjectT = {
-  callbackParams: Array<GlobalParamsT>,
-  partnerParams: Array<GlobalParamsT>
-}
 type TypeT = 'callback' | 'partner'
 type KeysT = [string, TypeT]
 type KeysArrayT = Array<KeysT>
@@ -50,7 +43,7 @@ function _omitType (params): Array<GlobalParamsT> {
  *
  * @returns {Promise}
  */
-function get (): Promise<GlobalParamsObjectT> {
+function get (): Promise<GlobalParamsMapT> {
   return Promise.all([
     StorageManager.filterBy(_storeName, 'callback'),
     StorageManager.filterBy(_storeName, 'partner')
