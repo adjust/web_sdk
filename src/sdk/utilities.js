@@ -56,61 +56,6 @@ function isValidJson (string) {
 }
 
 /**
- * Bind event to an element
- *
- * @param {Window|Document} element
- * @param {string} eventName
- * @param {Function} func
- */
-function on (element, eventName, func) {
-  if (element.addEventListener) {
-    element.addEventListener(eventName, func, false)
-  }
-}
-
-/**
- * Unbind event off an element
- *
- * @param {Window|Document} element
- * @param {string} eventName
- * @param {Function} func
- */
-function off (element, eventName, func) {
-  if (element.removeEventListener) {
-    element.removeEventListener(eventName, func, false)
-  }
-}
-
-/**
- * Get Page Visibility API attributes that can be accessed depending on the browser implementation
- *
- * @returns {{hidden: string, visibilityChange: string}|null}
- * @private
- */
-function getVisibilityApiAccess () {
-  if (typeof document.hidden !== 'undefined') {
-    return {
-      hidden: 'hidden',
-      visibilityChange: 'visibilitychange'
-    }
-  }
-
-  const prefixes = ['moz', 'ms', 'o', 'webkit']
-
-  for (let i = 0; i <= prefixes.length; i += 1) {
-    const prefix = prefixes[i]
-    if (typeof document[`${prefix}Hidden`] !== 'undefined') {
-      return {
-        hidden: `${prefix}Hidden`,
-        visibilityChange: `${prefix}visibilitychange`
-      }
-    }
-  }
-
-  return null
-}
-
-/**
  * Find index of an element in the list and return it
  *
  * @param {Array} array
@@ -235,9 +180,6 @@ export {
   isEmpty,
   isObject,
   isValidJson,
-  getVisibilityApiAccess,
-  on,
-  off,
   findIndex,
   convertToMap,
   intersection,

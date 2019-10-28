@@ -1,5 +1,5 @@
 import * as Config from '../config'
-import * as Utilities from '../utilities'
+import * as Listeners from '../listeners'
 import * as Session from '../session'
 import * as StorageManager from '../storage/storage-manager'
 import * as Queue from '../queue'
@@ -40,8 +40,8 @@ describe('test session functionality', () => {
 
   beforeAll(() => {
     jest.spyOn(request, 'default')
-    jest.spyOn(Utilities, 'on')
-    jest.spyOn(Utilities, 'off')
+    jest.spyOn(Listeners, 'on')
+    jest.spyOn(Listeners, 'off')
     jest.spyOn(Identity, 'persist')
     jest.spyOn(Identity, 'sync').mockImplementation(() => Promise.resolve({}))
     jest.spyOn(Queue, 'push')
@@ -50,7 +50,7 @@ describe('test session functionality', () => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(PubSub, 'publish')
 
-    pvaSpy = jest.spyOn(Utilities, 'getVisibilityApiAccess')
+    pvaSpy = jest.spyOn(Listeners, 'getVisibilityApiAccess')
   })
 
   beforeEach(() => {
@@ -96,16 +96,16 @@ describe('test session functionality', () => {
       // by default Page Visibility is available
       Session.watch()
 
-      expect(Utilities.on).toHaveBeenCalled()
+      expect(Listeners.on).toHaveBeenCalled()
 
       Session.destroy()
 
-      expect(Utilities.off).toHaveBeenCalled()
+      expect(Listeners.off).toHaveBeenCalled()
       expect(clearTimeout).toHaveBeenCalled()
 
       // clear mocks
-      Utilities.on.mockClear()
-      Utilities.off.mockClear()
+      Listeners.on.mockClear()
+      Listeners.off.mockClear()
       clearTimeout.mockClear()
 
       // when Page Visibility Api is not available
@@ -113,11 +113,11 @@ describe('test session functionality', () => {
 
       Session.watch()
 
-      expect(Utilities.on).not.toHaveBeenCalled()
+      expect(Listeners.on).not.toHaveBeenCalled()
 
       Session.destroy()
 
-      expect(Utilities.off).not.toHaveBeenCalled()
+      expect(Listeners.off).not.toHaveBeenCalled()
       expect(clearTimeout).not.toHaveBeenCalled()
 
       return Utils.flushPromises()
@@ -134,7 +134,7 @@ describe('test session functionality', () => {
 
       Session.destroy()
 
-      expect(Utilities.off).toHaveBeenCalled()
+      expect(Listeners.off).toHaveBeenCalled()
       expect(clearInterval).toHaveBeenCalled()
 
       Session.watch()
@@ -267,7 +267,7 @@ describe('test session functionality', () => {
 
           Session.watch()
 
-          expect(Utilities.on).toHaveBeenCalled()
+          expect(Listeners.on).toHaveBeenCalled()
 
           return Utils.flushPromises()
         })
@@ -329,7 +329,7 @@ describe('test session functionality', () => {
 
           Session.watch()
 
-          expect(Utilities.on).toHaveBeenCalled()
+          expect(Listeners.on).toHaveBeenCalled()
 
           dateNowSpy.mockReturnValue(currentTime += 60 * SECOND)
           jest.advanceTimersByTime(60 * SECOND)
@@ -384,7 +384,7 @@ describe('test session functionality', () => {
         .then(() => {
           Session.watch()
 
-          expect(Utilities.on).toHaveBeenCalled()
+          expect(Listeners.on).toHaveBeenCalled()
           expect(ActivityState.default.current.lastActive).toBe(currentTime)
 
           return Utils.flushPromises()
