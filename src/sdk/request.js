@@ -3,6 +3,12 @@ import {isEmpty, isObject, isValidJson, isRequest, entries} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
 
+const _errors = {
+  TRANSACTION_ERROR: 'XHR transaction failed due to an error',
+  SERVER_MALFORMED_RESPONSE: 'Response from server is malformed',
+  NO_CONNECTION: 'No internet connectivity'
+}
+
 /**
  * Get filtered response from successful request
  *
@@ -11,7 +17,7 @@ import defaultParams from './default-params'
  * @returns {Object}
  * @private
  */
-function _getSuccessObject (xhr, url) {
+function _getSuccessResponse (xhr, url) {
   const response = JSON.parse(xhr.response)
   const append = isRequest(url, 'attribution') ? [
     'attribution',
@@ -30,21 +36,39 @@ function _getSuccessObject (xhr, url) {
 }
 
 /**
- * Get an error object with necessary data
+ * Get an error object which is about to be passed to resolve method
  *
  * @param {Object} xhr
- * @param {boolean=} onlyResponse
  * @returns {Object}
  * @private
  */
-function _getErrorObject (xhr, onlyResponse) {
-  if (onlyResponse) {
-    return isValidJson(xhr.response)
-      ? JSON.parse(xhr.response)
-      : {message: 'Unknown error from server', code: 'UNKNOWN'}
-  }
+function _getErrorResponseForResolve (xhr) {
+  return isValidJson(xhr.response)
+    ? {
+      response: JSON.parse(xhr.response),
+      message: 'Error from server',
+      code: 'SERVER_ERROR'
+    }
+    : {
+      message: 'Unknown error from server',
+      code: 'SERVER_UNKNOWN_ERROR'
+    }
+}
 
-  const error = {message: 'Unknown error, retry will follow', code: 'RETRY'}
+/**
+ * Get an error object which is about to be passed to reject method
+ *
+ * @param {Object} xhr
+ * @param {string=} code
+ * @returns {Object}
+ * @private
+ */
+function _getErrorResponseForReject (xhr, code) {
+  const error = {
+    action: 'RETRY',
+    message: _errors[code],
+    code
+  }
 
   return {
     status: xhr.status,
@@ -101,14 +125,14 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
 
   if (xhr.status >= 200 && xhr.status < 300) {
     if (isValidJson(xhr.response)) {
-      resolve(_getSuccessObject(xhr, url))
+      resolve(_getSuccessResponse(xhr, url))
     } else {
-      reject(_getErrorObject(xhr))
+      reject(_getErrorResponseForReject(xhr, 'SERVER_MALFORMED_RESPONSE'))
     }
   } else if (xhr.status === 0) {
-    reject(_getErrorObject(xhr))
+    reject(_getErrorResponseForReject(xhr, 'NO_CONNECTION'))
   } else {
-    resolve(_getErrorObject(xhr, true))
+    resolve(_getErrorResponseForResolve(xhr))
   }
 
 }
@@ -157,7 +181,7 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams = {}) {
     }
 
     xhr.onreadystatechange = () => _handleReadyStateChange(reject, resolve, {xhr, url})
-    xhr.onerror = () => reject(_getErrorObject(xhr))
+    xhr.onerror = () => reject(_getErrorResponseForReject(xhr, 'TRANSACTION_ERROR'))
 
     xhr.send(method === 'GET' ? undefined : encodedParams)
 

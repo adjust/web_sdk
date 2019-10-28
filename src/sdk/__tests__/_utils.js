@@ -34,8 +34,14 @@ function setGlobalProp (o, prop) {
   })
 }
 
-function errorResponse () {
-  return {response: {message: 'An error', code: 'RETRY'}}
+function errorResponse (code) {
+  return {
+    response: {
+      message: 'An error',
+      action: 'RETRY',
+      code: code || 'ERROR'
+    }
+  }
 }
 
 function mockDate (date) {

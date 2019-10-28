@@ -64,10 +64,16 @@ describe('perform api requests', () => {
     Config.default.destroy()
   })
 
-  it('rejects when network issue', () => {
+  it('rejects when xhr transaction error', () => {
 
     mockXHR = Utils.createMockXHR({error: 'connection failed'}, 4, 500, 'Connection failed')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
+
+    const response = {
+      action: 'RETRY',
+      message: 'XHR transaction failed due to an error',
+      code: 'TRANSACTION_ERROR'
+    }
 
     expect.assertions(1)
 
@@ -77,8 +83,8 @@ describe('perform api requests', () => {
     })).rejects.toEqual({
       status: 500,
       statusText: 'Connection failed',
-      response: {message: 'Unknown error, retry will follow', code: 'RETRY'},
-      responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
+      response: response,
+      responseText: JSON.stringify(response)
     })
 
     return Utils.flushPromises()
@@ -87,10 +93,16 @@ describe('perform api requests', () => {
       })
   })
 
-  it('rejects when status 0', () => {
+  it('rejects when network connection error', () => {
 
     mockXHR = Utils.createMockXHR('', 4, 0, 'Network issue')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
+
+    const response = {
+      action: 'RETRY',
+      message: 'No internet connectivity',
+      code: 'NO_CONNECTION'
+    }
 
     expect.assertions(1)
 
@@ -100,8 +112,8 @@ describe('perform api requests', () => {
     })).rejects.toEqual({
       status: 0,
       statusText: 'Network issue',
-      response: {message: 'Unknown error, retry will follow', code: 'RETRY'},
-      responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
+      response: response,
+      responseText: JSON.stringify(response)
     })
 
     return Utils.flushPromises()
@@ -120,7 +132,11 @@ describe('perform api requests', () => {
     expect(request.default({
       url: '/some-url',
       params: {}
-    })).resolves.toEqual({error: 'some error'})
+    })).resolves.toEqual({
+      response: {error: 'some error'},
+      message: 'Error from server',
+      code: 'SERVER_ERROR'
+    })
 
     return Utils.flushPromises()
       .then(() => {
@@ -128,7 +144,7 @@ describe('perform api requests', () => {
       })
   })
 
-  it('resolves UNKNOWN error returned from server', () => {
+  it('resolves unknown error returned from server', () => {
 
     mockXHR = Utils.createMockXHR('', 4, 400, 'Some error')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
@@ -138,7 +154,10 @@ describe('perform api requests', () => {
     expect(request.default({
       url: '/some-url',
       params: {}
-    })).resolves.toEqual({message: 'Unknown error from server', code: 'UNKNOWN'})
+    })).resolves.toEqual({
+      message: 'Unknown error from server',
+      code: 'SERVER_UNKNOWN_ERROR'
+    })
 
     return Utils.flushPromises()
       .then(() => {
@@ -151,6 +170,12 @@ describe('perform api requests', () => {
     mockXHR = Utils.createMockXHR('bla bla not json', 4, 200, 'OK')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
+    const response = {
+      action: 'RETRY',
+      message: 'Response from server is malformed',
+      code: 'SERVER_MALFORMED_RESPONSE'
+    }
+
     expect.assertions(1)
 
     expect(request.default({
@@ -159,8 +184,8 @@ describe('perform api requests', () => {
     })).rejects.toEqual({
       status: 200,
       statusText: 'OK',
-      response: {message: 'Unknown error, retry will follow', code: 'RETRY'},
-      responseText: JSON.stringify({message: 'Unknown error, retry will follow', code: 'RETRY'})
+      response: response,
+      responseText: JSON.stringify(response)
     })
 
     return Utils.flushPromises()
