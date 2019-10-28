@@ -9,6 +9,8 @@ import {isEmpty} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
 import backOff from './backoff'
+import {isConnected} from './listeners'
+import {SECOND} from './constants'
 
 type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'
 type MethodT ='GET' | 'POST' | 'PUT' | 'DELETE'
@@ -34,6 +36,7 @@ type StartAtT = number
 const DEFAULT_ATTEMPTS: AttemptsT = 0
 const DEFAULT_WAIT: WaitT = 150
 const MAX_WAIT: WaitT = 0x7FFFFFFF // 2^31 - 1
+const NO_CONNECTION_WAIT = 60 * SECOND
 
 const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}: PackageParamsT = {}) => {
   /**
@@ -93,12 +96,18 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   let _timeoutId: ?TimeoutID = null
 
   /**
-   * Number of request attempts
+   * Number of request and connection attempts
    *
-   * @type {number}
+   * @type {{request: number, connection: number}}
    * @private
    */
-  let _attempts: AttemptsT = DEFAULT_ATTEMPTS
+  const _attempts: {
+    request: AttemptsT,
+    connection: AttemptsT
+  } = {
+    request: DEFAULT_ATTEMPTS,
+    connection: DEFAULT_ATTEMPTS
+  }
 
   /**
    * Waiting time for the request to be sent
@@ -210,7 +219,31 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
 
     _startAt = Date.now()
 
-    return _request()
+    return _preRequest()
+  }
+
+  /**
+   * Check if there is internet connect and if not then setup the timeout
+   *
+   * @returns {Promise<HttpResultT>}
+   * @private
+   */
+  function _preRequest (): Promise<HttpResultT> {
+    _clearTimeout()
+
+    if (isConnected()) {
+      return _request()
+    }
+
+    _attempts.connection += 1
+
+    Logger.log(`No internet connectivity, trying request ${_url || 'unknown'} in ${NO_CONNECTION_WAIT}ms`)
+
+    return new Promise(resolve => {
+      _timeoutId = setTimeout(() => {
+        resolve(_preRequest())
+      }, NO_CONNECTION_WAIT)
+    })
   }
 
   /**
@@ -228,7 +261,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
           url: _url,
           method: _method,
           params: {
-            attempts: _attempts ? (_attempts + 1) : 1,
+            attempts: (_attempts.request ? (_attempts.request + 1) : 1) + _attempts.connection,
             ..._params},
         })
           .then(result => _continue(result, resolve))
@@ -258,7 +291,8 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   function _finish (failed?: boolean): void {
     Logger.log(`Request ${_url || 'unknown'} ${failed ? 'failed' : 'has been finished'}`)
 
-    _attempts = DEFAULT_ATTEMPTS
+    _attempts.request = DEFAULT_ATTEMPTS
+    _attempts.connection = DEFAULT_ATTEMPTS
     _wait = DEFAULT_WAIT
 
     _restore()
@@ -274,12 +308,12 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   function _retry (wait?: WaitT): Promise<HttpResultT> {
-    _attempts += 1
+    _attempts.request += 1
 
     clear()
 
     return _prepareRequest({
-      wait: wait || backOff(_attempts, _strategy),
+      wait: wait || backOff(_attempts.request, _strategy),
       retrying: true
     })
   }
@@ -321,8 +355,8 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   function _error (response: ParamsT, resolve, reject): void {
-    if (response.code === 'RETRY') {
-      resolve(_retry())
+    if (response.action === 'RETRY') {
+      resolve(_retry(response.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined))
       return
     }
 
@@ -356,21 +390,31 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   }
 
   /**
-   * Clear the current request
+   * Clear request/connection timeout
+   *
+   * @private
    */
-  function clear (): void {
-    const stillRunning = !!_startAt
-
+  function _clearTimeout (): void {
     if (_timeoutId) {
       clearTimeout(_timeoutId)
     }
 
     _timeoutId = null
+  }
+
+  /**
+   * Clear the current request
+   */
+  function clear (): void {
+    const stillRunning = !!_startAt
+
+    _clearTimeout()
     _startAt = null
 
     if (stillRunning) {
       _wait = DEFAULT_WAIT
-      _attempts = DEFAULT_ATTEMPTS
+      _attempts.request = DEFAULT_ATTEMPTS
+      _attempts.connection = DEFAULT_ATTEMPTS
 
       Logger.log(`Previous ${_url || 'unknown'} request attempt canceled`)
 
