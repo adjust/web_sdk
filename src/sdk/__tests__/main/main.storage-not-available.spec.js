@@ -7,6 +7,7 @@ import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
+import * as Listeners from '../../listeners'
 import Suite from './main.suite'
 
 jest.mock('../../logger')
@@ -28,6 +29,7 @@ describe('main entry point - test instance initiation when storage is not availa
     jest.spyOn(Identity, 'start')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(GdprForgetDevice, 'check')
+    jest.spyOn(Listeners, 'register')
   })
 
   afterEach(() => {

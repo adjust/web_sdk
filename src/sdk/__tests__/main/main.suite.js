@@ -12,6 +12,7 @@ import * as StorageManager from '../../storage/storage-manager'
 import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
+import * as Listeners from '../../listeners'
 import * as request from '../../request'
 
 const config = {
@@ -30,6 +31,8 @@ let _instance
 function _startFirstPart () {
   expect(Config.default.baseParams.appToken).toEqual('some-app-token')
   expect(Config.default.baseParams.environment).toEqual('production')
+
+  expect(Listeners.register).toHaveBeenCalledTimes(1)
 
   expect(PubSub.subscribe.mock.calls[0][0]).toEqual('sdk:shutdown')
   expect(PubSub.subscribe.mock.calls[1][0]).toEqual('sdk:gdpr-forget-me')
@@ -52,7 +55,7 @@ function expectStart () {
       expect(sdkClick.default).toHaveBeenCalledTimes(1)
     })
 
-  return {assertions: 13, promise}
+  return {assertions: 14, promise}
 }
 
 function expectPartialStartWithGdprRequest () {
@@ -65,7 +68,7 @@ function expectPartialStartWithGdprRequest () {
       expectGdprRequest()
     })
 
-  return {assertions: 14, promise}
+  return {assertions: 15, promise}
 }
 
 function expectNotStart (restart) {
@@ -74,6 +77,7 @@ function expectNotStart (restart) {
     expect(Config.default.baseParams).toEqual({})
   }
 
+  expect(Listeners.register).not.toHaveBeenCalled()
   expect(PubSub.subscribe).not.toHaveBeenCalled()
   expect(Identity.start).not.toHaveBeenCalled()
   expect(GdprForgetDevice.check).not.toHaveBeenCalled()
@@ -232,12 +236,13 @@ function _expectPause () {
 
 function expectShutDown (onlyNumOfAssertions) {
   if (onlyNumOfAssertions) {
-    return {assertions: 7}
+    return {assertions: 8}
   }
 
   _expectPause()
   expect(PubSub.destroy).toHaveBeenCalled()
   expect(Identity.destroy).toHaveBeenCalled()
+  expect(Listeners.destroy).toHaveBeenCalled()
   expect(StorageManager.default.destroy).toHaveBeenCalled()
   expect(Config.default.baseParams).toEqual({})
 }
@@ -247,9 +252,10 @@ function expectPartialShutDown () {
 
   expect(PubSub.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
+  expect(Listeners.destroy).not.toHaveBeenCalled()
   expect(StorageManager.default.destroy).not.toHaveBeenCalled()
 
-  return {assertions: a.assertions + 3}
+  return {assertions: a.assertions + 4}
 }
 
 function _expectNotPause () {
@@ -278,7 +284,7 @@ function _expectNotDestroy () {
 }
 
 function expectClearAndDestroy (onlyNumOfAssertions) {
-  const assertions = 12
+  const assertions = 13
 
   if (onlyNumOfAssertions) {
     return {assertions}

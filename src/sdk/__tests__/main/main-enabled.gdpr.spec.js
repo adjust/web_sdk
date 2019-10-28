@@ -10,6 +10,7 @@ import * as StorageManager from '../../storage/storage-manager'
 import * as Attribution from '../../attribution'
 import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
+import * as Listeners from '../../listeners'
 import * as request from '../../request'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
@@ -55,6 +56,8 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     jest.spyOn(StorageManager.default, 'destroy')
     jest.spyOn(GdprForgetDevice, 'check')
     jest.spyOn(GdprForgetDevice, 'destroy')
+    jest.spyOn(Listeners, 'register')
+    jest.spyOn(Listeners, 'destroy')
 
     State.default.disabled = null
   })

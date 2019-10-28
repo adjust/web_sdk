@@ -10,6 +10,7 @@ import * as Logger from '../../logger'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Attribution from '../../attribution'
 import * as StorageManager from '../../storage/storage-manager'
+import * as Listeners from '../../listeners'
 import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
 import Suite from './main.suite'
@@ -44,6 +45,8 @@ describe('main entry point - test instance initiation when storage is available'
     jest.spyOn(GdprForgetDevice, 'check')
     jest.spyOn(Attribution, 'destroy')
     jest.spyOn(StorageManager.default, 'destroy')
+    jest.spyOn(Listeners, 'register')
+    jest.spyOn(Listeners, 'destroy')
 
     sessionWatchSpy = jest.spyOn(Session, 'watch')
   })

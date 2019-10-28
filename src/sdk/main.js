@@ -10,6 +10,7 @@ import {start, status, disable, enable, clear as identityClear, destroy as ident
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
+import {register as listenersRegister, destroy as listenersDestroy} from './listeners'
 import event from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
@@ -233,6 +234,7 @@ function _shutdown (async): void {
 
   pubSubDestroy()
   identityDestroy()
+  listenersDestroy()
   StorageManager.destroy()
   Config.destroy()
 }
@@ -287,6 +289,7 @@ function _continue (): Promise<void> {
 /**
  * Start the execution by preparing the environment for the current usage
  * - prepares mandatory parameters
+ * - register some global event listeners (online, offline events)
  * - subscribe to a GDPR-Forget-Me request event
  * - subscribe to the attribution change event
  * - register activity state if doesn't exist
@@ -307,6 +310,8 @@ function _start (params: ParamsT): void {
   }
 
   Config.baseParams = params
+
+  listenersRegister()
 
   subscribe('sdk:shutdown', () => _shutdown(true))
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
