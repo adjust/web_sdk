@@ -231,7 +231,7 @@ describe('activity state functionality', () => {
     expect(params.sessionLength).toEqual((7 * MINUTE) / SECOND)
   })
 
-  it('update session and event count on demand', () => {
+  it('updates session and event count on demand', () => {
 
     ActivityState.default.updateParams('/session')
     ActivityState.default.updateParams('/event')
@@ -266,6 +266,16 @@ describe('activity state functionality', () => {
 
   })
 
+  it('updates installed flag if not set already', () => {
+
+    expect(ActivityState.default.current.installed).toBeUndefined()
+
+    ActivityState.default.updateInstalled()
+
+    expect(ActivityState.default.current.installed).toBeTruthy()
+
+  })
+
   it('ignores everything if activity state not initiated', () => {
 
     ActivityState.default.destroy()
@@ -294,6 +304,11 @@ describe('activity state functionality', () => {
     expect(ActivityState.default.current).toBeNull()
 
     ActivityState.default.updateLastActive()
+
+    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.current).toBeNull()
+
+    ActivityState.default.updateInstalled()
 
     expect(ActivityState.default.getParams()).toEqual({})
     expect(ActivityState.default.current).toBeNull()

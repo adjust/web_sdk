@@ -506,7 +506,7 @@ describe('perform api requests', () => {
       jest.restoreAllMocks()
     })
 
-    it('broadcasts sdk:gdpr-forget-me when opted_out and ignores ask_in', () => {
+    it('broadcasts sdk:gdpr-forget-me when opted_out and ignores attribution check and session finished events', () => {
 
       prepare({
         adid: '123123',
@@ -516,7 +516,7 @@ describe('perform api requests', () => {
         tracking_state: 'opted_out'
       })
 
-      expect.assertions(3)
+      expect.assertions(4)
 
       request.default({
         url: '/session'
@@ -528,6 +528,7 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
@@ -537,7 +538,7 @@ describe('perform api requests', () => {
         })
     })
 
-    it('checks attribution info on session request with ask_in', () => {
+    it('checks attribution info on session request with ask_in and broadcast session finished event', () => {
 
       prepare({
         adid: '123123',
@@ -546,7 +547,7 @@ describe('perform api requests', () => {
         ask_in: 2500
       })
 
-      expect.assertions(2)
+      expect.assertions(3)
 
       request.default({
         url: '/session'
@@ -557,6 +558,7 @@ describe('perform api requests', () => {
           ask_in: 2500
         })
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
+        expect(PubSub.publish).toHaveBeenCalledWith('session:finished')
       })
 
       return Utils.flushPromises()
@@ -573,7 +575,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      expect.assertions(2)
+      expect.assertions(3)
 
       request.default({
         url: '/event',
@@ -586,6 +588,7 @@ describe('perform api requests', () => {
           timestamp: '2019-02-02'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
       })
 
       return Utils.flushPromises()
@@ -601,7 +604,7 @@ describe('perform api requests', () => {
         ask_in: 2500
       })
 
-      expect.assertions(2)
+      expect.assertions(3)
 
       request.default({
         url: '/anything',
@@ -613,6 +616,26 @@ describe('perform api requests', () => {
           ask_in: 2500
         })
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
+      })
+
+      return Utils.flushPromises()
+        .then(() => {
+          mockXHR.onreadystatechange()
+        })
+    })
+
+    it('broadcasts session finish event only on session request', () => {
+
+      prepare({message: 'bla'})
+
+      expect.assertions(2)
+
+      request.default({
+        url: '/session'
+      }).then(result => {
+        expect(result).toEqual({})
+        expect(PubSub.publish).toHaveBeenCalledWith('session:finished')
       })
 
       return Utils.flushPromises()
@@ -629,7 +652,7 @@ describe('perform api requests', () => {
         tracking_state: 'opted_out'
       })
 
-      expect.assertions(3)
+      expect.assertions(4)
 
       request.default({
         url: '/anything',
@@ -642,6 +665,7 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 

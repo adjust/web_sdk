@@ -205,6 +205,21 @@ function updateParams (url, auto) {
 }
 
 /**
+ * Update installed flag - first session has been finished
+ */
+function updateInstalled () {
+  if (_activityState === null) {
+    return
+  }
+
+  if (_activityState.installed) {
+    return
+  }
+
+  _update({installed: true})
+}
+
+/**
  * Update session params which depend on the time offset since last measure point
  */
 function updateSessionOffset () {
@@ -258,6 +273,7 @@ const ActivityState = {
   initParams,
   getParams,
   updateParams,
+  updateInstalled,
   updateSessionOffset,
   updateSessionLength,
   resetSessionOffset,

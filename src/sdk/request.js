@@ -203,6 +203,7 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams = {}) {
 function _interceptResponse (result, options) {
   const isGdprRequest = isRequest(options.url, 'gdpr_forget_device')
   const isAttributionRequest = isRequest(options.url, 'attribution')
+  const isSessionRequest = isRequest(options.url, 'session')
   const optedOut = result.tracking_state === 'opted_out'
 
   if (!isGdprRequest && optedOut) {
@@ -212,6 +213,10 @@ function _interceptResponse (result, options) {
 
   if (!isAttributionRequest && !isGdprRequest && !optedOut && result.ask_in) {
     publish('attribution:check', result)
+  }
+
+  if (isSessionRequest) {
+    publish('session:finished')
   }
 
   return result

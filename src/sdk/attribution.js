@@ -119,22 +119,23 @@ function _continue (result: HttpResultT, finish, retry): Promise<HttpResultT | A
 /**
  * Request attribution if session asked for it
  *
- * @param {Object} sessionResult
+ * @param {Object=} sessionResult
  * @param {number=} sessionResult.ask_in
  */
-function check (sessionResult: HttpResultT = {}): Promise<?ActivityStateMapT> {
+function check (sessionResult: HttpResultT): Promise<?ActivityStateMapT> {
   const activityState = ActivityState.current
+  const askIn = (sessionResult || {}).ask_in
 
-  if (!sessionResult.ask_in && activityState.attribution || !activityState.sessionCount) {
+  if (!askIn && (activityState.attribution || !activityState.installed)) {
     return Promise.resolve(activityState)
   }
 
   _request.send({
     params: {
-      initiatedBy: !sessionResult.ask_in ? 'sdk' : 'backend',
+      initiatedBy: !sessionResult ? 'sdk' : 'backend',
       ...ActivityState.getParams()
     },
-    wait: sessionResult.ask_in
+    wait: askIn
   })
 
   ActivityState.updateSessionOffset()

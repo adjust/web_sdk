@@ -37,7 +37,7 @@ describe('test attribution functionality', () => {
 
   it('does nothing if there is no ask_in parameter and attribution already stored', () => {
 
-    ActivityState.default.current = {attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}, sessionCount: 1}
+    ActivityState.default.current = {attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}, installed: 1}
 
     const sessionResult = {some: 'thing'}
     const attributionPromise = Attribution.check(sessionResult)
@@ -62,7 +62,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new', something: 'wrong'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(8)
@@ -113,7 +113,7 @@ describe('test attribution functionality', () => {
 
   it('request attribution but retries request if retry_in was returned by backend', () => {
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockResolvedValue({retry_in: 2500})
 
     expect.assertions(24)
@@ -182,7 +182,7 @@ describe('test attribution functionality', () => {
 
   it('ignores empty attribution result even if there is no stored attribution at the moment', () => {
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockResolvedValue(null)
 
     expect.assertions(8)
@@ -212,7 +212,7 @@ describe('test attribution functionality', () => {
 
   it('ignores attribution result with unknown parameters', () => {
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockResolvedValue({some: 'thing', totally: 'unknown'})
 
     expect.assertions(8)
@@ -243,7 +243,7 @@ describe('test attribution functionality', () => {
   it('requests timed-out attribution which returns the same as existing one', () => {
 
     const currentAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
-    const cachedActivityState = {attribution: {adid: '123', ...currentAttribution.attribution}, sessionCount: 1}
+    const cachedActivityState = {attribution: {adid: '123', ...currentAttribution.attribution}, installed: 1}
 
     ActivityState.default.current = cachedActivityState
     request.default.mockResolvedValue(currentAttribution)
@@ -278,7 +278,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new', state: 'installed'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new', state: 'installed'}
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(7)
@@ -308,7 +308,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
-    ActivityState.default.current = {attribution: oldAttribution, sessionCount: 1}
+    ActivityState.default.current = {attribution: oldAttribution, installed: 1}
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(7)
@@ -338,7 +338,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}
 
-    ActivityState.default.current = {attribution: oldAttribution, sessionCount: 1}
+    ActivityState.default.current = {attribution: oldAttribution, installed: 1}
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(6)
@@ -367,7 +367,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}
 
-    ActivityState.default.current = {attribution: oldAttribution, sessionCount: 1}
+    ActivityState.default.current = {attribution: oldAttribution, installed: 1}
     request.default.mockResolvedValue({ask_in: 3000})
 
     expect.assertions(22)
@@ -433,7 +433,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockRejectedValue(Utils.errorResponse())
 
     expect.assertions(21)
@@ -504,7 +504,7 @@ describe('test attribution functionality', () => {
 
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(6)
@@ -533,7 +533,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
-    ActivityState.default.current = {sessionCount: 1}
+    ActivityState.default.current = {installed: 1}
     request.default.mockResolvedValue(newAttribution)
 
     expect.assertions(8)

@@ -6,7 +6,7 @@ import {convertToMap} from './utilities'
 import {on, off, getVisibilityApiAccess} from './listeners'
 import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
-import {publish} from './pub-sub'
+import {publish, subscribe} from './pub-sub'
 import {SECOND} from './constants'
 
 /**
@@ -59,6 +59,8 @@ function watch () {
   }
 
   _running = true
+
+  subscribe('session:finished', ActivityState.updateInstalled)
 
   if (_pva) {
     on(document, _pva.visibilityChange, _handleVisibilityChange)
@@ -145,17 +147,6 @@ function _handleVisibilityChange () {
 }
 
 /**
- * Check if there is attribution missing and fire an event to request it
- *
- * @private
- */
-function _checkAttribution () {
-  if (!ActivityState.current.attribution) {
-    publish('attribution:check', {})
-  }
-}
-
-/**
  * Start the session timer, every N seconds:
  * - update session params
  * - persist changes (store updated activity state)
@@ -233,7 +224,7 @@ function _checkSession () {
     return _trackSession()
   }
 
-  _checkAttribution()
+  publish('attribution:check')
 
   return persist()
 }

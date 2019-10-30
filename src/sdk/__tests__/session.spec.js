@@ -49,6 +49,8 @@ describe('test session functionality', () => {
     jest.spyOn(Logger.default, 'error')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(PubSub, 'publish')
+    jest.spyOn(PubSub, 'subscribe')
+    jest.spyOn(ActivityState.default, 'updateInstalled')
 
     pvaSpy = jest.spyOn(Listeners, 'getVisibilityApiAccess')
   })
@@ -91,11 +93,12 @@ describe('test session functionality', () => {
       return Utils.flushPromises()
     })
 
-    it('subscribes on visibility change event when Page Visibility Api is available', () => {
+    it('subscribes on session:finished event and on visibility change event when Page Visibility Api is available', () => {
 
       // by default Page Visibility is available
       Session.watch()
 
+      expect(PubSub.subscribe).toHaveBeenCalledWith('session:finished', expect.any(Function))
       expect(Listeners.on).toHaveBeenCalled()
 
       Session.destroy()
@@ -142,6 +145,16 @@ describe('test session functionality', () => {
       expect(Logger.default.error).not.toHaveBeenCalled()
 
       return Utils.flushPromises()
+    })
+
+    it('updates installed flag when session:finished event is recognized', () => {
+
+      PubSub.publish('session:finished')
+
+      jest.runAllTimers()
+
+      expect(ActivityState.default.updateInstalled).toHaveBeenCalled()
+
     })
 
     it('updates last active timestamp every n seconds', () => {
@@ -408,7 +421,7 @@ describe('test session functionality', () => {
 
     })
 
-    it('checks attribution when attribution missing if session already tracked', () => {
+    it('checks attribution if session already tracked', () => {
 
       let currentTime = Date.now()
 
@@ -426,29 +439,7 @@ describe('test session functionality', () => {
         })
         .then(() => {
           expect(Queue.push).not.toHaveBeenCalled()
-          expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', {})
-        })
-    })
-
-    it('does not check attribution when attribution not missing if session already tracked', () => {
-
-      let currentTime = Date.now()
-
-      dateNowSpy.mockReturnValue(currentTime)
-
-      expect.assertions(2)
-
-      return Identity.persist()
-        .then(() => {
-          ActivityState.default.current = {...ActivityState.default.current, attribution: {adid: 'bla'}}
-
-          Session.watch()
-
-          return Utils.flushPromises()
-        })
-        .then(() => {
-          expect(Queue.push).not.toHaveBeenCalled()
-          expect(PubSub.publish).not.toHaveBeenCalled()
+          expect(PubSub.publish).toHaveBeenCalledWith('attribution:check')
         })
     })
 
@@ -595,7 +586,7 @@ describe('test session functionality', () => {
 
           // no session window reached, so request was not sent
           expect(Queue.push).not.toHaveBeenCalled()
-          expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', {})
+          expect(PubSub.publish).toHaveBeenCalledWith('attribution:check')
 
           PubSub.publish.mockClear()
 

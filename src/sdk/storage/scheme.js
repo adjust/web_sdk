@@ -61,6 +61,13 @@ const _activityStateScheme = {
     eventCount: 'ec',
     lastActive: 'la',
     lastInterval: 'li',
+    installed: {
+      key: 'i',
+      values: {
+        false: 0,
+        true: 1
+      }
+    },
     attribution: {
       key: 'at',
       keys: {
