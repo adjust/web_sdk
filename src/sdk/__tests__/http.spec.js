@@ -1,4 +1,4 @@
-import * as request from '../request'
+import * as http from '../http'
 import * as defaultParams from '../default-params'
 import * as Time from '../time'
 import * as ActivityState from '../activity-state'
@@ -77,7 +77,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(request.default({
+    expect(http.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -106,7 +106,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(request.default({
+    expect(http.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -129,7 +129,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(request.default({
+    expect(http.default({
       url: '/some-url',
       params: {}
     })).resolves.toEqual({
@@ -151,7 +151,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(request.default({
+    expect(http.default({
       url: '/some-url',
       params: {}
     })).resolves.toEqual({
@@ -178,7 +178,7 @@ describe('perform api requests', () => {
 
     expect.assertions(1)
 
-    expect(request.default({
+    expect(http.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -201,8 +201,8 @@ describe('perform api requests', () => {
 
     expect.assertions(0)
 
-    expect(request.default({
-      url: '/not-resolve-request'
+    expect(http.default({
+      url: '/not-resolved-request'
     })).resolves.toEqual({})
 
     return Utils.flushPromises()
@@ -231,7 +231,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(request.default({
+      expect(http.default({
         url: '/some-url',
         params: {
           eventToken: '567abc',
@@ -263,7 +263,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(request.default({
+      expect(http.default({
         url: '/some-url',
         params: {
           eventToken: '567abc'
@@ -302,7 +302,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(request.default({
+      expect(http.default({
         url: '/some-other-url',
         params: {
           bla: 'truc'
@@ -325,7 +325,7 @@ describe('perform api requests', () => {
     it('performs gdpr_forget_device request', () => {
       expect.assertions(4)
 
-      expect(request.default({
+      expect(http.default({
         url: '/gdpr_forget_device',
         method: 'POST'
       })).resolves.toEqual(response)
@@ -346,7 +346,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(request.default({
+      expect(http.default({
         url: '/sweet-url',
         params: {
           some: 'thing'
@@ -370,7 +370,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      expect(request.default({
+      expect(http.default({
         url: '/some-url',
         params: {
           some: 'thing',
@@ -399,7 +399,7 @@ describe('perform api requests', () => {
 
       expect.assertions(5)
 
-      expect(request.default({
+      expect(http.default({
         url: '/some-url',
         method: 'POST',
         params: {
@@ -438,7 +438,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      expect(request.default({
+      expect(http.default({
         url: '/session',
         params: {
           some: 'thing',
@@ -466,7 +466,7 @@ describe('perform api requests', () => {
         timestamp: '2019-02-02'
       })
 
-      expect(request.default({
+      expect(http.default({
         url: '/attribution',
         params: {
           some: 'thing',
@@ -518,7 +518,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      request.default({
+      http.default({
         url: '/session'
       }).then(result => {
         expect(result).toEqual({
@@ -549,7 +549,7 @@ describe('perform api requests', () => {
 
       expect.assertions(3)
 
-      request.default({
+      http.default({
         url: '/session'
       }).then(result => {
         expect(result).toEqual({
@@ -577,7 +577,7 @@ describe('perform api requests', () => {
 
       expect.assertions(3)
 
-      request.default({
+      http.default({
         url: '/event',
         params: {
           eventToken: 'token1'
@@ -606,7 +606,7 @@ describe('perform api requests', () => {
 
       expect.assertions(3)
 
-      request.default({
+      http.default({
         url: '/anything',
         params: {
           bla: 'truc'
@@ -631,7 +631,7 @@ describe('perform api requests', () => {
 
       expect.assertions(2)
 
-      request.default({
+      http.default({
         url: '/session'
       }).then(result => {
         expect(result).toEqual({})
@@ -654,7 +654,7 @@ describe('perform api requests', () => {
 
       expect.assertions(4)
 
-      request.default({
+      http.default({
         url: '/anything',
         params: {
           bla: 'truc'
@@ -684,7 +684,7 @@ describe('perform api requests', () => {
 
       expect.assertions(2)
 
-      request.default({
+      http.default({
         url: '/gdpr_forget_device'
       }).then(result => {
         expect(result).toEqual({

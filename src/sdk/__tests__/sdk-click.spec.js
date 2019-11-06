@@ -1,17 +1,17 @@
 import * as sdkClick from '../sdk-click'
-import * as request from '../request'
+import * as http from '../http'
 import * as Time from '../time'
 import * as Queue from '../queue'
 import * as ActivityState from '../activity-state'
 
-jest.mock('../request')
+jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
 describe('test sdk-click functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(request, 'default')
+    jest.spyOn(http, 'default')
     jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
 
@@ -40,7 +40,7 @@ describe('test sdk-click functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).not.toHaveBeenCalled()
+    expect(http.default).not.toHaveBeenCalled()
 
   })
 
@@ -82,7 +82,7 @@ describe('test sdk-click functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledWith(fullConfig)
+        expect(http.default).toHaveBeenCalledWith(fullConfig)
 
         return Utils.flushPromises()
       })

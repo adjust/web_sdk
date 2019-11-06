@@ -1,13 +1,13 @@
 import * as GdprForgetDevice from '../gdpr-forget-device'
 import * as Config from '../config'
-import * as request from '../request'
+import * as http from '../http'
 import * as Time from '../time'
 import * as Logger from '../logger'
 import * as ActivityState from '../activity-state'
 import * as State from '../state'
 import * as PubSub from '../pub-sub'
 
-jest.mock('../request')
+jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
@@ -36,19 +36,19 @@ function expectRequest () {
   }
 
   jest.runOnlyPendingTimers()
-  expect(request.default).toHaveBeenCalledWith(fullConfig)
-  request.default.mockClear()
+  expect(http.default).toHaveBeenCalledWith(fullConfig)
+  http.default.mockClear()
 }
 
 function expectNotRequest () {
     jest.runOnlyPendingTimers()
-    expect(request.default).not.toHaveBeenCalled()
+    expect(http.default).not.toHaveBeenCalled()
 }
 
 describe('GDPR forget device functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(request, 'default')
+    jest.spyOn(http, 'default')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(PubSub, 'publish')

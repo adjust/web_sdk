@@ -1,12 +1,12 @@
 import * as Queue from '../queue'
-import * as request from '../request'
+import * as http from '../http'
 import * as StorageManager from '../storage/storage-manager'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
 import * as Time from '../time'
 import {MINUTE, SECOND} from '../constants'
 
-jest.mock('../request')
+jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
@@ -21,16 +21,16 @@ function checkExecution ({config, times, success = true, successResult, wait = 1
 
   jest.runOnlyPendingTimers()
 
-  const lastRequest = request.default.mock.calls.length - 1
+  const lastRequest = http.default.mock.calls.length - 1
 
   expect(setTimeout).toHaveBeenCalledTimes(times)
   expect(setTimeout.mock.calls[times - 1][1]).toBe(wait)
-  expect(request.default.mock.calls[lastRequest][0]).toMatchObject({
+  expect(http.default.mock.calls[lastRequest][0]).toMatchObject({
     url: config.url,
     method: 'GET',
     params: {createdAt: 'some-time'}
   })
-  expect(request.default.mock.results[lastRequest].value)[requestAction].toEqual(requestActionResult)
+  expect(http.default.mock.results[lastRequest].value)[requestAction].toEqual(requestActionResult)
   expect(Logger.default.log).toHaveBeenLastCalledWith(logMessage)
 
   if (reset) {
@@ -55,7 +55,7 @@ describe('test request queuing functionality', () => {
     dateNowSpy = jest.spyOn(Date, 'now')
 
     jest.spyOn(Queue, 'push')
-    jest.spyOn(request, 'default')
+    jest.spyOn(http, 'default')
     jest.spyOn(StorageManager.default, 'addItem')
     jest.spyOn(StorageManager.default, 'getFirst')
     jest.spyOn(Logger.default, 'info')
@@ -99,7 +99,7 @@ describe('test request queuing functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 150)
-        expect(request.default.mock.calls[0][0]).toMatchObject({
+        expect(http.default.mock.calls[0][0]).toMatchObject({
           url: config.url,
           method: 'GET',
           params: {createdAt: 'some-time'}
@@ -198,21 +198,21 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime+3, url: '/some-url-4', params: defaultParams}
         ])
 
-        request.default.mockResolvedValue({continue_in: 2000})
+        http.default.mockResolvedValue({continue_in: 2000})
 
         return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 2000}}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
-        request.default.mockResolvedValue({continue_in: 3000})
+        http.default.mockResolvedValue({continue_in: 3000})
 
         return checkExecution({config: config2, times: 1, reset: true, wait: 2000, successResult: {continue_in: 3000}}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
 
-        request.default.mockResolvedValue({status: 'success'})
+        http.default.mockResolvedValue({status: 'success'})
 
         return checkExecution({config: config3, times: 1, reset: true, wait: 3000}) // + 5 assertions
       })
@@ -242,7 +242,7 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(22)
 
-    request.default.mockResolvedValue({continue_in: 3000})
+    http.default.mockResolvedValue({continue_in: 3000})
 
     Queue.push(config1)
 
@@ -277,7 +277,7 @@ describe('test request queuing functionality', () => {
         ])
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
-        request.default.mockResolvedValue({status: 'success'})
+        http.default.mockResolvedValue({status: 'success'})
 
         return checkExecution({config: config2, times: 1, reset: true, wait: 2600}) // + 5 assertions
       })
@@ -306,7 +306,7 @@ describe('test request queuing functionality', () => {
 
     expect.assertions(22)
 
-    request.default.mockResolvedValue({continue_in: 500})
+    http.default.mockResolvedValue({continue_in: 500})
 
     Queue.push(config1)
 
@@ -347,7 +347,7 @@ describe('test request queuing functionality', () => {
         ])
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
-        request.default.mockResolvedValue({status: 'success'})
+        http.default.mockResolvedValue({status: 'success'})
 
         return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
       })
@@ -370,7 +370,7 @@ describe('test request queuing functionality', () => {
 
     dateNowSpy.mockReturnValue(currentTime)
 
-    request.default.mockRejectedValue(Utils.errorResponse())
+    http.default.mockRejectedValue(Utils.errorResponse())
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
@@ -399,16 +399,16 @@ describe('test request queuing functionality', () => {
       .then(() => {
         checkExecution({config: config1, times: 3, success: false, wait: 200, flush: false}) // + 5 assertions
 
-        request.default.mockClear()
-        request.default.mockResolvedValue({status: 'success'})
+        http.default.mockClear()
+        http.default.mockResolvedValue({status: 'success'})
 
         return Utils.flushPromises()
       })
       .then(() => {
         checkExecution({config: config1, times: 4, wait: 300, flush: false, reset: true}) // + 5 assertions
 
-        request.default.mockClear()
-        request.default.mockRejectedValue(Utils.errorResponse())
+        http.default.mockClear()
+        http.default.mockRejectedValue(Utils.errorResponse())
 
         return Utils.flushPromises()
       })
@@ -420,8 +420,8 @@ describe('test request queuing functionality', () => {
       .then(() => {
         checkExecution({config: config2, times: 2, success: false, wait: 100, flush: false}) // + 5 assertions
 
-        request.default.mockClear()
-        request.default.mockResolvedValue({status: 'success'})
+        http.default.mockClear()
+        http.default.mockResolvedValue({status: 'success'})
 
         return Utils.flushPromises()
       })
@@ -442,7 +442,7 @@ describe('test request queuing functionality', () => {
 
     dateNowSpy.mockReturnValue(currentTime)
 
-    request.default.mockRejectedValue(Utils.errorResponse())
+    http.default.mockRejectedValue(Utils.errorResponse())
 
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
@@ -474,8 +474,8 @@ describe('test request queuing functionality', () => {
       .then(() => {
         checkExecution({config: config1, times: 2, success: false, wait: 100, flush: false}) // + 5 assertions
 
-        request.default.mockClear()
-        request.default.mockResolvedValue({status: 'success'})
+        http.default.mockClear()
+        http.default.mockResolvedValue({status: 'success'})
 
         return Utils.flushPromises()
       })
@@ -527,7 +527,7 @@ describe('test request queuing functionality', () => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
         expect(setTimeout).not.toHaveBeenCalled()
-        expect(request.default).not.toHaveBeenCalled()
+        expect(http.default).not.toHaveBeenCalled()
 
         return StorageManager.default.getAll('queue')
       })
@@ -577,7 +577,7 @@ describe('test request queuing functionality', () => {
 
         checkExecution({config: config1, times: 1, reset: true, flush: false}) // + 5 assertions
 
-        request.default.mockClear()
+        http.default.mockClear()
 
         return Utils.flushPromises()
       })
@@ -586,7 +586,7 @@ describe('test request queuing functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(setTimeout).not.toHaveBeenCalled()
-        expect(request.default).not.toHaveBeenCalled()
+        expect(http.default).not.toHaveBeenCalled()
 
         return StorageManager.default.getAll('queue')
       })
@@ -635,7 +635,7 @@ describe('test request queuing functionality', () => {
 
         expect(StorageManager.default.addItem).toHaveBeenCalledTimes(2)
         expect(setTimeout).not.toHaveBeenCalled()
-        expect(request.default).not.toHaveBeenCalled()
+        expect(http.default).not.toHaveBeenCalled()
 
         return StorageManager.default.getAll('queue')
       })

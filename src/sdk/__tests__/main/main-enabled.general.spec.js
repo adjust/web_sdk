@@ -14,7 +14,7 @@ import * as Listeners from '../../listeners'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
-jest.mock('../../request')
+jest.mock('../../http')
 jest.mock('../../logger')
 jest.useFakeTimers()
 

@@ -4,10 +4,10 @@ import * as Queue from '../queue'
 import * as Time from '../time'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import * as request from '../request'
+import * as http from '../http'
 import * as ActivityState from '../activity-state'
 
-jest.mock('../request')
+jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
@@ -38,7 +38,7 @@ function expectRequest (requestConfig) {
 
       jest.runOnlyPendingTimers()
 
-      expect(request.default).toHaveBeenCalledWith(fullConfig)
+      expect(http.default).toHaveBeenCalledWith(fullConfig)
 
       return Utils.flushPromises()
     })
@@ -47,7 +47,7 @@ function expectRequest (requestConfig) {
 describe('event tracking functionality', () => {
 
   beforeAll(() => {
-    jest.spyOn(request, 'default')
+    jest.spyOn(http, 'default')
     jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'error')
@@ -82,7 +82,7 @@ describe('event tracking functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).not.toHaveBeenCalled()
+        expect(http.default).not.toHaveBeenCalled()
 
         event.default()
         expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')

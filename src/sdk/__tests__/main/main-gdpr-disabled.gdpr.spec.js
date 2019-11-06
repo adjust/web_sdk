@@ -11,11 +11,11 @@ import * as Attribution from '../../attribution'
 import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
-import * as request from '../../request'
+import * as http from '../../http'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
-jest.mock('../../request')
+jest.mock('../../http')
 jest.mock('../../logger')
 jest.useFakeTimers()
 
@@ -28,7 +28,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(Date, 'now').mockImplementation(() => now + Utils.randomInRange(1000, 9999))
     jest.spyOn(event, 'default')
     jest.spyOn(sdkClick, 'default')
-    jest.spyOn(request, 'default')
+    jest.spyOn(http, 'default')
     jest.spyOn(Queue, 'run')
     jest.spyOn(Queue, 'push')
     jest.spyOn(Queue, 'setOffline')
@@ -170,7 +170,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       jest.runOnlyPendingTimers()
 
-      expect(request.default).not.toHaveBeenCalled()
+      expect(http.default).not.toHaveBeenCalled()
     })
 
     it('flush forget-me event but ignores it', () => {
@@ -213,7 +213,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       jest.runOnlyPendingTimers()
 
-      expect(request.default).not.toHaveBeenCalled()
+      expect(http.default).not.toHaveBeenCalled()
     })
   })
 

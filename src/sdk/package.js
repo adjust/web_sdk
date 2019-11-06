@@ -4,7 +4,7 @@ import {
   type HttpContinueCbT,
   type BackOffStrategyT
 } from './types'
-import request from './request'
+import http from './http'
 import {isEmpty} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
@@ -257,7 +257,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       _timeoutId = setTimeout(() => {
         _startAt = null
 
-        return request({
+        return http({
           url: _url,
           method: _method,
           params: {

@@ -15,7 +15,7 @@ import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
 import Suite from './main.suite'
 
-jest.mock('../../request')
+jest.mock('../../http')
 jest.mock('../../logger')
 jest.useFakeTimers()
 

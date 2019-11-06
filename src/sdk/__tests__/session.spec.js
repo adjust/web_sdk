@@ -7,13 +7,13 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import * as request from '../request'
+import * as http from '../http'
 import * as Time from '../time'
 import * as PubSub from '../pub-sub'
 import {MINUTE, SECOND} from '../constants'
 
 jest.mock('../logger')
-jest.mock('../request')
+jest.mock('../http')
 jest.useFakeTimers()
 
 function goToForeground () {
@@ -39,7 +39,7 @@ describe('test session functionality', () => {
   }
 
   beforeAll(() => {
-    jest.spyOn(request, 'default')
+    jest.spyOn(http, 'default')
     jest.spyOn(Listeners, 'on')
     jest.spyOn(Listeners, 'off')
     jest.spyOn(Identity, 'persist')
@@ -293,7 +293,7 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
-          expect(request.default).toHaveBeenCalledWith({
+          expect(http.default).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
             params: {
@@ -362,7 +362,7 @@ describe('test session functionality', () => {
 
           jest.advanceTimersByTime(150)
 
-          expect(request.default).toHaveBeenCalledWith({
+          expect(http.default).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
             params: {
@@ -674,7 +674,7 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
-          expect(request.default).toHaveBeenCalledWith({
+          expect(http.default).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
             params: {
@@ -740,7 +740,7 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
-          expect(request.default).toHaveBeenCalledWith({
+          expect(http.default).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
             params: {
@@ -836,7 +836,7 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
-          expect(request.default).toHaveBeenCalledWith({
+          expect(http.default).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
             params: {
@@ -890,7 +890,7 @@ describe('test session functionality', () => {
 
           jest.runOnlyPendingTimers()
 
-          expect(request.default).not.toHaveBeenCalled()
+          expect(http.default).not.toHaveBeenCalled()
         })
     })
   })

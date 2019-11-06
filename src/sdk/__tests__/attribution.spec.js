@@ -1,5 +1,5 @@
 import * as Attribution from '../attribution'
-import * as request from '../request'
+import * as http from '../http'
 import * as PubSub from '../pub-sub'
 import * as Time from '../time'
 import * as Identity from '../identity'
@@ -7,7 +7,7 @@ import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
 import * as StorageManager from '../storage/storage-manager'
 
-jest.mock('../request')
+jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
@@ -16,7 +16,7 @@ describe('test attribution functionality', () => {
   beforeAll(() => {
     ActivityState.default.current = {}
 
-    jest.spyOn(request, 'default')
+    jest.spyOn(http, 'default')
     jest.spyOn(Identity, 'persist')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
@@ -46,7 +46,7 @@ describe('test attribution functionality', () => {
 
     expect.assertions(4)
 
-    expect(request.default).not.toHaveBeenCalled()
+    expect(http.default).not.toHaveBeenCalled()
     expect(ActivityState.default.updateSessionOffset).not.toHaveBeenCalled()
     expect(Identity.persist).not.toHaveBeenCalled()
 
@@ -63,7 +63,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockResolvedValue(newAttribution)
+    http.default.mockResolvedValue(newAttribution)
 
     expect.assertions(8)
 
@@ -71,8 +71,8 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject({
+    expect(http.default).toHaveBeenCalledTimes(1)
+    expect(http.default.mock.calls[0][0]).toMatchObject({
       url: '/attribution',
       params: {initiatedBy: 'sdk'}
     })
@@ -100,7 +100,7 @@ describe('test attribution functionality', () => {
 
     expect.assertions(4)
 
-    expect(request.default).not.toHaveBeenCalled()
+    expect(http.default).not.toHaveBeenCalled()
     expect(ActivityState.default.updateSessionOffset).not.toHaveBeenCalled()
     expect(Identity.persist).not.toHaveBeenCalled()
 
@@ -114,7 +114,7 @@ describe('test attribution functionality', () => {
   it('request attribution but retries request if retry_in was returned by backend', () => {
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockResolvedValue({retry_in: 2500})
+    http.default.mockResolvedValue({retry_in: 2500})
 
     expect.assertions(24)
 
@@ -122,8 +122,8 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject({
+    expect(http.default).toHaveBeenCalledTimes(1)
+    expect(http.default.mock.calls[0][0]).toMatchObject({
       url: '/attribution',
       params: {initiatedBy: 'sdk'}
     })
@@ -142,11 +142,11 @@ describe('test attribution functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(2)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2500)
 
-        request.default.mockResolvedValue({retry_in: 3500})
+        http.default.mockResolvedValue({retry_in: 3500})
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledTimes(2)
+        expect(http.default).toHaveBeenCalledTimes(2)
 
         return Utils.flushPromises()
       })
@@ -159,12 +159,12 @@ describe('test attribution functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(3)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3500)
 
-        request.default.mockClear()
-        request.default.mockResolvedValue('')
+        http.default.mockClear()
+        http.default.mockResolvedValue('')
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledTimes(1)
+        expect(http.default).toHaveBeenCalledTimes(1)
 
         return Utils.flushPromises()
       })
@@ -183,7 +183,7 @@ describe('test attribution functionality', () => {
   it('ignores empty attribution result even if there is no stored attribution at the moment', () => {
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockResolvedValue(null)
+    http.default.mockResolvedValue(null)
 
     expect.assertions(8)
 
@@ -191,8 +191,8 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject({
+    expect(http.default).toHaveBeenCalledTimes(1)
+    expect(http.default.mock.calls[0][0]).toMatchObject({
       url: '/attribution',
       params: {initiatedBy: 'backend'}
     })
@@ -213,7 +213,7 @@ describe('test attribution functionality', () => {
   it('ignores attribution result with unknown parameters', () => {
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockResolvedValue({some: 'thing', totally: 'unknown'})
+    http.default.mockResolvedValue({some: 'thing', totally: 'unknown'})
 
     expect.assertions(8)
 
@@ -221,8 +221,8 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject({
+    expect(http.default).toHaveBeenCalledTimes(1)
+    expect(http.default.mock.calls[0][0]).toMatchObject({
       url: '/attribution',
       params: {initiatedBy: 'backend'}
     })
@@ -246,7 +246,7 @@ describe('test attribution functionality', () => {
     const cachedActivityState = {attribution: {adid: '123', ...currentAttribution.attribution}, installed: 1}
 
     ActivityState.default.current = cachedActivityState
-    request.default.mockResolvedValue(currentAttribution)
+    http.default.mockResolvedValue(currentAttribution)
 
     expect.assertions(8)
 
@@ -254,8 +254,8 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
-    expect(request.default.mock.calls[0][0]).toMatchObject({
+    expect(http.default).toHaveBeenCalledTimes(1)
+    expect(http.default.mock.calls[0][0]).toMatchObject({
       url: '/attribution',
       params: {initiatedBy: 'backend'}
     })
@@ -279,7 +279,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new', state: 'installed'}
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockResolvedValue(newAttribution)
+    http.default.mockResolvedValue(newAttribution)
 
     expect.assertions(7)
 
@@ -287,7 +287,7 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(http.default).toHaveBeenCalledTimes(1)
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
@@ -309,7 +309,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
     ActivityState.default.current = {attribution: oldAttribution, installed: 1}
-    request.default.mockResolvedValue(newAttribution)
+    http.default.mockResolvedValue(newAttribution)
 
     expect.assertions(7)
 
@@ -317,7 +317,7 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(http.default).toHaveBeenCalledTimes(1)
     expect(ActivityState.default.updateSessionOffset).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
@@ -339,7 +339,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker new', network: 'old'}
 
     ActivityState.default.current = {attribution: oldAttribution, installed: 1}
-    request.default.mockResolvedValue(newAttribution)
+    http.default.mockResolvedValue(newAttribution)
 
     expect.assertions(6)
 
@@ -347,7 +347,7 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(http.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return Utils.flushPromises()
@@ -368,7 +368,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'newest'}
 
     ActivityState.default.current = {attribution: oldAttribution, installed: 1}
-    request.default.mockResolvedValue({ask_in: 3000})
+    http.default.mockResolvedValue({ask_in: 3000})
 
     expect.assertions(22)
 
@@ -376,7 +376,7 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(http.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
     expect(setTimeout).toHaveBeenCalledTimes(1)
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
@@ -393,7 +393,7 @@ describe('test attribution functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledTimes(2)
+        expect(http.default).toHaveBeenCalledTimes(2)
 
         return Utils.flushPromises()
       })
@@ -407,12 +407,12 @@ describe('test attribution functionality', () => {
         expect(setTimeout).toHaveBeenCalledTimes(3)
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 3000)
 
-        request.default.mockClear()
-        request.default.mockResolvedValue(newAttribution)
+        http.default.mockClear()
+        http.default.mockResolvedValue(newAttribution)
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledTimes(1)
+        expect(http.default).toHaveBeenCalledTimes(1)
 
         return Utils.flushPromises()
       })
@@ -434,7 +434,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockRejectedValue(Utils.errorResponse())
+    http.default.mockRejectedValue(Utils.errorResponse())
 
     expect.assertions(21)
 
@@ -442,7 +442,7 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(http.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return Utils.flushPromises()
@@ -456,7 +456,7 @@ describe('test attribution functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledTimes(2)
+        expect(http.default).toHaveBeenCalledTimes(2)
 
         return Utils.flushPromises()
       })
@@ -470,7 +470,7 @@ describe('test attribution functionality', () => {
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledTimes(3)
+        expect(http.default).toHaveBeenCalledTimes(3)
 
         return Utils.flushPromises()
       })
@@ -482,12 +482,12 @@ describe('test attribution functionality', () => {
         expect(activityState.attribution).toBeUndefined()
         expect(ActivityState.default.current.attribution).toBeUndefined()
 
-        request.default.mockClear()
-        request.default.mockResolvedValue(newAttribution)
+        http.default.mockClear()
+        http.default.mockResolvedValue(newAttribution)
 
         jest.runOnlyPendingTimers()
 
-        expect(request.default).toHaveBeenCalledTimes(1)
+        expect(http.default).toHaveBeenCalledTimes(1)
 
         return Utils.flushPromises()
       })
@@ -505,7 +505,7 @@ describe('test attribution functionality', () => {
     const newAttribution = {adid: '123', attribution: {tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}}
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockResolvedValue(newAttribution)
+    http.default.mockResolvedValue(newAttribution)
 
     expect.assertions(6)
 
@@ -514,7 +514,7 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).not.toHaveBeenCalled()
+    expect(http.default).not.toHaveBeenCalled()
     expect(Identity.persist).toHaveBeenCalledTimes(1)
 
     return Utils.flushPromises()
@@ -534,7 +534,7 @@ describe('test attribution functionality', () => {
     const formatted = {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'new'}
 
     ActivityState.default.current = {installed: 1}
-    request.default.mockResolvedValue(newAttribution)
+    http.default.mockResolvedValue(newAttribution)
 
     expect.assertions(8)
 
@@ -544,13 +544,13 @@ describe('test attribution functionality', () => {
 
     jest.runOnlyPendingTimers()
 
-    expect(request.default).toHaveBeenCalledTimes(1)
+    expect(http.default).toHaveBeenCalledTimes(1)
     expect(Identity.persist).toHaveBeenCalledTimes(2)
 
     return Utils.flushPromises()
       .then(() => StorageManager.default.getFirst('activityState'))
       .then(activityState => {
-        expect(request.default).toHaveBeenCalledTimes(1)
+        expect(http.default).toHaveBeenCalledTimes(1)
         expect(activityState.attribution).toEqual(formatted)
         expect(ActivityState.default.current.attribution).toEqual(formatted)
         expect(Identity.persist).toHaveBeenCalledTimes(3)

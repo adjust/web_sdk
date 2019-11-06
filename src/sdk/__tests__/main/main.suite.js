@@ -13,7 +13,7 @@ import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
-import * as request from '../../request'
+import * as http from '../../http'
 
 const config = {
   appToken: 'some-app-token',
@@ -392,22 +392,22 @@ function _expectAttributionCheck () {
 }
 
 function expectGdprRequest () {
-  const lastCall = request.default.mock.calls.length
+  const lastCall = http.default.mock.calls.length
 
   jest.runOnlyPendingTimers()
 
-  expect(request.default).toHaveBeenCalled()
-  expect(request.default.mock.calls[lastCall][0]).toMatchObject(_gdprConfig)
+  expect(http.default).toHaveBeenCalled()
+  expect(http.default.mock.calls[lastCall][0]).toMatchObject(_gdprConfig)
 
   return {assertions: 2}
 }
 
 function expectNotGdprRequest (logMessage) {
-  const requestCall = ((request.default.mock.calls || [])[0] || [])[0] || {}
+  const httpCall = ((http.default.mock.calls || [])[0] || [])[0] || {}
 
   jest.runOnlyPendingTimers()
 
-  expect(requestCall).not.toMatchObject(_gdprConfig)
+  expect(httpCall).not.toMatchObject(_gdprConfig)
   expect(Logger.default.log).toHaveBeenCalledWith(logMessage)
 }
 

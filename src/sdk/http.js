@@ -223,12 +223,12 @@ function _interceptResponse (result, options) {
 }
 
 /**
- * Request factory to perform all kind of api requests
+ * Http request factory to perform all kind of api requests
  *
  * @param {Object} options
  * @returns {Promise}
  */
-export default function request (options) {
+export default function http (options) {
   return defaultParams()
     .then(params => _buildXhr(options, params))
     .then(result => _interceptResponse(result, options))
