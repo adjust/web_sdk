@@ -1,5 +1,5 @@
 // @flow
-import Package from './package'
+import Request from './request'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Config from './config'
@@ -7,12 +7,12 @@ import {status} from './identity'
 import {publish} from './pub-sub'
 
 /**
- * Package request instance
+ * Http request instance
  *
  * @type {Object}
  * @private
  */
-const _request = Package({
+const _request = Request({
   url: '/gdpr_forget_device',
   method: 'POST',
   strategy: 'short'

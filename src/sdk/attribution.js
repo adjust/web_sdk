@@ -10,15 +10,15 @@ import {entries, intersection, isEmpty, reducer} from './utilities'
 import {persist} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
-import Package from './package'
+import Request from './request'
 
 /**
- * Package request instance
+ * Http request instance
  *
  * @type {Object}
  * @private
  */
-const _request = Package({
+const _request = Request({
   url: '/attribution',
   strategy: 'short',
   continueCb: _continue

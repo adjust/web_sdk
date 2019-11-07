@@ -16,7 +16,7 @@ type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'
 type MethodT ='GET' | 'POST' | 'PUT' | 'DELETE'
 type ParamsT = {[key: string]: mixed}
 type WaitT = number
-type PackageParamsT = {|
+type RequestParamsT = {|
   url?: UrlT,
   method?: MethodT,
   params?: ParamsT,
@@ -38,9 +38,9 @@ const DEFAULT_WAIT: WaitT = 150
 const MAX_WAIT: WaitT = 0x7FFFFFFF // 2^31 - 1
 const NO_CONNECTION_WAIT = 60 * SECOND
 
-const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}: PackageParamsT = {}) => {
+const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}: RequestParamsT = {}) => {
   /**
-   * Global param values set on package instantiation and later used for restore
+   * Global param values set on request instantiation and later used for restore
    *
    * @type {{url: string, method: string, params: Object, continueCb: Function}}
    * @private
@@ -147,7 +147,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {Function=} continueCb
    * @private
    */
-  function _prepareParams ({url, method, params, continueCb}: PackageParamsT): void {
+  function _prepareParams ({url, method, params, continueCb}: RequestParamsT): void {
     if (url) {
       _url = url
     }
@@ -374,7 +374,7 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {number=} wait
    * @returns {Promise}
    */
-  function send ({url, method, params = {}, continueCb, wait}: PackageParamsT = {}): Promise<HttpResultT> {
+  function send ({url, method, params = {}, continueCb, wait}: RequestParamsT = {}): Promise<HttpResultT> {
     _prepareParams({url, method, params, continueCb})
 
     return _prepareRequest({wait})
@@ -429,6 +429,6 @@ const Package = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   }
 }
 
-export default Package
+export default Request
 
 

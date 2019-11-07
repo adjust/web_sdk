@@ -1,4 +1,4 @@
-import * as Package from '../package'
+import * as Request from '../request'
 import * as http from '../http'
 import * as Time from '../time'
 import * as Logger from '../logger'
@@ -8,7 +8,7 @@ jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
-describe('test package functionality', () => {
+describe('test request functionality', () => {
 
   let dateNowSpy
   let createdAtSpy
@@ -20,7 +20,7 @@ describe('test package functionality', () => {
       createdAt: now
     }
   })
-  const someRequest = Package.default({
+  const someRequest = Request.default({
     url: '/global-request',
     params: {
       some: 'param'
@@ -1188,7 +1188,7 @@ describe('test package functionality', () => {
 
     describe('uses default parameters', () => {
 
-      const req = Package.default({
+      const req = Request.default({
         url: '/another-global-request',
       })
 
@@ -1263,7 +1263,7 @@ describe('test package functionality', () => {
     describe('passes custom parameters', () => {
 
       const continueCb = jest.fn((_, finish) => finish())
-      const req = Package.default({
+      const req = Request.default({
         url: '/another-global-request',
         params: {
           some: 'param'
@@ -1361,7 +1361,7 @@ describe('test package functionality', () => {
 
   it('does not send the request when url not defined', () => {
 
-    const errorRequest = Package.default({
+    const errorRequest = Request.default({
       params: {some: 'param'}
     })
 
