@@ -1,5 +1,5 @@
 import Config from './config'
-import StorageManager from './storage/storage-manager'
+import Storage from './storage/storage'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Request from './request'
@@ -62,8 +62,8 @@ function _continue (result, finish) {
     wait
   } : null
 
-  return StorageManager.getFirst(_storeName)
-    .then(pending => pending ? StorageManager.deleteItem(_storeName, pending.timestamp) : null)
+  return Storage.getFirst(_storeName)
+    .then(pending => pending ? Storage.deleteItem(_storeName, pending.timestamp) : null)
     .then(() => {
       finish()
       _current.running = false
@@ -143,7 +143,7 @@ function push ({url, method, params}, auto) {
 
   const pending = {timestamp: _prepareTimestamp(), url, method, params}
 
-  return StorageManager.addItem(_storeName, pending)
+  return Storage.addItem(_storeName, pending)
     .then(() => _persist(url))
     .then(() => _current.running ? {} : run())
 }
@@ -215,7 +215,7 @@ function run ({cleanUp, wait} = {}) {
   }
 
   return chain
-    .then(() => StorageManager.getFirst(_storeName))
+    .then(() => Storage.getFirst(_storeName))
     .then(pending => _prepareToSend(pending, wait))
 }
 
@@ -256,7 +256,7 @@ function setOffline (state) {
  */
 function _cleanUp () {
   const upperBound = Date.now() - Config.requestValidityWindow
-  return StorageManager.deleteBulk(_storeName, {upperBound})
+  return Storage.deleteBulk(_storeName, {upperBound})
 }
 
 /**
@@ -273,7 +273,7 @@ function isRunning () {
  * Clear queue store
  */
 function clear () {
-  return StorageManager.clear(_storeName)
+  return Storage.clear(_storeName)
 }
 
 /**

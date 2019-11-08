@@ -1,6 +1,6 @@
 // @flow
 import {type GlobalParamsT, type GlobalParamsMapT} from './types'
-import StorageManager from './storage/storage-manager'
+import Storage from './storage/storage'
 import Logger from './logger'
 import {convertToMap, intersection} from './utilities'
 
@@ -45,8 +45,8 @@ function _omitType (params): Array<GlobalParamsT> {
  */
 function get (): Promise<GlobalParamsMapT> {
   return Promise.all([
-    StorageManager.filterBy(_storeName, 'callback'),
-    StorageManager.filterBy(_storeName, 'partner')
+    Storage.filterBy(_storeName, 'callback'),
+    Storage.filterBy(_storeName, 'partner')
   ]).then(([callbackParams, partnerParams]) => {
     return {
       callbackParams: _omitType(callbackParams),
@@ -75,8 +75,8 @@ function add (params: Array<GlobalParamsT>, type: TypeT): void | Promise<KeysArr
     .map(key => ({key, value: map[key], type}))
 
   return Promise.all([
-    StorageManager.filterBy(_storeName, type),
-    StorageManager.addBulk(_storeName, prepared, true)
+    Storage.filterBy(_storeName, type),
+    Storage.addBulk(_storeName, prepared, true)
   ]).then(([oldParams, newParams]) => {
     const intersecting = intersection(
       oldParams.map(param => param.key),
@@ -107,7 +107,7 @@ function remove (key: string, type: TypeT): void | Promise<KeysT> {
     return Promise.reject({message: _error.short})
   }
 
-  return StorageManager.deleteItem(_storeName, [key, type])
+  return Storage.deleteItem(_storeName, [key, type])
     .then(result => {
       Logger.log(`${key} ${type} parameter has been deleted`)
       return result
@@ -125,7 +125,7 @@ function removeAll (type: TypeT): void | Promise<KeysArrayT> {
     return Promise.reject({message: _error.short})
   }
 
-  return StorageManager.deleteBulk(_storeName, type)
+  return Storage.deleteBulk(_storeName, type)
     .then(result => {
       Logger.log(`All ${type} parameters have been deleted`)
       return result
@@ -136,7 +136,7 @@ function removeAll (type: TypeT): void | Promise<KeysArrayT> {
  * Clear globalParams store
  */
 function clear (): void {
-  return StorageManager.clear(_storeName)
+  return Storage.clear(_storeName)
 }
 
 export {

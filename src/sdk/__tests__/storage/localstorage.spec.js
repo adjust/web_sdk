@@ -1,5 +1,5 @@
 import * as LocalStorage from '../../storage/localstorage'
-import * as StorageManager from '../../storage/storage-manager'
+import * as Storage from '../../storage/storage'
 import * as Identity from '../../identity'
 import * as ActivityState from '../../activity-state'
 import * as Logger from '../../logger'
@@ -34,18 +34,18 @@ describe('LocalStorage usage', () => {
     expect(supported).toBeFalsy()
     expect(Logger.default.error).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
 
-    return StorageManager.default.getItem('activityState')
+    return Storage.default.getItem('activityState')
       .catch(error => {
         expect(error.name).toEqual('LSNotSupported')
         expect(error.message).toEqual('LocalStorage is not supported')
 
-        return StorageManager.default.getAll('activityState')
+        return Storage.default.getAll('activityState')
       })
       .catch(error => {
         expect(error.name).toEqual('LSNotSupported')
         expect(error.message).toEqual('LocalStorage is not supported')
 
-        return StorageManager.default.clear('activityState')
+        return Storage.default.clear('activityState')
       })
       .catch(error => {
         expect(error.name).toEqual('LSNotSupported')
@@ -62,19 +62,19 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(4)
 
-    expect(StorageManager.default.type).toBe('localStorage')
+    expect(Storage.default.type).toBe('localStorage')
 
     return Identity.start()
       .then(() => {
 
-        StorageManager.default.destroy()
+        Storage.default.destroy()
         localStorage.clear()
 
         activityState = ActivityState.default.current
 
         expect(activityState.uuid).toBeDefined()
 
-        return StorageManager.default.getFirst('activityState')
+        return Storage.default.getFirst('activityState')
       })
       .then(stored => {
 
@@ -88,10 +88,10 @@ describe('LocalStorage usage', () => {
 
   describe('run common tests for LocalStorage implementation', () => {
     it('sets storage type to localStorage', () => {
-      expect(StorageManager.default.type).toBe('localStorage')
+      expect(Storage.default.type).toBe('localStorage')
     })
 
-    Suite(StorageManager.default)()
+    Suite(Storage.default)()
   })
 
 })

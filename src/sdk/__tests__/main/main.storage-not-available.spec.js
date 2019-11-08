@@ -41,7 +41,7 @@ describe('main entry point - test instance initiation when storage is not availa
   })
 
   it('prevents initiation if storage is not available', () => {
-    jest.doMock('../../storage/storage-manager', () => { return null })
+    jest.doMock('../../storage/storage', () => { return null })
 
     const AdjustInstance = require('../../main').default
 

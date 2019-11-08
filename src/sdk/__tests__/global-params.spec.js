@@ -1,6 +1,6 @@
 import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
-import * as StorageManager from '../storage/storage-manager'
+import * as Storage from '../storage/storage'
 
 jest.mock('../logger')
 
@@ -57,7 +57,7 @@ describe('global parameters functionality', () => {
         expect(callbackParams).toEqual([])
         expect(partnerParams).toEqual([])
 
-        jest.spyOn(StorageManager.default, 'filterBy')
+        jest.spyOn(Storage.default, 'filterBy')
           .mockReturnValue(null)
 
         return GlobalParams.get()
@@ -66,7 +66,7 @@ describe('global parameters functionality', () => {
         expect(callbackParams).toEqual([])
         expect(partnerParams).toEqual([])
 
-        StorageManager.default.filterBy.mockRestore()
+        Storage.default.filterBy.mockRestore()
       })
   })
 

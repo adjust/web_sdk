@@ -1,7 +1,7 @@
 // @flow
 import {type EventParamsT, type GlobalParamsT} from './types'
 import Config from './config'
-import StorageManager from './storage/storage-manager'
+import Storage from './storage/storage'
 import Logger from './logger'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
@@ -54,12 +54,12 @@ function initSdk ({logLevel, logOutput, ...params}: LogParamsT = {}): void {
 
   Logger.setLogLevel(logLevel, logOutput)
 
-  if (!StorageManager) {
+  if (!Storage) {
     Logger.error('Adjust SDK can not start, there is no storage available')
     return
   }
 
-  Logger.info(`Available storage is ${StorageManager.type}`)
+  Logger.info(`Available storage is ${Storage.type}`)
 
   if (Config.isInitialised()) {
     Logger.error('You already initiated your instance')
@@ -235,7 +235,7 @@ function _shutdown (async): void {
   pubSubDestroy()
   identityDestroy()
   listenersDestroy()
-  StorageManager.destroy()
+  Storage.destroy()
   Config.destroy()
 }
 
@@ -342,7 +342,7 @@ function _start (params: ParamsT): void {
  * @private
  */
 function _preCheck (description: string, callback: () => mixed) {
-  if (!StorageManager) {
+  if (!Storage) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
   }

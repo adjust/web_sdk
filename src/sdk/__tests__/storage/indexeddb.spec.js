@@ -64,20 +64,20 @@ describe('IndexedDB usage', () => {
 
   describe('run common tests for IndexedDB implementation', () => {
     jest.isolateModules(() => {
-      const StorageManager = require('../../storage/storage-manager').default
+      const Storage = require('../../storage/storage').default
 
       it('sets storage type to indexedDB', () => {
-        expect(StorageManager.type).toBe('indexedDB')
+        expect(Storage.type).toBe('indexedDB')
       })
 
-      Suite(StorageManager)()
+      Suite(Storage)()
     })
   })
 
   describe('integration with Identity and data restore', () => {
     jest.isolateModules(() => {
       const Identity = require('../../identity')
-      const StorageManager = require('../../storage/storage-manager').default
+      const Storage = require('../../storage/storage').default
 
       it('restores activityState record from the running memory when db gets destroyed', () => {
 
@@ -85,19 +85,19 @@ describe('IndexedDB usage', () => {
 
         expect.assertions(4)
 
-        expect(StorageManager.type).toBe('indexedDB')
+        expect(Storage.type).toBe('indexedDB')
 
         return Identity.start()
           .then(() => {
 
-            StorageManager.destroy()
+            Storage.destroy()
             fakeIDB._databases.clear()
 
             activityState = ActivityState.default.current
 
             expect(activityState.uuid).toBeDefined()
 
-            return StorageManager.getFirst('activityState')
+            return Storage.getFirst('activityState')
           })
           .then(stored => {
 
@@ -127,18 +127,18 @@ describe('IndexedDB usage', () => {
           Identity.destroy()
           localStorage.clear()
           fakeIDB._databases.clear()
-          StorageManager.destroy()
+          Storage.destroy()
         })
 
         it('returns empty results when migration is not available', () => {
 
           expect.assertions(2)
 
-          return StorageManager.getFirst('activityState')
+          return Storage.getFirst('activityState')
             .then(result => {
               expect(result).toBeUndefined()
 
-              return StorageManager.getAll('queue')
+              return Storage.getAll('queue')
             })
             .then(result => {
               expect(result).toEqual([])
@@ -155,7 +155,7 @@ describe('IndexedDB usage', () => {
 
           expect.assertions(6)
 
-          return StorageManager.getFirst('activityState')
+          return Storage.getFirst('activityState')
             .then(result => {
               expect(result).toEqual({
                 uuid: 1,
@@ -168,7 +168,7 @@ describe('IndexedDB usage', () => {
                 }
               })
 
-              return StorageManager.getAll('queue')
+              return Storage.getAll('queue')
             })
             .then(result => {
               expect(result).toEqual([
@@ -179,7 +179,7 @@ describe('IndexedDB usage', () => {
               expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.globalParams.name]).toBeNull()
 
-              return StorageManager.getAll('globalParams')
+              return Storage.getAll('globalParams')
             })
             .then(result => {
               expect(result).toEqual([
@@ -208,17 +208,17 @@ describe('IndexedDB usage', () => {
               QuickStorage.default.stores[storeNames.activityState.name] = activityStateSet
               QuickStorage.default.stores[storeNames.globalParams.name] = globalParamsSet
 
-              StorageManager.destroy()
+              Storage.destroy()
               fakeIDB._databases.clear()
 
-              return StorageManager.getFirst('activityState')
+              return Storage.getFirst('activityState')
             })
             .then(result => {
 
               expect(result).toEqual(inMemoryActivityState)
               expect(result.uuid).toBeDefined()
 
-              return StorageManager.getAll('queue')
+              return Storage.getAll('queue')
             })
             .then(result => {
               expect(result).toEqual([
@@ -229,7 +229,7 @@ describe('IndexedDB usage', () => {
               expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.globalParams.name]).toBeNull()
 
-              return StorageManager.getAll('globalParams')
+              return Storage.getAll('globalParams')
             })
             .then(result => {
               expect(result).toEqual([
@@ -242,7 +242,7 @@ describe('IndexedDB usage', () => {
 
         it('ignores db close if there is no db instance', () => {
           expect(() => {
-            StorageManager.destroy()
+            Storage.destroy()
           }).not.toThrow()
         })
 

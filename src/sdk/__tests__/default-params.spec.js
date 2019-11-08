@@ -1,7 +1,7 @@
 import * as defaultParams from '../default-params'
 import * as ActivityState from '../activity-state'
 import * as Time from '../time'
-import * as StorageManager from '../storage/storage-manager'
+import * as Storage from '../storage/storage'
 
 jest.mock('../logger')
 
@@ -314,7 +314,7 @@ describe('request default parameters formation', () => {
       .then(params => {
         expect(params.queueSize).toBe(0)
 
-        return StorageManager.default.addBulk('queue', [
+        return Storage.default.addBulk('queue', [
           {timestamp: 1, url: '/url1'},
           {timestamp: 2, url: '/url2'},
           {timestamp: 3, url: '/url3'}

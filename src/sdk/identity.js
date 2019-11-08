@@ -1,6 +1,6 @@
 // @flow
 import {type ActivityStateMapT} from './types'
-import StorageManager from './storage/storage-manager'
+import Storage from './storage/storage'
 import ActivityState from './activity-state'
 import State from './state'
 import Logger from './logger'
@@ -81,7 +81,7 @@ function start (): Promise<?ActivityStateMapT> {
   }
   _starting = true
 
-  return StorageManager.getFirst(_storeName)
+  return Storage.getFirst(_storeName)
     .then(stored => {
       const intercepted = _intercept(stored)
 
@@ -92,7 +92,7 @@ function start (): Promise<?ActivityStateMapT> {
 
       const activityState = ActivityState.current || {uuid: _generateUuid()}
 
-      return StorageManager.addItem(_storeName, activityState)
+      return Storage.addItem(_storeName, activityState)
         .then(() => {
           State.reload()
           _starting = false
@@ -112,7 +112,7 @@ function persist (): Promise<?ActivityStateMapT> {
   }
 
   const activityState = {...ActivityState.current, lastActive: Date.now()}
-  return StorageManager.updateItem(_storeName, activityState)
+  return Storage.updateItem(_storeName, activityState)
     .then(() => ActivityState.current = activityState)
 }
 
@@ -123,7 +123,7 @@ function persist (): Promise<?ActivityStateMapT> {
  * @returns {Promise}
  */
 function sync (): Promise<ActivityStateMapT> {
-  return StorageManager.getFirst(_storeName)
+  return Storage.getFirst(_storeName)
     .then(activityState => {
       const lastActive = ActivityState.current.lastActive || 0
 
@@ -217,8 +217,8 @@ function clear (): void {
     pending: false
   }
 
-  return StorageManager.clear(_storeName)
-    .then(() => StorageManager.addItem(_storeName, newActivityState))
+  return Storage.clear(_storeName)
+    .then(() => Storage.addItem(_storeName, newActivityState))
 }
 
 /**

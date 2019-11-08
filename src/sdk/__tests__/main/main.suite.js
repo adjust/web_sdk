@@ -8,7 +8,7 @@ import * as sdkClick from '../../sdk-click'
 import * as GlobalParams from '../../global-params'
 import * as State from '../../state'
 import * as Attribution from '../../attribution'
-import * as StorageManager from '../../storage/storage-manager'
+import * as Storage from '../../storage/storage'
 import * as Logger from '../../logger'
 import * as ActivityState from '../../activity-state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
@@ -243,7 +243,7 @@ function expectShutDown (onlyNumOfAssertions) {
   expect(PubSub.destroy).toHaveBeenCalled()
   expect(Identity.destroy).toHaveBeenCalled()
   expect(Listeners.destroy).toHaveBeenCalled()
-  expect(StorageManager.default.destroy).toHaveBeenCalled()
+  expect(Storage.default.destroy).toHaveBeenCalled()
   expect(Config.default.baseParams).toEqual({})
 }
 
@@ -253,7 +253,7 @@ function expectPartialShutDown () {
   expect(PubSub.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
   expect(Listeners.destroy).not.toHaveBeenCalled()
-  expect(StorageManager.default.destroy).not.toHaveBeenCalled()
+  expect(Storage.default.destroy).not.toHaveBeenCalled()
 
   return {assertions: a.assertions + 4}
 }
@@ -268,7 +268,7 @@ function expectNotShutDown () {
   _expectNotPause()
   expect(PubSub.destroy).not.toHaveBeenCalled()
   expect(Identity.destroy).not.toHaveBeenCalled()
-  expect(StorageManager.default.destroy).not.toHaveBeenCalled()
+  expect(Storage.default.destroy).not.toHaveBeenCalled()
 }
 
 function _expectDestroy () {

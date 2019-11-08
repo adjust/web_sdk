@@ -32,9 +32,9 @@ describe('test storage availability', () => {
     jest.isolateModules(() => {
       mockAvailability(false, false)
 
-      const StorageManager = require('../../storage/storage-manager').default
+      const Storage = require('../../storage/storage').default
 
-      expect(StorageManager).toBeNull()
+      expect(Storage).toBeNull()
       expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
     })
   })
@@ -46,10 +46,10 @@ describe('test storage availability', () => {
     jest.isolateModules(() => {
       mockAvailability(true, false)
 
-      const StorageManager = require('../../storage/storage-manager').default
+      const Storage = require('../../storage/storage').default
 
-      expect(StorageManager).not.toBeNull()
-      expect(StorageManager.type).toBe('indexedDB')
+      expect(Storage).not.toBeNull()
+      expect(Storage.type).toBe('indexedDB')
     })
   })
 
@@ -60,10 +60,10 @@ describe('test storage availability', () => {
     jest.isolateModules(() => {
       mockAvailability(false, true)
 
-      const StorageManager = require('../../storage/storage-manager').default
+      const Storage = require('../../storage/storage').default
 
-      expect(StorageManager).not.toBeNull()
-      expect(StorageManager.type).toBe('localStorage')
+      expect(Storage).not.toBeNull()
+      expect(Storage.type).toBe('localStorage')
     })
   })
 
@@ -74,10 +74,10 @@ describe('test storage availability', () => {
     jest.isolateModules(() => {
       mockAvailability(true, true)
 
-      const StorageManager = require('../../storage/storage-manager').default
+      const Storage = require('../../storage/storage').default
 
-      expect(StorageManager).not.toBeNull()
-      expect(StorageManager.type).toBe('indexedDB')
+      expect(Storage).not.toBeNull()
+      expect(Storage.type).toBe('indexedDB')
     })
   })
 

@@ -6,7 +6,7 @@ import * as sdkClick from '../../sdk-click'
 import * as Identity from '../../identity'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
-import * as StorageManager from '../../storage/storage-manager'
+import * as Storage from '../../storage/storage'
 import * as Attribution from '../../attribution'
 import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
@@ -46,7 +46,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(Attribution, 'check')
     jest.spyOn(Attribution, 'destroy')
-    jest.spyOn(StorageManager.default, 'destroy')
+    jest.spyOn(Storage.default, 'destroy')
     jest.spyOn(GdprForgetDevice, 'check')
     jest.spyOn(Listeners, 'register')
     jest.spyOn(Listeners, 'destroy')
