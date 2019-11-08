@@ -3,7 +3,7 @@ import * as QuickStorage from '../../storage/quick-storage'
 describe('test low-level localStorage manipulation', () => {
 
   const stores = QuickStorage.default.stores
-  const storeNames = QuickStorage.default.names
+  const storeNames = QuickStorage.default.storeNames
   const queueRecords = [
     {timestamp: 1, url: '/url1'},
     {timestamp: 2, url: '/url2'}
@@ -38,10 +38,10 @@ describe('test low-level localStorage manipulation', () => {
 
   it('has getters and setters which names match the sdk db scheme', () => {
 
-    const queueProp = Object.getOwnPropertyDescriptor(stores, storeNames.queue)
-    const activityStateProp = Object.getOwnPropertyDescriptor(stores, storeNames.activityState)
-    const globalParamsProp = Object.getOwnPropertyDescriptor(stores, storeNames.globalParams)
-    const disabledProp = Object.getOwnPropertyDescriptor(stores, storeNames.disabled)
+    const queueProp = Object.getOwnPropertyDescriptor(stores, storeNames.queue.name)
+    const activityStateProp = Object.getOwnPropertyDescriptor(stores, storeNames.activityState.name)
+    const globalParamsProp = Object.getOwnPropertyDescriptor(stores, storeNames.globalParams.name)
+    const disabledProp = Object.getOwnPropertyDescriptor(stores, storeNames.disabled.name)
 
     expect(queueProp.get).toBeDefined()
     expect(queueProp.set).toBeDefined()
@@ -59,32 +59,32 @@ describe('test low-level localStorage manipulation', () => {
 
   it('returns empty result when no data in localStorage', () => {
 
-    expect(stores[storeNames.queue]).toBeNull()
-    expect(stores[storeNames.activityState]).toBeNull()
-    expect(stores[storeNames.globalParams]).toBeNull()
-    expect(stores[storeNames.disabled]).toBeNull()
+    expect(stores[storeNames.queue.name]).toBeNull()
+    expect(stores[storeNames.activityState.name]).toBeNull()
+    expect(stores[storeNames.globalParams.name]).toBeNull()
+    expect(stores[storeNames.disabled.name]).toBeNull()
 
     expect(localStorage.getItem).toHaveBeenCalledTimes(4)
-    expect(localStorage.getItem.mock.calls[0][0]).toEqual(`adjust-sdk.${storeNames.queue}`)
-    expect(localStorage.getItem.mock.calls[1][0]).toEqual(`adjust-sdk.${storeNames.activityState}`)
-    expect(localStorage.getItem.mock.calls[2][0]).toEqual(`adjust-sdk.${storeNames.globalParams}`)
-    expect(localStorage.getItem.mock.calls[3][0]).toEqual(`adjust-sdk.${storeNames.disabled}`)
+    expect(localStorage.getItem.mock.calls[0][0]).toEqual(`adjust-sdk.${storeNames.queue.name}`)
+    expect(localStorage.getItem.mock.calls[1][0]).toEqual(`adjust-sdk.${storeNames.activityState.name}`)
+    expect(localStorage.getItem.mock.calls[2][0]).toEqual(`adjust-sdk.${storeNames.globalParams.name}`)
+    expect(localStorage.getItem.mock.calls[3][0]).toEqual(`adjust-sdk.${storeNames.disabled.name}`)
 
   })
 
   it('sets and gets result from localStorage', () => {
 
-    stores[storeNames.queue] = queueRecords
-    stores[storeNames.activityState] = activityStateRecords
-    stores[storeNames.globalParams] = globalParamsRecords
-    stores[storeNames.disabled] = disabledRecord
+    stores[storeNames.queue.name] = queueRecords
+    stores[storeNames.activityState.name] = activityStateRecords
+    stores[storeNames.globalParams.name] = globalParamsRecords
+    stores[storeNames.disabled.name] = disabledRecord
 
     expect(localStorage.setItem).toHaveBeenCalledTimes(4)
 
-    expect(stores[storeNames.queue]).toEqual(queueRecords)
-    expect(stores[storeNames.activityState]).toEqual(activityStateRecords)
-    expect(stores[storeNames.globalParams]).toEqual(globalParamsRecords)
-    expect(stores[storeNames.disabled]).toEqual(disabledRecord)
+    expect(stores[storeNames.queue.name]).toEqual(queueRecords)
+    expect(stores[storeNames.activityState.name]).toEqual(activityStateRecords)
+    expect(stores[storeNames.globalParams.name]).toEqual(globalParamsRecords)
+    expect(stores[storeNames.disabled.name]).toEqual(disabledRecord)
 
     expect(localStorage.setItem.mock.calls[0][1]).toEqual(JSON.stringify(queueRecords))
     expect(localStorage.setItem.mock.calls[1][1]).toEqual(JSON.stringify(activityStateRecords))
@@ -97,29 +97,29 @@ describe('test low-level localStorage manipulation', () => {
 
     localStorage.setItem('should-stay-intact', 'something')
 
-    stores[storeNames.queue] = queueRecords
-    stores[storeNames.activityState] = activityStateRecords
-    stores[storeNames.globalParams] = globalParamsRecords
-    stores[storeNames.disabled] = disabledRecord
+    stores[storeNames.queue.name] = queueRecords
+    stores[storeNames.activityState.name] = activityStateRecords
+    stores[storeNames.globalParams.name] = globalParamsRecords
+    stores[storeNames.disabled.name] = disabledRecord
 
     expect(localStorage.getItem('should-stay-intact')).toBe('something')
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.queue}`)).toEqual(JSON.stringify(queueRecords))
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.activityState}`)).toEqual(JSON.stringify(activityStateRecords))
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.globalParams}`)).toEqual(JSON.stringify(globalParamsRecords))
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled}`)).toEqual(JSON.stringify(disabledRecordEncoded))
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.queue.name}`)).toEqual(JSON.stringify(queueRecords))
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.activityState.name}`)).toEqual(JSON.stringify(activityStateRecords))
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.globalParams.name}`)).toEqual(JSON.stringify(globalParamsRecords))
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled.name}`)).toEqual(JSON.stringify(disabledRecordEncoded))
 
     QuickStorage.default.clear()
 
-    expect(stores[storeNames.queue]).toBeNull()
-    expect(stores[storeNames.activityState]).toBeNull()
-    expect(stores[storeNames.globalParams]).toBeNull()
-    expect(stores[storeNames.disabled]).toEqual(disabledRecord)
+    expect(stores[storeNames.queue.name]).toBeNull()
+    expect(stores[storeNames.activityState.name]).toBeNull()
+    expect(stores[storeNames.globalParams.name]).toBeNull()
+    expect(stores[storeNames.disabled.name]).toEqual(disabledRecord)
 
     expect(localStorage.getItem('should-stay-intact')).toBe('something')
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.queue}`)).toBeNull()
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.activityState}`)).toBeNull()
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.globalParams}`)).toBeNull()
-    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled}`)).toEqual(JSON.stringify(disabledRecordEncoded))
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.queue.name}`)).toBeNull()
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.activityState.name}`)).toBeNull()
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.globalParams.name}`)).toBeNull()
+    expect(localStorage.getItem(`adjust-sdk.${storeNames.disabled.name}`)).toEqual(JSON.stringify(disabledRecordEncoded))
 
   })
 

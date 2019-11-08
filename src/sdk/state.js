@@ -7,7 +7,7 @@ import QuickStorage from './storage/quick-storage'
  * @type {string}
  * @private
  */
-let _storeName = QuickStorage.names.disabled
+let _storeName = QuickStorage.storeNames.disabled.name
 
 /**
  * Reference to the disabled state

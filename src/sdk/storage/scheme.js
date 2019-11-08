@@ -1,5 +1,6 @@
 import {REASON_GDPR, REASON_GENERAL} from '../constants'
 
+const _queueName = 'q'
 const _queueScheme = {
   keyPath: 'timestamp',
   autoIncrement: false,
@@ -44,6 +45,7 @@ const _queueScheme = {
   }
 }
 
+const _activityStateName = 'as'
 const _activityStateScheme = {
   keyPath: 'uuid',
   autoIncrement: false,
@@ -91,6 +93,7 @@ const _activityStateScheme = {
   }
 }
 
+const _globalParamsName = 'gp'
 const _globalParamsScheme = {
   keyPath: 'keyType',
   autoIncrement: false,
@@ -113,6 +116,7 @@ const _globalParamsScheme = {
   }
 }
 
+const _disabledName = 'd'
 const _disabledScheme = {
   keyPath: 'reason',
   fields: {
@@ -134,8 +138,21 @@ const _disabledScheme = {
 }
 
 export default {
-  queue: _queueScheme,
-  activityState: _activityStateScheme,
-  globalParams: _globalParamsScheme,
-  disabled: _disabledScheme
+  queue: {
+    name: _queueName,
+    scheme: _queueScheme
+  },
+  activityState: {
+    name: _activityStateName,
+    scheme: _activityStateScheme
+  },
+  globalParams: {
+    name: _globalParamsName,
+    scheme: _globalParamsScheme
+  },
+  disabled: {
+    name: _disabledName,
+    scheme: _disabledScheme,
+    permanent: true
+  }
 }

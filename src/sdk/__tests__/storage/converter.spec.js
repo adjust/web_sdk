@@ -371,18 +371,21 @@ describe('test Converter utility', () => {
   describe('scheme import with test override', () => {
     jest.isolateModules(() => {
       const someStoreScheme = {
-        keyPath: 'id',
-        fields: {
-          id: {
-            key: 'id',
-            primary: true
-          },
-          name: 'n',
-          surname: {
-            key: 's',
-            values: {
-              bla: 'b',
-              truc: 't'
+        name: 'ss',
+        scheme: {
+          keyPath: 'id',
+          fields: {
+            id: {
+              key: 'id',
+              primary: true
+            },
+            name: 'n',
+            surname: {
+              key: 's',
+              values: {
+                bla: 'b',
+                truc: 't'
+              }
             }
           }
         }

@@ -1,12 +1,10 @@
 import {convertRecord} from './converter'
+import {entries} from '../utilities'
 import Config from '../config'
 import SchemeMap from './scheme-map'
-import {values} from '../utilities'
 
-const _disabledName = 'd'
-const _schemeKeys = values(SchemeMap.storeNames.left)
-const _storageFields = [_disabledName,  ..._schemeKeys]
 const _storageName = Config.namespace
+const _storeNames = SchemeMap.storeNames.left
 
 /**
  * Get the value for specified key
@@ -53,23 +51,27 @@ function _set (key, value) {
  * Clear all data related to the sdk
  */
 function clear () {
-  _schemeKeys.forEach(key => {
-    localStorage.removeItem(`${_storageName}.${key}`)
-  })
+  entries(_storeNames)
+    .forEach(([, store]) => {
+      if (!store.permanent) {
+        localStorage.removeItem(`${_storageName}.${store.name}`)
+      }
+    })
 }
 
 const QuickStorage = {
-  names: {disabled: _disabledName, ...SchemeMap.storeNames.left},
+  storeNames: _storeNames,
   stores: {},
   clear
 }
 
-_storageFields.forEach(key => {
-  Object.defineProperty(QuickStorage.stores, key, {
-    get () { return _get(key) },
-    set (value) { return _set(key, value) }
+entries(_storeNames)
+  .forEach(([, store]) => {
+    Object.defineProperty(QuickStorage.stores, store.name, {
+      get () { return _get(store.name) },
+      set (value) { return _set(store.name, value) }
+    })
   })
-})
 
 Object.freeze(QuickStorage.stores)
 

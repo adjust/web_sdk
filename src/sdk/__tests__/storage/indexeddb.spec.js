@@ -149,9 +149,9 @@ describe('IndexedDB usage', () => {
         it('returns result migrated from the localStorage when upgraded within restarted window session', () => {
 
           // prepare some rows manually
-          QuickStorage.default.stores[storeNames.queue] = queueSet
-          QuickStorage.default.stores[storeNames.activityState] = activityStateSet
-          QuickStorage.default.stores[storeNames.globalParams] = globalParamsSet
+          QuickStorage.default.stores[storeNames.queue.name] = queueSet
+          QuickStorage.default.stores[storeNames.activityState.name] = activityStateSet
+          QuickStorage.default.stores[storeNames.globalParams.name] = globalParamsSet
 
           expect.assertions(6)
 
@@ -175,9 +175,9 @@ describe('IndexedDB usage', () => {
                 {timestamp: 1, url: '/url'},
                 {timestamp: 2, url: '/event'}
               ])
-              expect(QuickStorage.default.stores[storeNames.queue]).toBeNull()
-              expect(QuickStorage.default.stores[storeNames.activityState]).toBeNull()
-              expect(QuickStorage.default.stores[storeNames.globalParams]).toBeNull()
+              expect(QuickStorage.default.stores[storeNames.queue.name]).toBeNull()
+              expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
+              expect(QuickStorage.default.stores[storeNames.globalParams.name]).toBeNull()
 
               return StorageManager.getAll('globalParams')
             })
@@ -204,9 +204,9 @@ describe('IndexedDB usage', () => {
               expect(inMemoryActivityState.uuid).toBeDefined()
 
               // prepare some rows manually
-              QuickStorage.default.stores[storeNames.queue] = queueSet
-              QuickStorage.default.stores[storeNames.activityState] = activityStateSet
-              QuickStorage.default.stores[storeNames.globalParams] = globalParamsSet
+              QuickStorage.default.stores[storeNames.queue.name] = queueSet
+              QuickStorage.default.stores[storeNames.activityState.name] = activityStateSet
+              QuickStorage.default.stores[storeNames.globalParams.name] = globalParamsSet
 
               StorageManager.destroy()
               fakeIDB._databases.clear()
@@ -225,9 +225,9 @@ describe('IndexedDB usage', () => {
                 {timestamp: 1, url: '/url'},
                 {timestamp: 2, url: '/event'}
               ])
-              expect(QuickStorage.default.stores[storeNames.queue]).toBeNull()
-              expect(QuickStorage.default.stores[storeNames.activityState]).toBeNull()
-              expect(QuickStorage.default.stores[storeNames.globalParams]).toBeNull()
+              expect(QuickStorage.default.stores[storeNames.queue.name]).toBeNull()
+              expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
+              expect(QuickStorage.default.stores[storeNames.globalParams.name]).toBeNull()
 
               return StorageManager.getAll('globalParams')
             })

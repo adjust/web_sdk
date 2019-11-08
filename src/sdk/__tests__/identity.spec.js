@@ -10,7 +10,7 @@ jest.mock('../logger')
 
 describe('test identity methods', () => {
 
-  const storeNames = QuickStorage.default.names
+  const storeNames = QuickStorage.default.storeNames
 
   beforeAll(() => {
     jest.spyOn(PubSub, 'publish')
@@ -227,12 +227,12 @@ describe('test identity methods', () => {
 
       Identity.disable()
 
-      QuickStorage.default.stores[storeNames.disabled] = null
+      QuickStorage.default.stores[storeNames.disabled.name] = null
 
       return Identity.start()
         .then(() => {
           expect(State.default.disabled).toEqual({reason: 'general', pending: false})
-          expect(QuickStorage.default.stores[storeNames.disabled]).toEqual({reason: 'general', pending: false})
+          expect(QuickStorage.default.stores[storeNames.disabled.name]).toEqual({reason: 'general', pending: false})
         })
     })
 

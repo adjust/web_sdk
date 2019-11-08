@@ -3,7 +3,7 @@ import State from '../state'
 import QuickStorage from '../storage/quick-storage'
 import SchemeMap from './scheme-map'
 import Logger from '../logger'
-import {findIndex, isEmpty, isObject, reducer, values} from '../utilities'
+import {entries, findIndex, isEmpty, isObject, reducer} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
 /**
@@ -40,19 +40,25 @@ function _open () {
     return {status: 'error', error: {name: 'LSNotSupported', message: 'LocalStorage is not supported'}}
   }
 
-  const storeNames = values(SchemeMap.storeNames.left)
+  const storeNames = SchemeMap.storeNames.left
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 
-  storeNames.forEach(storeName => {
-    const asStoreName = SchemeMap.storeNames.left.activityState
+  entries(storeNames)
+    .filter(([, store]) => !store.permanent)
+    .forEach(([longStoreName, store]) => {
+      const asStoreName = storeNames.activityState.name
 
-    if (storeName === asStoreName && !QuickStorage.stores[asStoreName]) {
-      QuickStorage.stores[asStoreName] = inMemoryAvailable ? [convertRecord({storeName: convertStoreName({storeName, dir: 'right'}), record: activityState, dir: 'left'})] : []
-    } else if (!QuickStorage.stores[storeName]) {
-      QuickStorage.stores[storeName] = []
-    }
-  })
+      if (store.name === asStoreName && !QuickStorage.stores[asStoreName]) {
+        QuickStorage.stores[asStoreName] = inMemoryAvailable ? [convertRecord({
+          storeName: longStoreName,
+          record: activityState,
+          dir: 'left'
+        })] : []
+      } else if (!QuickStorage.stores[store.name]) {
+        QuickStorage.stores[store.name] = []
+      }
+    })
 
   State.recover()
 

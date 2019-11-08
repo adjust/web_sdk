@@ -1,16 +1,6 @@
 import {reducer, entries} from '../utilities'
 import Scheme from './scheme'
 
-const QUEUE_STORE = 'q'
-const ACTIVITY_STATE_STORE = 'as'
-const GLOBAL_PARAMS_STORE = 'gp'
-
-const StoreNames = {
-  queue: QUEUE_STORE,
-  activityState: ACTIVITY_STATE_STORE,
-  globalParams: GLOBAL_PARAMS_STORE
-}
-
 /**
  * Cast value into it's original type
  *
@@ -36,6 +26,23 @@ function _parseValue (value) {
 function _flipObject (obj) {
   return entries(obj)
     .map(([key, value]) => [value, _parseValue(key)])
+    .reduce(reducer, {})
+}
+
+/**
+ * Flip store name definition names:
+ * - short key pointing the long one along with additional configuration
+ *
+ * @param {Object} obj
+ * @returns {Object}
+ * @private
+ */
+function _flipStoreNames (obj) {
+  return entries(obj)
+    .map(([name, options]) => [options.name, {
+      name,
+      permanent: options.permanent
+    }])
     .reduce(reducer, {})
 }
 
@@ -80,13 +87,13 @@ function _flipScheme (storeName, fieldsScheme) {
  */
 function _prepareLeft () {
   return entries(Scheme)
-    .map(([storeName, storeScheme]) => [
+    .map(([storeName, store]) => [
       storeName,
       {
-        keyPath: storeScheme.keyPath,
-        autoIncrement: storeScheme.autoIncrement,
-        index: storeScheme.index,
-        fields: storeScheme.fields
+        keyPath: store.scheme.keyPath,
+        autoIncrement: store.scheme.autoIncrement,
+        index: store.scheme.index,
+        fields: store.scheme.fields
       }
     ])
     .reduce(reducer, {})
@@ -120,7 +127,7 @@ function _prepareRight () {
  */
 function _getValuesMap () {
   return entries(Scheme)
-    .reduce((acc, [, scheme]) => acc.concat(scheme.fields), [])
+    .reduce((acc, [, store]) => acc.concat(store.scheme.fields), [])
     .map(scheme => entries(scheme)
       .filter(([, map]) => map.values)
       .map(([, map]) => entries(map.values))
@@ -138,13 +145,29 @@ function _getValuesMap () {
  * @private
  */
 function _getShortKey (storeName, key) {
-  const map = Scheme[storeName].fields[key]
+  const map = Scheme[storeName].scheme.fields[key]
   return map ? (map.key || map) : key
+}
+
+/**
+ * Get store names and their general configuration (if store is permanent or not)
+ *
+ * @returns {Object}
+ * @private
+ */
+function _getStoreNames () {
+  return entries(Scheme)
+    .map(([storeName, scheme]) => [storeName, {
+      name: scheme.name,
+      permanent: scheme.permanent
+    }])
+    .reduce(reducer, {})
 }
 
 const Left = _prepareLeft()
 const Right = _prepareRight()
 const Values = _getValuesMap()
+const StoreNames = _getStoreNames()
 
 export default {
   left: Left,
@@ -152,6 +175,6 @@ export default {
   values: Values,
   storeNames: {
     left: StoreNames,
-    right: _flipObject(StoreNames)
+    right: _flipStoreNames(StoreNames)
   }
 }

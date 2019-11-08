@@ -109,7 +109,7 @@ function encodeValue (target) {
  * @returns {string}
  */
 function convertStoreName ({storeName, dir}) {
-  return SchemeMap.storeNames[dir][storeName] || storeName
+  return (SchemeMap.storeNames[dir][storeName] || {}).name || storeName
 }
 
 /**

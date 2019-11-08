@@ -3,7 +3,7 @@ import * as PubSub from '../pub-sub'
 
 describe('activity state functionality', () => {
 
-  const disabledStoreName = QuickStorage.default.names.disabled
+  const disabledStoreName = QuickStorage.default.storeNames.disabled.name
 
   beforeAll(() => {
     jest.spyOn(PubSub, 'publish')

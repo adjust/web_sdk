@@ -4,7 +4,7 @@ import ActivityState from '../activity-state'
 import State from '../state'
 import QuickStorage from '../storage/quick-storage'
 import Logger from '../logger'
-import {isEmpty, isObject, values} from '../utilities'
+import {isEmpty, isObject, entries} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
 const _dbName = Config.namespace
@@ -54,29 +54,35 @@ function _handleUpgradeNeeded (e, reject) {
   e.target.transaction.onerror = reject
   e.target.transaction.onabort = reject
 
-  const storeNames = values(SchemeMap.storeNames.left)
+  const storeNames = SchemeMap.storeNames.left
   const activityState = ActivityState.current || {}
   const inMemoryAvailable = activityState && !isEmpty(activityState)
 
-  storeNames.forEach(storeName => {
-    const options = SchemeMap.right[convertStoreName({storeName, dir: 'right'})]
-    const objectStore = db.createObjectStore(storeName, {
-      keyPath: options.keyPath,
-      autoIncrement: options.autoIncrement || false
+  entries(storeNames)
+    .filter(([, store]) => !store.permanent)
+    .forEach(([longStoreName, store]) => {
+      const options = SchemeMap.right[longStoreName]
+      const objectStore = db.createObjectStore(store.name, {
+        keyPath: options.keyPath,
+        autoIncrement: options.autoIncrement || false
+      })
+
+      if (options.index) {
+        objectStore.createIndex(`${options.index}Index`, options.index)
+      }
+
+      if (store.name === storeNames.activityState.name && inMemoryAvailable) {
+        objectStore.add(convertRecord({
+          storeName: longStoreName,
+          record: activityState,
+          dir: 'left'
+        }))
+        Logger.info('Activity state has been recovered')
+      } else if (QuickStorage.stores[store.name]) {
+        QuickStorage.stores[store.name].forEach(record => objectStore.add(record))
+        Logger.info(`Migration from localStorage done for ${longStoreName} store`)
+      }
     })
-
-    if (options.index) {
-      objectStore.createIndex(`${options.index}Index`, options.index)
-    }
-
-    if (storeName === SchemeMap.storeNames.left.activityState && inMemoryAvailable) {
-      objectStore.add(convertRecord({storeName: convertStoreName({storeName, dir: 'right'}), record: activityState, dir: 'left'}))
-      Logger.info('Activity state has been recovered')
-    } else if (QuickStorage.stores[storeName]) {
-      QuickStorage.stores[storeName].forEach(record => objectStore.add(record))
-      Logger.info(`Migration from localStorage done for ${storeName} store`)
-    }
-  })
 
   State.recover()
   QuickStorage.clear()
