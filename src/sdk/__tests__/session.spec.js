@@ -149,12 +149,31 @@ describe('test session functionality', () => {
 
     it('updates installed flag when session:finished event is recognized', () => {
 
-      PubSub.publish('session:finished')
+      Session.watch()
 
-      jest.runAllTimers()
+      expect.assertions(6)
 
-      expect(ActivityState.default.updateInstalled).toHaveBeenCalled()
+      expect(ActivityState.default.current.installed).toBeUndefined()
 
+      return Storage.default.getFirst('activityState')
+        .then(activityState => {
+          expect(activityState.installed).toBeUndefined()
+
+          PubSub.publish('session:finished')
+
+          jest.runOnlyPendingTimers()
+
+          expect(ActivityState.default.updateInstalled).toHaveBeenCalled()
+          expect(ActivityState.default.current.installed).toBeTruthy()
+          expect(activityState.installed).toBeUndefined()
+
+          return Storage.default.getFirst('activityState')
+        })
+        .then(activityState => {
+          expect(activityState.installed).toBeTruthy()
+
+          return Utils.flushPromises()
+        })
     })
 
     it('updates last active timestamp every n seconds', () => {

@@ -60,7 +60,7 @@ function watch () {
 
   _running = true
 
-  subscribe('session:finished', ActivityState.updateInstalled)
+  subscribe('session:finished', _handleSessionRequestFinish)
 
   if (_pva) {
     on(document, _pva.visibilityChange, _handleVisibilityChange)
@@ -144,6 +144,18 @@ function _handleVisibilityChange () {
   const handler = document[_pva.hidden] ? _handleBackground : _handleForeground
 
   _idTimeout = setTimeout(handler, 0)
+}
+
+/**
+ * Handle session request finish; update installed state
+ *
+ * @returns {Promise}
+ * @private
+ */
+function _handleSessionRequestFinish () {
+  ActivityState.updateInstalled()
+
+  return persist()
 }
 
 /**
