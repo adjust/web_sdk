@@ -24,17 +24,17 @@ describe('test global config', () => {
 
         jest.spyOn(Logger.default, 'error')
 
-        Config.default.baseParams = {}
+        Config.default.setBaseParams({})
 
         expect(Logger.default.error).toHaveBeenCalledWith('You must define appToken and environment')
         expect(Config.default.isInitialised()).toBeFalsy()
-        expect(Config.default.baseParams).toEqual({})
+        expect(Config.default.getBaseParams()).toEqual({})
 
-        Config.default.baseParams = {appToken: 'bla'}
+        Config.default.setBaseParams({appToken: 'bla'})
 
         expect(Logger.default.error).toHaveBeenCalledWith('You must define environment')
         expect(Config.default.isInitialised()).toBeFalsy()
-        expect(Config.default.baseParams).toEqual({})
+        expect(Config.default.getBaseParams()).toEqual({})
 
       })
 
@@ -45,25 +45,27 @@ describe('test global config', () => {
           environment: 'sandbox'
         }
 
-        Config.default.baseParams = appParams
+        Config.default.setBaseParams(appParams)
+
+        const baseParams = Config.default.getBaseParams()
 
         expect(Config.default.isInitialised()).toBeTruthy()
-        expect(Config.default.baseParams).toEqual(appParams)
-        expect(Config.default.baseParams).not.toBe(appParams)
+        expect(baseParams).toEqual(appParams)
+        expect(baseParams).not.toBe(appParams)
         expect(Config.default.baseUrl).toEqual({})
       })
 
       it('sets only allowed parameters', () => {
 
-        Config.default.baseParams = {
+        Config.default.setBaseParams({
           appToken: '123abc',
           environment: 'sandbox',
           defaultTracker: 'tracker',
           something: 'else'
-        }
+        })
 
         expect(Config.default.isInitialised()).toBeTruthy()
-        expect(Config.default.baseParams).toEqual({
+        expect(Config.default.getBaseParams()).toEqual({
           appToken: '123abc',
           environment: 'sandbox',
           defaultTracker: 'tracker',
@@ -78,15 +80,15 @@ describe('test global config', () => {
           environment: 'sandbox'
         }
 
-        Config.default.baseParams = appParams
+        Config.default.setBaseParams(appParams)
 
         expect(Config.default.isInitialised()).toBeTruthy()
-        expect(Config.default.baseParams).toEqual(appParams)
+        expect(Config.default.getBaseParams()).toEqual(appParams)
 
         Config.default.destroy()
 
         expect(Config.default.isInitialised()).toBeFalsy()
-        expect(Config.default.baseParams).toEqual({})
+        expect(Config.default.getBaseParams()).toEqual({})
       })
     })
   })

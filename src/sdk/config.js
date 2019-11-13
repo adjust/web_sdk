@@ -1,5 +1,10 @@
+// @flow
+declare var __ADJUST__NAMESPACE: string
+declare var __ADJUST__SDK_VERSION: string
+
+import {type BaseParamsT, type BaseParamsListT, type BaseParamsMandatoryListT} from './types'
 import {MINUTE, SECOND, DAY} from './constants'
-import {buildList} from './utilities'
+import {buildList, reducer} from './utilities'
 import Logger from './logger'
 
 /**
@@ -11,7 +16,7 @@ import Logger from './logger'
  * @type {Object}
  * @private
  */
-let _baseParams = {}
+let _baseParams: BaseParamsT = {}
 
 /**
  * Mandatory fields to set for sdk initialization
@@ -19,7 +24,7 @@ let _baseParams = {}
  * @type {string[]}
  * @private
  */
-const _mandatory = [
+const _mandatory: BaseParamsMandatoryListT = [
   'appToken',
   'environment'
 ]
@@ -30,7 +35,7 @@ const _mandatory = [
  * @type {string[]}
  * @private
  */
-const _fields = [
+const _allowed: BaseParamsListT = [
   ..._mandatory,
   'defaultTracker'
 ]
@@ -49,8 +54,8 @@ const _fields = [
  * }}
  */
 const _baseConfig = {
-  namespace: __ADJUST__NAMESPACE,
-  version: `js${__ADJUST__SDK_VERSION}`,
+  namespace: __ADJUST__NAMESPACE || 'adjust-sdk',
+  version: __ADJUST__SDK_VERSION || '0.0.0',
   baseUrl: process.env.NODE_ENV === 'test' ? {} : {
     app: 'https://app.adjust.com',
     gdpr: 'https://gdpr.adjust.com'
@@ -65,17 +70,16 @@ const _baseConfig = {
  *
  * @returns {boolean}
  */
-function isInitialised () {
+function isInitialised (): boolean {
   return _mandatory.reduce((acc, key) => acc && !!_baseParams[key], true)
 }
 
 /**
  * Get base params set by client
  *
- * @returns {any}
- * @private
+ * @returns {Object}
  */
-function _getParams () {
+function getBaseParams (): BaseParamsT {
   return {..._baseParams}
 }
 
@@ -83,17 +87,17 @@ function _getParams () {
  * Set base params for the sdk to run
  *
  * @param {Object} params
- * @private
  */
-function _setParams (params) {
+function setBaseParams (params: BaseParamsT): void {
 
   if (hasMissing(params)) {
     return
   }
 
-  _fields.forEach(key => {
-    _baseParams[key] = params[key]
-  })
+  _baseParams = _allowed
+    .map(key => [key, params[key]])
+    .reduce(reducer, {})
+
 }
 
 /**
@@ -103,7 +107,7 @@ function _setParams (params) {
  * @returns {boolean}
  * @private
  */
-function hasMissing (params) {
+function hasMissing (params: BaseParamsT): boolean {
 
   const missing = _mandatory.filter(value => !params[value])
 
@@ -118,20 +122,17 @@ function hasMissing (params) {
 /**
  * Restore config to its default state
  */
-function destroy () {
+function destroy (): void {
   _baseParams = {}
 }
 
 const Config = {
   ..._baseConfig,
+  getBaseParams,
+  setBaseParams,
   isInitialised,
   hasMissing,
   destroy
 }
-
-Object.defineProperty(Config, 'baseParams', {
-  get () { return _getParams() },
-  set (params) { return _setParams(params) }
-})
 
 export default Config

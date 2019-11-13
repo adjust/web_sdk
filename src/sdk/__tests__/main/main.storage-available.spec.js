@@ -182,10 +182,12 @@ describe('main entry point - test instance initiation when storage is available'
         environment: 'sandbox'
       })
 
+      const baseParams = Config.default.getBaseParams()
+
       expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
       expect(AdjustInstance).toBe(OtherInstance)
-      expect(Config.default.baseParams.appToken).toEqual('some-app-token')
-      expect(Config.default.baseParams.environment).toEqual('production')
+      expect(baseParams.appToken).toEqual('some-app-token')
+      expect(baseParams.environment).toEqual('production')
 
     })
 

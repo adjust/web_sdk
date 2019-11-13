@@ -93,7 +93,7 @@ describe('event tracking functionality', () => {
   describe('after initialisation', () => {
 
     beforeAll(() => {
-      Config.default.baseParams = appConfig
+      Config.default.setBaseParams(appConfig)
     })
 
     it('logs an error and return when event token is not provided', () => {

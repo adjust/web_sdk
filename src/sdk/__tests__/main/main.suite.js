@@ -29,8 +29,10 @@ const _gdprConfig = {
 let _instance
 
 function _startFirstPart () {
-  expect(Config.default.baseParams.appToken).toEqual('some-app-token')
-  expect(Config.default.baseParams.environment).toEqual('production')
+  const baseParams = Config.default.getBaseParams()
+
+  expect(baseParams.appToken).toEqual('some-app-token')
+  expect(baseParams.environment).toEqual('production')
 
   expect(Listeners.register).toHaveBeenCalledTimes(1)
 
@@ -74,7 +76,7 @@ function expectPartialStartWithGdprRequest () {
 function expectNotStart (restart) {
 
   if (!restart) {
-    expect(Config.default.baseParams).toEqual({})
+    expect(Config.default.getBaseParams()).toEqual({})
   }
 
   expect(Listeners.register).not.toHaveBeenCalled()
@@ -244,7 +246,7 @@ function expectShutDown (onlyNumOfAssertions) {
   expect(Identity.destroy).toHaveBeenCalled()
   expect(Listeners.destroy).toHaveBeenCalled()
   expect(Storage.default.destroy).toHaveBeenCalled()
-  expect(Config.default.baseParams).toEqual({})
+  expect(Config.default.getBaseParams()).toEqual({})
 }
 
 function expectPartialShutDown () {
@@ -343,8 +345,10 @@ function expectNotGdprForgetMeCallback () {
 }
 
 function expectAllUp () {
-  expect(Config.default.baseParams.appToken).toEqual('some-app-token')
-  expect(Config.default.baseParams.environment).toEqual('production')
+  const baseParams = Config.default.getBaseParams()
+
+  expect(baseParams.appToken).toEqual('some-app-token')
+  expect(baseParams.environment).toEqual('production')
 
   expect(ActivityState.default.current).not.toBeNull()
   expect(Queue.isRunning()).toBeTruthy()
@@ -370,7 +374,7 @@ function expectAllDown (onlyNumOfAssertions) {
     return {assertions: 6}
   }
 
-  expect(Config.default.baseParams).toEqual({})
+  expect(Config.default.getBaseParams()).toEqual({})
 
   expectNotGdprForgetMeCallback()
   expectNotAttributionCallback()

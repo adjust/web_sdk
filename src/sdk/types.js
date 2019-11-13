@@ -53,4 +53,25 @@ export type EventParamsT = {|
 
 export type ActivityStateMapT = {[key: string]: mixed} // TODO do the exact type
 
+export type BaseParamsT = $ReadOnly<{
+  appToken: string,
+  environment: 'production' | 'sandbox',
+  defaultTracker?: string
+}>
+
+export type LogParamsT = $ReadOnly<{|
+  logLevel?: 'none' | 'error' | 'info' | 'verbose',
+  logOutput?: string
+|}>
+
+export type InitParamsT = $ReadOnly<{|
+  appToken: $PropertyType<BaseParamsT, 'appToken'>,
+  environment: $PropertyType<BaseParamsT, 'environment'>,
+  defaultTracker?: $PropertyType<BaseParamsT, 'defaultTracker'>,
+  attributionCallback?: (string, Object) => mixed
+|}>
+
+export type BaseParamsListT = $ReadOnlyArray<$Keys<BaseParamsT>>
+export type BaseParamsMandatoryListT = $ReadOnlyArray<'appToken' | 'environment'>
+
 

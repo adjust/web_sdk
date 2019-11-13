@@ -78,7 +78,7 @@ describe('GDPR forget device functionality', () => {
 
     expectNotRequest()
 
-    Config.default.baseParams = appConfig
+    Config.default.setBaseParams(appConfig)
 
     GdprForgetDevice.check()
 

@@ -1,5 +1,10 @@
 // @flow
-import {type EventParamsT, type GlobalParamsT} from './types'
+import {
+  type InitParamsT,
+  type LogParamsT,
+  type EventParamsT,
+  type GlobalParamsT
+} from './types'
 import Config from './config'
 import Storage from './storage/storage'
 import Logger from './logger'
@@ -15,17 +20,7 @@ import event from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
 
-type LogT = {|
-  logLevel?: 'none' | 'error' | 'info' | 'verbose',
-  logOutput?: string
-|}
-type ParamsT = {|
-  appToken: string,
-  environment: 'production' | 'sandbox',
-  defaultTracker?: string,
-  attributionCallback?: (string, Object) => mixed
-|}
-type LogParamsT = {|...LogT, ...ParamsT|}
+type InitLogParamsT = $ReadOnly<{|...InitParamsT, ...LogParamsT|}>
 
 /**
  * In-memory parameters to be used if restarting
@@ -33,7 +28,7 @@ type LogParamsT = {|...LogT, ...ParamsT|}
  * @type {Object}
  * @private
  */
-let _params: ?ParamsT = null
+let _params: ?InitParamsT = null
 
 /**
  * Flag to mark if sdk is started
@@ -46,11 +41,11 @@ let _isStarted: boolean = false
 /**
  * Initiate the instance with parameters
  *
+ * @param {Object} params
  * @param {string} logLevel
  * @param {string} logOutput
- * @param {Object} params
  */
-function initSdk ({logLevel, logOutput, ...params}: LogParamsT = {}): void {
+function initSdk ({logLevel, logOutput, ...params}: InitLogParamsT = {}): void {
 
   Logger.setLogLevel(logLevel, logOutput)
 
@@ -303,13 +298,13 @@ function _continue (): Promise<void> {
  * @param {Function=} params.attributionCallback
  * @private
  */
-function _start (params: ParamsT): void {
+function _start (params: InitParamsT): void {
   if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
     return
   }
 
-  Config.baseParams = params
+  Config.setBaseParams(params)
 
   listenersRegister()
 

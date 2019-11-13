@@ -87,7 +87,7 @@ function _getErrorResponseForReject (xhr, code) {
  * @private
  */
 function _encodeParams (params, defaultParams) {
-  params = {...Config.baseParams, ...defaultParams, ...params}
+  params = {...Config.getBaseParams(), ...defaultParams, ...params}
 
   return entries(params)
     .filter(([, value]) => {
@@ -175,7 +175,7 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams = {}) {
     let xhr = new XMLHttpRequest()
 
     xhr.open(method, fullUrl, true)
-    xhr.setRequestHeader('Client-SDK', Config.version)
+    xhr.setRequestHeader('Client-SDK', `js${Config.version}`)
     if (method === 'POST') {
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
     }
