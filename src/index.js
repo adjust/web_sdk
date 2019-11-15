@@ -5,10 +5,11 @@ import app from './app'
 const appConfig = {
   appToken: 'src556ylophc',
   environment: 'production',
-  defaultTracker: 'bla',
   attributionCallback,
   logLevel: 'verbose', // 'none', 'error', 'info', 'verbose'
-  logOutput: '#log'
+  logOutput: '#log',
+  // defaultTracker: 'YOUR_DEFAULT_TRACKER',
+  // customUrl: 'YOUR_CUSTOM_URL'
 }
 
 const basicEventConfig = {

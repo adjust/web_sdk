@@ -8,6 +8,7 @@ This is the guide to the Javascript SDK of Adjust™ for web apps. You can read 
 * [Basic integration](#basic-integration)
    * [Recommendations](#recommendations)
    * [Basic setup](#basic-setup)
+   * [Traffic redirection](#traffic-redirection)
 * [Additional features](#additional-features)
    * [Event tracking](#event-tracking)
       * [Revenue tracking](#revenue-tracking)
@@ -49,6 +50,18 @@ Adjust.init({
   attributionCallback: function (newAttribution) {
     console.log(newAttribution) // define your attribution callback function
   }
+});
+```
+
+### <a id="traffic-redirection"></a>Traffic redirection
+
+It's possible to redirect all requests made by sdk to a custom endpoint defined in the configuration:
+
+
+```js
+Adjust.init({
+  // other stuff like appToken and environment
+  customUrl: 'https://some-domain.com'
 });
 ```
 

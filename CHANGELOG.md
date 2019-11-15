@@ -14,6 +14,8 @@ Here you can find changes for this project. When updating to a new version be su
 - disable/enable sdk
 - GDPR Forget Me ability
 - ability to define default tracker through configuration
+- sdk click when referrer available
+- traffic redirection
 
 ### Changed
 - using exposed single instance instead of initiating it manually with the `new` (`Adjust.init(YOUR_CONFIG)`)
