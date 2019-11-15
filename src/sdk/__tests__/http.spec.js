@@ -12,7 +12,11 @@ describe('perform api requests', () => {
 
   const appParams = {
     appToken: '123abc',
-    environment: 'sandbox'
+    environment: 'sandbox',
+    baseUrl: {
+      app: 'app-test',
+      gdpr: 'gdpr-test'
+    }
   }
 
   const defaultParamsString = [
@@ -38,7 +42,6 @@ describe('perform api requests', () => {
 
   beforeAll(() => {
     Config.default.setBaseParams(appParams)
-    Config.default.baseUrl = {app: 'app', gdpr: 'gdpr'}
 
     Utils.setGlobalProp(global.navigator, 'language')
     Utils.setGlobalProp(global.navigator, 'platform')
@@ -357,6 +360,29 @@ describe('perform api requests', () => {
         .then(() => {
 
           expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/sweet-url?${defaultParamsString}&some=thing`, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+
+          Config.default.setBaseParams(appParams)
+        })
+    })
+
+    it('overrides base and gdpr url with custom one', () => {
+
+      Config.default.setBaseParams({customUrl: 'custom-base', ...appParams})
+
+      expect.assertions(4)
+
+      expect(http.default({
+        url: '/some-url'
+      })).resolves.toEqual(response)
+
+      return Utils.flushPromises()
+        .then(() => {
+
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `custom-base/some-url?${defaultParamsString}`, true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
           expect(mockXHR.send).toHaveBeenCalledWith(undefined)
 

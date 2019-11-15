@@ -150,7 +150,8 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
 function _prepareUrlAndParams (url, method, params, defaultParams) {
   const encodedParams = _encodeParams(params, defaultParams)
   const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
-  const baseUrl = Config.baseUrl[base]
+  const customConfig = Config.getCustomConfig()
+  const baseUrl = customConfig.url || Config.baseUrl[base]
 
   return {
     fullUrl: baseUrl + url + (method === 'GET' ? `?${encodedParams}` : ''),

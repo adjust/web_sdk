@@ -52,25 +52,53 @@ describe('test global config', () => {
         expect(Config.default.isInitialised()).toBeTruthy()
         expect(baseParams).toEqual(appParams)
         expect(baseParams).not.toBe(appParams)
-        expect(Config.default.baseUrl).toEqual({})
+      })
+
+      it('overrides base and gdpr urls with custom one', () => {
+        Config.default.setBaseParams({
+          appToken: '123abc',
+          environment: 'sandbox',
+          customUrl: 'http://some-url.com'
+        })
+
+        expect(Config.default.isInitialised()).toBeTruthy()
+        expect(Config.default.getCustomConfig()).toEqual({url: 'http://some-url.com'})
+        expect(Config.default.getBaseParams()).toEqual({
+          appToken: '123abc',
+          environment: 'sandbox'
+        })
+      })
+
+      it('checks if only copies returned', () => {
+        Config.default.setBaseParams({
+          appToken: '123abc',
+          environment: 'sandbox',
+          customUrl: 'http://some-url.com'
+        })
+
+        const baseParams1 = Config.default.getBaseParams()
+        const baseParams2 = Config.default.getBaseParams()
+
+        expect(baseParams1).toEqual(baseParams2)
+        expect(baseParams1).not.toBe(baseParams2)
       })
 
       it('sets only allowed parameters', () => {
-
         Config.default.setBaseParams({
           appToken: '123abc',
           environment: 'sandbox',
           defaultTracker: 'tracker',
+          customUrl: 'http://some-url.com',
           something: 'else'
         })
 
         expect(Config.default.isInitialised()).toBeTruthy()
+        expect(Config.default.getCustomConfig()).toEqual({url: 'http://some-url.com'})
         expect(Config.default.getBaseParams()).toEqual({
           appToken: '123abc',
           environment: 'sandbox',
-          defaultTracker: 'tracker',
+          defaultTracker: 'tracker'
         })
-
       })
 
       it('destroys config', () => {

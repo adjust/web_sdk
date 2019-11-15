@@ -1,7 +1,7 @@
 // @flow
 import {
-  type InitParamsT,
-  type LogParamsT,
+  type InitConfigT,
+  type LogConfigT,
   type EventParamsT,
   type GlobalParamsT
 } from './types'
@@ -20,7 +20,7 @@ import event from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
 
-type InitLogParamsT = $ReadOnly<{|...InitParamsT, ...LogParamsT|}>
+type InitLogConfigT = $ReadOnly<{|...InitConfigT, ...LogConfigT|}>
 
 /**
  * In-memory parameters to be used if restarting
@@ -28,7 +28,7 @@ type InitLogParamsT = $ReadOnly<{|...InitParamsT, ...LogParamsT|}>
  * @type {Object}
  * @private
  */
-let _params: ?InitParamsT = null
+let _params: ?InitConfigT = null
 
 /**
  * Flag to mark if sdk is started
@@ -45,7 +45,7 @@ let _isStarted: boolean = false
  * @param {string} logLevel
  * @param {string} logOutput
  */
-function initSdk ({logLevel, logOutput, ...params}: InitLogParamsT = {}): void {
+function initSdk ({logLevel, logOutput, ...params}: InitLogConfigT = {}): void {
 
   Logger.setLogLevel(logLevel, logOutput)
 
@@ -298,7 +298,7 @@ function _continue (): Promise<void> {
  * @param {Function=} params.attributionCallback
  * @private
  */
-function _start (params: InitParamsT): void {
+function _start (params: InitConfigT): void {
   if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
     return
