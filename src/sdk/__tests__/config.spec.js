@@ -135,4 +135,34 @@ describe('test global config', () => {
     })
   })
 
+  describe('global constants not available', () => {
+    const oldNamespace = global.__ADJUST__NAMESPACE
+    const oldSdkVersion = global.__ADJUST__SDK_VERSION
+
+    global.__ADJUST__NAMESPACE = undefined
+    global.__ADJUST__SDK_VERSION = undefined
+
+    afterAll(() => {
+      global.__ADJUST__NAMESPACE = oldNamespace
+      global.__ADJUST__SDK_VERSION = oldSdkVersion
+    })
+
+    jest.isolateModules(() => {
+      const Config = require('../config')
+
+      it('falls back to default values', () => {
+
+        const appParams = {
+          appToken: '123abc',
+          environment: 'sandbox'
+        }
+
+        Config.default.setBaseParams(appParams)
+
+        expect(Config.default.namespace).toEqual('adjust-sdk')
+        expect(Config.default.version).toEqual('0.0.0')
+      })
+    })
+  })
+
 })
