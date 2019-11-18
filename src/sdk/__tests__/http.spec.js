@@ -41,7 +41,7 @@ describe('perform api requests', () => {
   let defaultParamsSpy
 
   beforeAll(() => {
-    Config.default.setBaseParams(appParams)
+    Config.default.set(appParams)
 
     Utils.setGlobalProp(global.navigator, 'language')
     Utils.setGlobalProp(global.navigator, 'platform')
@@ -286,7 +286,7 @@ describe('perform api requests', () => {
 
     it('performs GET request with defaultTracker parameter', () => {
 
-      Config.default.setBaseParams({defaultTracker: 'blatruc', ...appParams})
+      Config.default.set({defaultTracker: 'blatruc', ...appParams})
 
       const defaultParamsStringWithDefaultTracker = [
         'app_token=123abc',
@@ -321,7 +321,7 @@ describe('perform api requests', () => {
 
           mockXHR.onreadystatechange()
 
-          Config.default.setBaseParams(appParams)
+          Config.default.set(appParams)
         })
     })
 
@@ -345,7 +345,7 @@ describe('perform api requests', () => {
 
     it('tries to inject unknown parameter through configuration', () => {
 
-      Config.default.setBaseParams({something: 'strange', ...appParams})
+      Config.default.set({something: 'strange', ...appParams})
 
       expect.assertions(4)
 
@@ -365,13 +365,13 @@ describe('perform api requests', () => {
 
           mockXHR.onreadystatechange()
 
-          Config.default.setBaseParams(appParams)
+          Config.default.set(appParams)
         })
     })
 
     it('overrides base and gdpr url with custom one', () => {
 
-      Config.default.setBaseParams({customUrl: 'custom-base', ...appParams})
+      Config.default.set({customUrl: 'custom-base', ...appParams})
 
       expect.assertions(4)
 
@@ -388,7 +388,7 @@ describe('perform api requests', () => {
 
           mockXHR.onreadystatechange()
 
-          Config.default.setBaseParams(appParams)
+          Config.default.set(appParams)
         })
     })
 

@@ -5,9 +5,10 @@ declare var __ADJUST__SDK_VERSION: string
 import {
   type BaseParamsT,
   type CustomConfigT,
-  type InitConfigT,
+  type InitOptionsT,
   type BaseParamsListT,
   type BaseParamsMandatoryListT,
+  type CustomConfigListT
 } from './types'
 import {MINUTE, SECOND, DAY} from './constants'
 import {buildList, reducer} from './utilities'
@@ -27,6 +28,7 @@ let _baseParams: BaseParamsT = {}
 /**
  * Custom config set by client
  * - url override
+ * - event deduplication list limit
  *
  * @type {Object}
  * @private
@@ -45,14 +47,25 @@ const _mandatory: BaseParamsMandatoryListT = [
 ]
 
 /**
- * Allowed fields to set for sdk initialization
+ * Allowed params to be sent with each request
  *
  * @type {string[]}
  * @private
  */
-const _allowed: BaseParamsListT = [
+const _allowedParams: BaseParamsListT = [
   ..._mandatory,
   'defaultTracker'
+]
+
+/**
+ * Allowed configuration overrides
+ *
+ * @type {string[]}
+ * @private
+ */
+const _allowedConfig: CustomConfigListT = [
+  'customUrl',
+  'eventDeduplicationListLimit'
 ]
 
 /**
@@ -73,6 +86,7 @@ const _baseConfig = {
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
   requestValidityWindow: 28 * DAY,
+  eventDeduplicationListLimit: 10,
   baseUrl: process.env.NODE_ENV === 'test'
     ? {app: 'app', gdpr: 'gdpr'}
     : {app: 'https://app.adjust.com', gdpr: 'https://gdpr.adjust.com'}
@@ -97,19 +111,25 @@ function getBaseParams (): BaseParamsT {
 }
 
 /**
- * Set base params for the sdk to run and custom ones when provided
+ * Set base params and custom config for the sdk to run
  *
- * @param {Object} params
+ * @param {Object} options
  */
-function setBaseParams (params: InitConfigT): void {
-  if (hasMissing(params)) {
+function set (options: InitOptionsT): void {
+  if (hasMissing(options)) {
     return
   }
 
-  _customConfig = {url: params.customUrl}
-  _baseParams = _allowed
-    .filter(key => !!params[key])
-    .map(key => [key, params[key]])
+  const filteredParams = [..._allowedParams, ..._allowedConfig]
+    .filter(key => !!options[key])
+    .map(key => [key, options[key]])
+
+  _baseParams = filteredParams
+    .filter(([key]) => _allowedParams.indexOf(key) !== -1)
+    .reduce(reducer, {})
+
+  _customConfig = filteredParams
+    .filter(([key]) => _allowedConfig.indexOf(key) !== -1)
     .reduce(reducer, {})
 }
 
@@ -150,8 +170,8 @@ function destroy (): void {
 
 const Config = {
   ..._baseConfig,
+  set,
   getBaseParams,
-  setBaseParams,
   getCustomConfig,
   isInitialised,
   hasMissing,

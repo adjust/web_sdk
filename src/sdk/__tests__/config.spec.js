@@ -24,53 +24,61 @@ describe('test global config', () => {
 
         jest.spyOn(Logger.default, 'error')
 
-        Config.default.setBaseParams({})
+        Config.default.set({})
 
         expect(Logger.default.error).toHaveBeenCalledWith('You must define appToken and environment')
         expect(Config.default.isInitialised()).toBeFalsy()
         expect(Config.default.getBaseParams()).toEqual({})
+        expect(Config.default.getCustomConfig()).toEqual({})
 
-        Config.default.setBaseParams({appToken: 'bla'})
+        Config.default.set({appToken: 'bla'})
 
         expect(Logger.default.error).toHaveBeenCalledWith('You must define environment')
         expect(Config.default.isInitialised()).toBeFalsy()
         expect(Config.default.getBaseParams()).toEqual({})
+        expect(Config.default.getCustomConfig()).toEqual({})
 
       })
 
       it('returns true for correctly initialised state', () => {
 
-        const appParams = {
+        const appOptions = {
           appToken: '123abc',
           environment: 'sandbox'
         }
 
-        Config.default.setBaseParams(appParams)
+        Config.default.set(appOptions)
 
         const baseParams = Config.default.getBaseParams()
+        const customConfig = Config.default.getCustomConfig()
 
         expect(Config.default.isInitialised()).toBeTruthy()
-        expect(baseParams).toEqual(appParams)
-        expect(baseParams).not.toBe(appParams)
+        expect(baseParams).toEqual(appOptions)
+        expect(baseParams).not.toBe(appOptions)
+        expect(customConfig).toEqual({})
       })
 
-      it('overrides base and gdpr urls with custom one', () => {
-        Config.default.setBaseParams({
+      it('overrides configuration with some custom settings', () => {
+        Config.default.set({
           appToken: '123abc',
           environment: 'sandbox',
-          customUrl: 'http://some-url.com'
+          customUrl: 'http://some-url.com',
+          eventDeduplicationListLimit: 10
         })
 
         expect(Config.default.isInitialised()).toBeTruthy()
-        expect(Config.default.getCustomConfig()).toEqual({url: 'http://some-url.com'})
         expect(Config.default.getBaseParams()).toEqual({
           appToken: '123abc',
           environment: 'sandbox'
         })
+        expect(Config.default.getCustomConfig()).toEqual({
+          customUrl: 'http://some-url.com',
+          eventDeduplicationListLimit: 10
+        })
       })
 
       it('checks if only copies returned', () => {
-        Config.default.setBaseParams({
+        Config.default.set({
           appToken: '123abc',
           environment: 'sandbox',
           customUrl: 'http://some-url.com'
@@ -78,45 +86,61 @@ describe('test global config', () => {
 
         const baseParams1 = Config.default.getBaseParams()
         const baseParams2 = Config.default.getBaseParams()
+        const customConfig1 = Config.default.getCustomConfig()
+        const customConfig2 = Config.default.getCustomConfig()
 
         expect(baseParams1).toEqual(baseParams2)
         expect(baseParams1).not.toBe(baseParams2)
+        expect(customConfig1).toEqual(customConfig2)
+        expect(customConfig1).not.toBe(customConfig2)
       })
 
       it('sets only allowed parameters', () => {
-        Config.default.setBaseParams({
+        Config.default.set({
           appToken: '123abc',
           environment: 'sandbox',
           defaultTracker: 'tracker',
           customUrl: 'http://some-url.com',
+          eventDeduplicationListLimit: 11,
           something: 'else'
         })
 
         expect(Config.default.isInitialised()).toBeTruthy()
-        expect(Config.default.getCustomConfig()).toEqual({url: 'http://some-url.com'})
         expect(Config.default.getBaseParams()).toEqual({
           appToken: '123abc',
           environment: 'sandbox',
           defaultTracker: 'tracker'
         })
+        expect(Config.default.getCustomConfig()).toEqual({
+          customUrl: 'http://some-url.com',
+          eventDeduplicationListLimit: 11
+        })
       })
 
       it('destroys config', () => {
 
-        const appParams = {
+        const appOptions = {
           appToken: '123abc',
-          environment: 'sandbox'
+          environment: 'sandbox',
+          customUrl: 'url'
         }
 
-        Config.default.setBaseParams(appParams)
+        Config.default.set(appOptions)
 
         expect(Config.default.isInitialised()).toBeTruthy()
-        expect(Config.default.getBaseParams()).toEqual(appParams)
+        expect(Config.default.getBaseParams()).toEqual({
+          appToken: '123abc',
+          environment: 'sandbox',
+        })
+        expect(Config.default.getCustomConfig()).toEqual({
+          customUrl: 'url'
+        })
 
         Config.default.destroy()
 
         expect(Config.default.isInitialised()).toBeFalsy()
         expect(Config.default.getBaseParams()).toEqual({})
+        expect(Config.default.getCustomConfig()).toEqual({})
       })
     })
   })
@@ -152,12 +176,12 @@ describe('test global config', () => {
 
       it('falls back to default values', () => {
 
-        const appParams = {
+        const appOptions = {
           appToken: '123abc',
           environment: 'sandbox'
         }
 
-        Config.default.setBaseParams(appParams)
+        Config.default.set(appOptions)
 
         expect(Config.default.namespace).toEqual('adjust-sdk')
         expect(Config.default.version).toEqual('0.0.0')

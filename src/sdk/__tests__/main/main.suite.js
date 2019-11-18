@@ -77,6 +77,7 @@ function expectNotStart (restart) {
 
   if (!restart) {
     expect(Config.default.getBaseParams()).toEqual({})
+    expect(Config.default.getCustomConfig()).toEqual({})
   }
 
   expect(Listeners.register).not.toHaveBeenCalled()
@@ -238,7 +239,7 @@ function _expectPause () {
 
 function expectShutDown (onlyNumOfAssertions) {
   if (onlyNumOfAssertions) {
-    return {assertions: 8}
+    return {assertions: 9}
   }
 
   _expectPause()
@@ -247,6 +248,7 @@ function expectShutDown (onlyNumOfAssertions) {
   expect(Listeners.destroy).toHaveBeenCalled()
   expect(Storage.default.destroy).toHaveBeenCalled()
   expect(Config.default.getBaseParams()).toEqual({})
+  expect(Config.default.getCustomConfig()).toEqual({})
 }
 
 function expectPartialShutDown () {
@@ -286,7 +288,7 @@ function _expectNotDestroy () {
 }
 
 function expectClearAndDestroy (onlyNumOfAssertions) {
-  const assertions = 13
+  const assertions = 14
 
   if (onlyNumOfAssertions) {
     return {assertions}
@@ -371,10 +373,11 @@ function expectAllUp () {
 
 function expectAllDown (onlyNumOfAssertions) {
   if (onlyNumOfAssertions) {
-    return {assertions: 6}
+    return {assertions: 7}
   }
 
   expect(Config.default.getBaseParams()).toEqual({})
+  expect(Config.default.getCustomConfig()).toEqual({})
 
   expectNotGdprForgetMeCallback()
   expectNotAttributionCallback()

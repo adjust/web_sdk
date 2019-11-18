@@ -11,7 +11,7 @@ jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
-const appConfig = {
+const appOptions = {
   appToken: '123abc',
   environment: 'sandbox'
 }
@@ -93,7 +93,7 @@ describe('event tracking functionality', () => {
   describe('after initialisation', () => {
 
     beforeAll(() => {
-      Config.default.setBaseParams(appConfig)
+      Config.default.set(appOptions)
     })
 
     it('logs an error and return when event token is not provided', () => {

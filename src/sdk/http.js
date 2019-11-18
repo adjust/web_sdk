@@ -151,7 +151,7 @@ function _prepareUrlAndParams (url, method, params, defaultParams) {
   const encodedParams = _encodeParams(params, defaultParams)
   const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
   const customConfig = Config.getCustomConfig()
-  const baseUrl = customConfig.url || Config.baseUrl[base]
+  const baseUrl = customConfig.customUrl || Config.baseUrl[base]
 
   return {
     fullUrl: baseUrl + url + (method === 'GET' ? `?${encodedParams}` : ''),

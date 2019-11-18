@@ -1,7 +1,7 @@
 // @flow
 import {
-  type InitConfigT,
-  type LogConfigT,
+  type InitOptionsT,
+  type LogOptionsT,
   type EventParamsT,
   type GlobalParamsT
 } from './types'
@@ -20,7 +20,7 @@ import event from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
 
-type InitLogConfigT = $ReadOnly<{|...InitConfigT, ...LogConfigT|}>
+type IntiConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
 
 /**
  * In-memory parameters to be used if restarting
@@ -28,7 +28,7 @@ type InitLogConfigT = $ReadOnly<{|...InitConfigT, ...LogConfigT|}>
  * @type {Object}
  * @private
  */
-let _params: ?InitConfigT = null
+let _options: ?InitOptionsT = null
 
 /**
  * Flag to mark if sdk is started
@@ -41,11 +41,11 @@ let _isStarted: boolean = false
 /**
  * Initiate the instance with parameters
  *
- * @param {Object} params
+ * @param {Object} options
  * @param {string} logLevel
  * @param {string} logOutput
  */
-function initSdk ({logLevel, logOutput, ...params}: InitLogConfigT = {}): void {
+function initSdk ({logLevel, logOutput, ...options}: IntiConfigT = {}): void {
 
   Logger.setLogLevel(logLevel, logOutput)
 
@@ -61,13 +61,13 @@ function initSdk ({logLevel, logOutput, ...params}: InitLogConfigT = {}): void {
     return
   }
 
-  if (Config.hasMissing(params)) {
+  if (Config.hasMissing(options)) {
     return
   }
 
-  _params = {...params}
+  _options = {...options}
 
-  _start(params)
+  _start(options)
 }
 
 /**
@@ -160,8 +160,8 @@ function stop (): void {
 function restart (): void {
   const done = enable()
 
-  if (done && _params) {
-    _start(_params)
+  if (done && _options) {
+    _start(_options)
   }
 }
 
@@ -243,7 +243,7 @@ function _destroy (): void {
   _shutdown()
   gdprForgetDestroy()
 
-  _params = null
+  _options = null
 
   Logger.log('Adjust SDK instance has been destroyed')
 }
@@ -292,19 +292,22 @@ function _continue (): Promise<void> {
  * - run the package queue if not empty
  * - start watching the session
  *
- * @param {Object} params
- * @param {string} params.appToken
- * @param {string} params.environment
- * @param {Function=} params.attributionCallback
+ * @param {Object} options
+ * @param {string} options.appToken
+ * @param {string} options.environment
+ * @param {string=} options.defaultTracker
+ * @param {string=} options.customUrl
+ * @param {number=} options.eventDeduplicationListLimit
+ * @param {Function=} options.attributionCallback
  * @private
  */
-function _start (params: InitConfigT): void {
+function _start (options: InitOptionsT): void {
   if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
     return
   }
 
-  Config.setBaseParams(params)
+  Config.set(options)
 
   listenersRegister()
 
@@ -312,8 +315,8 @@ function _start (params: InitConfigT): void {
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
   subscribe('attribution:check', (e, result) => attributionCheck(result))
 
-  if (typeof params.attributionCallback === 'function') {
-    subscribe('attribution:change', params.attributionCallback)
+  if (typeof options.attributionCallback === 'function') {
+    subscribe('attribution:change', options.attributionCallback)
   }
 
   start()

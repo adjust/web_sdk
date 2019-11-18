@@ -11,7 +11,7 @@ jest.mock('../http')
 jest.mock('../logger')
 jest.useFakeTimers()
 
-const appConfig = {
+const appOptions = {
   appToken: '123abc',
   environment: 'sandbox'
 }
@@ -78,7 +78,7 @@ describe('GDPR forget device functionality', () => {
 
     expectNotRequest()
 
-    Config.default.setBaseParams(appConfig)
+    Config.default.set(appOptions)
 
     GdprForgetDevice.check()
 

@@ -60,23 +60,25 @@ export type BaseParamsT = $ReadOnly<$Shape<{
 }>>
 
 export type CustomConfigT = $ReadOnly<$Shape<{
-  url: string
+  customUrl: string,
+  eventDeduplicationListLimit: number
 }>>
 
-export type LogConfigT = $ReadOnly<$Shape<{|
+export type LogOptionsT = $ReadOnly<$Shape<{|
   logLevel: 'none' | 'error' | 'info' | 'verbose',
   logOutput: string
 |}>>
 
-export type InitConfigT = $ReadOnly<$Shape<{|
+export type InitOptionsT = $ReadOnly<$Shape<{|
   appToken: $PropertyType<BaseParamsT, 'appToken'>,
   environment: $PropertyType<BaseParamsT, 'environment'>,
   defaultTracker: $PropertyType<BaseParamsT, 'defaultTracker'>,
-  customUrl: $PropertyType<CustomConfigT, 'url'>,
+  customUrl: $PropertyType<CustomConfigT, 'customUrl'>,
+  eventDeduplicationListLimit: $PropertyType<CustomConfigT, 'eventDeduplicationListLimit'>,
   attributionCallback: (string, Object) => mixed
 |}>>
 
 export type BaseParamsListT = $ReadOnlyArray<$Keys<BaseParamsT>>
 export type BaseParamsMandatoryListT = $ReadOnlyArray<'appToken' | 'environment'>
-
+export type CustomConfigListT = $ReadOnlyArray<$Keys<CustomConfigT>>
 

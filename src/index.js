@@ -2,7 +2,7 @@ import './assets/scss/index.scss'
 import Adjust from './sdk/main'
 import app from './app'
 
-const appConfig = {
+const appOptions = {
   appToken: 'src556ylophc',
   environment: 'production',
   attributionCallback,
@@ -10,6 +10,7 @@ const appConfig = {
   logOutput: '#log',
   // defaultTracker: 'YOUR_DEFAULT_TRACKER',
   // customUrl: 'YOUR_CUSTOM_URL'
+  // eventDeduplicationListLimit: 'YOUR_EVENT_DEDUPLICATION_LIST_LIMIT'
 }
 
 const basicEventConfig = {
@@ -50,7 +51,7 @@ function attributionCallback (e, attribution) {
 }
 
 // INIT: Initiate adjust sdk with specified configuration
-Adjust.initSdk(appConfig)
+Adjust.initSdk(appOptions)
 
 // NOTE: this is custom demo app implementation
 app.start({
