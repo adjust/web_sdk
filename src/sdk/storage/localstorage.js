@@ -110,6 +110,7 @@ function _initRequest ({storeName, id, item}, action) {
     const items = QuickStorage.stores[storeName]
     const keys = _getKeys(storeName)
     const ids = id instanceof Array ? id.slice() : [id]
+    const lastId = (items[items.length - 1] || {})[options.keyPath] || 0
     const target = id
       ? keys
         .map((key, index) => [key, ids[index]])
@@ -119,7 +120,7 @@ function _initRequest ({storeName, id, item}, action) {
 
     const index = target ? findIndex(items, keys, target) : null
 
-    return action(resolve, reject, {keys, items, index, options})
+    return action(resolve, reject, {keys, items, index, options, lastId})
   })
 }
 
@@ -156,14 +157,17 @@ function _sort (items, keys, exact) {
  *
  * @param {Object} options
  * @param {*} target
+ * @param {number} next
  * @returns {*}
  * @private
  */
-function _prepareTarget (options, target) {
+function _prepareTarget (options, target, next) {
   const composite = _getCompositeKeys(options)
   return composite
     ? {[options.keyPath]: composite.map(key => target[key]).join(''), ...target}
-    : target
+    : options.autoIncrement && next
+      ? {[options.keyPath]: next, ...target}
+      : {...target}
 }
 
 /**
@@ -256,11 +260,11 @@ function filterBy (storeName, by) {
  * @returns {Promise}
  */
 function addItem (storeName, item) {
-  return _initRequest({storeName, item}, (resolve, reject, {items, index, options}) => {
+  return _initRequest({storeName, item}, (resolve, reject, {items, index, options, lastId}) => {
     if (index !== -1) {
       reject({name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing item into "${storeName}" store`})
     } else {
-      items.push(_prepareTarget(options, item))
+      items.push(_prepareTarget(options, item, (lastId + 1)))
       QuickStorage.stores[storeName] = items
       resolve(_prepareResult(options, item))
     }
@@ -276,13 +280,14 @@ function addItem (storeName, item) {
  * @returns {Promise}
  */
 function addBulk (storeName, target, overwrite) {
-  return _initRequest({storeName}, (resolve, reject, {keys, items, options}) => {
+  return _initRequest({storeName}, (resolve, reject, {keys, items, options, lastId}) => {
     if (!target || target && !target.length) {
       return reject({name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into "${storeName}" store`})
     }
 
+    let id = lastId
     const newItems = target
-      .map(item => _prepareTarget(options, item))
+      .map(item => _prepareTarget(options, item, ++id))
 
     const overlapping = newItems
       .filter(item => findIndex(items, keys, item) !== -1)
@@ -307,8 +312,9 @@ function addBulk (storeName, target, overwrite) {
  * @returns {Promise}
  */
 function updateItem (storeName, item) {
-  return _initRequest({storeName, item}, (resolve, _, {items, index, options}) => {
-    const target = _prepareTarget(options, item)
+  return _initRequest({storeName, item}, (resolve, _, {items, index, options, lastId}) => {
+    const nextId = index === -1 ? (lastId + 1) : null
+    const target = _prepareTarget(options, item, nextId)
 
     if (index === -1) {
       items.push(target)
@@ -395,12 +401,50 @@ function deleteBulk (storeName, value, condition) {
       const end = !condition || condition === 'upperBound' ? (index + 1) : sorted.length
       const deleted = sorted
         .splice(start, end)
-        .map(item => keys.map(k => item[k]))
+        .map(item => keys.length === 1
+          ? item[key]
+          : keys.map(k => item[k]))
 
       QuickStorage.stores[storeName] = sorted
 
       return deleted
     })
+}
+
+/**
+ * Trim the store from the left by specified length
+ *
+ * @param {string} storeName
+ * @param {number} length
+ * @returns {Promise}
+ */
+function trimItems (storeName, length) {
+  const open = _open()
+  const options = SchemeMap.right[convertStoreName({storeName, dir: 'right'})]
+
+  if (open.status === 'error') {
+    return Promise.reject(open.error)
+  }
+
+  return getAll(storeName)
+    .then(records => records.length ? records[length - 1] : null)
+    .then(record => record ? deleteBulk(storeName, record[options.keyPath], 'upperBound') : [])
+}
+
+/**
+ * Count the number of records in the store
+ *
+ * @param {string} storeName
+ * @returns {Promise}
+ */
+function count (storeName) {
+  const open = _open()
+
+  if (open.status === 'error') {
+    return Promise.reject(open.error)
+  }
+
+  return Promise.resolve(QuickStorage.stores[storeName].length)
 }
 
 /**
@@ -438,6 +482,8 @@ export {
   updateItem,
   deleteItem,
   deleteBulk,
+  trimItems,
+  count,
   clear,
   destroy
 }

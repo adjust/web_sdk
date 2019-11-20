@@ -66,6 +66,11 @@ describe('IndexedDB usage', () => {
     jest.isolateModules(() => {
       const Storage = require('../../storage/storage').default
 
+      afterEach(() => {
+        fakeIDB._databases.clear()
+        Storage.destroy()
+      })
+
       it('sets storage type to indexedDB', () => {
         expect(Storage.type).toBe('indexedDB')
       })

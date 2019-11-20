@@ -20,6 +20,8 @@ const _methods = {
   updateItem: _updateItem,
   deleteItem: _deleteItem,
   deleteBulk: _deleteBulk,
+  trimItems: _trimItems,
+  count: _count,
   clear: _clear
 }
 
@@ -153,6 +155,31 @@ function _deleteBulk (storage, storeName, target, condition) {
 }
 
 /**
+ * Extends storage's trimItems method by passing encoded storage name
+ *
+ * @param {Object} storage
+ * @param {string} storeName
+ * @param {number} length
+ * @returns {Promise}
+ * @private
+ */
+function _trimItems (storage, storeName, length) {
+  return storage.trimItems(storeName, length)
+}
+
+/**
+ * Extends storage's count method by passing encoded storage name
+ *
+ * @param {Object} storage
+ * @param {string} storeName
+ * @returns {Promise}
+ * @private
+ */
+function _count (storage, storeName) {
+  return storage.count(storeName)
+}
+
+/**
  * Extends storage's clear method by passing encoded storage name
  *
  * @param {Object} storage
@@ -186,18 +213,20 @@ function _augment (storage) {
  * Prefer indexedDB over localStorage
  *
  * @returns {{
- * isSupported?,
- * getAll?,
- * getFirst?,
- * getItem?,
- * filterBy?,
- * addItem?,
- * addBulk?,
- * updateItem?,
- * deleteItem?,
- * deleteBulk?,
- * clear?,
- * destroy?
+ * isSupported,
+ * getAll,
+ * getFirst,
+ * getItem,
+ * filterBy,
+ * addItem,
+ * addBulk,
+ * updateItem,
+ * deleteItem,
+ * deleteBulk,
+ * trimItems,
+ * count,
+ * clear,
+ * destroy
  * }|null}
  */
 function init () {

@@ -23,8 +23,7 @@ const _queueScheme = {
       }
     },
     timestamp: {
-      key: 't',
-      primary: true
+      key: 't'
     },
     params: {
       key: 'p',
@@ -52,7 +51,6 @@ const _activityStateScheme = {
   fields: {
     uuid: {
       key: 'u',
-      primary: true,
       values: {
         unknown: '-'
       }
@@ -64,7 +62,7 @@ const _activityStateScheme = {
     lastActive: 'la',
     lastInterval: 'li',
     installed: {
-      key: 'i',
+      key: 'in',
       values: {
         false: 0,
         true: 1
@@ -101,7 +99,6 @@ const _globalParamsScheme = {
   fields: {
     keyType: {
       key: 'kt',
-      primary: true,
       composite: ['key', 'type']
     },
     key: 'k',
@@ -113,6 +110,16 @@ const _globalParamsScheme = {
         partner: 2
       }
     }
+  }
+}
+
+const _eventDeduplicationName = 'ed'
+const _eventDeduplicationScheme = {
+  keyPath: 'internalId',
+  autoIncrement: true,
+  fields: {
+    internalId: 'ii',
+    id: 'i'
   }
 }
 
@@ -149,6 +156,10 @@ export default {
   globalParams: {
     name: _globalParamsName,
     scheme: _globalParamsScheme
+  },
+  eventDeduplication: {
+    name: _eventDeduplicationName,
+    scheme: _eventDeduplicationScheme
   },
   disabled: {
     name: _disabledName,

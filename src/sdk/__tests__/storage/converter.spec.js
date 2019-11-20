@@ -315,6 +315,20 @@ describe('test Converter utility', () => {
 
       })
 
+      it('encodes and decodes eventDeduplication record', () => {
+        expect(Converter.convertRecord({
+          storeName: 'eventDeduplication',
+          dir: 'left',
+          record: {internalId: 1, id: 'id1'}
+        })).toEqual({ii: 1, i: 'id1'})
+
+        expect(Converter.convertRecord({
+          storeName: 'eventDeduplication',
+          dir: 'right',
+          record: {ii: 2, i: 'id2'}
+        })).toEqual({internalId: 2, id: 'id2'})
+      })
+
       it('encodes and decodes disabled record', () => {
         expect(Converter.convertRecord({
           storeName: 'disabled',

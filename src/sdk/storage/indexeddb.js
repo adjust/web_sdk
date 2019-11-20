@@ -443,6 +443,40 @@ function deleteBulk (storeName, value, condition) {
 }
 
 /**
+ * Trim the store from the left by specified length
+ *
+ * @param {string} storeName
+ * @param {number} length
+ * @returns {Promise}
+ */
+function trimItems (storeName, length) {
+  const options = SchemeMap.right[convertStoreName({storeName, dir: 'right'})]
+
+  return getAll(storeName)
+    .then(records => records.length ? records[length - 1] : null)
+    .then(record => record ? deleteBulk(storeName, record[options.keyPath], 'upperBound') : [])
+}
+
+/**
+ * Count the number of records in the store
+ *
+ * @param {string} storeName
+ * @returns {Promise}
+ */
+function count (storeName) {
+  return _open()
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        const {store} = _getTranStore({storeName, mode: 'readonly'}, reject)
+        const request = store.count()
+
+        request.onsuccess = () => resolve(request.result)
+        request.onerror = error => _overrideError(reject, error)
+      })
+    })
+}
+
+/**
  * Clear all records from a particular store
  *
  * @param {string} storeName
@@ -473,6 +507,8 @@ export {
   updateItem,
   deleteItem,
   deleteBulk,
+  trimItems,
+  count,
   clear,
   destroy
 }

@@ -1,17 +1,6 @@
 export default function Suite (Storage) {
 
   return () => {
-    afterEach(() => {
-      Storage.clear('queue')
-      Storage.clear('activityState')
-      Storage.clear('globalParams')
-    })
-
-    afterAll(() => {
-      Storage.destroy()
-      localStorage.clear()
-    })
-
     it('returns rows from particular store', () => {
 
       // prepare some rows manually
@@ -652,6 +641,115 @@ export default function Suite (Storage) {
         .then(result => {
           expect(result).toEqual([{uuid: 'abcd4'}])
         })
+    })
+
+    it('auto-increments ids when adding to the eventDeduplication store', () => {
+
+      expect.assertions(1)
+
+      return Storage.addItem('eventDeduplication', {id: 'd'})
+        .then(() => Storage.addBulk('eventDeduplication', [
+          {id: 'c'},
+          {id: 'x'},
+          {id: 'b'},
+          {id: 'a'}
+        ]))
+        .then(() => Storage.updateItem('eventDeduplication', {internalId: 3, id: 'xxx'}))
+        .then(() => Storage.updateItem('eventDeduplication', {id: 'eee'}))
+        .then(() => Storage.deleteItem('eventDeduplication', 2))
+        .then(() => Storage.addItem('eventDeduplication', {id: 'ccc'}))
+        .then(() => Storage.getAll('eventDeduplication'))
+        .then(result => {
+          expect(result).toEqual([
+            {internalId: 1, id: 'd'},
+            {internalId: 3, id: 'xxx'},
+            {internalId: 4, id: 'b'},
+            {internalId: 5, id: 'a'},
+            {internalId: 6, id: 'eee'},
+            {internalId: 7, id: 'ccc'}
+          ])
+        })
+    })
+
+    it('deletes items in bulk from eventDeduplication store', () => {
+      const ids = [
+        {id: 'ddd'},
+        {id: 'ccc'},
+        {id: 'xxx'},
+        {id: 'bbb'},
+        {id: 'aaa'}
+      ]
+
+      expect.assertions(2)
+
+      return Storage.addBulk('eventDeduplication', ids)
+        .then(() => Storage.getAll('eventDeduplication'))
+        .then(() => Storage.deleteBulk('eventDeduplication', 3, 'lowerBound'))
+        .then(result => {
+          expect(result).toEqual([3, 4, 5])
+
+          return Storage.getAll('eventDeduplication')
+        })
+        .then(result => {
+          expect(result).toEqual([
+            {internalId: 1, id: 'ddd'},
+            {internalId: 2, id: 'ccc'}
+          ])
+        })
+    })
+
+    it('trim from the left', () => {
+      const ids = [
+        {id: 'a'},
+        {id: 'd'},
+        {id: 'b'},
+        {id: 'e'},
+        {id: 'c'}
+      ]
+
+      expect.assertions(3)
+
+      return Storage.trimItems('eventDeduplication', 5)
+        .then(result => {
+          expect(result).toEqual([])
+
+          return Storage.addBulk('eventDeduplication', ids)
+        })
+        .then(() => Storage.trimItems('eventDeduplication', 3))
+        .then(result => {
+          expect(result).toEqual([1, 2, 3])
+
+          return Storage.getAll('eventDeduplication')
+        })
+        .then(result => {
+          expect(result).toEqual([
+            {internalId: 4, id: 'e'},
+            {internalId: 5, id: 'c'}
+          ])
+        })
+
+    })
+
+    it('returns number of items in the store', () => {
+      const ids = [
+        {id: 'id1'},
+        {id: 'id2'},
+        {id: 'id3'}
+      ]
+
+      expect.assertions(2)
+
+      return Storage.count('eventDeduplication')
+        .then(count => {
+          expect(count).toEqual(0)
+
+          return Storage.addBulk('eventDeduplication', ids)
+        })
+        .then(() => Storage.count('eventDeduplication'))
+        .then(count => {
+          expect(count).toEqual(3)
+        })
+
     })
 
     it('clears items from the queue store', () => {

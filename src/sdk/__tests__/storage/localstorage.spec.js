@@ -87,6 +87,11 @@ describe('LocalStorage usage', () => {
   })
 
   describe('run common tests for LocalStorage implementation', () => {
+    afterEach(() => {
+      localStorage.clear()
+      Storage.default.destroy()
+    })
+
     it('sets storage type to localStorage', () => {
       expect(Storage.default.type).toBe('localStorage')
     })

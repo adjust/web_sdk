@@ -86,7 +86,6 @@ const _baseConfig = {
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
   requestValidityWindow: 28 * DAY,
-  eventDeduplicationListLimit: 10,
   baseUrl: process.env.NODE_ENV === 'test'
     ? {app: 'app', gdpr: 'gdpr'}
     : {app: 'https://app.adjust.com', gdpr: 'https://gdpr.adjust.com'}
