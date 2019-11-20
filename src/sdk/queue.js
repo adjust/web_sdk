@@ -256,7 +256,7 @@ function setOffline (state) {
  */
 function _cleanUp () {
   const upperBound = Date.now() - Config.requestValidityWindow
-  return Storage.deleteBulk(_storeName, {upperBound})
+  return Storage.deleteBulk(_storeName, upperBound, 'upperBound')
 }
 
 /**

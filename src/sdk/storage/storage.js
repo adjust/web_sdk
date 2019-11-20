@@ -1,7 +1,7 @@
 import * as IndexedDB from './indexeddb'
 import * as LocalStorage from './localstorage'
 import Logger from '../logger'
-import {isObject, reducer, entries} from '../utilities'
+import {reducer, entries} from '../utilities'
 import {convertRecord, convertRecords, convertValues, encodeValue, convertStoreName, decodeErrorMessage} from './converter'
 
 /**
@@ -142,12 +142,13 @@ function _deleteItem (storage, storeName, target) {
  *
  * @param {Object} storage
  * @param {string} storeName
- * @param target
+ * @param {string} target
+ * @param {string?} condition
  * @returns {Promise}
  * @private
  */
-function _deleteBulk (storage, storeName, target) {
-  return storage.deleteBulk(storeName, isObject(target) ? target : encodeValue(target))
+function _deleteBulk (storage, storeName, target, condition) {
+  return storage.deleteBulk(storeName, encodeValue(target), condition)
     .then(records => records.map(record => convertValues({storeName, dir: 'right', target: record})))
 }
 

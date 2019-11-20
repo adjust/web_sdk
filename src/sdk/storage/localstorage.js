@@ -130,18 +130,17 @@ function _initRequest ({storeName, id, item}, action) {
  *
  * @param {Array} items
  * @param {Array} keys
- * @param {string} force
- * @param {string=} force
+ * @param {string=} exact
  * @returns {Array}
  * @private
  */
-function _sort (items, keys, force) {
+function _sort (items, keys, exact) {
   const clone = [...items]
   const reversed = keys.slice().reverse()
 
   function compare (a, b, key) {
-    const expr1 = force ? force === a[key] : a[key] < b[key]
-    const expr2 = force ? force > a[key] : a[key] > b[key]
+    const expr1 = exact ? exact === a[key] : a[key] < b[key]
+    const expr2 = exact ? exact > a[key] : a[key] > b[key]
 
     return expr1 ? -1 : (expr2 ? 1 : 0)
   }
@@ -345,20 +344,20 @@ function deleteItem (storeName, id) {
  *
  * @param {Array} array
  * @param {string} key
- * @param {number|string} bound
+ * @param {number|string} value
  * @returns {number}
  * @private
  */
-function _findMax (array, key, bound) {
+function _findMax (array, key, value) {
 
   if (!array.length) {
     return -1
   }
 
-  let max = {index: -1, value: (isNaN(bound) ? '' : 0)}
+  let max = {index: -1, value: (isNaN(value) ? '' : 0)}
 
   for (let i = 0; i < array.length; i += 1) {
-    if (array[i][key] <= bound) {
+    if (array[i][key] <= value) {
       if (array[i][key] >= max.value) {
         max = {value: array[i][key], index: i}
       }
@@ -374,27 +373,28 @@ function _findMax (array, key, bound) {
  * Delete items until certain bound (primary key as a bound scope)
  *
  * @param {string} storeName
- * @param {string|Object} condition
- * @param {*=} condition.upperBound
+ * @param {*} value
+ * @param {string=} condition
  * @returns {Promise}
  */
-function deleteBulk (storeName, condition) {
+function deleteBulk (storeName, value, condition) {
   return getAll(storeName)
     .then(items => {
 
       const keys = _getKeys(storeName)
       const key = SchemeMap.right[convertStoreName({storeName, dir: 'right'})].index || keys[0]
-      const bound = isObject(condition) ? condition.upperBound : condition
-      const force = isObject(condition) ? null : condition
-      const sorted = _sort(items, keys, force)
-      const index = _findMax(sorted, key, bound)
+      const exact = condition ? null : value
+      const sorted = _sort(items, keys, exact)
+      const index = _findMax(sorted, key, value)
 
       if (index === -1) {
         return []
       }
 
+      const start = condition === 'lowerBound' ? index : 0
+      const end = !condition || condition === 'upperBound' ? (index + 1) : sorted.length
       const deleted = sorted
-        .splice(0, index + 1)
+        .splice(start, end)
         .map(item => keys.map(k => item[k]))
 
       QuickStorage.stores[storeName] = sorted
@@ -410,7 +410,6 @@ function deleteBulk (storeName, condition) {
  * @returns {Promise}
  */
 function clear (storeName) {
-
   const open = _open()
 
   if (open.status === 'error') {

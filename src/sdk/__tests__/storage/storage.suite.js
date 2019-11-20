@@ -495,7 +495,7 @@ export default function Suite (Storage) {
 
     })
 
-    it ('deletes items until certain bound from the queue store', () => {
+    it('deletes items until certain point from the queue store', () => {
 
       // prepare some rows manually
       const queueSet = [
@@ -516,7 +516,7 @@ export default function Suite (Storage) {
             {timestamp: 1552911178981, url: '/url3'}
           ])
 
-          return Storage.deleteBulk('queue', {upperBound: 1552705208300})
+          return Storage.deleteBulk('queue', 1552705208300, 'upperBound')
         })
         .then(deleted => {
           expect(deleted).toEqual([1552701608300, 1552705208300])
@@ -525,6 +525,46 @@ export default function Suite (Storage) {
         .then(result => {
           expect(result).toEqual([
             {timestamp: 1552911178981, url: '/url3'}
+          ])
+        })
+
+    })
+
+    it('deletes items from certain point from the queue store', () => {
+
+      // prepare some rows manually
+      const queueSet = [
+        {timestamp: 1552701608300, url: '/url1'},
+        {timestamp: 1552705208300, url: '/url2'},
+        {timestamp: 1552911178981, url: '/url3'},
+        {timestamp: 1552911178991, url: '/url4'},
+        {timestamp: 1552921178991, url: '/url5'}
+      ]
+
+      expect.assertions(3)
+
+      return Storage.addBulk('queue', queueSet)
+        .then(() => Storage.getAll('queue'))
+        .then(result => {
+
+          expect(result).toEqual([
+            {timestamp: 1552701608300, url: '/url1'},
+            {timestamp: 1552705208300, url: '/url2'},
+            {timestamp: 1552911178981, url: '/url3'},
+            {timestamp: 1552911178991, url: '/url4'},
+            {timestamp: 1552921178991, url: '/url5'}
+          ])
+
+          return Storage.deleteBulk('queue', 1552911178981, 'lowerBound')
+        })
+        .then(deleted => {
+          expect(deleted).toEqual([1552911178981, 1552911178991, 1552921178991])
+        })
+        .then(() => Storage.getAll('queue'))
+        .then(result => {
+          expect(result).toEqual([
+            {timestamp: 1552701608300, url: '/url1'},
+            {timestamp: 1552705208300, url: '/url2'}
           ])
         })
 
@@ -593,8 +633,6 @@ export default function Suite (Storage) {
     })
 
     it('deletes items in bulk from activityState store', () => {
-      expect.assertions(2)
-
       const activityStateSet = [
         {uuid: 'abcd1'},
         {uuid: 'abcd2'},
@@ -602,8 +640,10 @@ export default function Suite (Storage) {
         {uuid: 'abcd4'}
       ]
 
+      expect.assertions(2)
+
       return Storage.addBulk('activityState', activityStateSet)
-        .then(() => Storage.deleteBulk('activityState', {upperBound: 'abcd3'}))
+        .then(() => Storage.deleteBulk('activityState', 'abcd3', 'upperBound'))
         .then(result => {
           expect(result).toEqual(['abcd1', 'abcd2', 'abcd3'])
 

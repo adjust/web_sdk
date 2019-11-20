@@ -329,7 +329,7 @@ function _openCursor ({storeName, action = 'list', range = null, firstOnly, mode
           }
         }
 
-        cursorRequest.onerror = reject
+        cursorRequest.onerror = error => _overrideError(reject, error)
       })
     })
 }
@@ -430,15 +430,14 @@ function deleteItem (storeName, target) {
  * Delete items until certain bound (primary key as a bound scope)
  *
  * @param {string} storeName
- * @param {string|Object} condition
- * @param {*=} condition.upperBound
+ * @param {*} value
+ * @param {string=} condition
  * @returns {Promise}
  */
-function deleteBulk (storeName, condition) {
-
-  const range = isObject(condition)
-    ? IDBKeyRange.upperBound(condition.upperBound)
-    : IDBKeyRange.only(condition)
+function deleteBulk (storeName, value, condition) {
+  const range = condition
+    ? IDBKeyRange[condition](value)
+    : IDBKeyRange.only(value)
 
   return _openCursor({storeName, action: 'delete', range, mode: 'readwrite'})
 }
