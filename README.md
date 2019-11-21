@@ -14,6 +14,7 @@ This is the guide to the Javascript SDK of Adjust™ for web apps. You can read 
       * [Revenue tracking](#revenue-tracking)
       * [Callback parameters](#callback-parameters)
       * [Partner parameters](#partner-parameters)
+      * [Event deduplication](#event-deduplication)
 * [Logging](#logging)      
 * [License](#license)
 
@@ -60,7 +61,7 @@ It's possible to redirect all requests made by sdk to a custom endpoint defined 
 
 ```js
 Adjust.init({
-  // other stuff like appToken and environment
+  // ...
   customUrl: 'https://some-domain.com'
 });
 ```
@@ -151,6 +152,31 @@ Adjust.trackEvent(eventConfig)
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].
 
+### <a id="event-deduplication"></a>Event Deduplication
+
+It's now possible to provide event deduplication id in order to avoid tracking duplicated events
+
+```js
+var eventConfig = {
+  eventToken: 'EventToken',
+  deduplicationId: 'some-deduplication-id'
+};
+
+Adjust.trackEvent(eventConfig)
+```
+
+Also, it's possible to define custom limit for the event deduplication list. 
+This limit should be provided to the initial configuration.
+List limit is by default set to 10.
+
+```js
+Adjust.init({
+  // ...
+  eventDeduplicationListLimit: 14
+});
+```
+ 
+
 ### <a id="logging"></a>Logging
 
 By default sdk will log only errors in production if no explicit log level is provided. 
@@ -164,7 +190,7 @@ It's also possible to define log container in order to easier debug from mobile 
 
 ```js
 Adjust.init({
-  // other stuff like appToken and environment
+  // ...
   logLevel: 'LogLevel', // where LogLevel is "verbose", "info", "error" or "none"
   logOutput: '#log' // optional, show log messages into specified container
 });

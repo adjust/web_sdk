@@ -16,6 +16,7 @@ Here you can find changes for this project. When updating to a new version be su
 - ability to define default tracker through configuration
 - sdk click when referrer available
 - traffic redirection
+- event deduplication
 
 ### Changed
 - using exposed single instance instead of initiating it manually with the `new` (`Adjust.init(YOUR_CONFIG)`)

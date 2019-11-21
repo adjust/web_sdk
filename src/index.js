@@ -14,7 +14,8 @@ const appOptions = {
 }
 
 const basicEventConfig = {
-  eventToken: 'yywcyo'
+  eventToken: 'yywcyo',
+  // deduplicationId: 'YOUR_EVENT_DEDUPLICATION_ID'
 }
 
 const revenueEventConfig = {
