@@ -95,10 +95,8 @@ function expectRunningTrackEvent () {
   _instance.trackEvent({eventToken: 'blabla'})
 
   expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'})
-  expect(GlobalParams.get).toHaveBeenCalled()
 
-  return {assertions: 2}
-
+  return {assertions: 1}
 }
 
 function expectNotRunningTrackEvent (noInstance, noStorage) {

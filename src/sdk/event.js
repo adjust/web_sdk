@@ -2,7 +2,8 @@
 import {type EventParamsT, type GlobalParamsMapT} from './types'
 import {isEmpty, convertToMap} from './utilities'
 import {push} from './queue'
-import {get} from './global-params'
+import {get as getGlobalParams} from './global-params'
+import Storage from './storage/storage'
 import Logger from './logger'
 import Config from './config'
 
@@ -20,6 +21,16 @@ type RevenueT = {
   revenue: string,
   currency: string
 }
+
+const DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT = 10
+
+/**
+ * Name of the store used by event deduplication ids
+ *
+ * @type {string}
+ * @private
+ */
+const _storeName = 'eventDeduplication'
 
 /**
  * Get revenue value if positive and limit to 5 decimal places
@@ -88,6 +99,67 @@ function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: 
 }
 
 /**
+ * Get event deduplication ids
+ *
+ * @returns {Promise}
+ * @private
+ */
+function _getEventDeduplicationIds (): Promise<Array<string>> {
+  return Storage.getAll(_storeName)
+    .then(records => records.map(record => record.id))
+}
+
+/**
+ * Push event deduplication id and trim the store if out of the limit
+ *
+ * @param {string} id
+ * @returns {Promise}
+ * @private
+ */
+function _pushEventDeduplicationId (id: string): Promise<number> {
+  const limit = Config.getCustomConfig().eventDeduplicationListLimit || DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT
+
+  return Storage.count(_storeName)
+    .then(count => {
+      let chain = Promise.resolve()
+
+      if (count >= limit) {
+        const removeLength = count - limit + 1
+        Logger.log(`Event deduplication list limit has been reached. Oldest ids are about to be removed (${removeLength} of them)`)
+        chain = Storage.trimItems(_storeName, removeLength)
+      }
+
+      return chain
+    })
+    .then(() => {
+      Logger.info(`New event deduplication id is added to the list: ${id}`)
+      return Storage.addItem(_storeName, {id})
+    })
+}
+
+/**
+ * Check if deduplication id is already stored
+ * - if yes then reject
+ * - if not then push the id into storage
+ *
+ * @param {string=} id
+ * @returns {Promise}
+ * @private
+ */
+function _checkEventDeduplicationId (id?: string): Promise<?number> {
+  if (!id) {
+    return Promise.resolve()
+  }
+
+  return _getEventDeduplicationIds()
+    .then(list => {
+      return list.indexOf(id) === -1
+        ? _pushEventDeduplicationId(id)
+        : Promise.reject({message: `Event won't be tracked, since it was previously tracked with the same deduplication id ${id}`})
+    })
+}
+
+/**
  * Track event by sending the request to the server
  *
  * @param {Object} params
@@ -104,7 +176,8 @@ export default function event (params: EventParamsT): void | Promise<void> {
     return
   }
 
-  return get()
+  return _checkEventDeduplicationId(params.deduplicationId)
+    .then(getGlobalParams)
     .then(globalParams => {
       push({
         url: '/event',
@@ -112,5 +185,11 @@ export default function event (params: EventParamsT): void | Promise<void> {
         params: _prepareParams(params, globalParams)
       })
     })
+    .catch(error => {
+      if (error && error.message) {
+        Logger.error(error.message)
+      }
+    })
+
 }
 

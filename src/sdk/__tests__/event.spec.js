@@ -6,6 +6,7 @@ import * as GlobalParams from '../global-params'
 import * as Logger from '../logger'
 import * as http from '../http'
 import * as ActivityState from '../activity-state'
+import * as Storage from '../storage/storage'
 
 jest.mock('../http')
 jest.mock('../logger')
@@ -51,6 +52,10 @@ describe('event tracking functionality', () => {
     jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'error')
+    jest.spyOn(Logger.default, 'info')
+    jest.spyOn(Logger.default, 'log')
+    jest.spyOn(Storage.default, 'addItem')
+    jest.spyOn(Storage.default, 'trimItems')
 
     ActivityState.default.current = {uuid: 'some-uuid'}
   })
@@ -315,6 +320,279 @@ describe('event tracking functionality', () => {
             }
           })
         })
+    })
+
+    describe('event deduplication process', () => {
+
+      it('resolves event request successfully when no deduplication id provided', () => {
+        expect.assertions(5)
+
+        event.default({
+          eventToken: '123abc'
+        })
+
+        return Utils.flushPromises()
+          .then(() => {
+            expect(Storage.default.trimItems).not.toHaveBeenCalled()
+            expect(Storage.default.addItem.mock.calls.length).toBe(1)
+            expect(Storage.default.addItem.mock.calls[0][0]).toBe('queue')
+
+            return expectRequest({
+              url: '/event',
+              method: 'POST',
+              params: {
+                eventToken: '123abc'
+              }
+            }) // + 2 assertions
+          })
+      })
+
+      it('resolves event request successfully when provided deduplication id does not exist in the list', () => {
+
+        expect.assertions(5)
+
+        event.default({
+          eventToken: '123abc',
+          deduplicationId: '123-abc-456'
+        })
+
+        return Utils.flushPromises()
+          .then(() => {
+            expect(Storage.default.trimItems).not.toHaveBeenCalled()
+            expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: '123-abc-456'})
+            expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: 123-abc-456')
+
+            return expectRequest({
+              url: '/event',
+              method: 'POST',
+              params: {
+                eventToken: '123abc'
+              }
+            }) // + 2 assertions
+          })
+      })
+
+      it('rejects event tracking when already existing deduplication id provided', () => {
+
+        const list = [
+          {id: 'dedup-1234-abc'},
+          {id: 'dedup-1235-abc'},
+          {id: 'dedup-1236-abc'}
+        ]
+
+        expect.assertions(5)
+
+        return Storage.default.addBulk('eventDeduplication', list)
+          .then(() => {
+            event.default({
+              eventToken: '123abc',
+              deduplicationId: 'dedup-1235-abc'
+            })
+
+            return Utils.flushPromises()
+          })
+          .then(() => {
+            expect(Storage.default.trimItems).not.toHaveBeenCalled()
+            expect(Storage.default.addItem).not.toHaveBeenCalled()
+            expect(Logger.default.error).toHaveBeenCalledWith('Event won\'t be tracked, since it was previously tracked with the same deduplication id dedup-1235-abc')
+
+            expect(Queue.push).not.toHaveBeenCalled()
+            jest.runOnlyPendingTimers()
+            expect(http.default).not.toHaveBeenCalled()
+          })
+      })
+
+      describe('trim deduplication list', () => {
+        it('trims list by one when default limit is set', () => {
+          const list = [
+            {id: 'dedup-1230-abc'},
+            {id: 'dedup-1231-abc'},
+            {id: 'dedup-1232-abc'},
+            {id: 'dedup-1233-abc'},
+            {id: 'dedup-1234-abc'},
+            {id: 'dedup-1235-abc'},
+            {id: 'dedup-1236-abc'},
+            {id: 'dedup-1237-abc'},
+            {id: 'dedup-1238-abc'},
+            {id: 'dedup-1239-abc'}
+          ]
+
+          expect.assertions(12)
+
+          return Storage.default.addBulk('eventDeduplication', list)
+            .then(() => {
+              event.default({
+                eventToken: '123abc',
+                deduplicationId: 'dedup-1240-abc'
+              })
+
+              return Utils.flushPromises()
+            })
+            .then(() => {
+              expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 1)
+              expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (1 of them)')
+              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: 'dedup-1240-abc'})
+              expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
+
+              return expectRequest({
+                url: '/event',
+                method: 'POST',
+                params: {
+                  eventToken: '123abc'
+                }
+              }) // + 2 assertions
+            })
+            .then(() => Storage.default.getAll('eventDeduplication'))
+            .then(currentList => {
+              Storage.default.trimItems.mockClear()
+              Storage.default.addItem.mockClear()
+              Queue.push.mockClear()
+              http.default.mockClear()
+
+              expect(currentList.map(r => r.id)).toEqual([
+                'dedup-1231-abc',
+                'dedup-1232-abc',
+                'dedup-1233-abc',
+                'dedup-1234-abc',
+                'dedup-1235-abc',
+                'dedup-1236-abc',
+                'dedup-1237-abc',
+                'dedup-1238-abc',
+                'dedup-1239-abc',
+                'dedup-1240-abc'
+              ])
+
+              event.default({
+                eventToken: '123abc',
+                deduplicationId: 'dedup-1240-abc'
+              })
+
+              return Utils.flushPromises()
+            })
+            .then(() => {
+              expect(Storage.default.trimItems).not.toHaveBeenCalled()
+              expect(Storage.default.addItem).not.toHaveBeenCalled()
+              expect(Logger.default.error).toHaveBeenCalledWith('Event won\'t be tracked, since it was previously tracked with the same deduplication id dedup-1240-abc')
+
+              expect(Queue.push).not.toHaveBeenCalled()
+              jest.runOnlyPendingTimers()
+              expect(http.default).not.toHaveBeenCalled()
+            })
+        })
+
+        it('trims the list by difference when custom limit is set and is lower than previous one', () => {
+
+          Config.default.destroy()
+          Config.default.set({...appOptions, eventDeduplicationListLimit: 4})
+
+          const list = [
+            {id: 'dedup-1232-abc'},
+            {id: 'dedup-1233-abc'},
+            {id: 'dedup-1234-abc'},
+            {id: 'dedup-1235-abc'},
+            {id: 'dedup-1236-abc'},
+            {id: 'dedup-1237-abc'},
+            {id: 'dedup-1238-abc'},
+            {id: 'dedup-1239-abc'}
+          ]
+
+          expect.assertions(7)
+
+          return Storage.default.addBulk('eventDeduplication', list)
+            .then(() => {
+              event.default({
+                eventToken: '123abc',
+                deduplicationId: 'dedup-1240-abc'
+              })
+
+              return Utils.flushPromises()
+            })
+            .then(() => {
+              expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 5)
+              expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (5 of them)')
+              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: 'dedup-1240-abc'})
+              expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
+
+              return expectRequest({
+                url: '/event',
+                method: 'POST',
+                params: {
+                  eventToken: '123abc'
+                }
+              }) // + 2 assertions
+            })
+            .then(() => Storage.default.getAll('eventDeduplication'))
+            .then(currentList => {
+              expect(currentList.map(r => r.id)).toEqual([
+                'dedup-1237-abc',
+                'dedup-1238-abc',
+                'dedup-1239-abc',
+                'dedup-1240-abc'
+              ])
+            })
+        })
+
+        it('skips trim when custom limit is set and is greater than the previous one', () => {
+
+          Config.default.destroy()
+          Config.default.set({...appOptions, eventDeduplicationListLimit: 16})
+
+          const list = [
+            {id: 'dedup-1230-abc'},
+            {id: 'dedup-1231-abc'},
+            {id: 'dedup-1232-abc'},
+            {id: 'dedup-1233-abc'},
+            {id: 'dedup-1234-abc'},
+            {id: 'dedup-1235-abc'},
+            {id: 'dedup-1236-abc'},
+            {id: 'dedup-1237-abc'},
+            {id: 'dedup-1238-abc'},
+            {id: 'dedup-1239-abc'}
+          ]
+
+          expect.assertions(6)
+
+          return Storage.default.addBulk('eventDeduplication', list)
+            .then(() => {
+              event.default({
+                eventToken: '123abc',
+                deduplicationId: 'dedup-1240-abc'
+              })
+
+              return Utils.flushPromises()
+            })
+            .then(() => {
+              expect(Storage.default.trimItems).not.toHaveBeenCalled()
+              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: 'dedup-1240-abc'})
+              expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
+
+              return expectRequest({
+                url: '/event',
+                method: 'POST',
+                params: {
+                  eventToken: '123abc'
+                }
+              }) // + 2 assertions
+            })
+            .then(() => Storage.default.getAll('eventDeduplication'))
+            .then(currentList => {
+              expect(currentList.map(r => r.id)).toEqual([
+                'dedup-1230-abc',
+                'dedup-1231-abc',
+                'dedup-1232-abc',
+                'dedup-1233-abc',
+                'dedup-1234-abc',
+                'dedup-1235-abc',
+                'dedup-1236-abc',
+                'dedup-1237-abc',
+                'dedup-1238-abc',
+                'dedup-1239-abc',
+                'dedup-1240-abc'
+              ])
+            })
+
+        })
+      })
     })
 
   })

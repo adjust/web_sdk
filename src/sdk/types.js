@@ -47,6 +47,7 @@ export type EventParamsT = {|
   eventToken: string,
   revenue?: number,
   currency?: string,
+  deduplicationId?: string,
   callbackParams?: Array<GlobalParamsT>,
   partnerParams?: Array<GlobalParamsT>
 |}
