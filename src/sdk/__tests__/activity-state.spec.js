@@ -14,7 +14,7 @@ describe('activity state functionality', () => {
   beforeEach(() => {
     currentTime = now
     dateNowSpy.mockReturnValue(currentTime)
-    ActivityState.default.current = {uuid: 'some-uuid'}
+    ActivityState.default.init({uuid: 'some-uuid'})
     ActivityState.default.initParams()
   })
 
@@ -52,7 +52,7 @@ describe('activity state functionality', () => {
 
     ActivityState.default.destroy()
 
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
   })
 
@@ -281,37 +281,37 @@ describe('activity state functionality', () => {
     ActivityState.default.destroy()
 
     expect(ActivityState.default.getParams()).toEqual({})
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateParams('/session')
 
     expect(ActivityState.default.getParams()).toEqual({})
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateSessionOffset()
 
     expect(ActivityState.default.getParams()).toEqual({})
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateSessionLength()
 
     expect(ActivityState.default.getParams()).toEqual({})
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.resetSessionOffset()
 
     expect(ActivityState.default.getParams()).toEqual({})
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateLastActive()
 
     expect(ActivityState.default.getParams()).toEqual({})
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateInstalled()
 
     expect(ActivityState.default.getParams()).toEqual({})
-    expect(ActivityState.default.current).toBeNull()
+    expect(ActivityState.default.current).toEqual({})
 
   })
 

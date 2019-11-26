@@ -57,7 +57,7 @@ describe('event tracking functionality', () => {
     jest.spyOn(Storage.default, 'addItem')
     jest.spyOn(Storage.default, 'trimItems')
 
-    ActivityState.default.current = {uuid: 'some-uuid'}
+    ActivityState.default.init({uuid: 'some-uuid'})
   })
 
   afterEach(() => {

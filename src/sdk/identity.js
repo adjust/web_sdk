@@ -5,6 +5,7 @@ import ActivityState from './activity-state'
 import State from './state'
 import Logger from './logger'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
+import {isEmpty} from './utilities'
 
 type StatusT = 'on' | 'off' | 'paused'
 type ReasonT = {|
@@ -12,8 +13,8 @@ type ReasonT = {|
   pending?: boolean
 |}
 type InterceptT = {|
-  continue: boolean,
-  activityState?: ?ActivityStateMapT
+  exists: boolean,
+  stored?: ?ActivityStateMapT
 |}
 
 /**
@@ -56,18 +57,18 @@ function _generateUuid (): string {
  */
 function _intercept (stored: ActivityStateMapT): InterceptT {
   if (!stored) {
-    return {continue: true}
+    return {exists: false}
   }
 
   if (stored.uuid === 'unknown') {
     disable({reason: REASON_GDPR})
     ActivityState.destroy()
-    return {continue: false, activityState: null}
+    return {exists: true, stored: null}
   }
 
-  ActivityState.current = stored
+  ActivityState.init(stored)
 
-  return {continue: false, activityState: stored}
+  return {exists: true, stored: stored}
 }
 
 /**
@@ -82,23 +83,35 @@ function start (): Promise<?ActivityStateMapT> {
   _starting = true
 
   return Storage.getFirst(_storeName)
-    .then(stored => {
-      const intercepted = _intercept(stored)
-
-      if (!intercepted.continue) {
+    .then(_intercept)
+    .then((result: InterceptT) => {
+      if (result.exists) {
         _starting = false
-        return intercepted.activityState
+        return result.stored
       }
 
-      const activityState = ActivityState.current || {uuid: _generateUuid()}
+      const activityState = isEmpty(ActivityState.current)
+        ? {uuid: _generateUuid()}
+        : ActivityState.current
 
       return Storage.addItem(_storeName, activityState)
         .then(() => {
+          ActivityState.init(activityState)
           State.reload()
           _starting = false
-          return ActivityState.current = activityState
+          return activityState
         })
     })
+}
+
+/**
+ * Check if sdk is running at all (totally disabled or inactive activity state)
+ *
+ * @returns {boolean}
+ * @private
+ */
+function _isLive () {
+  return status() !== 'off' && ActivityState.isStarted()
 }
 
 /**
@@ -107,7 +120,7 @@ function start (): Promise<?ActivityStateMapT> {
  * @returns {Promise}
  */
 function persist (): Promise<?ActivityStateMapT> {
-  if (status() === 'off') {
+  if (!_isLive()) {
     return Promise.resolve(null)
   }
 
@@ -124,10 +137,10 @@ function persist (): Promise<?ActivityStateMapT> {
  */
 function sync (): Promise<ActivityStateMapT> {
   return Storage.getFirst(_storeName)
-    .then(activityState => {
+    .then((activityState: ActivityStateMapT) => {
       const lastActive = ActivityState.current.lastActive || 0
 
-      if (status() !== 'off' && lastActive < activityState.lastActive) {
+      if (_isLive() && lastActive < activityState.lastActive) {
         ActivityState.current = activityState
         State.reload()
       }

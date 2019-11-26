@@ -14,7 +14,7 @@ jest.useFakeTimers()
 describe('test attribution functionality', () => {
 
   beforeAll(() => {
-    ActivityState.default.current = {}
+    ActivityState.default.init({})
 
     jest.spyOn(http, 'default')
     jest.spyOn(Identity, 'persist')

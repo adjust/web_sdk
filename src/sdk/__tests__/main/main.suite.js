@@ -380,7 +380,7 @@ function expectAllDown (onlyNumOfAssertions) {
   expectNotGdprForgetMeCallback()
   expectNotAttributionCallback()
 
-  expect(ActivityState.default.current).toBeNull()
+  expect(ActivityState.default.current).toEqual({})
   expect(Queue.isRunning()).toBeFalsy()
   expect(Session.isRunning()).toBeFalsy()
 }

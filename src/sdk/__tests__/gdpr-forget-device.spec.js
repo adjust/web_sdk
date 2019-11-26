@@ -53,7 +53,7 @@ describe('GDPR forget device functionality', () => {
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(PubSub, 'publish')
 
-    ActivityState.default.current = {uuid: 'some-uuid'}
+    ActivityState.default.init({uuid: 'some-uuid'})
   })
 
   afterEach(() => {

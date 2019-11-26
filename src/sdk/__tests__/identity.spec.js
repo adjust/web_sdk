@@ -380,7 +380,7 @@ describe('test identity methods', () => {
   describe('when activity state does not exist', () => {
 
     it('returns empty activity state', () => {
-      expect(ActivityState.default.current).toBeNull()
+      expect(ActivityState.default.current).toEqual({})
     })
 
     it('starts activity state - checks activity state and creates new one', () => {
@@ -413,24 +413,20 @@ describe('test identity methods', () => {
         })
         .then(activityState => {
           expect(activityState).toBeNull()
-          expect(ActivityState.default.current).toBeNull()
+          expect(ActivityState.default.current).toEqual({})
         })
     })
 
-    it('updates activity state', () => {
-
+    it('ignores persist when sdk not initiated', () => {
       expect.assertions(3)
 
       jest.spyOn(Date, 'now').mockReturnValue(456)
 
       return Identity.persist()
         .then(activityState => {
-
-          const cachedActivityState = ActivityState.default.current
-
-          expect(activityState).toEqual(cachedActivityState)
-          expect(activityState).toMatchObject({lastActive: 456})
-          expect(Storage.default.updateItem).toHaveBeenCalledTimes(1)
+          expect(activityState).toBeNull()
+          expect(ActivityState.default.current).toEqual({})
+          expect(Storage.default.updateItem).not.toHaveBeenCalled()
         })
     })
 
@@ -443,7 +439,7 @@ describe('test identity methods', () => {
       return Identity.persist()
         .then(activityState => {
           expect(activityState).toBeNull()
-          expect(ActivityState.default.current).toBeNull()
+          expect(ActivityState.default.current).toEqual({})
           expect(Storage.default.updateItem).not.toHaveBeenCalled()
         })
     })

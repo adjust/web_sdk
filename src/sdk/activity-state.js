@@ -1,3 +1,8 @@
+// @flow
+import {
+  type ActivityStateMapT,
+  type SessionParamsT
+} from './types'
 import {SECOND} from './constants'
 import {timePassed} from './time'
 import {isRequest} from './utilities'
@@ -9,7 +14,15 @@ import Config from './config'
  * @type {Object}
  * @private
  */
-let _activityState = null
+let _activityState: ActivityStateMapT = {}
+
+/**
+ * Started flag, if activity state has been initiated
+ *
+ * @type {boolean}
+ * @private
+ */
+let _started: boolean = false
 
 /**
  * Active flag, if in foreground
@@ -17,15 +30,16 @@ let _activityState = null
  * @type {boolean}
  * @private
  */
-let _active = false
+let _active: boolean = false
+
 
 /**
  * Get current activity state
  *
- * @returns {Object|null}
+ * @returns {Object}
  */
-function currentGetter () {
-  return _activityState ? {..._activityState} : null
+function currentGetter (): ActivityStateMapT {
+  return _started ? {..._activityState} : {}
 }
 
 /**
@@ -33,8 +47,27 @@ function currentGetter () {
  *
  * @param {Object} params
  */
-function currentSetter (params) {
-  _activityState = {...params}
+function currentSetter (params: ActivityStateMapT = {}) {
+  _activityState = _started ? {...params} : {}
+}
+
+/**
+ * Initiate in-memory activity state
+ *
+ * @param {Object} params
+ */
+function init (params: ActivityStateMapT) {
+  _started = true
+  currentSetter(params)
+}
+
+/**
+ * Check if activity state is started
+ *
+ * @returns {boolean}
+ */
+function isStarted () {
+  return _started
 }
 
 /**
@@ -42,8 +75,8 @@ function currentSetter (params) {
  *
  * @private
  */
-function updateLastActive () {
-  if (_activityState === null) {
+function updateLastActive (): void {
+  if (!_started) {
     return
   }
 
@@ -57,21 +90,21 @@ function updateLastActive () {
  * @param {Object} params
  * @private
  */
-function _update (params) {
+function _update (params: ActivityStateMapT): void {
   _activityState = {..._activityState, ...params}
 }
 
 /**
  * Set active flag to true when going foreground
  */
-function toForeground () {
+function toForeground (): void {
   _active = true
 }
 
 /**
  * Set active flag to false when going background
  */
-function toBackground () {
+function toBackground (): void {
   _active = false
 }
 
@@ -81,7 +114,7 @@ function toBackground () {
  * @returns {number}
  * @private
  */
-function _getOffset () {
+function _getOffset (): number {
   const lastActive = _activityState.lastActive
   return Math.round(timePassed(lastActive, Date.now()) / SECOND)
 }
@@ -89,20 +122,20 @@ function _getOffset () {
 /**
  * Get time spent with optional offset from last point
  *
- * @returns {number|null}
+ * @returns {number}
  * @private
  */
-function _getTimeSpent () {
+function _getTimeSpent (): number {
   return (_activityState.timeSpent || 0) + (_active ? _getOffset() : 0)
 }
 
 /**
  * Get session length with optional offset from last point
  *
- * @returns {number|null}
+ * @returns {number}
  * @private
  */
-function _getSessionLength () {
+function _getSessionLength (): number {
   const lastActive = _activityState.lastActive
   const withinWindow = timePassed(lastActive, Date.now()) < Config.sessionWindow
   const withOffset = _active || !_active && withinWindow
@@ -113,20 +146,20 @@ function _getSessionLength () {
 /**
  * Get total number of sessions so far
  *
- * @returns {number|null}
+ * @returns {number}
  * @private
  */
-function _getSessionCount () {
+function _getSessionCount (): number {
   return _activityState.sessionCount || 0
 }
 
 /**
  * Get total number of events so far
  *
- * @returns {number|null}
+ * @returns {number}
  * @private
  */
-function _getEventCount () {
+function _getEventCount (): number {
   return _activityState.eventCount || 0
 }
 
@@ -136,7 +169,7 @@ function _getEventCount () {
  * @returns {number}
  * @private
  */
-function _getLastInterval () {
+function _getLastInterval (): number {
   const lastActive = _activityState.lastActive
 
   if (lastActive) {
@@ -149,7 +182,7 @@ function _getLastInterval () {
 /**
  * Initiate session params and go to foreground
  */
-function initParams () {
+function initParams (): void {
   updateSessionOffset()
   toForeground()
 }
@@ -159,8 +192,8 @@ function initParams () {
  *
  * @returns {Object}
  */
-function getParams () {
-  if (_activityState === null) {
+function getParams (): SessionParamsT {
+  if (!_started) {
     return {}
   }
 
@@ -180,8 +213,8 @@ function getParams () {
  * @param {string} url
  * @param {boolean=false} auto
  */
-function updateParams (url, auto) {
-  if (_activityState === null) {
+function updateParams (url: string, auto?: boolean): void {
+  if (!_started) {
     return
   }
 
@@ -207,8 +240,8 @@ function updateParams (url, auto) {
 /**
  * Update installed flag - first session has been finished
  */
-function updateInstalled () {
-  if (_activityState === null) {
+function updateInstalled (): void {
+  if (!_started) {
     return
   }
 
@@ -222,8 +255,8 @@ function updateInstalled () {
 /**
  * Update session params which depend on the time offset since last measure point
  */
-function updateSessionOffset () {
-  if (_activityState === null) {
+function updateSessionOffset (): void {
+  if (!_started) {
     return
   }
 
@@ -237,8 +270,8 @@ function updateSessionOffset () {
 /**
  * Update session length
  */
-function updateSessionLength () {
-  if (_activityState === null) {
+function updateSessionLength (): void {
+  if (!_started) {
     return
   }
 
@@ -251,8 +284,8 @@ function updateSessionLength () {
 /**
  * Reset time spent and session length to zero
  */
-function resetSessionOffset () {
-  if (_activityState === null) {
+function resetSessionOffset (): void {
+  if (!_started) {
     return
   }
 
@@ -262,12 +295,17 @@ function resetSessionOffset () {
 /**
  * Destroy current activity state
  */
-function destroy () {
-  _activityState = null
+function destroy (): void {
+  _activityState = {}
+  _started = false
   _active = false
 }
 
 const ActivityState = {
+  get current () { return currentGetter() },
+  set current (value) { return currentSetter(value) },
+  init,
+  isStarted,
   toForeground,
   toBackground,
   initParams,
@@ -280,10 +318,5 @@ const ActivityState = {
   updateLastActive,
   destroy
 }
-
-Object.defineProperty(ActivityState, 'current', {
-  get () { return currentGetter() },
-  set (value) { return currentSetter(value) }
-})
 
 export default ActivityState

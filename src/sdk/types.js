@@ -1,24 +1,45 @@
 // @flow
 
-type AttributionHttpResultT = $ReadOnly<{
+export type AttributionMapT = $ReadOnly<{|
+  adid: string,
   tracker_token: string,
   tracker_name: string,
-  network: string,
-  campaign: string,
-  adgroup: string,
-  creative: string,
-  click_label: string,
+  network?: string,
+  campaign?: string,
+  adgroup?: string,
+  creative?: string,
+  click_label?: string,
   state: string
-}>
+|}>
 
-export type AttributionWhiteListT = $ReadOnlyArray<$Keys<AttributionHttpResultT>>
+export type AttributionWhiteListT = $ReadOnlyArray<$Keys<AttributionMapT>>
+
+export type ActivityStateMapT = $Shape<{|
+  uuid: string,
+  lastActive: number,
+  lastInterval: number,
+  timeSpent: number,
+  sessionWindow: number,
+  sessionLength: number,
+  sessionCount: number,
+  eventCount: number,
+  installed: boolean,
+  attribution: AttributionMapT
+|}>
+
+export type SessionParamsT = $Shape<{|
+  timeSpent: $PropertyType<ActivityStateMapT, 'timeSpent'>,
+  sessionLength: $PropertyType<ActivityStateMapT, 'sessionLength'>,
+  sessionCount: $PropertyType<ActivityStateMapT, 'sessionCount'>,
+  lastInterval: $PropertyType<ActivityStateMapT, 'lastInterval'>
+|}>
 
 export type HttpResultT = $ReadOnly<{
   adid: string,
   continue_in: number,
   retry_in: number,
   ask_in: number,
-  attribution: AttributionHttpResultT
+  attribution: AttributionMapT
 }>
 
 type HttpFinishCb = () => void
@@ -51,8 +72,6 @@ export type EventParamsT = {|
   callbackParams?: Array<GlobalParamsT>,
   partnerParams?: Array<GlobalParamsT>
 |}
-
-export type ActivityStateMapT = {[key: string]: mixed} // TODO do the exact type
 
 export type BaseParamsT = $ReadOnly<$Shape<{
   appToken: string,

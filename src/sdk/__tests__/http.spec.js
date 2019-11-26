@@ -48,7 +48,8 @@ describe('perform api requests', () => {
     Utils.setGlobalProp(global.navigator, 'doNotTrack')
 
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
-    ActivityState.default.current = {uuid: 'some-uuid'}
+    ActivityState.default.init({uuid: 'some-uuid'})
+
 
     jest.spyOn(global.navigator, 'language', 'get').mockReturnValue('en-GB')
     jest.spyOn(global.navigator, 'platform', 'get').mockReturnValue('macos')

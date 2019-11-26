@@ -65,7 +65,7 @@ describe('test request queuing functionality', () => {
   })
 
   beforeEach(() => {
-    ActivityState.default.current = {uuid: 'some-uuid'}
+    ActivityState.default.init({uuid: 'some-uuid'})
     ActivityState.default.initParams()
   })
 
@@ -557,8 +557,6 @@ describe('test request queuing functionality', () => {
     dateNowSpy.mockReturnValue(currentTime)
 
     Queue.setOffline(true)
-
-    ActivityState.default.current = null
 
     const config1 = {url: '/session'}
     const config2 = {url: '/event'}

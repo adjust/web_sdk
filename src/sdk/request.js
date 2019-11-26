@@ -2,7 +2,8 @@
 import {
   type HttpResultT,
   type HttpContinueCbT,
-  type BackOffStrategyT
+  type BackOffStrategyT,
+  type SessionParamsT
 } from './types'
 import http from './http'
 import {isEmpty} from './utilities'
@@ -14,7 +15,11 @@ import {SECOND} from './constants'
 
 type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'
 type MethodT ='GET' | 'POST' | 'PUT' | 'DELETE'
-type ParamsT = {[key: string]: mixed}
+type ParamsT = $Shape<{|
+  createdAt?: string,
+  initiatedBy?: string,
+  ...SessionParamsT
+|}>
 type WaitT = number
 type RequestParamsT = {|
   url?: UrlT,
@@ -30,6 +35,11 @@ type DefaultParamsT = {|
   params?: ParamsT,
   continueCb?: HttpContinueCbT
 |}
+type ErrorResponseT = $Shape<{
+  action: string,
+  message: string,
+  code: string
+}>
 type AttemptsT = number
 type StartAtT = number
 
@@ -262,7 +272,8 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
           method: _method,
           params: {
             attempts: (_attempts.request ? (_attempts.request + 1) : 1) + _attempts.connection,
-            ..._params},
+            ..._params
+          },
         })
           .then(result => _continue(result, resolve))
           .catch(({response = {}} = {}) => _error(response, resolve, reject))
@@ -354,7 +365,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {Function} reject
    * @private
    */
-  function _error (response: ParamsT, resolve, reject): void {
+  function _error (response: ErrorResponseT, resolve, reject): void {
     if (response.action === 'RETRY') {
       resolve(_retry(response.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined))
       return

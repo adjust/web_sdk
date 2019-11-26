@@ -3,7 +3,8 @@ import {
   type HttpResultT,
   type AttributionStateT,
   type AttributionWhiteListT,
-  type ActivityStateMapT
+  type ActivityStateMapT,
+  type AttributionMapT
 } from './types'
 import {publish} from './pub-sub'
 import {entries, intersection, isEmpty, reducer} from './utilities'
@@ -80,11 +81,9 @@ function _setAttribution (result: HttpResultT): Promise<AttributionStateT> {
     return Promise.resolve({state: 'same'})
   }
 
-  const filtered = entries(result.attribution)
+  const attribution: AttributionMapT = entries(result.attribution)
     .filter(([key]) => _whitelist.indexOf(key) !== -1)
-    .reduce(reducer, {})
-
-  const attribution = {adid: result.adid, ...filtered}
+    .reduce(reducer, {adid: result.adid})
 
   ActivityState.current = {...ActivityState.current, attribution}
 

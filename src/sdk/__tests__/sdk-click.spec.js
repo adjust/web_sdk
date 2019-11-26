@@ -15,7 +15,7 @@ describe('test sdk-click functionality', () => {
     jest.spyOn(Queue, 'push')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
 
-    ActivityState.default.current = {uuid: 'some-uuid'}
+    ActivityState.default.init({uuid: 'some-uuid'})
   })
 
   afterEach(() => {
