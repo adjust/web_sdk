@@ -2,12 +2,17 @@ const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
+const packageJson = require('./package.json')
+const namespace = packageJson.name
+const version = packageJson.version
 
 module.exports = () => ({
   mode: 'production',
   entry: {
-    'sdk': path.resolve(__dirname, 'src/sdk/main.js'),
-    'sdk.min': path.resolve(__dirname, 'src/sdk/main.js')
+    'adjust-latest-test': path.resolve(__dirname, 'src/sdk/main.js'),
+    [`adjust-${version}-test`]: path.resolve(__dirname, 'src/sdk/main.js'),
+    'adjust-latest-test.min': path.resolve(__dirname, 'src/sdk/main.js'),
+    [`adjust-${version}-test.min`]: path.resolve(__dirname, 'src/sdk/main.js')
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -24,8 +29,8 @@ module.exports = () => ({
   },
   plugins: [
     new webpack.DefinePlugin({
-      __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
-      __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version)
+      __ADJUST__NAMESPACE: JSON.stringify(namespace),
+      __ADJUST__SDK_VERSION: JSON.stringify(version)
     }),
     new FlowWebpackPlugin()
   ],
