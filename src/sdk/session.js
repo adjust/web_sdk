@@ -229,10 +229,12 @@ function _trackSession () {
 function _checkSession () {
   _startTimer()
 
-  const lastInterval = ActivityState.current.lastInterval
+  const activityState = ActivityState.current
+  const lastInterval = activityState.lastInterval
+  const installed = activityState.installed
   const currentWindow = lastInterval * SECOND
 
-  if (lastInterval === -1 || currentWindow >= Config.sessionWindow) {
+  if (!installed || (installed && currentWindow >= Config.sessionWindow)) {
     return _trackSession()
   }
 

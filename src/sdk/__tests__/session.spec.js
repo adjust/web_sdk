@@ -292,7 +292,7 @@ describe('test session functionality', () => {
 
       _reset()
 
-      expect.assertions(4)
+      expect.assertions(5)
 
       return Identity.start()
         .then(() => {
@@ -304,6 +304,8 @@ describe('test session functionality', () => {
           return Utils.flushPromises()
         })
         .then(() => {
+          PubSub.publish('session:finished')
+
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
@@ -324,6 +326,7 @@ describe('test session functionality', () => {
               sessionCount: 1
             }
           })
+          expect(ActivityState.default.current.installed).toBeTruthy()
 
           return Utils.flushPromises()
         })
@@ -412,6 +415,8 @@ describe('test session functionality', () => {
 
       expect.assertions(6)
 
+      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+
       return Identity.persist()
         .then(() => {
           Session.watch()
@@ -447,6 +452,8 @@ describe('test session functionality', () => {
       dateNowSpy.mockReturnValue(currentTime)
 
       expect.assertions(2)
+
+      ActivityState.default.current = {...ActivityState.default.current, installed: true}
 
       return Identity.persist()
         .then(() => {
@@ -507,6 +514,9 @@ describe('test session functionality', () => {
       expect(activityState.timeSpent).toEqual(0)
       expect(activityState.sessionLength).toEqual(0)
       expect(activityState.lastInterval).toEqual(-1)
+
+      PubSub.publish('session:finished')
+      jest.runOnlyPendingTimers()
 
       return Utils.flushPromises()
         .then(() => {
@@ -727,6 +737,8 @@ describe('test session functionality', () => {
 
       expect.assertions(4)
 
+      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+
       return Identity.persist()
         .then(() => {
 
@@ -784,6 +796,8 @@ describe('test session functionality', () => {
 
       expect.assertions(2)
 
+      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+
       return Identity.persist()
         .then(() => {
 
@@ -818,6 +832,8 @@ describe('test session functionality', () => {
       dateNowSpy.mockReturnValue(currentTime)
 
       expect.assertions(4)
+
+      ActivityState.default.current = {...ActivityState.default.current, installed: true}
 
       return Identity.persist()
         .then(() => {
@@ -879,6 +895,8 @@ describe('test session functionality', () => {
       dateNowSpy.mockReturnValue(currentTime)
 
       expect.assertions(3)
+
+      ActivityState.default.current = {...ActivityState.default.current, installed: true}
 
       return Identity.persist()
         .then(() => {
