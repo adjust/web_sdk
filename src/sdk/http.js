@@ -217,7 +217,7 @@ function _interceptResponse (result, options) {
   }
 
   if (isSessionRequest) {
-    publish('session:finished')
+    publish('session:finished', result)
   }
 
   return result

@@ -149,10 +149,17 @@ function _handleVisibilityChange () {
 /**
  * Handle session request finish; update installed state
  *
- * @returns {Promise}
+ * @param {Object} e
+ * @param {Object} result
+ * @returns {Promise|void}
  * @private
  */
-function _handleSessionRequestFinish () {
+function _handleSessionRequestFinish (e, result = {}) {
+  if (result.response && result.response.error) {
+    Logger.error(`Session was not successful, error was returned from the server: ${result.response.error}`)
+    return
+  }
+
   ActivityState.updateInstalled()
 
   return persist()

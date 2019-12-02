@@ -555,7 +555,7 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
-        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 
@@ -585,7 +585,7 @@ describe('perform api requests', () => {
           ask_in: 2500
         })
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
-        expect(PubSub.publish).toHaveBeenCalledWith('session:finished')
+        expect(PubSub.publish).toHaveBeenCalledWith('session:finished', result)
       })
 
       return Utils.flushPromises()
@@ -615,7 +615,7 @@ describe('perform api requests', () => {
           timestamp: '2019-02-02'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
-        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
       })
 
       return Utils.flushPromises()
@@ -643,7 +643,7 @@ describe('perform api requests', () => {
           ask_in: 2500
         })
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
-        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
       })
 
       return Utils.flushPromises()
@@ -662,7 +662,7 @@ describe('perform api requests', () => {
         url: '/session'
       }).then(result => {
         expect(result).toEqual({})
-        expect(PubSub.publish).toHaveBeenCalledWith('session:finished')
+        expect(PubSub.publish).toHaveBeenCalledWith('session:finished', result)
       })
 
       return Utils.flushPromises()
@@ -692,7 +692,7 @@ describe('perform api requests', () => {
           tracking_state: 'opted_out'
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
-        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished')
+        expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
         expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
       })
 

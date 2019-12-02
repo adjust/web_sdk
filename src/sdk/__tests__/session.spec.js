@@ -147,7 +147,7 @@ describe('test session functionality', () => {
       return Utils.flushPromises()
     })
 
-    it('updates installed flag when session:finished event is recognized', () => {
+    it('updates installed flag when session:finished event is recognized with successful session request', () => {
 
       Session.watch()
 
@@ -159,7 +159,7 @@ describe('test session functionality', () => {
         .then(activityState => {
           expect(activityState.installed).toBeUndefined()
 
-          PubSub.publish('session:finished')
+          PubSub.publish('session:finished', {adid: 'bla'})
 
           jest.runOnlyPendingTimers()
 
@@ -171,6 +171,35 @@ describe('test session functionality', () => {
         })
         .then(activityState => {
           expect(activityState.installed).toBeTruthy()
+
+          return Utils.flushPromises()
+        })
+    })
+
+    it('ignores update of installed flag when session:finished event is recognized with unsuccessful session request', () => {
+
+      Session.watch()
+
+      expect.assertions(6)
+
+      expect(ActivityState.default.current.installed).toBeUndefined()
+
+      return Storage.default.getFirst('activityState')
+        .then(activityState => {
+          expect(activityState.installed).toBeUndefined()
+
+          PubSub.publish('session:finished', {code: 'SERVER_ERROR', response: {error: 'Some error from the server'}})
+
+          jest.runOnlyPendingTimers()
+
+          expect(ActivityState.default.updateInstalled).not.toHaveBeenCalled()
+          expect(ActivityState.default.current.installed).toBeUndefined()
+          expect(activityState.installed).toBeUndefined()
+
+          return Storage.default.getFirst('activityState')
+        })
+        .then(activityState => {
+          expect(activityState.installed).toBeUndefined()
 
           return Utils.flushPromises()
         })
@@ -304,7 +333,7 @@ describe('test session functionality', () => {
           return Utils.flushPromises()
         })
         .then(() => {
-          PubSub.publish('session:finished')
+          PubSub.publish('session:finished', {adid: 'bla'})
 
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
@@ -515,7 +544,7 @@ describe('test session functionality', () => {
       expect(activityState.sessionLength).toEqual(0)
       expect(activityState.lastInterval).toEqual(-1)
 
-      PubSub.publish('session:finished')
+      PubSub.publish('session:finished', {adid: 'bla'})
       jest.runOnlyPendingTimers()
 
       return Utils.flushPromises()

@@ -8398,7 +8398,7 @@ function removeGlobalCallbackParameter(key
  */
 
 
-function removePartnerCallbackParameter(key
+function removeGlobalPartnerParameter(key
 /*: string*/
 )
 /*: void*/
@@ -8714,7 +8714,7 @@ var Adjust = {
   addGlobalCallbackParameters: addGlobalCallbackParameters,
   addGlobalPartnerParameters: addGlobalPartnerParameters,
   removeGlobalCallbackParameter: removeGlobalCallbackParameter,
-  removePartnerCallbackParameter: removePartnerCallbackParameter,
+  removeGlobalPartnerParameter: removeGlobalPartnerParameter,
   clearGlobalCallbackParameters: clearGlobalCallbackParameters,
   clearGlobalPartnerParameters: clearGlobalPartnerParameters,
   switchToOfflineMode: switchToOfflineMode,
