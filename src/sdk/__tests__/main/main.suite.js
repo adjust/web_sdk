@@ -135,7 +135,7 @@ function expectRunningStatic () {
   _instance.removeGlobalCallbackParameter('some-key')
   expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'callback')
 
-  _instance.removePartnerCallbackParameter('some-key')
+  _instance.removeGlobalPartnerParameter('some-key')
   expect(GlobalParams.remove).toHaveBeenCalledWith('some-key', 'partner')
 
   _instance.clearGlobalCallbackParameters('callback')
@@ -176,7 +176,7 @@ function expectNotRunningStatic (noStorage) {
     : 'Adjust SDK is disabled, can not remove global callback parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
-  _instance.removePartnerCallbackParameter('key')
+  _instance.removeGlobalPartnerParameter('key')
 
   expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
     ? 'Adjust SDK can not remove global partner parameter, no storage available'

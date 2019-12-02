@@ -111,7 +111,7 @@ function removeGlobalCallbackParameter (key: string): void {
  *
  * @param {string} key
  */
-function removePartnerCallbackParameter (key: string): void {
+function removeGlobalPartnerParameter (key: string): void {
   _preCheck('remove global partner parameter', () => remove(key, 'partner'))
 }
 
@@ -361,7 +361,7 @@ const Adjust = {
   addGlobalCallbackParameters,
   addGlobalPartnerParameters,
   removeGlobalCallbackParameter,
-  removePartnerCallbackParameter,
+  removeGlobalPartnerParameter,
   clearGlobalCallbackParameters,
   clearGlobalPartnerParameters,
   switchToOfflineMode,

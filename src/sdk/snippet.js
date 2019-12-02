@@ -34,7 +34,7 @@
     'addGlobalCallbackParameters',
     'addGlobalPartnerParameters',
     'removeGlobalCallbackParameter',
-    'removePartnerCallbackParameter',
+    'removeGlobalPartnerParameter',
     'clearGlobalCallbackParameters',
     'clearGlobalPartnerParameters',
     'switchToOfflineMode',

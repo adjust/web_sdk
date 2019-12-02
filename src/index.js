@@ -61,7 +61,7 @@ app.start({
   addgcp: () => Adjust.addGlobalCallbackParameters(globalCallpackParams),
   addgpp: () => Adjust.addGlobalPartnerParameters(globalPartnerParams),
   removegcp: () => Adjust.removeGlobalCallbackParameter('key1'),
-  removegpp: () => Adjust.removePartnerCallbackParameter('key-1'),
+  removegpp: () => Adjust.removeGlobalPartnerParameter('key-1'),
   cleargcp: Adjust.clearGlobalCallbackParameters,
   cleargpp: Adjust.clearGlobalPartnerParameters,
   gooffline: () => Adjust.switchToOfflineMode(),
@@ -70,3 +70,4 @@ app.start({
   restart: Adjust.restart,
   gdpr: Adjust.gdprForgetMe
 })
+
