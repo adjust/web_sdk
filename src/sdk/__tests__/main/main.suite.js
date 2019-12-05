@@ -14,6 +14,7 @@ import * as ActivityState from '../../activity-state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as http from '../../http'
+import * as Scheduler from '../../scheduler'
 
 const config = {
   appToken: 'some-app-token',
@@ -55,9 +56,10 @@ function expectStart () {
       expect(Queue.run).toHaveBeenCalledWith({cleanUp: true})
       expect(Session.watch).toHaveBeenCalledTimes(1)
       expect(sdkClick.default).toHaveBeenCalledTimes(1)
+      expect(Scheduler.flush).toHaveBeenCalledTimes(1)
     })
 
-  return {assertions: 14, promise}
+  return {assertions: 15, promise}
 }
 
 function expectPartialStartWithGdprRequest () {
@@ -67,10 +69,11 @@ function expectPartialStartWithGdprRequest () {
       expect(Queue.run).not.toHaveBeenCalled()
       expect(Session.watch).not.toHaveBeenCalled()
       expect(sdkClick.default).not.toHaveBeenCalled()
+      expect(Scheduler.flush).not.toHaveBeenCalled()
       expectGdprRequest()
     })
 
-  return {assertions: 15, promise}
+  return {assertions: 16, promise}
 }
 
 function expectNotStart (restart) {
@@ -87,36 +90,65 @@ function expectNotStart (restart) {
   expect(Queue.run).not.toHaveBeenCalled()
   expect(Session.watch).not.toHaveBeenCalled()
   expect(sdkClick.default).not.toHaveBeenCalled()
+  expect(Scheduler.flush).not.toHaveBeenCalled()
 
+}
+
+function expectDelayedTrackEvent () {
+
+  _instance.trackEvent({eventToken: 'bla123'})
+
+  expect(Scheduler.delay).toHaveBeenCalledTimes(1)
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Calling track event is delayed until Adjust SDK is up')
+
+  const promise = Utils.flushPromises()
+    .then(() => {
+      expect(event.default).toHaveBeenCalledWith({eventToken: 'bla123'}, expect.any(Number))
+    })
+
+  return {assertions: 3, promise}
 }
 
 function expectRunningTrackEvent () {
 
   _instance.trackEvent({eventToken: 'blabla'})
 
-  expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'})
+  expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'}, undefined)
 
   return {assertions: 1}
 }
 
-function expectNotRunningTrackEvent (noInstance, noStorage) {
+function expectNotRunningTrackEvent () {
 
   _instance.trackEvent({eventToken: 'blabla'})
 
-  if (noInstance) {
-    if (noStorage) {
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not track event, no storage available')
-    } else {
-      expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
-    }
-  } else {
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not track event')
-    expect(event.default).not.toHaveBeenCalled()
-  }
-
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not track event')
+  expect(event.default).not.toHaveBeenCalled()
   expect(GlobalParams.get).not.toHaveBeenCalled()
 
-  return {assertions: noInstance ? 2 : 3}
+  return {assertions: 3}
+}
+
+function expectNotRunningTrackEventWhenNoInstance () {
+
+  _instance.trackEvent({eventToken: 'blabla'})
+
+  expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK can not track event, sdk instance is not initialized')
+  expect(GlobalParams.get).not.toHaveBeenCalled()
+
+  return {assertions: 2}
+
+}
+
+function expectNotRunningTrackEventWhenNoStorage () {
+
+  _instance.trackEvent({eventToken: 'blabla'})
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not track event, no storage available')
+  expect(GlobalParams.get).not.toHaveBeenCalled()
+
+  return {assertions: 2}
+
 }
 
 function expectRunningStatic () {
@@ -153,55 +185,81 @@ function expectRunningStatic () {
   return {assertions: 8}
 }
 
-function expectNotRunningStatic (noStorage) {
+function expectNotRunningStatic () {
 
   _instance.addGlobalCallbackParameters([{key: 'key', value: 'value'}])
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
-    ? 'Adjust SDK can not add global callback parameters, no storage available'
-    : 'Adjust SDK is disabled, can not add global callback parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not add global callback parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
   _instance.addGlobalPartnerParameters([{key: 'key', value: 'value'}])
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
-    ? 'Adjust SDK can not add global partner parameters, no storage available'
-    : 'Adjust SDK is disabled, can not add global partner parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not add global partner parameters')
   expect(GlobalParams.add).not.toHaveBeenCalled()
 
   _instance.removeGlobalCallbackParameter('key')
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
-    ? 'Adjust SDK can not remove global callback parameter, no storage available'
-    : 'Adjust SDK is disabled, can not remove global callback parameter')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove global callback parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
   _instance.removeGlobalPartnerParameter('key')
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
-    ? 'Adjust SDK can not remove global partner parameter, no storage available'
-    : 'Adjust SDK is disabled, can not remove global partner parameter')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove global partner parameter')
   expect(GlobalParams.remove).not.toHaveBeenCalled()
 
   _instance.clearGlobalCallbackParameters()
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
-    ? 'Adjust SDK can not remove all global callback parameters, no storage available'
-    : 'Adjust SDK is disabled, can not remove all global callback parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove all global callback parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
   _instance.clearGlobalPartnerParameters()
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
-    ? 'Adjust SDK can not remove all global partner parameters, no storage available'
-    : 'Adjust SDK is disabled, can not remove all global partner parameters')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not remove all global partner parameters')
   expect(GlobalParams.removeAll).not.toHaveBeenCalled()
 
   _instance.switchToOfflineMode()
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith(noStorage
-    ? 'Adjust SDK can not set offline mode, no storage available'
-    : 'Adjust SDK is disabled, can not set offline mode')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not set offline mode')
+  expect(Queue.setOffline).not.toHaveBeenCalled()
+
+  return {assertions: 14}
+}
+
+function expectNotRunningStaticWhenNoStorage () {
+
+  _instance.addGlobalCallbackParameters([{key: 'key', value: 'value'}])
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not add global callback parameters, no storage available')
+  expect(GlobalParams.add).not.toHaveBeenCalled()
+
+  _instance.addGlobalPartnerParameters([{key: 'key', value: 'value'}])
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not add global partner parameters, no storage available')
+  expect(GlobalParams.add).not.toHaveBeenCalled()
+
+  _instance.removeGlobalCallbackParameter('key')
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not remove global callback parameter, no storage available')
+  expect(GlobalParams.remove).not.toHaveBeenCalled()
+
+  _instance.removeGlobalPartnerParameter('key')
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not remove global partner parameter, no storage available')
+  expect(GlobalParams.remove).not.toHaveBeenCalled()
+
+  _instance.clearGlobalCallbackParameters()
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not remove all global callback parameters, no storage available')
+  expect(GlobalParams.removeAll).not.toHaveBeenCalled()
+
+  _instance.clearGlobalPartnerParameters()
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not remove all global partner parameters, no storage available')
+  expect(GlobalParams.removeAll).not.toHaveBeenCalled()
+
+  _instance.switchToOfflineMode()
+
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not set offline mode, no storage available')
   expect(Queue.setOffline).not.toHaveBeenCalled()
 
   return {assertions: 14}
@@ -436,10 +494,14 @@ export default function Suite (instance) {
     expectStart,
     expectPartialStartWithGdprRequest,
     expectNotStart,
+    expectDelayedTrackEvent,
     expectRunningTrackEvent,
     expectNotRunningTrackEvent,
+    expectNotRunningTrackEventWhenNoInstance,
+    expectNotRunningTrackEventWhenNoStorage,
     expectRunningStatic,
     expectNotRunningStatic,
+    expectNotRunningStaticWhenNoStorage,
     expectAttributionCallback,
     expectNotAttributionCallback,
     expectShutDown,

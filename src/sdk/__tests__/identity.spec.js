@@ -58,7 +58,7 @@ describe('test identity methods', () => {
 
       Identity.start()
         .catch(error => {
-          expect(error).toEqual({message: 'Adjust SDK start already in progress'})
+          expect(error).toEqual({interrupted: true, message: 'Adjust SDK start already in progress'})
         })
 
       return promise

@@ -8,6 +8,7 @@ import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
+import * as Scheduler from '../../scheduler'
 import Suite from './main.suite'
 
 jest.mock('../../logger')
@@ -30,6 +31,7 @@ describe('main entry point - test instance initiation when storage is not availa
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(GdprForgetDevice, 'check')
     jest.spyOn(Listeners, 'register')
+    jest.spyOn(Scheduler, 'flush')
   })
 
   afterEach(() => {
@@ -51,8 +53,8 @@ describe('main entry point - test instance initiation when storage is not availa
 
     expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK can not start, there is no storage available')
     suite.expectNotStart()
-    suite.expectNotRunningStatic(true)
-    suite.expectNotRunningTrackEvent(true, true)
+    suite.expectNotRunningStaticWhenNoStorage()
+    suite.expectNotRunningTrackEventWhenNoStorage()
 
   })
 

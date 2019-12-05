@@ -21,8 +21,9 @@ describe('test publish-subscribe pattern', () => {
   })
 
   afterAll(() => {
-    jest.restoreAllMocks()
     PubSub.destroy()
+    jest.restoreAllMocks()
+    jest.clearAllTimers()
   })
 
   it('publishes pretty event', () => {

@@ -339,7 +339,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {auto: true})
 
           jest.runOnlyPendingTimers()
 
@@ -409,7 +409,7 @@ describe('test session functionality', () => {
               callbackParams: {key1: 'value1', key2: 'value2'},
               partnerParams: {some: 'thing', very: 'nice'}
             }
-          }, true)
+          }, {auto: true})
 
           jest.advanceTimersByTime(150)
 
@@ -727,7 +727,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {auto: true})
           expect(PubSub.publish).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
@@ -796,7 +796,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {auto: true})
 
           jest.runOnlyPendingTimers()
 
@@ -896,7 +896,7 @@ describe('test session functionality', () => {
             url: '/session',
             method: 'POST',
             params: {}
-          }, true)
+          }, {auto: true})
 
           jest.runOnlyPendingTimers()
 

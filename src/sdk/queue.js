@@ -133,15 +133,23 @@ function _persist (url) {
  * @param {string} method
  * @param {Object=} params
  * @param {boolean=} auto
+ * @param {number=} timestamp
  * @returns {Promise}
  */
-function push ({url, method, params}, auto) {
+function push ({url, method, params}, {auto, timestamp} = {}) {
 
   ActivityState.updateParams(url, auto)
 
-  params = _prepareParams(url, params)
+  const pending = {
+    timestamp: _prepareTimestamp(),
+    url,
+    method,
+    params: _prepareParams(url, params)
+  }
 
-  const pending = {timestamp: _prepareTimestamp(), url, method, params}
+  if (timestamp) {
+    pending.createdAt = timestamp
+  }
 
   return Storage.addItem(_storeName, pending)
     .then(() => _persist(url))
@@ -152,6 +160,7 @@ function push ({url, method, params}, auto) {
  * Prepare to send pending request if available
  *
  * @param {number} timestamp
+ * @param {number=} createdAt
  * @param {string=} url
  * @param {string=} method
  * @param {Object=} params
@@ -159,9 +168,9 @@ function push ({url, method, params}, auto) {
  * @returns {Promise}
  * @private
  */
-function _prepareToSend ({timestamp, url, method, params} = {}, wait) {
+function _prepareToSend ({timestamp, createdAt, url, method, params} = {}, wait) {
   const activityState = ActivityState.current || {}
-  const firstSession = url === '/session' && !activityState.attribution
+  const firstSession = url === '/session' && !activityState.installed
   const noPending = !url && !method && !params
 
   if (_isOffline && !firstSession || noPending) {
@@ -174,7 +183,7 @@ function _prepareToSend ({timestamp, url, method, params} = {}, wait) {
     method,
     params: {
       ...params,
-      createdAt: getTimestamp(timestamp)
+      createdAt: getTimestamp(createdAt || timestamp)
     },
     wait: wait || _checkWait()
   })

@@ -11,6 +11,7 @@ import * as Attribution from '../../attribution'
 import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
+import * as Scheduler from '../../scheduler'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
@@ -50,6 +51,8 @@ describe('main entry point - test enable/disable when in initially enabled state
     jest.spyOn(GdprForgetDevice, 'check')
     jest.spyOn(Listeners, 'register')
     jest.spyOn(Listeners, 'destroy')
+    jest.spyOn(Scheduler, 'delay')
+    jest.spyOn(Scheduler, 'flush')
   })
 
   afterEach(() => {
@@ -73,19 +76,18 @@ describe('main entry point - test enable/disable when in initially enabled state
       AdjustInstance.initSdk(suite.config)
 
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectRunningTrackEvent()
+      const a2 = suite.expectDelayedTrackEvent()
       const a3 = suite.expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
 
-      return a3.promise
+      return a2.promise
     })
 
     it('disables sdk with shutdown', () => {
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
       expect(Identity.disable).toHaveBeenCalled()
 
@@ -164,12 +166,12 @@ describe('main entry point - test enable/disable when in initially enabled state
       AdjustInstance.initSdk(suite.config)
 
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectRunningTrackEvent()
+      const a2 = suite.expectDelayedTrackEvent()
       const a3 = suite.expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
 
-      return a3.promise
+      return a2.promise
     })
 
     it('fails to enable already enabled sdk', () => {
@@ -185,7 +187,6 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
       expect(Identity.disable).toHaveBeenCalled()
 
@@ -266,7 +267,7 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('prevents running track event', () => {
-      suite.expectNotRunningTrackEvent(true)
+      suite.expectNotRunningTrackEventWhenNoInstance()
     })
 
     it('fails to enable already enabled sdk', () => {
@@ -282,15 +283,13 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(19)
-
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectRunningTrackEvent()
+      const a2 = suite.expectDelayedTrackEvent()
       const a3 = suite.expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
 
-      return a3.promise
+      return a2.promise
     })
 
     it('fails again to enable already enabled sdk', () => {
@@ -306,7 +305,6 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
       expect(Identity.disable).toHaveBeenCalled()
 
@@ -368,15 +366,13 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(19)
-
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectRunningTrackEvent()
+      const a2 = suite.expectDelayedTrackEvent()
       const a3 = suite.expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
 
-      return a3.promise
+      return a2.promise
     })
   })
 

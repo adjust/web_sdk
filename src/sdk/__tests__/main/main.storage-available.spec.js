@@ -11,6 +11,7 @@ import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Attribution from '../../attribution'
 import * as Storage from '../../storage/storage'
 import * as Listeners from '../../listeners'
+import * as Scheduler from '../../scheduler'
 import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
 import Suite from './main.suite'
@@ -47,6 +48,7 @@ describe('main entry point - test instance initiation when storage is available'
     jest.spyOn(Storage.default, 'destroy')
     jest.spyOn(Listeners, 'register')
     jest.spyOn(Listeners, 'destroy')
+    jest.spyOn(Scheduler, 'flush')
 
     sessionWatchSpy = jest.spyOn(Session, 'watch')
   })
@@ -83,24 +85,63 @@ describe('main entry point - test instance initiation when storage is available'
 
       AdjustInstance.trackEvent()
 
-      expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
+      expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK can not track event, sdk instance is not initialized')
     })
 
-    it('runs session first and then sdk-click request', () => {
-      Utils.setDocumentProp('referrer', 'http://some-site.com')
+    it('runs session first and then sdk-click request and track event', () => {
+
       global.history.pushState({}, '', '?adjust_referrer=param%3Dvalue&something=else')
 
       AdjustInstance.initSdk(suite.config)
+      AdjustInstance.trackEvent({eventToken: 'bla123'})
 
-      expect.assertions(2)
+      expect.assertions(3)
 
       return Utils.flushPromises()
         .then(() => {
+
           const requests = Queue.push.mock.calls.map(call => call[0].url)
 
           expect(requests[0]).toEqual('/session')
           expect(requests[1]).toEqual('/sdk_click')
+          expect(requests[2]).toEqual('/event')
+
+          global.history.pushState({}, '', '?')
         })
+    })
+
+    it('respect the order of events tracked', () => {
+
+      AdjustInstance.initSdk(suite.config)
+
+      AdjustInstance.trackEvent({eventToken: 'bla1'})
+      AdjustInstance.trackEvent({eventToken: 'bla2'})
+
+      expect.assertions(9)
+
+      return Utils.flushPromises()
+        .then(() => {
+
+          AdjustInstance.trackEvent({eventToken: 'bla3'})
+          AdjustInstance.trackEvent({eventToken: 'bla4'})
+          AdjustInstance.trackEvent({eventToken: 'bla5'})
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+          const requests = Queue.push.mock.calls
+
+          expect(requests[0][0].url).toEqual('/session')
+          expect(requests[1][0].url).toEqual('/event')
+          expect(requests[1][0].params.eventToken).toEqual('bla1')
+          expect(requests[2][0].url).toEqual('/event')
+          expect(requests[2][0].params.eventToken).toEqual('bla2')
+          expect(requests[3][0].url).toEqual('/event')
+          expect(requests[3][0].params.eventToken).toEqual('bla3')
+          expect(requests[4][0].url).toEqual('/event')
+          expect(requests[4][0].params.eventToken).toEqual('bla4')
+        })
+
     })
 
     it('ignores attribution change event when no attribution callback provided', () => {

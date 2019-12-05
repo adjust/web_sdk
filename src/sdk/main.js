@@ -3,7 +3,8 @@ import {
   type InitOptionsT,
   type LogOptionsT,
   type EventParamsT,
-  type GlobalParamsT
+  type GlobalParamsT,
+  type CustomErrorT
 } from './types'
 import Config from './config'
 import Storage from './storage/storage'
@@ -16,6 +17,7 @@ import {add, remove, removeAll, clear as globalParamsClear} from './global-param
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
 import {register as listenersRegister, destroy as listenersDestroy} from './listeners'
+import {delay, flush, destroy as schedulerDestroy} from './scheduler'
 import event from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
@@ -76,7 +78,7 @@ function initSdk ({logLevel, logOutput, ...options}: IntiConfigT = {}): void {
  * @param {Object} params
  */
 function trackEvent (params: EventParamsT): void {
-  _preCheck('track event', () => event(params))
+  _preCheck('track event', (timestamp) => event(params, timestamp), true)
 }
 
 /**
@@ -211,6 +213,7 @@ function _handleGdprForgetMe (): void {
 function _pause (): void {
   _isStarted = false
 
+  schedulerDestroy()
   queueDestroy()
   sessionDestroy()
   attributionDestroy()
@@ -262,23 +265,44 @@ function _continue (): Promise<void> {
 
   if (sdkStatus === 'off') {
     _shutdown()
-    return Promise.reject({message: message('due to complete async disable')})
+    return Promise.reject({interrupted: true, message: message('due to complete async disable')})
   }
 
   if (sdkStatus === 'paused') {
     _pause()
-    return Promise.reject({message: message('due to partial async disable')})
+    return Promise.reject({interrupted: true, message: message('due to partial async disable')})
   }
 
   if (_isStarted) {
-    return Promise.reject({message: message('due to multiple synchronous start attempt')})
+    return Promise.reject({interrupted: true, message: message('due to multiple synchronous start attempt')})
   }
-
-  _isStarted = true
 
   queueRun({cleanUp: true})
 
   return sessionWatch()
+    .then(() => {
+      _isStarted = true
+    })
+}
+
+/**
+ * Handle error coming from the chain of commands
+ *
+ * @param {Object|Error} error
+ * @private
+ */
+function _error (error: CustomErrorT | Error) {
+  if (error.interrupted) {
+    Logger.log(error.message)
+    return
+  }
+
+  _shutdown()
+  Logger.error('Adjust SDK start has been canceled due to an error', error)
+
+  if (error.stack) {
+    throw error
+  }
 }
 
 /**
@@ -322,14 +346,8 @@ function _start (options: InitOptionsT): void {
   start()
     .then(_continue)
     .then(sdkClick)
-    .catch(error => {
-      if (error && error.message) {
-        Logger.log(error.message)
-      } else {
-        _shutdown()
-        Logger.error('Adjust SDK start has been canceled due to an error', error)
-      }
-    })
+    .then(flush)
+    .catch(_error)
 }
 
 /**
@@ -337,9 +355,10 @@ function _start (options: InitOptionsT): void {
  *
  * @param {string} description
  * @param {Function} callback
+ * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed) {
+function _preCheck (description: string, callback: () => mixed, schedule?: boolean) {
   if (!Storage) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -350,8 +369,18 @@ function _preCheck (description: string, callback: () => mixed) {
     return
   }
 
+  if (schedule && !Config.isInitialised()) {
+    Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
+    return
+  }
+
   if (typeof callback === 'function') {
-    callback()
+    if (schedule && !_isStarted) {
+      delay(callback)
+      Logger.log(`Calling ${description} is delayed until Adjust SDK is up`)
+    } else {
+      callback()
+    }
   }
 }
 

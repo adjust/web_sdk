@@ -12,6 +12,7 @@ import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as http from '../../http'
+import * as Scheduler from '../../scheduler'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
@@ -54,6 +55,8 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(GdprForgetDevice, 'check')
     jest.spyOn(GdprForgetDevice, 'destroy')
     jest.spyOn(Listeners, 'register')
+    jest.spyOn(Scheduler, 'delay')
+    jest.spyOn(Scheduler, 'flush')
 
     State.default.disabled = {reason: 'gdpr'}
   })

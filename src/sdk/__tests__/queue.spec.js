@@ -13,7 +13,7 @@ jest.useFakeTimers()
 let currentTime = Date.now()
 let dateNowSpy
 
-function checkExecution ({config, times, success = true, successResult, wait = 150, flush = true, reset = false}) {
+function checkExecution ({config, times, success = true, successResult, wait = 150, flush = true, reset = false, timestamp}) {
 
   const logMessage = (times === 1 ? 'Trying' : 'Re-trying') + ` request ${config.url} in ${wait}ms`
   const requestAction = success ? 'resolves' : 'rejects'
@@ -28,7 +28,7 @@ function checkExecution ({config, times, success = true, successResult, wait = 1
   expect(http.default.mock.calls[lastRequest][0]).toMatchObject({
     url: config.url,
     method: 'GET',
-    params: {createdAt: 'some-time'}
+    params: {createdAt: Time.getTimestamp(timestamp)}
   })
   expect(http.default.mock.results[lastRequest].value)[requestAction].toEqual(requestActionResult)
   expect(Logger.default.log).toHaveBeenLastCalledWith(logMessage)
@@ -61,10 +61,11 @@ describe('test request queuing functionality', () => {
     jest.spyOn(Logger.default, 'info')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'error')
-    jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
   })
 
   beforeEach(() => {
+    dateNowSpy.mockReturnValue(currentTime)
+
     ActivityState.default.init({uuid: 'some-uuid'})
     ActivityState.default.initParams()
   })
@@ -83,8 +84,6 @@ describe('test request queuing functionality', () => {
 
   it('pushes request to the queue and executes it if connected', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
     const config = {url: '/some-url'}
 
     expect.assertions(6)
@@ -102,7 +101,7 @@ describe('test request queuing functionality', () => {
         expect(http.default.mock.calls[0][0]).toMatchObject({
           url: config.url,
           method: 'GET',
-          params: {createdAt: 'some-time'}
+          params: {createdAt: Time.getTimestamp(currentTime)}
         })
         expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /some-url in 150ms')
 
@@ -118,8 +117,7 @@ describe('test request queuing functionality', () => {
 
   it('pushes multiple requests to the queue and executes them if connected', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
+    let queue
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
@@ -145,17 +143,19 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime+2, url: '/some-url-3', params: defaultParams}
         ])
 
-        return checkExecution({config: config1, times: 1, reset: true}) // + 5 assertions
+        queue = result.slice()
+
+        return checkExecution({config: config1, times: 1, reset: true, timestamp: queue[0].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
-        return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config2, times: 1, reset: true, timestamp: queue[1].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
 
-        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config3, times: 1, reset: true, timestamp: queue[2].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
@@ -167,10 +167,53 @@ describe('test request queuing functionality', () => {
       })
   })
 
+  it('pushes multiple requests to the queue and provide original timestamp to one of them', () => {
+
+    const createdAt = currentTime - 5
+    const config1 = {url: '/some-url-1'}
+    const config2 = {url: '/some-url-2'}
+    const timestamp1 = currentTime
+    const timestamp2 = currentTime + 1
+
+    expect.assertions(15)
+
+    Queue.push(config1)
+    Queue.push(config2, {timestamp: createdAt})
+
+    return Utils.flushPromises()
+      .then(() => {
+
+        expect(Storage.default.addItem).toHaveBeenCalledTimes(2)
+
+        return Storage.default.getAll('queue')
+      })
+      .then(result => {
+
+        expect(result).toEqual([
+          {timestamp: timestamp1, url: '/some-url-1', params: defaultParams},
+          {timestamp: timestamp2, createdAt, url: '/some-url-2', params: defaultParams}
+        ])
+
+        return checkExecution({config: config1, times: 1, reset: true, timestamp: timestamp1}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
+
+        return checkExecution({config: config2, times: 1, reset: true, timestamp: createdAt}) // + 5 assertions
+      })
+      .then(() => {
+        expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
+
+        return Storage.default.getFirst('queue')
+      })
+      .then(pending => {
+        expect(pending).toBeUndefined()
+      })
+  })
+
   it('pushes multiple requests to the queue and executes them with some delay requested from backend', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
+    let queue
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
@@ -198,28 +241,30 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime+3, url: '/some-url-4', params: defaultParams}
         ])
 
+        queue = result.slice()
+
         http.default.mockResolvedValue({continue_in: 2000})
 
-        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 2000}}) // + 5 assertions
+        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 2000}, timestamp: queue[0].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
         http.default.mockResolvedValue({continue_in: 3000})
 
-        return checkExecution({config: config2, times: 1, reset: true, wait: 2000, successResult: {continue_in: 3000}}) // + 5 assertions
+        return checkExecution({config: config2, times: 1, reset: true, wait: 2000, successResult: {continue_in: 3000}, timestamp: queue[1].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
 
         http.default.mockResolvedValue({status: 'success'})
 
-        return checkExecution({config: config3, times: 1, reset: true, wait: 3000}) // + 5 assertions
+        return checkExecution({config: config3, times: 1, reset: true, wait: 3000, timestamp: queue[2].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
 
-        return checkExecution({config: config4, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config4, times: 1, reset: true, timestamp: queue[3].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-4 has been finished')
@@ -233,12 +278,10 @@ describe('test request queuing functionality', () => {
 
   it('pushes one request and then several subsequent ones and still obeys continue_in from first response of the first request', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
+    let queue
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
-
 
     expect.assertions(22)
 
@@ -258,7 +301,7 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime, url: '/some-url-1', params: defaultParams}
         ])
 
-        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 3000}, flush: true}) // + 5 assertions
+        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 3000}, flush: true, timestamp: currentTime}) // + 5 assertions
       })
       .then(() => {
         dateNowSpy.mockReturnValue(currentTime += 400)
@@ -277,14 +320,16 @@ describe('test request queuing functionality', () => {
         ])
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
+        queue = result.slice()
+
         http.default.mockResolvedValue({status: 'success'})
 
-        return checkExecution({config: config2, times: 1, reset: true, wait: 2600}) // + 5 assertions
+        return checkExecution({config: config2, times: 1, reset: true, wait: 2600, timestamp: queue[0].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
 
-        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config3, times: 1, reset: true, timestamp: queue[1].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
@@ -298,8 +343,7 @@ describe('test request queuing functionality', () => {
 
   it('pushes one request which returns continue_in and then several subsequent ones which will continue executing normally when time passed is bigger then previously returned continue_in', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
+    let queue
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
@@ -322,7 +366,7 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime, url: '/some-url-1', params: defaultParams}
         ])
 
-        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 500}, flush: true}) // + 5 assertions
+        return checkExecution({config: config1, times: 1, reset: true, successResult: {continue_in: 500}, flush: true, timestamp: currentTime}) // + 5 assertions
       })
       .then(() => {
         dateNowSpy.mockReturnValue(currentTime += 600)
@@ -347,14 +391,16 @@ describe('test request queuing functionality', () => {
         ])
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
+        queue = result.slice()
+
         http.default.mockResolvedValue({status: 'success'})
 
-        return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config2, times: 1, reset: true, timestamp: queue[0].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
 
-        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config3, times: 1, reset: true, timestamp: queue[1].timestamp}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-3 has been finished')
@@ -368,10 +414,9 @@ describe('test request queuing functionality', () => {
 
   it('pushes requests to the queue and retries in fifo order if not connected', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
     http.default.mockRejectedValue(Utils.errorResponse())
 
+    let queue
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
 
@@ -393,11 +438,13 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams}
         ])
 
-        return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
+        queue = result.slice()
+
+        return checkExecution({config: config1, times: 1, success: false, timestamp: queue[0].timestamp}) // + 5 assertions
       })
-      .then(() => checkExecution({config: config1, times: 2, success: false, wait: 100})) // + 5 assertions
+      .then(() => checkExecution({config: config1, times: 2, success: false, wait: 100, timestamp: queue[0].timestamp})) // + 5 assertions
       .then(() => {
-        checkExecution({config: config1, times: 3, success: false, wait: 200, flush: false}) // + 5 assertions
+        checkExecution({config: config1, times: 3, success: false, wait: 200, flush: false, timestamp: queue[0].timestamp}) // + 5 assertions
 
         http.default.mockClear()
         http.default.mockResolvedValue({status: 'success'})
@@ -405,7 +452,7 @@ describe('test request queuing functionality', () => {
         return Utils.flushPromises()
       })
       .then(() => {
-        checkExecution({config: config1, times: 4, wait: 300, flush: false, reset: true}) // + 5 assertions
+        checkExecution({config: config1, times: 4, wait: 300, flush: false, reset: true, timestamp: queue[0].timestamp}) // + 5 assertions
 
         http.default.mockClear()
         http.default.mockRejectedValue(Utils.errorResponse())
@@ -415,17 +462,17 @@ describe('test request queuing functionality', () => {
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-1 has been finished')
 
-        return checkExecution({config: config2, times: 1, success: false}) // + 5 assertions
+        return checkExecution({config: config2, times: 1, success: false, timestamp: queue[1].timestamp}) // + 5 assertions
       })
       .then(() => {
-        checkExecution({config: config2, times: 2, success: false, wait: 100, flush: false}) // + 5 assertions
+        checkExecution({config: config2, times: 2, success: false, wait: 100, flush: false, timestamp: queue[1].timestamp}) // + 5 assertions
 
         http.default.mockClear()
         http.default.mockResolvedValue({status: 'success'})
 
         return Utils.flushPromises()
       })
-      .then(() => checkExecution({config: config2, times: 3, wait: 200, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 3, wait: 200, reset: true, timestamp: queue[1].timestamp})) // + 5 assertions
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /some-url-2 has been finished')
         expect(setTimeout).not.toHaveBeenCalled()
@@ -440,10 +487,9 @@ describe('test request queuing functionality', () => {
 
   it('pushes requests to the queue and retries in fifo order if not connected and executes the rest when connected', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
     http.default.mockRejectedValue(Utils.errorResponse())
 
+    let queue
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
     const config3 = {url: '/some-url-3'}
@@ -469,19 +515,21 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime+2, url: '/some-url-3', params: defaultParams}
         ])
 
-        return checkExecution({config: config1, times: 1, success: false}) // + 5 assertions
+        queue = result.slice()
+
+        return checkExecution({config: config1, times: 1, success: false, timestamp: queue[0].timestamp}) // + 5 assertions
       })
       .then(() => {
-        checkExecution({config: config1, times: 2, success: false, wait: 100, flush: false}) // + 5 assertions
+        checkExecution({config: config1, times: 2, success: false, wait: 100, flush: false, timestamp: queue[0].timestamp}) // + 5 assertions
 
         http.default.mockClear()
         http.default.mockResolvedValue({status: 'success'})
 
         return Utils.flushPromises()
       })
-      .then(() => checkExecution({config: config1, times: 3, wait: 200, reset: true})) // + 5 assertions
-      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
-      .then(() => checkExecution({config: config3, times: 1, wait: 150, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config1, times: 3, wait: 200, reset: true, timestamp: queue[0].timestamp})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true, timestamp: queue[1].timestamp})) // + 5 assertions
+      .then(() => checkExecution({config: config3, times: 1, wait: 150, reset: true, timestamp: queue[2].timestamp})) // + 5 assertions
       .then(() => {
         expect(setTimeout).not.toHaveBeenCalled()
       })
@@ -506,10 +554,9 @@ describe('test request queuing functionality', () => {
 
   it('does not execute the queue in offline mode and then run the queue when set back to online mode', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
     Queue.setOffline(true)
 
+    let queue
     const config1 = {url: '/some-url-1'}
     const config2 = {url: '/some-url-2'}
 
@@ -537,14 +584,16 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime+1, url: '/some-url-2', params: defaultParams}
         ])
 
+        queue = result.slice()
+
         Queue.setOffline(false)
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
         return Utils.flushPromises()
       })
-      .then(() => checkExecution({config: config1, times: 1, reset: true})) // + 5 assertions
-      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config1, times: 1, reset: true, timestamp: queue[0].timestamp})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true, timestamp: queue[1].timestamp})) // + 5 assertions
       .then(() => Storage.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
@@ -553,8 +602,6 @@ describe('test request queuing functionality', () => {
   })
 
   it('does execute first session in offline mode and ignores everything else', () => {
-
-    dateNowSpy.mockReturnValue(currentTime)
 
     Queue.setOffline(true)
 
@@ -573,7 +620,7 @@ describe('test request queuing functionality', () => {
 
         expect(Storage.default.addItem).toHaveBeenCalledTimes(2)
 
-        checkExecution({config: config1, times: 1, reset: true, flush: false}) // + 5 assertions
+        checkExecution({config: config1, times: 1, reset: true, flush: false, timestamp: currentTime}) // + 5 assertions
 
         http.default.mockClear()
 
@@ -599,7 +646,7 @@ describe('test request queuing functionality', () => {
 
         return Utils.flushPromises()
       })
-      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true, timestamp: currentTime+1})) // + 5 assertions
       .then(() => Storage.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
@@ -610,12 +657,11 @@ describe('test request queuing functionality', () => {
 
   it('does not execute session when not first one in offline mode and ignores everything else as well', () => {
 
-    dateNowSpy.mockReturnValue(currentTime)
-
     Queue.setOffline(true)
 
-    ActivityState.default.current = {attribution: {adid: '123', tracker_token: '123abc', tracker_name: 'tracker', network: 'bla'}}
+    ActivityState.default.current = {...ActivityState.default.current, installed: true}
 
+    let queue
     const config1 = {url: '/session'}
     const config2 = {url: '/event'}
 
@@ -643,14 +689,16 @@ describe('test request queuing functionality', () => {
           {timestamp: currentTime+1, url: '/event', params: {...defaultParams, eventCount: 1}}
         ])
 
+        queue = result.slice()
+
         Queue.setOffline(false)
 
         expect(Logger.default.info).toHaveBeenLastCalledWith('The app is now in online mode')
 
         return Utils.flushPromises()
       })
-      .then(() => checkExecution({config: config1, times: 1, reset: true})) // + 5 assertions
-      .then(() => checkExecution({config: config2, times: 1, reset: true})) // + 5 assertions
+      .then(() => checkExecution({config: config1, times: 1, reset: true, timestamp: queue[0].timestamp})) // + 5 assertions
+      .then(() => checkExecution({config: config2, times: 1, reset: true, timestamp: queue[1].timestamp})) // + 5 assertions
       .then(() => Storage.default.getFirst('queue'))
       .then(pending => {
         expect(pending).toBeUndefined()
@@ -831,27 +879,27 @@ describe('test request queuing functionality', () => {
           }
         ])
 
-        return checkExecution({config: config1, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config1, times: 1, reset: true, timestamp: timestamp1}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /session has been finished')
 
-        return checkExecution({config: config2, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config2, times: 1, reset: true, timestamp: timestamp2}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /event has been finished')
 
-        return checkExecution({config: config3, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config3, times: 1, reset: true, timestamp: timestamp3}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /event has been finished')
 
-        return checkExecution({config: config4, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config4, times: 1, reset: true, timestamp: timestamp4}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /session has been finished')
 
-        return checkExecution({config: config5, times: 1, reset: true}) // + 5 assertions
+        return checkExecution({config: config5, times: 1, reset: true, timestamp: timestamp5}) // + 5 assertions
       })
       .then(() => {
         expect(Logger.default.log).toHaveBeenCalledWith('Request /event has been finished')

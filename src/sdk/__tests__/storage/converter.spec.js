@@ -40,8 +40,8 @@ describe('test Converter utility', () => {
           record: {
             url: '/session',
             timestamp: 123456,
+            createdAt: 123456,
             params: {
-              createdAt: 123456,
               timeSpent: 1,
               sessionLength: 2,
               sessionCount: 3,
@@ -55,8 +55,8 @@ describe('test Converter utility', () => {
         })).toEqual({
           u: 1,
           t: 123456,
+          ca: 123456,
           p: {
-            ca: 123456,
             ts: 1,
             sl: 2,
             sc: 3,
@@ -75,7 +75,6 @@ describe('test Converter utility', () => {
             url: '/session',
             timestamp: 123456,
             params: {
-              createdAt: 123456,
               timeSpent: 1,
               sessionLength: 2,
               sessionCount: 3,
@@ -90,7 +89,6 @@ describe('test Converter utility', () => {
           u: 1,
           t: 123456,
           p: {
-            ca: 123456,
             ts: 1,
             sl: 2,
             sc: 3,
@@ -109,8 +107,8 @@ describe('test Converter utility', () => {
             u: 3,
             t: 6543321,
             m: 2,
+            ca: 982734982,
             p: {
-              ca: 982734982,
               ts: 10,
               sl: 2,
               sc: 5,
@@ -123,8 +121,8 @@ describe('test Converter utility', () => {
           url: '/gdpr_forget_device',
           timestamp: 6543321,
           method: 'POST',
+          createdAt: 982734982,
           params: {
-            createdAt: 982734982,
             timeSpent: 10,
             sessionLength: 2,
             sessionCount: 5,
@@ -285,15 +283,15 @@ describe('test Converter utility', () => {
           storeName: 'queue',
           dir: 'left',
           records: [
-            {url: '/session', method: 'POST', timestamp: 123456, params: {createdAt: 123456, timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10}},
-            {url: '/event', method: 'POST', timestamp: 28374628, params: {createdAt: 28374628, timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc'}},
-            {url: '/event', method: 'POST', timestamp: 28374628, params: {createdAt: 28374628, timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5, eventToken: 'abc123', revenue: 100}},
+            {url: '/session', method: 'POST', timestamp: 123456, createdAt: 123456, params: {timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10}},
+            {url: '/event', method: 'POST', timestamp: 28374628, params: {timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc'}},
+            {url: '/event', method: 'POST', timestamp: 28374628, params: {timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5, eventToken: 'abc123', revenue: 100}},
             {url: '/url', method: 'DELETE', timestamp: 123746, params: {custom: 'param'}}
           ]
         })).toEqual([
-          {u: 1, m: 2, t: 123456, p: {ca: 123456, ts: 10, sl: 12, sc: 9, ec: 10, li: 10}},
-          {u: 2, m: 2, t: 28374628, p: {ca: 28374628, ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc'}},
-          {u: 2, m: 2, t: 28374628, p: {ca: 28374628, ts: 5, sl: 6, sc: 9, ec: 12, li: 5, et: 'abc123', re: 100}},
+          {u: 1, m: 2, t: 123456, ca: 123456, p: {ts: 10, sl: 12, sc: 9, ec: 10, li: 10}},
+          {u: 2, m: 2, t: 28374628, p: {ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc'}},
+          {u: 2, m: 2, t: 28374628, p: {ts: 5, sl: 6, sc: 9, ec: 12, li: 5, et: 'abc123', re: 100}},
           {u: '/url', m: 4, t: 123746, p: {custom: 'param'}}
         ])
 
@@ -301,16 +299,16 @@ describe('test Converter utility', () => {
           storeName: 'queue',
           dir: 'right',
           records: [
-            {u: 1, t: 12412, p: {ca: 12412, ts: 10, sl: 12, sc: 9, ec: 10, li: 10}},
-            {u: 2, m: 2, t: 12312, p: {ca: 12312, ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc'}},
-            {u: 3, m: 3, t: 3423452, p: {ca: 3423452, ts: 5, sl: 6, sc: 9, ec: 12, li: 5}},
-            {u: '/some-other-url', m: 1, t: 123746, p: {other: 'param', ca: 123746}}
+            {u: 1, t: 12412, p: {ts: 10, sl: 12, sc: 9, ec: 10, li: 10}},
+            {u: 2, m: 2, t: 12312, ca: 12312, p: {ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc'}},
+            {u: 3, m: 3, t: 3423452, ca: 3423452, p: {ts: 5, sl: 6, sc: 9, ec: 12, li: 5}},
+            {u: '/some-other-url', m: 1, t: 123746, p: {other: 'param'}}
           ]
         })).toEqual([
-          {url: '/session', timestamp: 12412, params: {createdAt: 12412, timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10}},
-          {url: '/event', method: 'POST', timestamp: 12312, params: {createdAt: 12312, timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc'}},
-          {url: '/gdpr_forget_device', method: 'PUT', timestamp: 3423452, params: {createdAt: 3423452, timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5}},
-          {url: '/some-other-url', method: 'GET', timestamp: 123746, params: {other: 'param', createdAt: 123746}}
+          {url: '/session', timestamp: 12412, params: {timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10}},
+          {url: '/event', method: 'POST', timestamp: 12312, createdAt: 12312, params: {timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc'}},
+          {url: '/gdpr_forget_device', method: 'PUT', timestamp: 3423452, createdAt: 3423452, params: {timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5}},
+          {url: '/some-other-url', method: 'GET', timestamp: 123746, params: {other: 'param'}}
         ])
 
       })

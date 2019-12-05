@@ -17,7 +17,7 @@ const appOptions = {
   environment: 'sandbox'
 }
 
-function expectRequest (requestConfig) {
+function expectRequest (requestConfig, timestamp) {
 
   const fullConfig = {
     ...requestConfig,
@@ -35,7 +35,7 @@ function expectRequest (requestConfig) {
 
   return Utils.flushPromises()
     .then(() => {
-      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig, {timestamp})
 
       jest.runOnlyPendingTimers()
 
@@ -74,27 +74,6 @@ describe('event tracking functionality', () => {
     jest.restoreAllMocks()
   })
 
-  it('prevents running event request before initialisation', () => {
-
-    event.default({})
-
-    expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
-    expect(Logger.default.error).toHaveBeenCalledTimes(1)
-
-    return Utils.flushPromises()
-      .then(() => {
-        expect(Queue.push).not.toHaveBeenCalled()
-
-        jest.runOnlyPendingTimers()
-
-        expect(http.default).not.toHaveBeenCalled()
-
-        event.default()
-        expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK is not initiated, can not track event')
-        expect(Logger.default.error).toHaveBeenCalledTimes(2)
-      })
-  })
-
   describe('after initialisation', () => {
 
     beforeAll(() => {
@@ -126,6 +105,28 @@ describe('event tracking functionality', () => {
           callbackParams: {'some-key': 'some-value'}
         }
       })
+    })
+
+    it('resolves event request successfully without revenue and some map params 2', () => {
+
+      const timestamp = 1575380422927
+
+      expect.assertions(2)
+
+      event.default({
+        eventToken: '123abc',
+        callbackParams: [{key: 'some-key', value: 'some-value'}],
+        revenue: 0
+      }, timestamp)
+
+      return expectRequest({
+        url: '/event',
+        method: 'POST',
+        params: {
+          eventToken: '123abc',
+          callbackParams: {'some-key': 'some-value'}
+        }
+      }, timestamp)
     })
 
     it('resolves event request successfully with revenue but no currency', () => {

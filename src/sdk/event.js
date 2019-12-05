@@ -163,14 +163,10 @@ function _checkEventDeduplicationId (id?: string): Promise<?number> {
  * Track event by sending the request to the server
  *
  * @param {Object} params
+ * @param {number=} timestamp
  * @return Promise
  */
-export default function event (params: EventParamsT): void | Promise<void> {
-  if (!Config.isInitialised()) {
-    Logger.error('Adjust SDK is not initiated, can not track event')
-    return
-  }
-
+export default function event (params: EventParamsT, timestamp?: number): void | Promise<void> {
   if (!params || (params && (isEmpty(params) || !params.eventToken))) {
     Logger.error('You must provide event token in order to track event')
     return
@@ -183,7 +179,7 @@ export default function event (params: EventParamsT): void | Promise<void> {
         url: '/event',
         method: 'POST',
         params: _prepareParams(params, globalParams)
-      })
+      }, {timestamp})
     })
     .catch(error => {
       if (error && error.message) {

@@ -12,6 +12,7 @@ import * as State from '../../state'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as http from '../../http'
+import * as Scheduler from '../../scheduler'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
@@ -58,6 +59,8 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     jest.spyOn(GdprForgetDevice, 'destroy')
     jest.spyOn(Listeners, 'register')
     jest.spyOn(Listeners, 'destroy')
+    jest.spyOn(Scheduler, 'delay')
+    jest.spyOn(Scheduler, 'flush')
 
     State.default.disabled = null
   })
@@ -81,15 +84,13 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(19)
-
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectRunningTrackEvent()
+      const a2 = suite.expectDelayedTrackEvent()
       const a3 = suite.expectStart()
 
       expect.assertions(a1.assertions + a2.assertions + a3.assertions)
 
-      return a3.promise
+      return a2.promise
     })
 
     it('runs forget-me request and flush', () => {
@@ -229,8 +230,6 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     it('initiates and prevents running all static methods and track event and runs forget-me request', () => {
 
       AdjustInstance.initSdk(suite.config)
-
-      expect.assertions(20)
 
       const a1 = suite.expectPartialStartWithGdprRequest()
       const a2 = suite.expectNotRunningStatic()

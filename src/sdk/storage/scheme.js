@@ -22,13 +22,11 @@ const _queueScheme = {
         DELETE: 4
       }
     },
-    timestamp: {
-      key: 't'
-    },
+    timestamp: 't',
+    createdAt: 'ca',
     params: {
       key: 'p',
       keys: {
-        createdAt: 'ca',
         timeSpent: 'ts',
         sessionLength: 'sl',
         sessionCount: 'sc',

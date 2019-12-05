@@ -224,7 +224,7 @@ function _trackSession () {
         url: '/session',
         method: 'POST',
         params: _prepareParams(callbackParams, partnerParams)
-      }, true)
+      }, {auto: true})
     })
 }
 
