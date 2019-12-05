@@ -2438,13 +2438,11 @@ var _queueScheme = {
         DELETE: 4
       }
     },
-    timestamp: {
-      key: 't'
-    },
+    timestamp: 't',
+    createdAt: 'ca',
     params: {
       key: 'p',
       keys: {
-        createdAt: 'ca',
         timeSpent: 'ts',
         sessionLength: 'sl',
         sessionCount: 'sc',
@@ -5808,7 +5806,7 @@ function _interceptResponse(result, options) {
   }
 
   if (isSessionRequest) {
-    publish('session:finished');
+    publish('session:finished', result);
   }
 
   return result;
@@ -6737,6 +6735,7 @@ function identity_start()
 {
   if (_starting) {
     return identity_Promise.reject({
+      interrupted: true,
       message: 'Adjust SDK start already in progress'
     });
   }
@@ -7072,22 +7071,32 @@ function _persist(url) {
  * @param {string} method
  * @param {Object=} params
  * @param {boolean=} auto
+ * @param {number=} timestamp
  * @returns {Promise}
  */
 
 
-function push(_ref, auto) {
+function push(_ref) {
   var url = _ref.url,
       method = _ref.method,
       params = _ref.params;
+
+  var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      auto = _ref2.auto,
+      timestamp = _ref2.timestamp;
+
   activity_state.updateParams(url, auto);
-  params = queue_prepareParams(url, params);
   var pending = {
     timestamp: _prepareTimestamp(),
     url: url,
     method: method,
-    params: params
+    params: queue_prepareParams(url, params)
   };
+
+  if (timestamp) {
+    pending.createdAt = timestamp;
+  }
+
   return storage_storage.addItem(queue_storeName, pending).then(function () {
     return _persist(url);
   }).then(function () {
@@ -7098,6 +7107,7 @@ function push(_ref, auto) {
  * Prepare to send pending request if available
  *
  * @param {number} timestamp
+ * @param {number=} createdAt
  * @param {string=} url
  * @param {string=} method
  * @param {Object=} params
@@ -7108,15 +7118,16 @@ function push(_ref, auto) {
 
 
 function _prepareToSend() {
-  var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      timestamp = _ref2.timestamp,
-      url = _ref2.url,
-      method = _ref2.method,
-      params = _ref2.params;
+  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      timestamp = _ref3.timestamp,
+      createdAt = _ref3.createdAt,
+      url = _ref3.url,
+      method = _ref3.method,
+      params = _ref3.params;
 
   var wait = arguments.length > 1 ? arguments[1] : undefined;
   var activityState = activity_state.current || {};
-  var firstSession = url === '/session' && !activityState.attribution;
+  var firstSession = url === '/session' && !activityState.installed;
   var noPending = !url && !method && !params;
 
   if (_isOffline && !firstSession || noPending) {
@@ -7128,7 +7139,7 @@ function _prepareToSend() {
     url: url,
     method: method,
     params: objectSpread2_default()({}, params, {
-      createdAt: getTimestamp(timestamp)
+      createdAt: getTimestamp(createdAt || timestamp)
     }),
     wait: wait || _checkWait()
   });
@@ -7160,9 +7171,9 @@ function _checkWait() {
 
 
 function run() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      cleanUp = _ref3.cleanUp,
-      wait = _ref3.wait;
+  var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      cleanUp = _ref4.cleanUp,
+      wait = _ref4.wait;
 
   _current.running = true;
 
@@ -7602,12 +7613,21 @@ function _handleVisibilityChange() {
 /**
  * Handle session request finish; update installed state
  *
- * @returns {Promise}
+ * @param {Object} e
+ * @param {Object} result
+ * @returns {Promise|void}
  * @private
  */
 
 
-function _handleSessionRequestFinish() {
+function _handleSessionRequestFinish(e) {
+  var result = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (result.response && result.response.error) {
+    logger.error("Session was not successful, error was returned from the server: ".concat(result.response.error));
+    return;
+  }
+
   activity_state.updateInstalled();
   return persist();
 }
@@ -7676,7 +7696,9 @@ function _trackSession() {
       url: '/session',
       method: 'POST',
       params: session_prepareParams(callbackParams, partnerParams)
-    }, true);
+    }, {
+      auto: true
+    });
   });
 }
 /**
@@ -7979,6 +8001,67 @@ function gdpr_forget_device_destroy()
 }
 
 
+// CONCATENATED MODULE: ./src/sdk/scheduler.js
+/*:: type TaskT = {|
+  method: (timestamp?: number) => mixed,
+  timestamp: number
+|}*/
+
+/**
+ * Delayed tasks list
+ *
+ * @type {Array}
+ * @private
+ */
+var _tasks
+/*: Array<TaskT>*/
+= [];
+/**
+ * Put the dask in the delayed list
+ *
+ * @param {Function} method
+ */
+
+function delay(method
+/*: $PropertyType<TaskT, 'method'>*/
+)
+/*: void*/
+{
+  _tasks.push({
+    method: method,
+    timestamp: Date.now()
+  });
+}
+/**
+ * Flush all delayed tasks
+ */
+
+
+function flush()
+/*: void*/
+{
+  _tasks.forEach(function (task
+  /*: TaskT*/
+  ) {
+    if (typeof task.method === 'function') {
+      task.method(task.timestamp);
+    }
+  });
+
+  _tasks = [];
+}
+/**
+ * Destroy all pending tasks
+ */
+
+
+function scheduler_destroy()
+/*: void*/
+{
+  _tasks = [];
+}
+
+
 // CONCATENATED MODULE: ./src/sdk/event.js
 
 
@@ -8173,20 +8256,18 @@ function _checkEventDeduplicationId(id
  * Track event by sending the request to the server
  *
  * @param {Object} params
+ * @param {number=} timestamp
  * @return Promise
  */
 
 
 function event_event(params
 /*: EventParamsT*/
+, timestamp
+/*: number*/
 )
 /*: void | Promise<void>*/
 {
-  if (!config.isInitialised()) {
-    logger.error('Adjust SDK is not initiated, can not track event');
-    return;
-  }
-
   if (!params || params && (isEmpty(params) || !params.eventToken)) {
     logger.error('You must provide event token in order to track event');
     return;
@@ -8197,6 +8278,8 @@ function event_event(params
       url: '/event',
       method: 'POST',
       params: event_prepareParams(params, globalParams)
+    }, {
+      timestamp: timestamp
     });
   }).catch(function (error) {
     if (error && error.message) {
@@ -8251,7 +8334,8 @@ function sdkClick()
 
 
 var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
-/*:: import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT } from './types';*/
+/*:: import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT } from './types';*/
+
 
 
 
@@ -8339,9 +8423,9 @@ function trackEvent(params
 )
 /*: void*/
 {
-  _preCheck('track event', function () {
-    return event_event(params);
-  });
+  _preCheck('track event', function (timestamp) {
+    return event_event(params, timestamp);
+  }, true);
 }
 /**
  * Add global callback parameters
@@ -8536,6 +8620,7 @@ function _pause()
 /*: void*/
 {
   _isStarted = false;
+  scheduler_destroy();
   queue_destroy();
   session_destroy();
   attribution_destroy();
@@ -8599,6 +8684,7 @@ function main_continue()
     _shutdown();
 
     return main_Promise.reject({
+      interrupted: true,
       message: message('due to complete async disable')
     });
   }
@@ -8607,21 +8693,48 @@ function main_continue()
     _pause();
 
     return main_Promise.reject({
+      interrupted: true,
       message: message('due to partial async disable')
     });
   }
 
   if (_isStarted) {
     return main_Promise.reject({
+      interrupted: true,
       message: message('due to multiple synchronous start attempt')
     });
   }
 
-  _isStarted = true;
   run({
     cleanUp: true
   });
-  return watch();
+  return watch().then(function () {
+    _isStarted = true;
+  });
+}
+/**
+ * Handle error coming from the chain of commands
+ *
+ * @param {Object|Error} error
+ * @private
+ */
+
+
+function main_error(error
+/*: CustomErrorT | Error*/
+) {
+  if (error.interrupted) {
+    logger.log(error.message);
+    return;
+  }
+
+  _shutdown();
+
+  logger.error('Adjust SDK start has been canceled due to an error', error);
+
+  if (error.stack) {
+    throw error;
+  }
 }
 /**
  * Start the execution by preparing the environment for the current usage
@@ -8669,21 +8782,14 @@ function _start(options
     subscribe('attribution:change', options.attributionCallback);
   }
 
-  identity_start().then(main_continue).then(sdkClick).catch(function (error) {
-    if (error && error.message) {
-      logger.log(error.message);
-    } else {
-      _shutdown();
-
-      logger.error('Adjust SDK start has been canceled due to an error', error);
-    }
-  });
+  identity_start().then(main_continue).then(sdkClick).then(flush).catch(main_error);
 }
 /**
  * Check if it's possible to run provided method
  *
  * @param {string} description
  * @param {Function} callback
+ * @param {boolean=false} schedule
  * @private
  */
 
@@ -8692,6 +8798,8 @@ function _preCheck(description
 /*: string*/
 , callback
 /*: () => mixed*/
+, schedule
+/*: boolean*/
 ) {
   if (!storage_storage) {
     logger.log("Adjust SDK can not ".concat(description, ", no storage available"));
@@ -8703,8 +8811,18 @@ function _preCheck(description
     return;
   }
 
+  if (schedule && !config.isInitialised()) {
+    logger.error("Adjust SDK can not ".concat(description, ", sdk instance is not initialized"));
+    return;
+  }
+
   if (typeof callback === 'function') {
-    callback();
+    if (schedule && !_isStarted) {
+      delay(callback);
+      logger.log("Calling ".concat(description, " is delayed until Adjust SDK is up"));
+    } else {
+      callback();
+    }
   }
 }
 
