@@ -6,8 +6,7 @@ This is the guide to the Javascript SDK of Adjust™ for web apps. You can read 
 
 * [Example apps](#example-app)
 * [Installation](#installation)
-   * [Recommendations](#recommendations)
-   * [Initialization](#initialization)   
+* [Initialization](#initialization)   
 * [Event tracking](#event-tracking)
 * [Global callback parameters](#global-callback-parameters)
 * [Global partner parameters](#global-partner-parameters)
@@ -31,14 +30,7 @@ To do so paste the following snippet into `<head>` tag:
 </script>
 ```
 
-### <a id="recommendations">Recommendations</a>
-
-There are two ways to differentiate users coming from native apps to users coming from web apps if you are not running ad campaigns for your web apps:
-
-- Create new app(s) in your Adjust dashboard for your web app, pick one of the supported platforms during the creation and use this app token in the Adjust SDK to initialise it. As with your native apps, organic traffic from your app will then be labelled under the `Organic` tracker in your Adjust dashboard.
-- Use one of your pre-existing app and hardcode a pre-installed tracker token in the Adjust SDK. All traffic from your app will then be labelled under the hardcoded tracker in your Adjust dashboard.
-
-### <a id="initialization">Initialization</a>
+## <a id="initialization">Initialization</a>
 
 In order to initialize Adjust Web SDK you must call `Adjust.initSdk` method as soon as possible:
 
@@ -51,7 +43,7 @@ Adjust.initSdk({
  
 Here is the full list of available parameters for the `initSdk` method:
 
-#### Mandatory params
+### Mandatory params
 
 <a id="app-token">**appToken**</a> `string`
 
@@ -61,7 +53,7 @@ Initialization method requires this parameter, make sure to provide valid app to
 
 This param is also mandatory. Available options are `production` or `sandbox`. Use `sandbox` in case you are testing SDK locally with your web app
 
-#### Optional params
+### Optional params
  
 <a id="attribution-callback">**attributionCallback**</a> `function`
 
@@ -117,13 +109,13 @@ Adjust.trackEvent({
 Make sure to track event only after you [initialize](#initialization) the Adjust SDK.
 Here is the full list of available parameters for the `trackEvent` method:
 
-#### Mandatory params
+### Mandatory params
 
 <a id="event-token">**eventToken**</a> `string`
 
 Track event method requires this parameter, make sure to provide valid event token
 
-#### Optional params
+### Optional params
 
 <a id="revenue">**revenue**</a> `number`
 
