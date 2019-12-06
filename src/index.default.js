@@ -3,7 +3,7 @@ import Adjust from './sdk/main'
 import app from './app'
 
 const appOptions = {
-  appToken: 'src556ylophc',
+  appToken: 'YOUR_APP_TOKEN',
   environment: 'production',
   attributionCallback,
   logLevel: 'verbose', // 'none', 'error', 'info', 'verbose'
@@ -14,12 +14,12 @@ const appOptions = {
 }
 
 const basicEventConfig = {
-  eventToken: 'yywcyo',
+  eventToken: 'YOUR_EVENT_TOKEN',
   // deduplicationId: 'YOUR_EVENT_DEDUPLICATION_ID'
 }
 
 const revenueEventConfig = {
-  eventToken: 'wmxoqe',
+  eventToken: 'YOUR_EVENT_TOKEN',
   revenue: 10,
   currency: 'EUR',
   callbackParams: [
