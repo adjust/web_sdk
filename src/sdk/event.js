@@ -117,7 +117,8 @@ function _getEventDeduplicationIds (): Promise<Array<string>> {
  * @private
  */
 function _pushEventDeduplicationId (id: string): Promise<number> {
-  const limit = Config.getCustomConfig().eventDeduplicationListLimit || DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT
+  const customLimit = Config.getCustomConfig().eventDeduplicationListLimit
+  const limit = customLimit > 0 ? customLimit : DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT
 
   return Storage.count(_storeName)
     .then(count => {

@@ -69,6 +69,32 @@ describe('test session functionality', () => {
     jest.clearAllTimers()
   })
 
+  function expectStarted () {
+    expect(PubSub.subscribe).toHaveBeenCalledWith('session:finished', expect.any(Function))
+    expect(Listeners.on).toHaveBeenCalled()
+    expect(Session.isRunning()).toBeTruthy()
+
+    PubSub.subscribe.mockClear()
+    Listeners.on.mockClear()
+
+    return Utils.flushPromises()
+  }
+
+  function expectNotStartedAgainButRunning () {
+    expect(PubSub.subscribe).not.toHaveBeenCalled()
+    expect(Listeners.on).not.toHaveBeenCalled()
+    expect(Session.isRunning()).toBeTruthy()
+  }
+
+  function expectDestroyed () {
+    expect(Listeners.off).toHaveBeenCalled()
+    expect(clearTimeout).toHaveBeenCalled()
+    expect(Session.isRunning()).toBeFalsy()
+
+    Listeners.off.mockClear()
+    clearTimeout.mockClear()
+  }
+
   describe('general functionality', () => {
 
     let dateNowSpy
@@ -81,70 +107,66 @@ describe('test session functionality', () => {
       dateNowSpy.mockRestore()
     })
 
-    it('starts the session watch and logs error and returns if calling watch multiple times', () => {
-      Session.watch()
+    it('starts the session watch and rejects if calling watch multiple times', () => {
 
-      expect(Logger.default.error).not.toHaveBeenCalled()
+      expect.assertions(7)
 
-      Session.watch()
+      Session.watch() // 1st attempt
 
-      expect(Logger.default.error).toHaveBeenCalledWith('Session watch already initiated')
+      return expectStarted() // +3
+        .then(() => Session.watch()) // 2nd attempt
+        .catch(error => {
 
-      return Utils.flushPromises()
+          expectNotStartedAgainButRunning() // +3
+
+          expect(error).toEqual({
+            interrupted: true,
+            message: 'Session watch already initiated'
+          })
+        })
     })
 
     it('subscribes on session:finished event and on visibility change event when Page Visibility Api is available', () => {
 
       // by default Page Visibility is available
+
       Session.watch()
 
-      expect(PubSub.subscribe).toHaveBeenCalledWith('session:finished', expect.any(Function))
-      expect(Listeners.on).toHaveBeenCalled()
+      expectStarted()
 
       Session.destroy()
 
-      expect(Listeners.off).toHaveBeenCalled()
-      expect(clearTimeout).toHaveBeenCalled()
-
-      // clear mocks
-      Listeners.on.mockClear()
-      Listeners.off.mockClear()
-      clearTimeout.mockClear()
+      expectDestroyed()
 
       // when Page Visibility Api is not available
       pvaSpy.mockReturnValueOnce(null)
 
       Session.watch()
 
+      expect(PubSub.subscribe).toHaveBeenCalledWith('session:finished', expect.any(Function))
       expect(Listeners.on).not.toHaveBeenCalled()
+      expect(Session.isRunning()).toBeTruthy()
 
       Session.destroy()
 
       expect(Listeners.off).not.toHaveBeenCalled()
       expect(clearTimeout).not.toHaveBeenCalled()
-
-      return Utils.flushPromises()
+      expect(Session.isRunning()).toBeFalsy()
     })
 
     it('destroys session watch', () => {
 
-      Session.watch() // 1st attempt
+      Session.watch()
 
-      Session.watch() // 2nd attempt
-
-      expect(Logger.default.error).toHaveBeenCalledWith('Session watch already initiated')
-      Logger.default.error.mockClear()
+      expectStarted()
 
       Session.destroy()
 
-      expect(Listeners.off).toHaveBeenCalled()
-      expect(clearInterval).toHaveBeenCalled()
+      expectDestroyed()
 
       Session.watch()
 
-      expect(Logger.default.error).not.toHaveBeenCalled()
-
-      return Utils.flushPromises()
+      return expectStarted()
     })
 
     it('updates installed flag when session:finished event is recognized with successful session request', () => {
@@ -923,7 +945,7 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(3)
+      expect.assertions(4)
 
       ActivityState.default.current = {...ActivityState.default.current, installed: true}
 
@@ -945,13 +967,12 @@ describe('test session functionality', () => {
           dateNowSpy.mockReturnValue(currentTime += Config.default.sessionWindow + 5 * MINUTE) // + 35 minutes
           jest.advanceTimersByTime(Config.default.sessionWindow + 5 * MINUTE)
 
-          Session.watch()
-
-          expect(Queue.push).not.toHaveBeenCalled()
-
-          return Utils.flushPromises()
+          return Session.watch()
         })
-        .then(() => {
+        .catch(error => {
+          expect(error.interrupted).toEqual(true)
+          expect(error.message).toEqual('Session request canceled because the tab is still hidden')
+
           expect(Queue.push).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()

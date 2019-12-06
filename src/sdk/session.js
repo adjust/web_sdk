@@ -54,8 +54,7 @@ function watch () {
   _pva = getVisibilityApiAccess()
 
   if (_running) {
-    Logger.error('Session watch already initiated')
-    return
+    return Promise.reject({interrupted: true, message: 'Session watch already initiated'})
   }
 
   _running = true
@@ -67,7 +66,7 @@ function watch () {
   }
 
   if (_pva && document[_pva.hidden]) {
-    return
+    return Promise.reject({interrupted: true, message: 'Session request canceled because the tab is still hidden'})
   }
 
   ActivityState.initParams()
