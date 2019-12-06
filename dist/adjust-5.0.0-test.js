@@ -7462,6 +7462,8 @@ function global_params_clear()
 
 
 // CONCATENATED MODULE: ./src/sdk/session.js
+var session_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+
 
 
 
@@ -7521,8 +7523,10 @@ function watch() {
   _pva = getVisibilityApiAccess();
 
   if (_running) {
-    logger.error('Session watch already initiated');
-    return;
+    return session_Promise.reject({
+      interrupted: true,
+      message: 'Session watch already initiated'
+    });
   }
 
   _running = true;
@@ -7533,7 +7537,10 @@ function watch() {
   }
 
   if (_pva && document[_pva.hidden]) {
-    return;
+    return session_Promise.reject({
+      interrupted: true,
+      message: 'Session request canceled because the tab is still hidden'
+    });
   }
 
   activity_state.initParams();
@@ -8208,7 +8215,8 @@ function _pushEventDeduplicationId(id
 )
 /*: Promise<number>*/
 {
-  var limit = config.getCustomConfig().eventDeduplicationListLimit || DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT;
+  var customLimit = config.getCustomConfig().eventDeduplicationListLimit;
+  var limit = customLimit > 0 ? customLimit : DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT;
   return storage_storage.count(event_storeName).then(function (count) {
     var chain = event_Promise.resolve();
 
