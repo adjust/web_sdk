@@ -30,6 +30,10 @@ To do so paste the following snippet into `<head>` tag:
 </script>
 ```
 
+The above snippet can be used in Google Tag Manager as Custom HTML tag.
+
+Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
+
 ## <a id="initialization">Initialization</a>
 
 In order to initialize Adjust Web SDK you must call `Adjust.initSdk` method as soon as possible:
@@ -72,7 +76,7 @@ Adjust.initSdk({
 
 <a id="default-tracker">**defaultTracker**</a> `string`
 
-Define default tracker to which you want your traffic to be attributed by default
+By default, users who are not attributed to any campaigns will be attributed to the Organic tracker of the app. If you want to overwrite this behaviour and attributed this type of traffic under a different tracker, you can use this method to set a different default tracker.
 
 <a id="custom-url">**customUrl**</a> `string`
 
@@ -325,6 +329,7 @@ Example:
 Adjust.gdprForgetMe();
 ```
 
+You can find more details [here](https://help.adjust.com/manage-data/data-privacy/gdpr)
 
 ## <a id="license">License</a>
 
