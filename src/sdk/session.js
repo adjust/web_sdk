@@ -66,7 +66,8 @@ function watch () {
   }
 
   if (_pva && document[_pva.hidden]) {
-    return Promise.reject({interrupted: true, message: 'Session request canceled because the tab is still hidden'})
+    Logger.log('Session request attempt canceled because the tab is still hidden')
+    return Promise.resolve({})
   }
 
   ActivityState.initParams()
@@ -237,10 +238,10 @@ function _checkSession () {
 
   const activityState = ActivityState.current
   const lastInterval = activityState.lastInterval
-  const installed = activityState.installed
+  const isEnqueued = activityState.sessionCount > 0
   const currentWindow = lastInterval * SECOND
 
-  if (!installed || (installed && currentWindow >= Config.sessionWindow)) {
+  if (!isEnqueued || (isEnqueued && currentWindow >= Config.sessionWindow)) {
     return _trackSession()
   }
 

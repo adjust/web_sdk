@@ -47,6 +47,7 @@ describe('test session functionality', () => {
     jest.spyOn(Queue, 'push')
     jest.spyOn(Queue, 'run').mockImplementation(() => {})
     jest.spyOn(Logger.default, 'error')
+    jest.spyOn(Logger.default, 'log')
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(PubSub, 'subscribe')
@@ -466,7 +467,7 @@ describe('test session functionality', () => {
 
       expect.assertions(6)
 
-      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+      ActivityState.default.current = {...ActivityState.default.current, sessionCount: 1}
 
       return Identity.persist()
         .then(() => {
@@ -504,7 +505,7 @@ describe('test session functionality', () => {
 
       expect.assertions(2)
 
-      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+      ActivityState.default.current = {...ActivityState.default.current, sessionCount: 1}
 
       return Identity.persist()
         .then(() => {
@@ -788,7 +789,7 @@ describe('test session functionality', () => {
 
       expect.assertions(4)
 
-      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+      ActivityState.default.current = {...ActivityState.default.current, sessionCount: 1}
 
       return Identity.persist()
         .then(() => {
@@ -828,7 +829,7 @@ describe('test session functionality', () => {
             params: {
               attempts: 1,
               createdAt: 'some-time',
-              sessionCount: 1,
+              sessionCount: 2, // +1 simulated initial session
               timeSpent: 120,
               sessionLength: 120,
               lastInterval: 1800 // 30 minutes
@@ -847,7 +848,7 @@ describe('test session functionality', () => {
 
       expect.assertions(2)
 
-      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+      ActivityState.default.current = {...ActivityState.default.current, sessionCount: 1}
 
       return Identity.persist()
         .then(() => {
@@ -884,7 +885,7 @@ describe('test session functionality', () => {
 
       expect.assertions(4)
 
-      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+      ActivityState.default.current = {...ActivityState.default.current, sessionCount: 1}
 
       return Identity.persist()
         .then(() => {
@@ -928,7 +929,7 @@ describe('test session functionality', () => {
             params: {
               attempts: 1,
               createdAt: 'some-time',
-              sessionCount: 1,
+              sessionCount: 2, // +1 simulated initial session
               timeSpent: 40,
               sessionLength: 40,
               lastInterval: 2100 // 35 minutes
@@ -945,9 +946,9 @@ describe('test session functionality', () => {
 
       dateNowSpy.mockReturnValue(currentTime)
 
-      expect.assertions(4)
+      expect.assertions(3)
 
-      ActivityState.default.current = {...ActivityState.default.current, installed: true}
+      ActivityState.default.current = {...ActivityState.default.current, sessionCount: 1}
 
       return Identity.persist()
         .then(() => {
@@ -969,9 +970,8 @@ describe('test session functionality', () => {
 
           return Session.watch()
         })
-        .catch(error => {
-          expect(error.interrupted).toEqual(true)
-          expect(error.message).toEqual('Session request canceled because the tab is still hidden')
+        .then(() => {
+          expect(Logger.default.log).toHaveBeenCalledWith('Session request attempt canceled because the tab is still hidden')
 
           expect(Queue.push).not.toHaveBeenCalled()
 
