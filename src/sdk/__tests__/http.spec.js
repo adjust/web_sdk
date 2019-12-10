@@ -128,7 +128,7 @@ describe('perform api requests', () => {
 
   it('resolves error returned from server (because of retry mechanism)', () => {
 
-    mockXHR = Utils.createMockXHR({error: 'some error'}, 4, 400, 'Some error')
+    mockXHR = Utils.createMockXHR({error: 'Session failed (failed to get app token)'}, 4, 400, 'Some server')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -137,9 +137,9 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).resolves.toEqual({
-      response: {error: 'some error'},
-      message: 'Error from server',
-      code: 'SERVER_ERROR'
+      response: {error: 'Session failed (failed to get app token)'},
+      message: 'Server was not able to process the request, probably due to error coming from the client',
+      code: 'SERVER_CANNOT_PROCESS'
     })
 
     return Utils.flushPromises()
@@ -148,28 +148,7 @@ describe('perform api requests', () => {
       })
   })
 
-  it('resolves unknown error returned from server', () => {
-
-    mockXHR = Utils.createMockXHR('', 4, 400, 'Some error')
-    global.XMLHttpRequest = jest.fn(() => mockXHR)
-
-    expect.assertions(1)
-
-    expect(http.default({
-      url: '/some-url',
-      params: {}
-    })).resolves.toEqual({
-      message: 'Unknown error from server',
-      code: 'SERVER_UNKNOWN_ERROR'
-    })
-
-    return Utils.flushPromises()
-      .then(() => {
-        mockXHR.onreadystatechange()
-      })
-  })
-
-  it('reject badly formed json from server', () => {
+  it('reject badly formed json from server when ok status', () => {
 
     mockXHR = Utils.createMockXHR('bla bla not json', 4, 200, 'OK')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
@@ -188,6 +167,35 @@ describe('perform api requests', () => {
     })).rejects.toEqual({
       status: 200,
       statusText: 'OK',
+      response: response,
+      responseText: JSON.stringify(response)
+    })
+
+    return Utils.flushPromises()
+      .then(() => {
+        mockXHR.onreadystatechange()
+      })
+  })
+
+  it('reject badly formed json from server when error status', () => {
+
+    mockXHR = Utils.createMockXHR('Internal Server Error', 4, 500, 'Internal Error')
+    global.XMLHttpRequest = jest.fn(() => mockXHR)
+
+    const response = {
+      action: 'RETRY',
+      message: 'Server is not responding properly',
+      code: 'SERVER_NOT_RESPONDING'
+    }
+
+    expect.assertions(1)
+
+    expect(http.default({
+      url: '/some-url',
+      params: {}
+    })).rejects.toEqual({
+      status: 500,
+      statusText: 'Internal Error',
       response: response,
       responseText: JSON.stringify(response)
     })

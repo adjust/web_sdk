@@ -6,6 +6,8 @@ import defaultParams from './default-params'
 const _errors = {
   TRANSACTION_ERROR: 'XHR transaction failed due to an error',
   SERVER_MALFORMED_RESPONSE: 'Response from server is malformed',
+  SERVER_NOT_RESPONDING: 'Server is not responding properly',
+  SERVER_CANNOT_PROCESS: 'Server was not able to process the request, probably due to error coming from the client',
   NO_CONNECTION: 'No internet connectivity'
 }
 
@@ -39,20 +41,16 @@ function _getSuccessResponse (xhr, url) {
  * Get an error object which is about to be passed to resolve method
  *
  * @param {Object} xhr
+ * @param {string} code
  * @returns {Object}
  * @private
  */
-function _getErrorResponseForResolve (xhr) {
-  return isValidJson(xhr.response)
-    ? {
-      response: JSON.parse(xhr.response),
-      message: 'Error from server',
-      code: 'SERVER_ERROR'
-    }
-    : {
-      message: 'Unknown error from server',
-      code: 'SERVER_UNKNOWN_ERROR'
-    }
+function _getErrorResponseForResolve (xhr, code) {
+  return {
+    response: JSON.parse(xhr.response),
+    message: _errors[code],
+    code
+  }
 }
 
 /**
@@ -123,18 +121,22 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
     return
   }
 
-  if (xhr.status >= 200 && xhr.status < 300) {
-    if (isValidJson(xhr.response)) {
-      resolve(_getSuccessResponse(xhr, url))
-    } else {
-      reject(_getErrorResponseForReject(xhr, 'SERVER_MALFORMED_RESPONSE'))
-    }
-  } else if (xhr.status === 0) {
+  const okStatus = xhr.status >= 200 && xhr.status < 300
+  const validJson = isValidJson(xhr.response)
+
+  if (xhr.status === 0) {
     reject(_getErrorResponseForReject(xhr, 'NO_CONNECTION'))
   } else {
-    resolve(_getErrorResponseForResolve(xhr))
+    if (validJson) {
+      return okStatus
+        ? resolve(_getSuccessResponse(xhr, url))
+        : resolve(_getErrorResponseForResolve(xhr, 'SERVER_CANNOT_PROCESS'))
+    } else {
+      return okStatus
+        ? reject(_getErrorResponseForReject(xhr, 'SERVER_MALFORMED_RESPONSE'))
+        : reject(_getErrorResponseForReject(xhr, 'SERVER_NOT_RESPONDING'))
+    }
   }
-
 }
 
 /**
