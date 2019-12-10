@@ -5576,6 +5576,8 @@ var http_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promi
 var _errors = {
   TRANSACTION_ERROR: 'XHR transaction failed due to an error',
   SERVER_MALFORMED_RESPONSE: 'Response from server is malformed',
+  SERVER_INTERNAL_ERROR: 'Internal error occurred on the server',
+  SERVER_CANNOT_PROCESS: 'Server was not able to process the request, probably due to error coming from the client',
   NO_CONNECTION: 'No internet connectivity'
   /**
    * Get filtered response from successful request
@@ -5589,7 +5591,7 @@ var _errors = {
 };
 
 function _getSuccessResponse(xhr, url) {
-  var response = JSON.parse(xhr.response);
+  var response = JSON.parse(xhr.responseText);
   var append = isRequest(url, 'attribution') ? ['attribution', 'message'] : [];
   return ['adid', 'timestamp', 'ask_in', 'retry_in', 'tracking_state'].concat(append).filter(function (key) {
     return response[key];
@@ -5598,45 +5600,23 @@ function _getSuccessResponse(xhr, url) {
   }, {});
 }
 /**
- * Get an error object which is about to be passed to resolve method
+ * Get an error object which is about to be passed to resolve or reject method
  *
  * @param {Object} xhr
+ * @param {string} code
+ * @param {boolean=} proceed
  * @returns {Object}
  * @private
  */
 
 
-function _getErrorResponseForResolve(xhr) {
-  return isValidJson(xhr.response) ? {
-    response: JSON.parse(xhr.response),
-    message: 'Error from server',
-    code: 'SERVER_ERROR'
-  } : {
-    message: 'Unknown error from server',
-    code: 'SERVER_UNKNOWN_ERROR'
-  };
-}
-/**
- * Get an error object which is about to be passed to reject method
- *
- * @param {Object} xhr
- * @param {string=} code
- * @returns {Object}
- * @private
- */
-
-
-function _getErrorResponseForReject(xhr, code) {
-  var error = {
-    action: 'RETRY',
+function _getErrorResponse(xhr, code) {
+  var proceed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  return {
+    action: proceed ? 'CONTINUE' : 'RETRY',
+    response: isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText,
     message: _errors[code],
     code: code
-  };
-  return {
-    status: xhr.status,
-    statusText: xhr.statusText,
-    response: error,
-    responseText: JSON.stringify(error)
   };
 }
 /**
@@ -5695,16 +5675,17 @@ function _handleReadyStateChange(reject, resolve, _ref3) {
     return;
   }
 
-  if (xhr.status >= 200 && xhr.status < 300) {
-    if (isValidJson(xhr.response)) {
-      resolve(_getSuccessResponse(xhr, url));
-    } else {
-      reject(_getErrorResponseForReject(xhr, 'SERVER_MALFORMED_RESPONSE'));
-    }
-  } else if (xhr.status === 0) {
-    reject(_getErrorResponseForReject(xhr, 'NO_CONNECTION'));
+  var okStatus = xhr.status >= 200 && xhr.status < 300;
+  var validJson = isValidJson(xhr.responseText);
+
+  if (xhr.status === 0) {
+    reject(_getErrorResponse(xhr, 'NO_CONNECTION'));
   } else {
-    resolve(_getErrorResponseForResolve(xhr));
+    if (validJson) {
+      return okStatus ? resolve(_getSuccessResponse(xhr, url)) : resolve(_getErrorResponse(xhr, 'SERVER_CANNOT_PROCESS', true));
+    } else {
+      return okStatus ? reject(_getErrorResponse(xhr, 'SERVER_MALFORMED_RESPONSE')) : reject(_getErrorResponse(xhr, 'SERVER_INTERNAL_ERROR'));
+    }
   }
 }
 /**
@@ -5770,7 +5751,7 @@ function _buildXhr(_ref4) {
     };
 
     xhr.onerror = function () {
-      return reject(_getErrorResponseForReject(xhr, 'TRANSACTION_ERROR'));
+      return reject(_getErrorResponse(xhr, 'TRANSACTION_ERROR'));
     };
 
     xhr.send(method === 'GET' ? undefined : encodedParams);
@@ -6098,8 +6079,9 @@ var request_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Pr
   continueCb?: HttpContinueCbT
 |}*/
 
-/*:: type ErrorResponseT = $Shape<{
+/*:: type ErrorResultT = $Shape<{
   action: string,
+  response: string | {[key: string]: string},
   message: string,
   code: string
 }>*/
@@ -6408,12 +6390,8 @@ var request_Request = function Request() {
           }, _params)
         }).then(function (result) {
           return _continue(result, resolve);
-        }).catch(function () {
-          var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-              _ref4$response = _ref4.response,
-              response = _ref4$response === void 0 ? {} : _ref4$response;
-
-          return _error(response, resolve, reject);
+        }).catch(function (result) {
+          return _error(result, resolve, reject);
         });
       }, _wait);
     });
@@ -6512,26 +6490,30 @@ var request_Request = function Request() {
   /**
    * Ensure to resolve on retry and finish request when unknown error
    *
-   * @param {Object} response
+   * @param {Object} result
    * @param {Function} resolve
    * @param {Function} reject
    * @private
    */
 
 
-  function _error(response
-  /*: ErrorResponseT*/
-  , resolve, reject)
+  function _error()
   /*: void*/
   {
-    if (response.action === 'RETRY') {
-      resolve(_retry(response.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined));
+    var result
+    /*: ErrorResultT*/
+    = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var resolve = arguments.length > 1 ? arguments[1] : undefined;
+    var reject = arguments.length > 2 ? arguments[2] : undefined;
+
+    if (result.action === 'RETRY') {
+      resolve(_retry(result.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined));
       return;
     }
 
     _finish(true);
 
-    reject(response);
+    reject(result);
   }
   /**
    * Send the request after specified or default waiting period
@@ -6548,13 +6530,13 @@ var request_Request = function Request() {
   function send()
   /*: Promise<HttpResultT>*/
   {
-    var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        url = _ref5.url,
-        method = _ref5.method,
-        _ref5$params = _ref5.params,
-        params = _ref5$params === void 0 ? {} : _ref5$params,
-        continueCb = _ref5.continueCb,
-        wait = _ref5.wait;
+    var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        url = _ref4.url,
+        method = _ref4.method,
+        _ref4$params = _ref4.params,
+        params = _ref4$params === void 0 ? {} : _ref4$params,
+        continueCb = _ref4.continueCb,
+        wait = _ref4.wait;
 
     _prepareParams({
       url: url,
@@ -7537,10 +7519,8 @@ function watch() {
   }
 
   if (_pva && document[_pva.hidden]) {
-    return session_Promise.reject({
-      interrupted: true,
-      message: 'Session request canceled because the tab is still hidden'
-    });
+    logger.log('Session request attempt canceled because the tab is still hidden');
+    return session_Promise.resolve({});
   }
 
   activity_state.initParams();
@@ -7720,10 +7700,10 @@ function _checkSession() {
 
   var activityState = activity_state.current;
   var lastInterval = activityState.lastInterval;
-  var installed = activityState.installed;
+  var isEnqueued = activityState.sessionCount > 0;
   var currentWindow = lastInterval * SECOND;
 
-  if (!installed || installed && currentWindow >= config.sessionWindow) {
+  if (!isEnqueued || isEnqueued && currentWindow >= config.sessionWindow) {
     return _trackSession();
   }
 
