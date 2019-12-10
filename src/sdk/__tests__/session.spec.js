@@ -211,7 +211,7 @@ describe('test session functionality', () => {
         .then(activityState => {
           expect(activityState.installed).toBeUndefined()
 
-          PubSub.publish('session:finished', {code: 'SERVER_ERROR', response: {error: 'Some error from the server'}})
+          PubSub.publish('session:finished', {code: 'SERVER_INTERNAL_ERROR', response: {error: 'Some error from the server'}})
 
           jest.runOnlyPendingTimers()
 

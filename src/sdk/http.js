@@ -6,7 +6,7 @@ import defaultParams from './default-params'
 const _errors = {
   TRANSACTION_ERROR: 'XHR transaction failed due to an error',
   SERVER_MALFORMED_RESPONSE: 'Response from server is malformed',
-  SERVER_NOT_RESPONDING: 'Server is not responding properly',
+  SERVER_INTERNAL_ERROR: 'Internal error occurred on the server',
   SERVER_CANNOT_PROCESS: 'Server was not able to process the request, probably due to error coming from the client',
   NO_CONNECTION: 'No internet connectivity'
 }
@@ -20,7 +20,7 @@ const _errors = {
  * @private
  */
 function _getSuccessResponse (xhr, url) {
-  const response = JSON.parse(xhr.response)
+  const response = JSON.parse(xhr.responseText)
   const append = isRequest(url, 'attribution') ? [
     'attribution',
     'message'
@@ -38,41 +38,20 @@ function _getSuccessResponse (xhr, url) {
 }
 
 /**
- * Get an error object which is about to be passed to resolve method
+ * Get an error object which is about to be passed to resolve or reject method
  *
  * @param {Object} xhr
  * @param {string} code
+ * @param {boolean=} proceed
  * @returns {Object}
  * @private
  */
-function _getErrorResponseForResolve (xhr, code) {
+function _getErrorResponse (xhr, code, proceed = false) {
   return {
-    response: JSON.parse(xhr.response),
+    action: proceed ? 'CONTINUE' : 'RETRY',
+    response: isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText,
     message: _errors[code],
     code
-  }
-}
-
-/**
- * Get an error object which is about to be passed to reject method
- *
- * @param {Object} xhr
- * @param {string=} code
- * @returns {Object}
- * @private
- */
-function _getErrorResponseForReject (xhr, code) {
-  const error = {
-    action: 'RETRY',
-    message: _errors[code],
-    code
-  }
-
-  return {
-    status: xhr.status,
-    statusText: xhr.statusText,
-    response: error,
-    responseText: JSON.stringify(error)
   }
 }
 
@@ -122,19 +101,19 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
   }
 
   const okStatus = xhr.status >= 200 && xhr.status < 300
-  const validJson = isValidJson(xhr.response)
+  const validJson = isValidJson(xhr.responseText)
 
   if (xhr.status === 0) {
-    reject(_getErrorResponseForReject(xhr, 'NO_CONNECTION'))
+    reject(_getErrorResponse(xhr, 'NO_CONNECTION'))
   } else {
     if (validJson) {
       return okStatus
         ? resolve(_getSuccessResponse(xhr, url))
-        : resolve(_getErrorResponseForResolve(xhr, 'SERVER_CANNOT_PROCESS'))
+        : resolve(_getErrorResponse(xhr, 'SERVER_CANNOT_PROCESS', true))
     } else {
       return okStatus
-        ? reject(_getErrorResponseForReject(xhr, 'SERVER_MALFORMED_RESPONSE'))
-        : reject(_getErrorResponseForReject(xhr, 'SERVER_NOT_RESPONDING'))
+        ? reject(_getErrorResponse(xhr, 'SERVER_MALFORMED_RESPONSE'))
+        : reject(_getErrorResponse(xhr, 'SERVER_INTERNAL_ERROR'))
     }
   }
 }
@@ -184,7 +163,7 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams = {}) {
     }
 
     xhr.onreadystatechange = () => _handleReadyStateChange(reject, resolve, {xhr, url})
-    xhr.onerror = () => reject(_getErrorResponseForReject(xhr, 'TRANSACTION_ERROR'))
+    xhr.onerror = () => reject(_getErrorResponse(xhr, 'TRANSACTION_ERROR'))
 
     xhr.send(method === 'GET' ? undefined : encodedParams)
 

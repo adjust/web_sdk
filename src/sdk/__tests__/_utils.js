@@ -36,11 +36,10 @@ function setGlobalProp (o, prop) {
 
 function errorResponse (code) {
   return {
-    response: {
-      message: 'An error',
-      action: 'RETRY',
-      code: code || 'ERROR'
-    }
+    message: 'An error',
+    response: 'An error',
+    action: 'RETRY',
+    code: code || 'ERROR'
   }
 }
 

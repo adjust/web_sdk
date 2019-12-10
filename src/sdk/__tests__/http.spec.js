@@ -73,22 +73,17 @@ describe('perform api requests', () => {
     mockXHR = Utils.createMockXHR({error: 'connection failed'}, 4, 500, 'Connection failed')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
-    const response = {
-      action: 'RETRY',
-      message: 'XHR transaction failed due to an error',
-      code: 'TRANSACTION_ERROR'
-    }
-
     expect.assertions(1)
 
     expect(http.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
-      status: 500,
-      statusText: 'Connection failed',
-      response: response,
-      responseText: JSON.stringify(response)
+      response: {error: 'connection failed'},
+      action: 'RETRY',
+      message: 'XHR transaction failed due to an error',
+      code: 'TRANSACTION_ERROR'
+
     })
 
     return Utils.flushPromises()
@@ -102,22 +97,16 @@ describe('perform api requests', () => {
     mockXHR = Utils.createMockXHR('', 4, 0, 'Network issue')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
-    const response = {
-      action: 'RETRY',
-      message: 'No internet connectivity',
-      code: 'NO_CONNECTION'
-    }
-
     expect.assertions(1)
 
     expect(http.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
-      status: 0,
-      statusText: 'Network issue',
-      response: response,
-      responseText: JSON.stringify(response)
+      action: 'RETRY',
+      response: JSON.stringify(''),
+      message: 'No internet connectivity',
+      code: 'NO_CONNECTION'
     })
 
     return Utils.flushPromises()
@@ -137,6 +126,7 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).resolves.toEqual({
+      action: 'CONTINUE',
       response: {error: 'Session failed (failed to get app token)'},
       message: 'Server was not able to process the request, probably due to error coming from the client',
       code: 'SERVER_CANNOT_PROCESS'
@@ -153,22 +143,16 @@ describe('perform api requests', () => {
     mockXHR = Utils.createMockXHR('bla bla not json', 4, 200, 'OK')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
-    const response = {
-      action: 'RETRY',
-      message: 'Response from server is malformed',
-      code: 'SERVER_MALFORMED_RESPONSE'
-    }
-
     expect.assertions(1)
 
     expect(http.default({
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
-      status: 200,
-      statusText: 'OK',
-      response: response,
-      responseText: JSON.stringify(response)
+      action: 'RETRY',
+      response: JSON.stringify('bla bla not json'),
+      message: 'Response from server is malformed',
+      code: 'SERVER_MALFORMED_RESPONSE'
     })
 
     return Utils.flushPromises()
@@ -177,16 +161,10 @@ describe('perform api requests', () => {
       })
   })
 
-  it('reject badly formed json from server when error status', () => {
+  it('reject badly formed json from server when internal server error', () => {
 
     mockXHR = Utils.createMockXHR('Internal Server Error', 4, 500, 'Internal Error')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
-
-    const response = {
-      action: 'RETRY',
-      message: 'Server is not responding properly',
-      code: 'SERVER_NOT_RESPONDING'
-    }
 
     expect.assertions(1)
 
@@ -194,10 +172,10 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
-      status: 500,
-      statusText: 'Internal Error',
-      response: response,
-      responseText: JSON.stringify(response)
+      action: 'RETRY',
+      response: JSON.stringify('Internal Server Error'),
+      message: 'Internal error occurred on the server',
+      code: 'SERVER_INTERNAL_ERROR'
     })
 
     return Utils.flushPromises()

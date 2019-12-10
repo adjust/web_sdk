@@ -35,8 +35,9 @@ type DefaultParamsT = {|
   params?: ParamsT,
   continueCb?: HttpContinueCbT
 |}
-type ErrorResponseT = $Shape<{
+type ErrorResultT = $Shape<{
   action: string,
+  response: string | {[key: string]: string},
   message: string,
   code: string
 }>
@@ -276,7 +277,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
           },
         })
           .then(result => _continue(result, resolve))
-          .catch(({response = {}} = {}) => _error(response, resolve, reject))
+          .catch(result => _error(result, resolve, reject))
       }, _wait)
     })
   }
@@ -360,19 +361,19 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   /**
    * Ensure to resolve on retry and finish request when unknown error
    *
-   * @param {Object} response
+   * @param {Object} result
    * @param {Function} resolve
    * @param {Function} reject
    * @private
    */
-  function _error (response: ErrorResponseT, resolve, reject): void {
-    if (response.action === 'RETRY') {
-      resolve(_retry(response.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined))
+  function _error (result: ErrorResultT = {}, resolve, reject): void {
+    if (result.action === 'RETRY') {
+      resolve(_retry(result.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined))
       return
     }
 
     _finish(true)
-    reject(response)
+    reject(result)
   }
 
   /**

@@ -1054,7 +1054,7 @@ describe('test request functionality', () => {
       .mockReturnValueOnce(now)
       .mockReturnValueOnce(newNow)
 
-    http.default.mockRejectedValue({response: {message: 'Unknown error'}})
+    http.default.mockRejectedValue({message: 'Unknown error'})
 
     expect.assertions(17)
 
