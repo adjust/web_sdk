@@ -1,4 +1,7 @@
 import * as Scheduler from '../scheduler'
+import * as Logger from '../logger'
+
+jest.mock('../logger')
 
 describe('test scheduler functionality', () => {
 
@@ -7,6 +10,8 @@ describe('test scheduler functionality', () => {
 
   beforeAll(() => {
     dateNowSpy = jest.spyOn(Date, 'now')
+
+    jest.spyOn(Logger.default, 'log')
   })
 
   afterEach(() => {
@@ -26,9 +31,11 @@ describe('test scheduler functionality', () => {
 
     const action1 = jest.fn()
     const action2 = jest.fn()
+    const action3 = 'not-a-method'
 
-    Scheduler.delay(action1)
-    Scheduler.delay(action2)
+    Scheduler.delay(action1, 'action one')
+    Scheduler.delay(action2, 'action two')
+    Scheduler.delay(action3, 'action three')
 
     expect(action1).not.toHaveBeenCalled()
     expect(action2).not.toHaveBeenCalled()
@@ -37,6 +44,9 @@ describe('test scheduler functionality', () => {
 
     expect(action1).toHaveBeenCalledWith(currentTime)
     expect(action2).toHaveBeenCalledWith(currentTime+1)
+    expect(Logger.default.log).toHaveBeenCalledTimes(2)
+    expect(Logger.default.log).toHaveBeenCalledWith('Delayed action one task is running now')
+    expect(Logger.default.log).toHaveBeenCalledWith('Delayed action two task is running now')
   })
 
   it('destroys before flush', () => {

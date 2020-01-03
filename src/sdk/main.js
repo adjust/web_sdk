@@ -376,8 +376,8 @@ function _preCheck (description: string, callback: () => mixed, schedule?: boole
 
   if (typeof callback === 'function') {
     if (schedule && !_isStarted) {
-      delay(callback)
-      Logger.log(`Calling ${description} is delayed until Adjust SDK is up`)
+      delay(callback, description)
+      Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
       callback()
     }

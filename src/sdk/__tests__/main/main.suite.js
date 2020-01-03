@@ -99,7 +99,7 @@ function expectDelayedTrackEvent () {
   _instance.trackEvent({eventToken: 'bla123'})
 
   expect(Scheduler.delay).toHaveBeenCalledTimes(1)
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Calling track event is delayed until Adjust SDK is up')
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Running track event is delayed until Adjust SDK is up')
 
   const promise = Utils.flushPromises()
     .then(() => {
