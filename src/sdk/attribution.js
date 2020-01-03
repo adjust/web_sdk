@@ -1,6 +1,7 @@
 // @flow
 import {
-  type HttpResultT,
+  type HttpSuccessResponseT,
+  type HttpErrorResponseT,
   type AttributionStateT,
   type AttributionWhiteListT,
   type ActivityStateMapT,
@@ -46,13 +47,13 @@ const _whitelist: AttributionWhiteListT = [
  * Check if new attribution is the same as old one
  *
  * @param {string} adid
- * @param {Object} attribution
+ * @param {Object=} attribution
  * @returns {boolean}
  * @private
  */
-function _isSame ({adid, attribution}: HttpResultT): boolean {
+function _isSame ({adid, attribution}: HttpSuccessResponseT): boolean {
   const oldAttribution = ActivityState.current.attribution || {}
-  const anyDifferent = _whitelist.some(k => oldAttribution[k] !== attribution[k])
+  const anyDifferent = attribution && _whitelist.some(k => oldAttribution[k] !== attribution[k])
 
   return !anyDifferent && adid === oldAttribution.adid
 }
@@ -61,11 +62,11 @@ function _isSame ({adid, attribution}: HttpResultT): boolean {
  * Check if attribution result is valid
  *
  * @param {string} adid
- * @param {Object} attribution
+ * @param {Object=} attribution
  * @returns {boolean}
  * @private
  */
-function _isValid ({adid = '', attribution = {}}: HttpResultT): boolean {
+function _isValid ({adid = '', attribution = {}}: HttpSuccessResponseT): boolean {
   return !!adid && !!intersection(_whitelist, Object.keys(attribution)).length
 }
 
@@ -75,8 +76,7 @@ function _isValid ({adid = '', attribution = {}}: HttpResultT): boolean {
  * @param {Object} result
  * @private
  */
-function _setAttribution (result: HttpResultT): Promise<AttributionStateT> {
-
+function _setAttribution (result: HttpSuccessResponseT): Promise<AttributionStateT> {
   if (isEmpty(result) || !_isValid(result) || _isSame(result)) {
     return Promise.resolve({state: 'same'})
   }
@@ -104,8 +104,11 @@ function _setAttribution (result: HttpResultT): Promise<AttributionStateT> {
  * @returns {Promise}
  * @private
  */
-function _continue (result: HttpResultT, finish, retry): Promise<HttpResultT | AttributionStateT> {
-  result = result || {}
+function _continue (result: HttpSuccessResponseT | HttpErrorResponseT, finish, retry): Promise<HttpSuccessResponseT | HttpErrorResponseT | AttributionStateT> {
+  if (!result || result && result.status === 'error') {
+    finish()
+    return Promise.resolve({state: 'unknown'})
+  }
 
   if (!result.ask_in) {
     finish()
@@ -121,7 +124,7 @@ function _continue (result: HttpResultT, finish, retry): Promise<HttpResultT | A
  * @param {Object=} sessionResult
  * @param {number=} sessionResult.ask_in
  */
-function check (sessionResult: HttpResultT): Promise<?ActivityStateMapT> {
+function check (sessionResult: HttpSuccessResponseT): Promise<?ActivityStateMapT> {
   const activityState = ActivityState.current
   const askIn = (sessionResult || {}).ask_in
 

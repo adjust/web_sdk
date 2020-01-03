@@ -1,15 +1,19 @@
+// @flow
+import {
+  type UrlT,
+  type DefaultParamsT,
+  type HttpSuccessResponseT,
+  type HttpErrorResponseT,
+  type HttpRequestParamsT,
+  type ErrorCodeT
+} from './types'
+import {HTTP_ERRORS} from './constants'
 import Config from './config'
 import {isEmpty, isObject, isValidJson, isRequest, entries} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
 
-const _errors = {
-  TRANSACTION_ERROR: 'XHR transaction failed due to an error',
-  SERVER_MALFORMED_RESPONSE: 'Response from server is malformed',
-  SERVER_INTERNAL_ERROR: 'Internal error occurred on the server',
-  SERVER_CANNOT_PROCESS: 'Server was not able to process the request, probably due to error coming from the client',
-  NO_CONNECTION: 'No internet connectivity'
-}
+type ParamsWithAttemptsT = $PropertyType<HttpRequestParamsT, 'params'>
 
 /**
  * Get filtered response from successful request
@@ -19,22 +23,26 @@ const _errors = {
  * @returns {Object}
  * @private
  */
-function _getSuccessResponse (xhr, url) {
-  const response = JSON.parse(xhr.responseText)
-  const append = isRequest(url, 'attribution') ? [
-    'attribution',
-    'message'
-  ] : []
+function _getSuccessResponse (xhr: XMLHttpRequest, url: UrlT): HttpSuccessResponseT {
+  const result = JSON.parse(xhr.responseText)
+  let response = {
+    status: 'success',
+    adid: result.adid,
+    timestamp: result.timestamp,
+    ask_in: result.ask_in,
+    retry_in: result.retry_in,
+    continue_in: result.continue_in,
+    tracking_state: result.tracking_state,
+    attribution: undefined,
+    message: undefined
+  }
 
-  return [
-    'adid',
-    'timestamp',
-    'ask_in',
-    'retry_in',
-    'tracking_state',
-    ...append
-  ].filter(key => response[key])
-    .reduce((acc, key) => ({...acc, [key]: response[key]}), {})
+  if (isRequest(url, 'attribution')) {
+    response.attribution = result.attribution
+    response.message = result.message
+  }
+
+  return response
 }
 
 /**
@@ -46,13 +54,37 @@ function _getSuccessResponse (xhr, url) {
  * @returns {Object}
  * @private
  */
-function _getErrorResponse (xhr, code, proceed = false) {
+function _getErrorResponse (xhr: XMLHttpRequest, code: ErrorCodeT, proceed: boolean = false): HttpErrorResponseT {
   return {
+    status: 'error',
     action: proceed ? 'CONTINUE' : 'RETRY',
     response: isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText,
-    message: _errors[code],
+    message: HTTP_ERRORS[code],
     code
   }
+}
+
+/**
+ * Encode parameter depending on the type
+ *
+ * @param {string} key
+ * @param {*} value
+ * @returns {string}
+ * @private
+ */
+function _encodeParam ([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<ParamsWithAttemptsT>]): string {
+  const encodedKey = encodeURIComponent(key.replace(/([A-Z])/g, ($1) => `_${$1.toLowerCase()}`))
+  let encodedValue = value
+
+  if (typeof value === 'string') {
+    encodedValue = encodeURIComponent(value)
+  }
+
+  if (isObject(value)) {
+    encodedValue = encodeURIComponent(JSON.stringify(value) || '')
+  }
+
+  return [encodedKey, encodedValue].join('=')
 }
 
 /**
@@ -63,26 +95,15 @@ function _getErrorResponse (xhr, code, proceed = false) {
  * @returns {string}
  * @private
  */
-function _encodeParams (params, defaultParams) {
-  params = {...Config.getBaseParams(), ...defaultParams, ...params}
-
-  return entries(params)
+function _encodeParams (params: ParamsWithAttemptsT, defaultParams: DefaultParamsT): string {
+  return entries({...Config.getBaseParams(), ...defaultParams, ...params})
     .filter(([, value]) => {
       if (isObject(value)) {
         return !isEmpty(value)
       }
       return !!value || (value === 0)
     })
-    .map(pair => pair.map((value, index) => {
-      if (index === 0) {
-        value = value.replace(/([A-Z])/g, ($1) => `_${$1.toLowerCase()}`)
-      }
-
-      if (isObject(value)) {
-        value = JSON.stringify(value)
-      }
-      return encodeURIComponent(value)
-    }).join('='))
+    .map(_encodeParam)
     .join('&')
 }
 
@@ -95,7 +116,7 @@ function _encodeParams (params, defaultParams) {
  * @param {string} url
  * @private
  */
-function _handleReadyStateChange (reject, resolve, {xhr, url}) {
+function _handleReadyStateChange (reject, resolve, {xhr, url}: {xhr: XMLHttpRequest, url: UrlT}) {
   if (xhr.readyState !== 4) {
     return
   }
@@ -128,7 +149,7 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}) {
  * @returns {{encodedParams: string, fullUrl: string}}
  * @private
  */
-function _prepareUrlAndParams (url, method, params, defaultParams) {
+function _prepareUrlAndParams ({url, method, params}: HttpRequestParamsT, defaultParams: DefaultParamsT): {fullUrl: string, encodedParams: string} {
   const encodedParams = _encodeParams(params, defaultParams)
   const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
   const customConfig = Config.getCustomConfig()
@@ -149,11 +170,10 @@ function _prepareUrlAndParams (url, method, params, defaultParams) {
  * @param {Object} defaultParams
  * @returns {Promise}
  */
-function _buildXhr ({url, method = 'GET', params = {}}, defaultParams = {}) {
-  const {fullUrl, encodedParams} = _prepareUrlAndParams(url, method, params, defaultParams)
+function _buildXhr ({url, method = 'GET', params = {}}: HttpRequestParamsT, defaultParams: DefaultParamsT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
+  const {fullUrl, encodedParams} = _prepareUrlAndParams({url, method, params}, defaultParams)
 
   return new Promise((resolve, reject) => {
-
     let xhr = new XMLHttpRequest()
 
     xhr.open(method, fullUrl, true)
@@ -166,26 +186,43 @@ function _buildXhr ({url, method = 'GET', params = {}}, defaultParams = {}) {
     xhr.onerror = () => reject(_getErrorResponse(xhr, 'TRANSACTION_ERROR'))
 
     xhr.send(method === 'GET' ? undefined : encodedParams)
-
   })
 }
 
 /**
- * Intercept response from backend and:
+ * Intercept response from backend
+ *
+ * @param {Object} result
+ * @param {string} result.status
+ * @param {string} url
+ * @returns {Object}
+ * @private
+ */
+function _interceptResponse (result: HttpSuccessResponseT | HttpErrorResponseT, url: UrlT): HttpSuccessResponseT | HttpErrorResponseT {
+  if (result.status === 'success') {
+    return _interceptSuccess(result, url)
+  }
+
+  return result
+}
+
+/**
+ * Intercept successful response from backend and:
  * - always check if tracking_state is set to `opted_out` and if yes disable sdk
  * - check if ask_in parameter is present in order to check if attribution have been changed
+ * - emit session finish event if session request
  *
  * @param {Object} result
  * @param {string} result.tracking_state
  * @param {number} result.ask_in
- * @param {Object} options
+ * @param {string} url
  * @returns {Object}
  * @private
  */
-function _interceptResponse (result, options) {
-  const isGdprRequest = isRequest(options.url, 'gdpr_forget_device')
-  const isAttributionRequest = isRequest(options.url, 'attribution')
-  const isSessionRequest = isRequest(options.url, 'session')
+function _interceptSuccess (result: HttpSuccessResponseT, url): HttpSuccessResponseT {
+  const isGdprRequest = isRequest(url, 'gdpr_forget_device')
+  const isAttributionRequest = isRequest(url, 'attribution')
+  const isSessionRequest = isRequest(url, 'session')
   const optedOut = result.tracking_state === 'opted_out'
 
   if (!isGdprRequest && optedOut) {
@@ -210,8 +247,8 @@ function _interceptResponse (result, options) {
  * @param {Object} options
  * @returns {Promise}
  */
-export default function http (options) {
+export default function http (options: HttpRequestParamsT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
   return defaultParams()
-    .then(params => _buildXhr(options, params))
-    .then(result => _interceptResponse(result, options))
+    .then(defaultParams => _buildXhr(options, defaultParams))
+    .then(result => _interceptResponse(result, options.url))
 }

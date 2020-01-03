@@ -1365,13 +1365,20 @@ describe('test request functionality', () => {
       params: {some: 'param'}
     })
 
-    expect.assertions(3)
+    expect.assertions(4)
 
     return errorRequest.send()
-      .catch(() => {
+      .catch(error => {
         expect(http.default).not.toHaveBeenCalled()
         expect(Logger.default.error).toHaveBeenCalledWith('You must define url for the request to be sent')
         expect(setTimeout).not.toHaveBeenCalled()
+        expect(error).toEqual({
+          status: 'error',
+          action: 'CONTINUE',
+          response: '',
+          message: 'Url is not provided',
+          code: 'MISSING_URL'
+        })
       })
 
   })

@@ -1,4 +1,8 @@
 // @flow
+export type NavigatorT = Navigator & {
+  msDoNotTrack?: any,
+  userLanguage?: string
+}
 
 export type AttributionMapT = $ReadOnly<{|
   adid: string,
@@ -34,22 +38,62 @@ export type SessionParamsT = $Shape<{|
   lastInterval: $PropertyType<ActivityStateMapT, 'lastInterval'>
 |}>
 
-export type HttpResultT = $ReadOnly<{
+export type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'
+
+export type MethodT = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+export type ParamsT = $Shape<{|
+  createdAt?: string,
+  initiatedBy?: string,
+  ...SessionParamsT
+|}>
+
+export type HttpRequestParamsT = $ReadOnly<{|
+  url: UrlT,
+  method?: MethodT,
+  params: $ReadOnly<{|
+    attempts: number,
+    ...ParamsT
+  |}>
+|}>
+
+export type HttpSuccessResponseT = $ReadOnly<{|
+  status: 'success',
   adid: string,
-  continue_in: number,
-  retry_in: number,
-  ask_in: number,
-  attribution: AttributionMapT
-}>
+  timestamp: string,
+  continue_in?: number,
+  retry_in?: number,
+  ask_in?: number,
+  tracking_state?: number,
+  attribution?: AttributionMapT,
+  message?: string
+|}>
 
-type HttpFinishCb = () => void
+export type ErrorCodeT =
+  'TRANSACTION_ERROR' |
+  'SERVER_MALFORMED_RESPONSE' |
+  'SERVER_INTERNAL_ERROR' |
+  'SERVER_CANNOT_PROCESS' |
+  'NO_CONNECTION' |
+  'SKIP' |
+  'MISSING_URL'
 
-type HttpRetryCb = (number) => Promise<HttpResultT>
+export type HttpErrorResponseT = $ReadOnly<{|
+  status: 'error',
+  action: 'CONTINUE' | 'RETRY',
+  response: {[string]: string} | string,
+  message: string,
+  code: ErrorCodeT
+|}>
 
-export type HttpContinueCbT = (HttpResultT, HttpFinishCb, HttpRetryCb) => mixed
+type HttpFinishCbT = () => void
+
+type HttpRetryCbT = (number) => Promise<HttpSuccessResponseT | HttpErrorResponseT>
+
+export type HttpContinueCbT = (HttpSuccessResponseT | HttpErrorResponseT, HttpFinishCbT, HttpRetryCbT) => mixed
 
 export type AttributionStateT = {|
-  state: 'same' | 'changed'
+  state: 'same' | 'changed' | 'unknown'
 |}
 
 export type BackOffStrategyT = 'long' | 'short' | 'test'
@@ -99,12 +143,58 @@ export type InitOptionsT = $ReadOnly<$Shape<{|
 |}>>
 
 export type BaseParamsListT = $ReadOnlyArray<$Keys<BaseParamsT>>
+
 export type BaseParamsMandatoryListT = $ReadOnlyArray<'appToken' | 'environment'>
+
 export type CustomConfigListT = $ReadOnlyArray<$Keys<CustomConfigT>>
 
 export type CustomErrorT = {|
   name: string,
   message: string,
   interrupted?: boolean
+|}
+
+export type CreatedAtT = {|
+  createdAt: string
+|}
+
+export type SentAtT = {|
+  sentAt: string
+|}
+
+export type WebUuidT = {|
+  webUuid: string
+|}
+
+export type TrackEnabledT = {|
+  trackingEnabled?: boolean
+|}
+
+export type PlatformT = {|
+  platform: string
+|}
+
+export type LanguageT = {|
+  language: string,
+  country?: string
+|}
+
+export type MachineTypeT = {|
+  machineType?: string
+|}
+
+export type QueueSizeT = {|
+  queueSize: number
+|}
+
+export type DefaultParamsT = {|
+  ...CreatedAtT,
+  ...SentAtT,
+  ...WebUuidT,
+  ...TrackEnabledT,
+  ...PlatformT,
+  ...LanguageT,
+  ...MachineTypeT,
+  ...QueueSizeT
 |}
 

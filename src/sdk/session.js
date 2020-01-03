@@ -155,7 +155,7 @@ function _handleVisibilityChange () {
  * @private
  */
 function _handleSessionRequestFinish (e, result = {}) {
-  if (result.response && result.response.error) {
+  if (result.response && result.response.error) { // TODO might not be needed anymore
     Logger.error(`Session was not successful, error was returned from the server: ${result.response.error}`)
     return
   }

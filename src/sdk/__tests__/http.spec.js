@@ -50,7 +50,6 @@ describe('perform api requests', () => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     ActivityState.default.init({uuid: 'some-uuid'})
 
-
     jest.spyOn(global.navigator, 'language', 'get').mockReturnValue('en-GB')
     jest.spyOn(global.navigator, 'platform', 'get').mockReturnValue('macos')
     jest.spyOn(global.navigator, 'doNotTrack', 'get').mockReturnValue(0)
@@ -79,11 +78,11 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
+      status: 'error',
       response: {error: 'connection failed'},
       action: 'RETRY',
       message: 'XHR transaction failed due to an error',
       code: 'TRANSACTION_ERROR'
-
     })
 
     return Utils.flushPromises()
@@ -103,6 +102,7 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
+      status: 'error',
       action: 'RETRY',
       response: JSON.stringify(''),
       message: 'No internet connectivity',
@@ -126,6 +126,7 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).resolves.toEqual({
+      status: 'error',
       action: 'CONTINUE',
       response: {error: 'Session failed (failed to get app token)'},
       message: 'Server was not able to process the request, probably due to error coming from the client',
@@ -149,6 +150,7 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
+      status: 'error',
       action: 'RETRY',
       response: JSON.stringify('bla bla not json'),
       message: 'Response from server is malformed',
@@ -172,6 +174,7 @@ describe('perform api requests', () => {
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
+      status: 'error',
       action: 'RETRY',
       response: JSON.stringify('Internal Server Error'),
       message: 'Internal error occurred on the server',
@@ -229,7 +232,10 @@ describe('perform api requests', () => {
           very: 'nice',
           and: {test: 'object'}
         }
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -258,7 +264,10 @@ describe('perform api requests', () => {
         params: {
           eventToken: '567abc'
         }
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -297,7 +306,10 @@ describe('perform api requests', () => {
         params: {
           bla: 'truc'
         }
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -318,7 +330,10 @@ describe('perform api requests', () => {
       expect(http.default({
         url: '/gdpr_forget_device',
         method: 'POST'
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -341,7 +356,10 @@ describe('perform api requests', () => {
         params: {
           some: 'thing'
         }
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -364,7 +382,10 @@ describe('perform api requests', () => {
 
       expect(http.default({
         url: '/some-url'
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -395,7 +416,10 @@ describe('perform api requests', () => {
           bla: 'ble',
           obj: {}
         }
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -419,7 +443,10 @@ describe('perform api requests', () => {
           some: 'thing',
           very: 'nice'
         }
-      })).resolves.toEqual(response)
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
 
       return Utils.flushPromises()
         .then(() => {
@@ -459,6 +486,7 @@ describe('perform api requests', () => {
           and: {test: 'object'}
         }
       })).resolves.toEqual({
+        status: 'success',
         adid: '123123',
         timestamp: '2019-02-02'
       })
@@ -487,6 +515,7 @@ describe('perform api requests', () => {
           and: {test: 'object'}
         }
       })).resolves.toEqual({
+        status: 'success',
         adid: '123123',
         attribution: 'thing',
         message: 'bla',
@@ -535,6 +564,7 @@ describe('perform api requests', () => {
         url: '/session'
       }).then(result => {
         expect(result).toEqual({
+          status: 'success',
           adid: '123123',
           timestamp: '2019-02-02',
           ask_in: 2500,
@@ -566,6 +596,7 @@ describe('perform api requests', () => {
         url: '/session'
       }).then(result => {
         expect(result).toEqual({
+          status: 'success',
           adid: '123123',
           timestamp: '2019-02-02',
           ask_in: 2500
@@ -597,6 +628,7 @@ describe('perform api requests', () => {
         }
       }).then(result => {
         expect(result).toEqual({
+          status: 'success',
           adid: '123123',
           timestamp: '2019-02-02'
         })
@@ -626,6 +658,7 @@ describe('perform api requests', () => {
         }
       }).then(result => {
         expect(result).toEqual({
+          status: 'success',
           ask_in: 2500
         })
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:check', result)
@@ -647,7 +680,7 @@ describe('perform api requests', () => {
       http.default({
         url: '/session'
       }).then(result => {
-        expect(result).toEqual({})
+        expect(result).toEqual({status: 'success'})
         expect(PubSub.publish).toHaveBeenCalledWith('session:finished', result)
       })
 
@@ -674,6 +707,7 @@ describe('perform api requests', () => {
         }
       }).then(result => {
         expect(result).toEqual({
+          status: 'success',
           ask_in: 2500,
           tracking_state: 'opted_out'
         })
@@ -701,6 +735,7 @@ describe('perform api requests', () => {
         url: '/gdpr_forget_device'
       }).then(result => {
         expect(result).toEqual({
+          status: 'success',
           ask_in: 2500,
           tracking_state: 'opted_out'
         })

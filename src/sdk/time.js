@@ -7,7 +7,6 @@
  * @private
  */
 function _prependZero (value, power = 1) {
-
   let formatted = value + ''
 
   for (let i = 1; i <= power; i += 1) {
@@ -26,7 +25,6 @@ function _prependZero (value, power = 1) {
  * @private
  */
 function _getDate (date) {
-
   const day = _prependZero(date.getDate())
   const month = _prependZero(date.getMonth() + 1)
   const year = date.getFullYear()
@@ -42,7 +40,6 @@ function _getDate (date) {
  * @private
  */
 function _getTime (date) {
-
   const hours = _prependZero(date.getHours(), 1)
   const minutes = _prependZero(date.getMinutes())
   const seconds = _prependZero(date.getSeconds())
@@ -59,7 +56,6 @@ function _getTime (date) {
  * @private
  */
 function _getTimezone (date) {
-
   const offsetInMinutes = date.getTimezoneOffset()
   const hoursOffset = _prependZero(Math.floor(Math.abs(offsetInMinutes) / 60))
   const minutesOffset = _prependZero(Math.abs(offsetInMinutes) % 60)
@@ -75,7 +71,6 @@ function _getTimezone (date) {
  * @returns {string}
  */
 function getTimestamp (timestamp) {
-
   const d = timestamp ? new Date(timestamp) : new Date()
   const date = _getDate(d)
   const time = _getTime(d)
@@ -92,7 +87,6 @@ function getTimestamp (timestamp) {
  * @returns {number}
  */
 function timePassed (d1, d2) {
-
   if (isNaN(d1) || isNaN(d2)) {
     return 0
   }

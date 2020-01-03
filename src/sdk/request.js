@@ -1,9 +1,13 @@
 // @flow
 import {
-  type HttpResultT,
+  type HttpSuccessResponseT,
+  type HttpErrorResponseT,
   type HttpContinueCbT,
   type BackOffStrategyT,
-  type SessionParamsT
+  type UrlT,
+  type MethodT,
+  type ParamsT,
+  type HttpRequestParamsT
 } from './types'
 import http from './http'
 import {isEmpty} from './utilities'
@@ -11,15 +15,8 @@ import {getTimestamp} from './time'
 import Logger from './logger'
 import backOff from './backoff'
 import {isConnected} from './listeners'
-import {SECOND} from './constants'
+import {SECOND, HTTP_ERRORS} from './constants'
 
-type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'
-type MethodT ='GET' | 'POST' | 'PUT' | 'DELETE'
-type ParamsT = $Shape<{|
-  createdAt?: string,
-  initiatedBy?: string,
-  ...SessionParamsT
-|}>
 type WaitT = number
 type RequestParamsT = {|
   url?: UrlT,
@@ -29,18 +26,14 @@ type RequestParamsT = {|
   strategy?: BackOffStrategyT,
   wait?: WaitT
 |}
+
 type DefaultParamsT = {|
   url?: UrlT,
   method: MethodT,
   params?: ParamsT,
   continueCb?: HttpContinueCbT
 |}
-type ErrorResultT = $Shape<{
-  action: string,
-  response: string | {[key: string]: string},
-  message: string,
-  code: string
-}>
+
 type AttemptsT = number
 type StartAtT = number
 
@@ -214,45 +207,65 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @returns {Promise}
    * @private
    */
-  function _prepareRequest ({wait, retrying}: {wait?: WaitT, retrying?: boolean}): Promise<HttpResultT> {
+  function _prepareRequest ({wait, retrying}: {wait?: WaitT, retrying?: boolean}): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
     _wait = wait ? _prepareWait(wait) : _wait
 
     if (_skip(wait)) {
-      return Promise.resolve({})
+      return Promise.resolve({
+        status: 'error',
+        action: 'CONTINUE',
+        response: '',
+        message: HTTP_ERRORS['SKIP'],
+        code: 'SKIP'
+      })
     }
 
     if (!_url) {
       Logger.error('You must define url for the request to be sent')
-      return Promise.reject({error: 'No url specified'})
+      return Promise.reject({
+        status: 'error',
+        action: 'CONTINUE',
+        response: '',
+        message: HTTP_ERRORS['MISSING_URL'],
+        code: 'MISSING_URL'
+      })
     }
 
     Logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url} in ${_wait}ms`)
 
     _startAt = Date.now()
 
-    return _preRequest()
+    return _preRequest({
+      url: _url,
+      method: _method,
+      params: {
+        attempts: 1,
+        ..._params
+      }
+    })
   }
 
   /**
    * Check if there is internet connect and if not then setup the timeout
    *
-   * @returns {Promise<HttpResultT>}
+   * @param {Object} options
+   * @returns {Promise}
    * @private
    */
-  function _preRequest (): Promise<HttpResultT> {
+  function _preRequest (options: HttpRequestParamsT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
     _clearTimeout()
 
     if (isConnected()) {
-      return _request()
+      return _request(options)
     }
 
     _attempts.connection += 1
 
-    Logger.log(`No internet connectivity, trying request ${_url || 'unknown'} in ${NO_CONNECTION_WAIT}ms`)
+    Logger.log(`No internet connectivity, trying request ${options.url} in ${NO_CONNECTION_WAIT}ms`)
 
     return new Promise(resolve => {
       _timeoutId = setTimeout(() => {
-        resolve(_preRequest())
+        resolve(_preRequest(options))
       }, NO_CONNECTION_WAIT)
     })
   }
@@ -260,21 +273,22 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   /**
    * Do the timed-out request with retry mechanism
    *
+   * @param {Object} options
    * @returns {Promise}
    * @private
    */
-  function _request (): Promise<HttpResultT> {
+  function _request (options: HttpRequestParamsT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
     return new Promise((resolve, reject) => {
       _timeoutId = setTimeout(() => {
         _startAt = null
 
         return http({
-          url: _url,
-          method: _method,
+          url: options.url,
+          method: options.method,
           params: {
-            attempts: (_attempts.request ? (_attempts.request + 1) : 1) + _attempts.connection,
-            ..._params
-          },
+            ...options.params,
+            attempts: (_attempts.request ? (_attempts.request + 1) : 1) + _attempts.connection
+          }
         })
           .then(result => _continue(result, resolve))
           .catch(result => _error(result, resolve, reject))
@@ -319,7 +333,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @returns {Promise}
    * @private
    */
-  function _retry (wait?: WaitT): Promise<HttpResultT> {
+  function _retry (wait?: WaitT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
     _attempts.request += 1
 
     clear()
@@ -341,10 +355,8 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {Function} resolve
    * @private
    */
-  function _continue (result: HttpResultT, resolve): void {
-    result = result || {}
-
-    if (result.retry_in) {
+  function _continue (result: HttpSuccessResponseT | HttpErrorResponseT, resolve): void {
+    if (result && result.retry_in) {
       resolve(_retry(result.retry_in))
       return
     }
@@ -366,14 +378,14 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {Function} reject
    * @private
    */
-  function _error (result: ErrorResultT = {}, resolve, reject): void {
-    if (result.action === 'RETRY') {
+  function _error (result: HttpErrorResponseT, resolve, reject): void {
+    if (result && result.action === 'RETRY') {
       resolve(_retry(result.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined))
       return
     }
 
     _finish(true)
-    reject(result)
+    reject(result || {})
   }
 
   /**
@@ -386,7 +398,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {number=} wait
    * @returns {Promise}
    */
-  function send ({url, method, params = {}, continueCb, wait}: RequestParamsT = {}): Promise<HttpResultT> {
+  function send ({url, method, params = {}, continueCb, wait}: RequestParamsT = {}): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
     _prepareParams({url, method, params, continueCb})
 
     return _prepareRequest({wait})

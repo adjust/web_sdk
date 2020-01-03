@@ -36,6 +36,7 @@ function setGlobalProp (o, prop) {
 
 function errorResponse (code) {
   return {
+    status: 'error',
     message: 'An error',
     response: 'An error',
     action: 'RETRY',
