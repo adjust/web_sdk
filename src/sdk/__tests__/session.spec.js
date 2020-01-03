@@ -203,7 +203,7 @@ describe('test session functionality', () => {
 
       Session.watch()
 
-      expect.assertions(6)
+      expect.assertions(7)
 
       expect(ActivityState.default.current.installed).toBeUndefined()
 
@@ -211,13 +211,14 @@ describe('test session functionality', () => {
         .then(activityState => {
           expect(activityState.installed).toBeUndefined()
 
-          PubSub.publish('session:finished', {code: 'SERVER_INTERNAL_ERROR', response: {error: 'Some error from the server'}})
+          PubSub.publish('session:finished', Utils.errorResponse('SERVER_INTERNAL_ERROR'))
 
           jest.runOnlyPendingTimers()
 
           expect(ActivityState.default.updateInstalled).not.toHaveBeenCalled()
           expect(ActivityState.default.current.installed).toBeUndefined()
           expect(activityState.installed).toBeUndefined()
+          expect(Logger.default.error).toHaveBeenCalledWith('Session was not successful, error was returned from the server:', 'An error')
 
           return Storage.default.getFirst('activityState')
         })
