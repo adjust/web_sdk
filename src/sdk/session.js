@@ -1,3 +1,10 @@
+// @flow
+import {
+  type DocumentT,
+  type HttpSuccessResponseT,
+  type HttpErrorResponseT,
+  type GlobalParamsMapT
+} from './types'
 import Config from './config'
 import ActivityState from './activity-state'
 import Logger from './logger'
@@ -8,6 +15,13 @@ import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
 import {publish, subscribe} from './pub-sub'
 import {SECOND} from './constants'
+
+type keyValueT = {[key: string]: string}
+
+type SessionRequestParamsT = $Shape<{
+  callbackParams: keyValueT,
+  partnerParams: keyValueT
+}>
 
 /**
  * Flag to mark if session watch is already on
@@ -23,7 +37,7 @@ let _running = false
  * @type {number}
  * @private
  */
-let _idInterval
+let _idInterval: ?IntervalID
 
 /**
  * Reference to timeout id to be used for clearing
@@ -31,7 +45,7 @@ let _idInterval
  * @type {number}
  * @private
  */
-let _idTimeout
+let _idTimeout: ?TimeoutID
 
 /**
  * Browser-specific prefixes for accessing Page Visibility API
@@ -42,6 +56,13 @@ let _idTimeout
 let _pva
 
 /**
+ * Reference to the document casted to a plain object
+ *
+ * @type {Document}
+ */
+const documentExt = (document: DocumentT)
+
+/**
  * Initiate session watch:
  * - bind to visibility change event to track window state (if out of focus or closed)
  * - initiate activity state params and visibility state
@@ -50,7 +71,7 @@ let _pva
  *
  * @returns {Promise}
  */
-function watch () {
+function watch (): Promise<mixed> {
   _pva = getVisibilityApiAccess()
 
   if (_running) {
@@ -62,10 +83,10 @@ function watch () {
   subscribe('session:finished', _handleSessionRequestFinish)
 
   if (_pva) {
-    on(document, _pva.visibilityChange, _handleVisibilityChange)
+    on(documentExt, _pva.visibilityChange, _handleVisibilityChange)
   }
 
-  if (_pva && document[_pva.hidden]) {
+  if (_pva && documentExt[_pva.hidden]) {
     Logger.log('Session request attempt canceled because the tab is still hidden')
     return Promise.resolve({})
   }
@@ -80,14 +101,14 @@ function watch () {
  *
  * @returns {boolean}
  */
-function isRunning () {
+function isRunning (): boolean {
   return _running
 }
 
 /**
  * Destroy session watch
  */
-function destroy () {
+function destroy (): void {
   _running = false
 
   ActivityState.toBackground()
@@ -96,7 +117,7 @@ function destroy () {
 
   if (_pva) {
     clearTimeout(_idTimeout)
-    off(document, _pva.visibilityChange, _handleVisibilityChange)
+    off(documentExt, _pva.visibilityChange, _handleVisibilityChange)
   }
 }
 
@@ -109,7 +130,7 @@ function destroy () {
  * @returns {Promise}
  * @private
  */
-function _handleBackground () {
+function _handleBackground (): Promise<mixed> {
   _stopTimer()
 
   ActivityState.updateSessionOffset()
@@ -123,10 +144,10 @@ function _handleBackground () {
  * - update session length
  * - check for the session and restart the timer
  *
- * @returns {Promise<any | never>}
+ * @returns {Promise}
  * @private
  */
-function _handleForeground () {
+function _handleForeground (): Promise<mixed> {
   ActivityState.updateSessionLength()
   ActivityState.toForeground()
 
@@ -138,10 +159,10 @@ function _handleForeground () {
  *
  * @private
  */
-function _handleVisibilityChange () {
+function _handleVisibilityChange (): void {
   clearTimeout(_idTimeout)
 
-  const handler = document[_pva.hidden] ? _handleBackground : _handleForeground
+  const handler = _pva && documentExt[_pva.hidden] ? _handleBackground : _handleForeground
 
   _idTimeout = setTimeout(handler, 0)
 }
@@ -154,8 +175,8 @@ function _handleVisibilityChange () {
  * @returns {Promise|void}
  * @private
  */
-function _handleSessionRequestFinish (e, result = {}) {
-  if (result.status === 'error') {
+function _handleSessionRequestFinish (e, result: HttpSuccessResponseT | HttpErrorResponseT): ?Promise<mixed> {
+  if (result && result.status === 'error') {
     Logger.error('Session was not successful, error was returned from the server:', result.response)
     return
   }
@@ -172,7 +193,7 @@ function _handleSessionRequestFinish (e, result = {}) {
  *
  * @private
  */
-function _startTimer () {
+function _startTimer (): void {
   _stopTimer()
 
   _idInterval = setInterval(() => {
@@ -186,27 +207,27 @@ function _startTimer () {
  *
  * @private
  */
-function _stopTimer () {
+function _stopTimer (): void {
   clearInterval(_idInterval)
 }
 
 /**
  * Prepare parameters for the session tracking
  *
- * @param {Array} globalCallbackParams
- * @param {Array} globalPartnerParams
+ * @param {Array} callbackParams
+ * @param {Array} partnerParams
  * @returns {Object}
  * @private
  */
-function _prepareParams (globalCallbackParams, globalPartnerParams) {
+function _prepareParams ({callbackParams, partnerParams}: $ReadOnly<GlobalParamsMapT>): SessionRequestParamsT {
   const baseParams = {}
 
-  if (globalCallbackParams.length) {
-    baseParams.callbackParams = convertToMap(globalCallbackParams)
+  if (callbackParams.length) {
+    baseParams.callbackParams = convertToMap(callbackParams)
   }
 
-  if (globalPartnerParams.length) {
-    baseParams.partnerParams = convertToMap(globalPartnerParams)
+  if (partnerParams.length) {
+    baseParams.partnerParams = convertToMap(partnerParams)
   }
 
   return baseParams
@@ -217,13 +238,13 @@ function _prepareParams (globalCallbackParams, globalPartnerParams) {
  *
  * @private
  */
-function _trackSession () {
+function _trackSession (): Promise<mixed> {
   return getGlobalParams()
-    .then(({callbackParams, partnerParams}) => {
+    .then((globalParams) => {
       push({
         url: '/session',
         method: 'POST',
-        params: _prepareParams(callbackParams, partnerParams)
+        params: _prepareParams(globalParams)
       }, {auto: true})
     })
 }
@@ -233,7 +254,7 @@ function _trackSession () {
  *
  * @private
  */
-function _checkSession () {
+function _checkSession (): Promise<mixed> {
   _startTimer()
 
   const activityState = ActivityState.current

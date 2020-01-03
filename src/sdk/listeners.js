@@ -1,4 +1,5 @@
 // @flow
+import {type DocumentT} from './types'
 import {entries} from './utilities'
 
 type EventCbT = (e: Event) => void
@@ -69,7 +70,9 @@ function off (element: Document | any, eventName: string, func: EventCbT): void 
  * @private
  */
 function getVisibilityApiAccess (): ?PageVisibilityApiMap {
-  if (typeof document.hidden !== 'undefined') {
+  const documentExt = (document: DocumentT)
+
+  if (typeof documentExt.hidden !== 'undefined') {
     return {
       hidden: 'hidden',
       visibilityChange: 'visibilitychange'
@@ -86,8 +89,8 @@ function getVisibilityApiAccess (): ?PageVisibilityApiMap {
 
   for (let i = 0; i < accessMapEntries.length; i += 1) {
     const [hidden, visibilityChange] = accessMapEntries[i]
-    // $FlowFixMe vendor prefixed props are not part of global Document type
-    if (typeof document[hidden] !== 'undefined') {
+
+    if (typeof documentExt[hidden] !== 'undefined') {
       return {hidden, visibilityChange}
     }
   }

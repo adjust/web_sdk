@@ -4,6 +4,14 @@ export type NavigatorT = Navigator & {
   userLanguage?: string
 }
 
+export type DocumentT = Document & {
+  hidden: boolean,
+  mozHidden?: boolean,
+  msHidden?: boolean,
+  oHidden?: boolean,
+  webkitHidden?: boolean
+}
+
 export type AttributionMapT = $ReadOnly<{|
   adid: string,
   tracker_token: string,
