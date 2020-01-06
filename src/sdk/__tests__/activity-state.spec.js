@@ -262,7 +262,7 @@ describe('activity state functionality', () => {
     expect(params.timeSpent).toBeUndefined()
     expect(params.sessionLength).toBeUndefined()
     expect(params.sessionCount).toBeUndefined()
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
 
   })
 
@@ -280,37 +280,37 @@ describe('activity state functionality', () => {
 
     ActivityState.default.destroy()
 
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateParams('/session')
 
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateSessionOffset()
 
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateSessionLength()
 
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.resetSessionOffset()
 
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateLastActive()
 
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
     ActivityState.default.updateInstalled()
 
-    expect(ActivityState.default.getParams()).toEqual({})
+    expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
   })

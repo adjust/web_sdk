@@ -144,7 +144,7 @@ function reducer (acc, [key, value]) {
  * @returns {Array}
  * @private
  */
-function _objectExtract (object, what) {
+function _objectExtract (object = {}, what) {
   const extractMap = {
     entries: key => [key, object[key]],
     values: key => object[key]
@@ -175,6 +175,20 @@ function values (object) {
   return _objectExtract(object, 'values')
 }
 
+/**
+ * Check if value is empty in any way (empty object, false value, zero) and use it as predicate method
+ *
+ * @param {*} value
+ * @returns {boolean}
+ */
+function isEmptyEntry (value) {
+  if (isObject(value)) {
+    return !isEmpty(value)
+  }
+
+  return !!value || (value === 0)
+}
+
 export {
   buildList,
   isEmpty,
@@ -187,5 +201,6 @@ export {
   getHostName,
   reducer,
   entries,
-  values
+  values,
+  isEmptyEntry
 }

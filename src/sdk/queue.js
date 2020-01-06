@@ -1,11 +1,30 @@
+// @flow
+import {
+  type HttpSuccessResponseT,
+  type HttpErrorResponseT,
+  type HttpFinishCbT,
+  type WaitT,
+  type UrlT,
+  type MethodT,
+  type RequestParamsT,
+  type ActivityStateMapT
+} from './types'
 import Config from './config'
 import Storage from './storage/storage'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Request from './request'
-import {isRequest} from './utilities'
+import {entries, isRequest, isEmptyEntry, reducer} from './utilities'
 import {persist} from './identity'
 import {getTimestamp} from './time'
+
+type PendingT = {|
+  timestamp: number,
+  url: UrlT,
+  method?: MethodT,
+  createdAt?: number,
+  params: RequestParamsT
+|}
 
 /**
  * Http request instance
@@ -37,10 +56,17 @@ const _storeName = 'queue'
 /**
  * Current running state and task timestamp
  *
- * @type {{running: boolean, timestamp: null|number, pause: Object}}
+ * @type {{running: boolean, timestamp: void|number, pause: void|Object}}
  * @private
  */
-const _current = {
+const _current: {|
+  running: boolean,
+  timestamp: ?number,
+  pause: ?{|
+    timestamp: number,
+    wait: WaitT
+  |}
+|} = {
   running: false,
   timestamp: null,
   pause: null
@@ -54,7 +80,7 @@ const _current = {
  * @returns {Promise}
  * @private
  */
-function _continue (result, finish) {
+function _continue (result: HttpSuccessResponseT | HttpErrorResponseT, finish: HttpFinishCbT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
   const wait = result && result.continue_in || null
 
   _current.pause = wait ? {
@@ -72,22 +98,6 @@ function _continue (result, finish) {
 }
 
 /**
- * Prepare parameters which are about to be sent with the request
- *
- * @param url
- * @param params
- * @returns {any}
- * @private
- */
-function _prepareParams (url, params) {
-  const baseParams = isRequest(url, 'event') ? {
-    eventCount: ActivityState.current.eventCount
-  } : {}
-
-  return {...baseParams, ...ActivityState.getParams(), ...params}
-}
-
-/**
  * Correct timestamp if equal or less then previous one to avoid constraint errors
  * Cases when needed:
  * - test environment
@@ -96,10 +106,10 @@ function _prepareParams (url, params) {
  * @returns {number}
  * @private
  */
-function _prepareTimestamp () {
+function _prepareTimestamp (): number {
   let timestamp = Date.now()
 
-  if (timestamp <= _current.timestamp) {
+  if (_current.timestamp && timestamp <= _current.timestamp) {
     timestamp = _current.timestamp + 1
   }
 
@@ -115,7 +125,7 @@ function _prepareTimestamp () {
  * @returns {Promise}
  * @private
  */
-function _persist (url) {
+function _persist (url): Promise<?ActivityStateMapT> {
 
   if (isRequest(url, 'session')) {
     ActivityState.resetSessionOffset()
@@ -136,15 +146,18 @@ function _persist (url) {
  * @param {number=} timestamp
  * @returns {Promise}
  */
-function push ({url, method, params}, {auto, timestamp} = {}) {
+function push ({url, method, params}: {|url: UrlT, method: MethodT, params: RequestParamsT|}, {auto, timestamp}: {|auto?: boolean, timestamp?: number|} = {}) {
 
   ActivityState.updateParams(url, auto)
 
-  const pending = {
+  const filteredParams = entries(params)
+    .filter(([, value]) => isEmptyEntry(value))
+    .reduce(reducer, {})
+  const pending: PendingT = {
     timestamp: _prepareTimestamp(),
     url,
     method,
-    params: _prepareParams(url, params)
+    params: {...ActivityState.getParams(url), ...filteredParams}
   }
 
   if (timestamp) {
@@ -168,7 +181,7 @@ function push ({url, method, params}, {auto, timestamp} = {}) {
  * @returns {Promise}
  * @private
  */
-function _prepareToSend ({timestamp, createdAt, url, method, params} = {}, wait) {
+function _prepareToSend ({timestamp, createdAt, url, method, params}: PendingT = {}, wait?: ?WaitT): Promise<mixed> {
   const activityState = ActivityState.current || {}
   const firstSession = url === '/session' && !activityState.installed
   const noPending = !url && !method && !params
@@ -192,18 +205,15 @@ function _prepareToSend ({timestamp, createdAt, url, method, params} = {}, wait)
 /**
  * Check if there is waiting period required
  *
- * @returns {null|*}
+ * @returns {void|number}
  * @private
  */
-function _checkWait () {
-  if (!_current.pause) {
-    return null
-  }
+function _checkWait (): ?WaitT {
+  const {timestamp, wait} = _current.pause || {}
+  const rest = Date.now() - (timestamp || 0)
 
-  const rest = Date.now() - _current.pause.timestamp
-
-  return rest < _current.pause.wait
-    ? (_current.pause.wait - rest)
+  return rest < wait
+    ? (wait - rest)
     : null
 }
 
@@ -214,7 +224,7 @@ function _checkWait () {
  * @param {number=} wait
  * @returns {Promise}
  */
-function run ({cleanUp, wait} = {}) {
+function run ({cleanUp, wait}: {cleanUp?: boolean, wait?: ?WaitT} = {}): Promise<mixed> {
   _current.running = true
 
   let chain = Promise.resolve({})
@@ -235,7 +245,7 @@ function run ({cleanUp, wait} = {}) {
  *
  * @param {boolean} state
  */
-function setOffline (state) {
+function setOffline (state: boolean): void {
   if (state === undefined) {
     Logger.error('State not provided, true or false has to be defined')
     return
@@ -263,7 +273,7 @@ function setOffline (state) {
  * @private
  * @returns {Promise}
  */
-function _cleanUp () {
+function _cleanUp (): Promise<mixed> {
   const upperBound = Date.now() - Config.requestValidityWindow
   return Storage.deleteBulk(_storeName, upperBound, 'upperBound')
 }
@@ -274,21 +284,21 @@ function _cleanUp () {
  *
  * @returns {boolean}
  */
-function isRunning () {
+function isRunning (): boolean {
   return _current.running
 }
 
 /**
  * Clear queue store
  */
-function clear () {
+function clear (): void {
   return Storage.clear(_storeName)
 }
 
 /**
  * Destroy queue by clearing current timeout
  */
-function destroy () {
+function destroy (): void {
   _request.clear()
   _current.running = false
   _current.timestamp = null

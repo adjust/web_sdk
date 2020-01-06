@@ -2,6 +2,8 @@
 import {
   type HttpSuccessResponseT,
   type HttpErrorResponseT,
+  type HttpFinishCbT,
+  type HttpRetryCbT,
   type AttributionStateT,
   type AttributionWhiteListT,
   type ActivityStateMapT,
@@ -104,7 +106,7 @@ function _setAttribution (result: HttpSuccessResponseT): Promise<AttributionStat
  * @returns {Promise}
  * @private
  */
-function _continue (result: HttpSuccessResponseT | HttpErrorResponseT, finish, retry): Promise<HttpSuccessResponseT | HttpErrorResponseT | AttributionStateT> {
+function _continue (result: HttpSuccessResponseT | HttpErrorResponseT, finish: HttpFinishCbT, retry: HttpRetryCbT): Promise<HttpSuccessResponseT | HttpErrorResponseT | AttributionStateT> {
   if (!result || result && result.status === 'error') {
     finish()
     return Promise.resolve({state: 'unknown'})

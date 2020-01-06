@@ -3,7 +3,8 @@ import {
   type DocumentT,
   type HttpSuccessResponseT,
   type HttpErrorResponseT,
-  type GlobalParamsMapT
+  type GlobalParamsMapT,
+  type SessionRequestParamsT
 } from './types'
 import Config from './config'
 import ActivityState from './activity-state'
@@ -15,13 +16,6 @@ import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
 import {publish, subscribe} from './pub-sub'
 import {SECOND} from './constants'
-
-type keyValueT = {[key: string]: string}
-
-type SessionRequestParamsT = $Shape<{
-  callbackParams: keyValueT,
-  partnerParams: keyValueT
-}>
 
 /**
  * Flag to mark if session watch is already on
@@ -220,17 +214,10 @@ function _stopTimer (): void {
  * @private
  */
 function _prepareParams ({callbackParams, partnerParams}: $ReadOnly<GlobalParamsMapT>): SessionRequestParamsT {
-  const baseParams = {}
-
-  if (callbackParams.length) {
-    baseParams.callbackParams = convertToMap(callbackParams)
+  return {
+    callbackParams: callbackParams.length ? convertToMap(callbackParams) : null,
+    partnerParams: partnerParams.length ? convertToMap(partnerParams) : null
   }
-
-  if (partnerParams.length) {
-    baseParams.partnerParams = convertToMap(partnerParams)
-  }
-
-  return baseParams
 }
 
 /**

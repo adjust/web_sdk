@@ -9,7 +9,7 @@ import {
 } from './types'
 import {HTTP_ERRORS} from './constants'
 import Config from './config'
-import {isEmpty, isObject, isValidJson, isRequest, entries} from './utilities'
+import {isObject, isValidJson, isRequest, entries, isEmptyEntry} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
 
@@ -97,12 +97,7 @@ function _encodeParam ([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<Params
  */
 function _encodeParams (params: ParamsWithAttemptsT, defaultParams: DefaultParamsT): string {
   return entries({...Config.getBaseParams(), ...defaultParams, ...params})
-    .filter(([, value]) => {
-      if (isObject(value)) {
-        return !isEmpty(value)
-      }
-      return !!value || (value === 0)
-    })
+    .filter(([, value]) => isEmptyEntry(value))
     .map(_encodeParam)
     .join('&')
 }

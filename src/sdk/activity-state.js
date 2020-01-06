@@ -1,7 +1,8 @@
 // @flow
 import {
+  type UrlT,
   type ActivityStateMapT,
-  type SessionParamsT
+  type CommonRequestParams
 } from './types'
 import {SECOND} from './constants'
 import {timePassed} from './time'
@@ -192,19 +193,25 @@ function initParams (): void {
  *
  * @returns {Object}
  */
-function getParams (): SessionParamsT {
+function getParams (url?: UrlT): ?CommonRequestParams {
   if (!_started) {
-    return {}
+    return null
   }
 
   const lastInterval = _activityState.lastInterval >= 0 ? _activityState.lastInterval : 0
 
-  return {
+  const baseParams: CommonRequestParams = {
     timeSpent: _activityState.timeSpent || 0,
     sessionLength: _activityState.sessionLength || 0,
     sessionCount: _activityState.sessionCount || 1,
     lastInterval: lastInterval || 0
   }
+
+  if (url && isRequest(url, 'event')) {
+    baseParams.eventCount = _activityState.eventCount
+  }
+
+  return baseParams
 }
 
 /**

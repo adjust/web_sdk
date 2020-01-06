@@ -1,4 +1,5 @@
 // @flow
+import {type SdkClickRequestParamsT} from './types'
 import {reducer} from './utilities'
 import {getTimestamp} from './time'
 import {push} from './queue'
@@ -20,6 +21,21 @@ function _getReferrer (): ?string {
 }
 
 /**
+ * Prepare params for the sdk click request
+ *
+ * @param {string} referrer
+ * @returns {Object}
+ * @private
+ */
+function _prepareParams (referrer): SdkClickRequestParamsT {
+  return {
+    clickTime: getTimestamp(),
+    source: 'web_referrer',
+    referrer: decodeURIComponent(referrer)
+  }
+}
+
+/**
  * Check if there are parameters to send through sdk_click request
  */
 export default function sdkClick (): void {
@@ -29,11 +45,7 @@ export default function sdkClick (): void {
     push({
       url: '/sdk_click',
       method: 'POST',
-      params: {
-        clickTime: getTimestamp(),
-        source: 'web_referrer',
-        referrer: decodeURIComponent(referrer)
-      }
+      params: _prepareParams(referrer)
     })
   }
 }

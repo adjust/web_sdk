@@ -4,33 +4,33 @@ import {
   type HttpErrorResponseT,
   type HttpContinueCbT,
   type BackOffStrategyT,
+  type WaitT,
   type UrlT,
   type MethodT,
-  type ParamsT,
+  type RequestParamsT,
   type HttpRequestParamsT
 } from './types'
 import http from './http'
-import {isEmpty} from './utilities'
+import {entries, isEmpty, reducer, isEmptyEntry} from './utilities'
 import {getTimestamp} from './time'
 import Logger from './logger'
 import backOff from './backoff'
 import {isConnected} from './listeners'
 import {SECOND, HTTP_ERRORS} from './constants'
 
-type WaitT = number
-type RequestParamsT = {|
+type RequestConfigT = {|
   url?: UrlT,
   method?: MethodT,
-  params?: ParamsT,
+  params?: RequestParamsT,
   continueCb?: HttpContinueCbT,
   strategy?: BackOffStrategyT,
-  wait?: WaitT
+  wait?: ?WaitT
 |}
 
-type DefaultParamsT = {|
+type DefaultConfigT = {|
   url?: UrlT,
   method: MethodT,
-  params?: ParamsT,
+  params?: RequestParamsT,
   continueCb?: HttpContinueCbT
 |}
 
@@ -42,14 +42,14 @@ const DEFAULT_WAIT: WaitT = 150
 const MAX_WAIT: WaitT = 0x7FFFFFFF // 2^31 - 1
 const NO_CONNECTION_WAIT = 60 * SECOND
 
-const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}: RequestParamsT = {}) => {
+const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}: RequestConfigT = {}) => {
   /**
    * Global param values set on request instantiation and later used for restore
    *
    * @type {{url: string, method: string, params: Object, continueCb: Function}}
    * @private
    */
-  let _default: DefaultParamsT = {url, method, params, continueCb}
+  let _default: DefaultConfigT = {url, method, params, continueCb}
 
   /**
    * Url param per instance or per request
@@ -73,7 +73,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @type {Object}
    * @private
    */
-  let _params: ParamsT = {...params}
+  let _params: RequestParamsT = {...params}
 
   /**
    * Optional continue callback per instance or per request
@@ -136,7 +136,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @returns {number}
    * @private
    */
-  function _prepareWait (wait?: WaitT): WaitT {
+  function _prepareWait (wait?: ?WaitT): WaitT {
     wait = wait || DEFAULT_WAIT
 
     return wait > MAX_WAIT ? MAX_WAIT : wait
@@ -151,7 +151,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {Function=} continueCb
    * @private
    */
-  function _prepareParams ({url, method, params, continueCb}: RequestParamsT): void {
+  function _prepareParams ({url, method, params, continueCb}: RequestConfigT): void {
     if (url) {
       _url = url
     }
@@ -207,7 +207,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @returns {Promise}
    * @private
    */
-  function _prepareRequest ({wait, retrying}: {wait?: WaitT, retrying?: boolean}): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
+  function _prepareRequest ({wait, retrying}: {wait?: ?WaitT, retrying?: boolean}): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
     _wait = wait ? _prepareWait(wait) : _wait
 
     if (_skip(wait)) {
@@ -282,11 +282,15 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       _timeoutId = setTimeout(() => {
         _startAt = null
 
+        const filteredParams = entries(options.params)
+          .filter(([, value]) => isEmptyEntry(value))
+          .reduce(reducer, {})
+
         return http({
           url: options.url,
           method: options.method,
           params: {
-            ...options.params,
+            ...filteredParams,
             attempts: (_attempts.request ? (_attempts.request + 1) : 1) + _attempts.connection
           }
         })
@@ -398,7 +402,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @param {number=} wait
    * @returns {Promise}
    */
-  function send ({url, method, params = {}, continueCb, wait}: RequestParamsT = {}): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
+  function send ({url, method, params = {}, continueCb, wait}: RequestConfigT = {}): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
     _prepareParams({url, method, params, continueCb})
 
     return _prepareRequest({wait})

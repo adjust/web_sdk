@@ -1,21 +1,16 @@
 // @flow
-import {type EventParamsT, type GlobalParamsMapT} from './types'
+import {
+  type EventParamsT,
+  type EventRequestParamsT,
+  type GlobalParamsMapT,
+  type GlobalKeyValueParamsT
+} from './types'
 import {isEmpty, convertToMap} from './utilities'
 import {push} from './queue'
 import {get as getGlobalParams} from './global-params'
 import Storage from './storage/storage'
 import Logger from './logger'
 import Config from './config'
-
-type keyValueT = {[key: string]: string}
-
-type EventRequestParamsT = {|
-  eventToken: string,
-  revenue?: string,
-  currency?: string,
-  callbackParams?: keyValueT,
-  partnerParams?: keyValueT
-|}
 
 type RevenueT = {
   revenue: string,
@@ -78,11 +73,11 @@ function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: 
     ..._getRevenue(params.revenue, params.currency)
   }
 
-  const eventCallbackParams: keyValueT = {
+  const eventCallbackParams: GlobalKeyValueParamsT = {
     ...convertToMap(callbackParams),
     ...convertToMap(params.callbackParams)
   }
-  const eventPartnerParams: keyValueT = {
+  const eventPartnerParams: GlobalKeyValueParamsT = {
     ...convertToMap(partnerParams),
     ...convertToMap(params.partnerParams)
   }

@@ -39,21 +39,48 @@ export type ActivityStateMapT = $Shape<{|
   attribution: AttributionMapT
 |}>
 
-export type SessionParamsT = $Shape<{|
+export type CommonRequestParams = {|
   timeSpent: $PropertyType<ActivityStateMapT, 'timeSpent'>,
   sessionLength: $PropertyType<ActivityStateMapT, 'sessionLength'>,
   sessionCount: $PropertyType<ActivityStateMapT, 'sessionCount'>,
-  lastInterval: $PropertyType<ActivityStateMapT, 'lastInterval'>
-|}>
+  lastInterval: $PropertyType<ActivityStateMapT, 'lastInterval'>,
+  eventCount?: $PropertyType<ActivityStateMapT, 'eventCount'>
+|}
 
-export type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'
+export type GlobalKeyValueParamsT = {[key: string]: string}
+
+export type EventRequestParamsT = {|
+  eventToken: string,
+  revenue?: string,
+  currency?: string,
+  callbackParams?: ?GlobalKeyValueParamsT,
+  partnerParams?: ?GlobalKeyValueParamsT
+|}
+
+export type SessionRequestParamsT = {|
+  callbackParams?: ?GlobalKeyValueParamsT,
+  partnerParams?: ?GlobalKeyValueParamsT
+|}
+
+export type SdkClickRequestParamsT = {|
+  clickTime: string,
+  source: string,
+  referrer: string
+|}
+
+export type WaitT = number
+
+export type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device' | '/sdk_click'
 
 export type MethodT = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
-export type ParamsT = $Shape<{|
+export type RequestParamsT = $Shape<{|
   createdAt?: string,
-  initiatedBy?: string,
-  ...SessionParamsT
+  initiatedBy?: 'sdk' | 'backend',
+  ...SessionRequestParamsT,
+  ...EventRequestParamsT,
+  ...SdkClickRequestParamsT,
+  ...CommonRequestParams
 |}>
 
 export type HttpRequestParamsT = $ReadOnly<{|
@@ -61,7 +88,7 @@ export type HttpRequestParamsT = $ReadOnly<{|
   method?: MethodT,
   params: $ReadOnly<{|
     attempts: number,
-    ...ParamsT
+    ...RequestParamsT
   |}>
 |}>
 
@@ -94,9 +121,9 @@ export type HttpErrorResponseT = $ReadOnly<{|
   code: ErrorCodeT
 |}>
 
-type HttpFinishCbT = () => void
+export type HttpFinishCbT = () => void
 
-type HttpRetryCbT = (number) => Promise<HttpSuccessResponseT | HttpErrorResponseT>
+export type HttpRetryCbT = (number) => Promise<HttpSuccessResponseT | HttpErrorResponseT>
 
 export type HttpContinueCbT = (HttpSuccessResponseT | HttpErrorResponseT, HttpFinishCbT, HttpRetryCbT) => mixed
 

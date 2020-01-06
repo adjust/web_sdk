@@ -362,7 +362,10 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {}
+            params: {
+              callbackParams: null,
+              partnerParams: null
+            }
           }, {auto: true})
 
           jest.runOnlyPendingTimers()
@@ -750,7 +753,10 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {}
+            params: {
+              callbackParams: null,
+              partnerParams: null
+            }
           }, {auto: true})
           expect(PubSub.publish).not.toHaveBeenCalled()
 
@@ -819,7 +825,10 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {}
+            params: {
+              callbackParams: null,
+              partnerParams: null
+            }
           }, {auto: true})
 
           jest.runOnlyPendingTimers()
@@ -919,7 +928,10 @@ describe('test session functionality', () => {
           expect(Queue.push).toHaveBeenCalledWith({
             url: '/session',
             method: 'POST',
-            params: {}
+            params: {
+              callbackParams: null,
+              partnerParams: null
+            }
           }, {auto: true})
 
           jest.runOnlyPendingTimers()
