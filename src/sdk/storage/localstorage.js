@@ -1,5 +1,5 @@
 import ActivityState from '../activity-state'
-import State from '../state'
+import Preferences from '../preferences'
 import QuickStorage from '../storage/quick-storage'
 import SchemeMap from './scheme-map'
 import Logger from '../logger'
@@ -60,7 +60,7 @@ function _open () {
       }
     })
 
-  State.recover()
+  Preferences.recover()
 
   return {status: 'success'}
 }

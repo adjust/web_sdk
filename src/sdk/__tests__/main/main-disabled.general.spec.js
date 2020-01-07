@@ -8,7 +8,7 @@ import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as Storage from '../../storage/storage'
 import * as Attribution from '../../attribution'
-import * as State from '../../state'
+import * as Preferences from '../../preferences'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
@@ -54,7 +54,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
 
-    State.default.disabled = {reason: 'general'}
+    Preferences.default.disabled = {reason: 'general'}
   })
 
   afterEach(() => {

@@ -2,7 +2,7 @@ import {publish} from './pub-sub'
 import QuickStorage from './storage/quick-storage'
 
 /**
- * Name of the store used by disabled
+ * Name of the store used by preferences
  *
  * @type {string}
  * @private
@@ -41,7 +41,7 @@ function _disabledSetter (value) {
 }
 
 /**
- * Reload current disabled state from localStorage
+ * Reload current preferences from localStorage
  */
 function reload () {
   const stored = QuickStorage.stores[_storeName]
@@ -54,7 +54,7 @@ function reload () {
 }
 
 /**
- * Recover states from memory
+ * Recover preferences from memory
  */
 function recover () {
   if (!QuickStorage.stores[_storeName]) {
@@ -62,14 +62,14 @@ function recover () {
   }
 }
 
-const State = {
+const Preferences = {
   reload,
   recover
 }
 
-Object.defineProperty(State, 'disabled', {
+Object.defineProperty(Preferences, 'disabled', {
   get () { return _disabledGetter() },
   set (value) { return _disabledSetter(value) }
 })
 
-export default State
+export default Preferences

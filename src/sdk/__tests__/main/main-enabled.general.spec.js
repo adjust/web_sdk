@@ -8,7 +8,7 @@ import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as Storage from '../../storage/storage'
 import * as Attribution from '../../attribution'
-import * as State from '../../state'
+import * as Preferences from '../../preferences'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
@@ -62,7 +62,7 @@ describe('main entry point - test enable/disable when in initially enabled state
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    State.default.disabled = null
+    Preferences.default.disabled = null
   })
 
 

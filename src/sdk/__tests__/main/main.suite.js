@@ -6,7 +6,7 @@ import * as Session from '../../session'
 import * as event from '../../event'
 import * as sdkClick from '../../sdk-click'
 import * as GlobalParams from '../../global-params'
-import * as State from '../../state'
+import * as Preferences from '../../preferences'
 import * as Attribution from '../../attribution'
 import * as Storage from '../../storage/storage'
 import * as Logger from '../../logger'
@@ -376,7 +376,7 @@ function expectGdprForgetMeCallback (onlyNumOfAssertions, asyncPublish) {
     return {assertions}
   }
 
-  const oldState = State.default.disabled
+  const oldState = Preferences.default.disabled
 
   if (asyncPublish) {
     PubSub.publish('sdk:gdpr-forget-me', true)
@@ -384,20 +384,20 @@ function expectGdprForgetMeCallback (onlyNumOfAssertions, asyncPublish) {
 
   jest.runOnlyPendingTimers()
 
-  expect(State.default.disabled).not.toEqual(oldState)
-  expect(State.default.disabled).toEqual({reason: 'gdpr', pending: false})
+  expect(Preferences.default.disabled).not.toEqual(oldState)
+  expect(Preferences.default.disabled).toEqual({reason: 'gdpr', pending: false})
 
   return {assertions}
 }
 
 function expectNotGdprForgetMeCallback () {
-  const oldState = State.default.disabled
+  const oldState = Preferences.default.disabled
 
   PubSub.publish('sdk:gdpr-forget-me', true)
 
   jest.runOnlyPendingTimers()
 
-  expect(State.default.disabled).toEqual(oldState)
+  expect(Preferences.default.disabled).toEqual(oldState)
 
   return {assertions: 1}
 }
@@ -478,12 +478,12 @@ function teardown () {
   _instance.__testonly__.destroy()
   localStorage.clear()
   jest.clearAllMocks()
-  State.default.disabled = null
+  Preferences.default.disabled = null
 }
 
 function teardownAndDisable (reason = 'general') {
   teardown()
-  State.default.disabled = {reason}
+  Preferences.default.disabled = {reason}
 }
 
 export default function Suite (instance) {

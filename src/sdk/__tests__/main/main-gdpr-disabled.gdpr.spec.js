@@ -8,7 +8,7 @@ import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as Storage from '../../storage/storage'
 import * as Attribution from '../../attribution'
-import * as State from '../../state'
+import * as Preferences from '../../preferences'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as http from '../../http'
@@ -58,7 +58,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
 
-    State.default.disabled = {reason: 'gdpr'}
+    Preferences.default.disabled = {reason: 'gdpr'}
   })
 
   afterEach(() => {
@@ -68,7 +68,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    State.default.disabled = null
+    Preferences.default.disabled = null
   })
 
   describe('sdk: init -> forget -> flush', () => {

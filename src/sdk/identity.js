@@ -2,7 +2,7 @@
 import {type ActivityStateMapT} from './types'
 import Storage from './storage/storage'
 import ActivityState from './activity-state'
-import State from './state'
+import Preferences from './preferences'
 import Logger from './logger'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
 import {isEmpty} from './utilities'
@@ -97,7 +97,7 @@ function start (): Promise<?ActivityStateMapT> {
       return Storage.addItem(_storeName, activityState)
         .then(() => {
           ActivityState.init(activityState)
-          State.reload()
+          Preferences.reload()
           _starting = false
           return activityState
         })
@@ -142,7 +142,7 @@ function sync (): Promise<ActivityStateMapT> {
 
       if (_isLive() && lastActive < activityState.lastActive) {
         ActivityState.current = activityState
-        State.reload()
+        Preferences.reload()
       }
 
       return activityState
@@ -158,7 +158,7 @@ function sync (): Promise<ActivityStateMapT> {
  */
 function disable ({reason, pending = false}: ReasonT = {}): boolean {
   const logReason = (reason) => reason === REASON_GDPR ? ' due to GDPR-Forget-Me request' : ''
-  const disabled = State.disabled || {}
+  const disabled = Preferences.disabled || {}
 
   if (disabled.reason) {
     Logger.log('Adjust SDK is already disabled' + logReason(disabled.reason))
@@ -167,7 +167,7 @@ function disable ({reason, pending = false}: ReasonT = {}): boolean {
 
   Logger.log('Adjust SDK has been disabled' + logReason(reason))
 
-  State.disabled = {
+  Preferences.disabled = {
     reason: reason || REASON_GENERAL,
     pending
   }
@@ -179,7 +179,7 @@ function disable ({reason, pending = false}: ReasonT = {}): boolean {
  * Enable sdk if not GDPR forgotten
  */
 function enable (): boolean {
-  const disabled = State.disabled || {}
+  const disabled = Preferences.disabled || {}
 
   if (disabled.reason === REASON_GDPR) {
     Logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled')
@@ -193,7 +193,7 @@ function enable (): boolean {
 
   Logger.log('Adjust SDK has been enabled')
 
-  State.disabled = null
+  Preferences.disabled = null
 
   return true
 }
@@ -207,7 +207,7 @@ function enable (): boolean {
  * @returns {string}
  */
 function status (): StatusT {
-  const disabled = State.disabled || {}
+  const disabled = Preferences.disabled || {}
 
   if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
     return 'off'
@@ -225,7 +225,7 @@ function clear (): void {
   const newActivityState = {uuid: 'unknown'}
 
   ActivityState.current = newActivityState
-  State.disabled = {
+  Preferences.disabled = {
     reason: REASON_GDPR,
     pending: false
   }
