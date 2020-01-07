@@ -1825,6 +1825,15 @@ var HOUR = MINUTE * 60;
 var DAY = HOUR * 24;
 var REASON_GENERAL = 'general';
 var REASON_GDPR = 'gdpr';
+var HTTP_ERRORS = {
+  'TRANSACTION_ERROR': 'XHR transaction failed due to an error',
+  'SERVER_MALFORMED_RESPONSE': 'Response from server is malformed',
+  'SERVER_INTERNAL_ERROR': 'Internal error occurred on the server',
+  'SERVER_CANNOT_PROCESS': 'Server was not able to process the request, probably due to error coming from the client',
+  'NO_CONNECTION': 'No internet connectivity',
+  'SKIP': 'Skipping slower attempt',
+  'MISSING_URL': 'Url is not provided'
+};
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
 var defineProperty = __webpack_require__(2);
 var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
@@ -2005,7 +2014,9 @@ function reducer(acc, _ref) {
  */
 
 
-function _objectExtract(object, what) {
+function _objectExtract() {
+  var object = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var what = arguments.length > 1 ? arguments[1] : undefined;
   var extractMap = {
     entries: function entries(key) {
       return [key, object[key]];
@@ -2037,6 +2048,21 @@ function entries(object) {
 
 function utilities_values(object) {
   return _objectExtract(object, 'values');
+}
+/**
+ * Check if value is empty in any way (empty object, false value, zero) and use it as predicate method
+ *
+ * @param {*} value
+ * @returns {boolean}
+ */
+
+
+function isEmptyEntry(value) {
+  if (isObject(value)) {
+    return !isEmpty(value);
+  }
+
+  return !!value || value === 0;
 }
 
 
@@ -2921,7 +2947,7 @@ function timePassed(d1, d2) {
 
 
 // CONCATENATED MODULE: ./src/sdk/activity-state.js
-/*:: import { type ActivityStateMapT, type SessionParamsT } from './types';*/
+/*:: import { type UrlT, type ActivityStateMapT, type CommonRequestParams } from './types';*/
 
 
 
@@ -3162,20 +3188,30 @@ function initParams()
  */
 
 
-function getParams()
-/*: SessionParamsT*/
+function getParams(url
+/*: UrlT*/
+)
+/*: ?CommonRequestParams*/
 {
   if (!_started) {
-    return {};
+    return null;
   }
 
   var lastInterval = _activityState.lastInterval >= 0 ? _activityState.lastInterval : 0;
-  return {
+  var baseParams
+  /*: CommonRequestParams*/
+  = {
     timeSpent: _activityState.timeSpent || 0,
     sessionLength: _activityState.sessionLength || 0,
     sessionCount: _activityState.sessionCount || 1,
     lastInterval: lastInterval || 0
   };
+
+  if (url && isRequest(url, 'event')) {
+    baseParams.eventCount = _activityState.eventCount;
+  }
+
+  return baseParams;
 }
 /**
  * Update activity state parameters depending on the endpoint which has been run
@@ -5427,6 +5463,11 @@ function storage_init() {
 
 
 
+var default_params_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+/*:: import { type NavigatorT, type CreatedAtT, type SentAtT, type WebUuidT, type TrackEnabledT, type PlatformT, type LanguageT, type MachineTypeT, type QueueSizeT, type DefaultParamsT } from './types';*/
+
+
+
 
 
 /**
@@ -5436,7 +5477,9 @@ function storage_init() {
  * @private
  */
 
-function _getCreatedAt() {
+function _getCreatedAt()
+/*: CreatedAtT*/
+{
   return {
     createdAt: getTimestamp()
   };
@@ -5449,7 +5492,9 @@ function _getCreatedAt() {
  */
 
 
-function _getSentAt() {
+function _getSentAt()
+/*: SentAtT*/
+{
   return {
     sentAt: getTimestamp()
   };
@@ -5462,7 +5507,9 @@ function _getSentAt() {
  */
 
 
-function _getWebUuid() {
+function _getWebUuid()
+/*: WebUuidT*/
+{
   return {
     webUuid: activity_state.current.uuid
   };
@@ -5470,16 +5517,21 @@ function _getWebUuid() {
 /**
  * Get track enabled parameter by reading doNotTrack
  *
- * @returns {{trackingEnabled: boolean}|{}}
+ * @returns {{trackingEnabled: boolean}|null}
  * @private
  */
 
 
-function _getTrackEnabled() {
-  var isNavigatorDNT = typeof navigator.doNotTrack !== 'undefined';
+function _getTrackEnabled()
+/*: ?TrackEnabledT*/
+{
+  var navigatorExt = (navigator
+  /*: NavigatorT*/
+  );
+  var isNavigatorDNT = typeof navigatorExt.doNotTrack !== 'undefined';
   var isWindowDNT = typeof window.doNotTrack !== 'undefined';
-  var isMsDNT = typeof navigator.msDoNotTrack !== 'undefined';
-  var dnt = isNavigatorDNT ? navigator.doNotTrack : isWindowDNT ? window.doNotTrack : isMsDNT ? navigator.msDoNotTrack : null;
+  var isMsDNT = typeof navigatorExt.msDoNotTrack !== 'undefined';
+  var dnt = isNavigatorDNT ? navigatorExt.doNotTrack : isWindowDNT ? window.doNotTrack : isMsDNT ? navigatorExt.msDoNotTrack : null;
 
   if (parseInt(dnt, 10) === 0 || dnt === 'no') {
     return {
@@ -5493,7 +5545,7 @@ function _getTrackEnabled() {
     };
   }
 
-  return {};
+  return null;
 }
 /**
  * Get platform parameter => hardcoded to `web`
@@ -5503,7 +5555,9 @@ function _getTrackEnabled() {
  */
 
 
-function _getPlatform() {
+function _getPlatform()
+/*: PlatformT*/
+{
   return {
     platform: 'web'
   };
@@ -5516,8 +5570,14 @@ function _getPlatform() {
  */
 
 
-function _getLanguage() {
-  var _split = (navigator.language || navigator.userLanguage || 'en').split('-'),
+function _getLanguage()
+/*: LanguageT*/
+{
+  var navigatorExt = (navigator
+  /*: NavigatorT*/
+  );
+
+  var _split = (navigatorExt.language || navigatorExt.userLanguage || 'en').split('-'),
       _split2 = slicedToArray_default()(_split, 2),
       language = _split2[0],
       country = _split2[1];
@@ -5534,11 +5594,13 @@ function _getLanguage() {
  */
 
 
-function _getMachineType() {
+function _getMachineType()
+/*: MachineTypeT*/
+{
   var ua = navigator.userAgent || navigator.vendor;
   var overrideWin32 = navigator.platform === 'Win32' && (ua.indexOf('WOW64') !== -1 || ua.indexOf('Win64') !== -1);
   return {
-    machineType: (overrideWin32 ? 'Win64' : navigator.platform) || undefined
+    machineType: overrideWin32 ? 'Win64' : navigator.platform
   };
 }
 /**
@@ -5549,7 +5611,9 @@ function _getMachineType() {
  */
 
 
-function _getQueueSize() {
+function _getQueueSize()
+/*: Promise<QueueSizeT>*/
+{
   return storage_storage.getAll('queue').then(function (records) {
     return {
       queueSize: records.length
@@ -5557,7 +5621,9 @@ function _getQueueSize() {
   });
 }
 
-function default_params_defaultParams() {
+function default_params_defaultParams()
+/*: Promise<DefaultParamsT>*/
+{
   return _getQueueSize().then(function (queueSize) {
     return objectSpread2_default()({}, _getCreatedAt(), {}, _getSentAt(), {}, _getWebUuid(), {}, _getTrackEnabled(), {}, _getPlatform(), {}, _getLanguage(), {}, _getMachineType(), {}, queueSize);
   });
@@ -5566,38 +5632,56 @@ function default_params_defaultParams() {
 
 
 
-
 var http_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+/*:: import { type UrlT, type DefaultParamsT, type HttpSuccessResponseT, type HttpErrorResponseT, type HttpRequestParamsT, type ErrorCodeT } from './types';*/
 
 
 
 
 
-var _errors = {
-  TRANSACTION_ERROR: 'XHR transaction failed due to an error',
-  SERVER_MALFORMED_RESPONSE: 'Response from server is malformed',
-  SERVER_INTERNAL_ERROR: 'Internal error occurred on the server',
-  SERVER_CANNOT_PROCESS: 'Server was not able to process the request, probably due to error coming from the client',
-  NO_CONNECTION: 'No internet connectivity'
-  /**
-   * Get filtered response from successful request
-   *
-   * @param {Object} xhr
-   * @param {String} url
-   * @returns {Object}
-   * @private
-   */
 
-};
 
-function _getSuccessResponse(xhr, url) {
-  var response = JSON.parse(xhr.responseText);
-  var append = isRequest(url, 'attribution') ? ['attribution', 'message'] : [];
-  return ['adid', 'timestamp', 'ask_in', 'retry_in', 'tracking_state'].concat(append).filter(function (key) {
-    return response[key];
-  }).reduce(function (acc, key) {
-    return objectSpread2_default()({}, acc, defineProperty_default()({}, key, response[key]));
-  }, {});
+/*:: type ParamsWithAttemptsT = $PropertyType<HttpRequestParamsT, 'params'>*/
+
+/**
+ * Get filtered response from successful request
+ *
+ * @param {Object} xhr
+ * @param {String} url
+ * @returns {Object}
+ * @private
+ */
+function _getSuccessResponse(xhr
+/*: XMLHttpRequest*/
+, url
+/*: UrlT*/
+)
+/*: HttpSuccessResponseT*/
+{
+  var result = JSON.parse(xhr.responseText);
+  var response = {
+    status: 'success',
+    adid: result.adid,
+    timestamp: result.timestamp,
+    ask_in: result.ask_in,
+    retry_in: result.retry_in,
+    continue_in: result.continue_in,
+    tracking_state: result.tracking_state,
+    attribution: undefined,
+    message: undefined
+  };
+
+  if (isRequest(url, 'attribution')) {
+    response.attribution = result.attribution;
+    response.message = result.message;
+  }
+
+  return entries(response).filter(function (_ref) {
+    var _ref2 = slicedToArray_default()(_ref, 2),
+        value = _ref2[1];
+
+    return !!value;
+  }).reduce(reducer, {});
 }
 /**
  * Get an error object which is about to be passed to resolve or reject method
@@ -5610,14 +5694,55 @@ function _getSuccessResponse(xhr, url) {
  */
 
 
-function _getErrorResponse(xhr, code) {
-  var proceed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+function _getErrorResponse(xhr
+/*: XMLHttpRequest*/
+, code
+/*: ErrorCodeT*/
+)
+/*: HttpErrorResponseT*/
+{
+  var proceed
+  /*: boolean*/
+  = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   return {
+    status: 'error',
     action: proceed ? 'CONTINUE' : 'RETRY',
     response: isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText,
-    message: _errors[code],
+    message: HTTP_ERRORS[code],
     code: code
   };
+}
+/**
+ * Encode parameter depending on the type
+ *
+ * @param {string} key
+ * @param {*} value
+ * @returns {string}
+ * @private
+ */
+
+
+function _encodeParam(_ref3)
+/*: string*/
+{
+  var _ref4 = slicedToArray_default()(_ref3, 2),
+      key = _ref4[0],
+      value = _ref4[1];
+
+  var encodedKey = encodeURIComponent(key.replace(/([A-Z])/g, function ($1) {
+    return "_".concat($1.toLowerCase());
+  }));
+  var encodedValue = value;
+
+  if (typeof value === 'string') {
+    encodedValue = encodeURIComponent(value);
+  }
+
+  if (isObject(value)) {
+    encodedValue = encodeURIComponent(JSON.stringify(value) || '');
+  }
+
+  return [encodedKey, encodedValue].join('=');
 }
 /**
  * Encode key-value pairs to be used in url
@@ -5629,32 +5754,19 @@ function _getErrorResponse(xhr, code) {
  */
 
 
-function _encodeParams(params, defaultParams) {
-  params = objectSpread2_default()({}, config.getBaseParams(), {}, defaultParams, {}, params);
-  return entries(params).filter(function (_ref) {
-    var _ref2 = slicedToArray_default()(_ref, 2),
-        value = _ref2[1];
+function _encodeParams(params
+/*: ParamsWithAttemptsT*/
+, defaultParams
+/*: DefaultParamsT*/
+)
+/*: string*/
+{
+  return entries(objectSpread2_default()({}, config.getBaseParams(), {}, defaultParams, {}, params)).filter(function (_ref5) {
+    var _ref6 = slicedToArray_default()(_ref5, 2),
+        value = _ref6[1];
 
-    if (isObject(value)) {
-      return !isEmpty(value);
-    }
-
-    return !!value || value === 0;
-  }).map(function (pair) {
-    return pair.map(function (value, index) {
-      if (index === 0) {
-        value = value.replace(/([A-Z])/g, function ($1) {
-          return "_".concat($1.toLowerCase());
-        });
-      }
-
-      if (isObject(value)) {
-        value = JSON.stringify(value);
-      }
-
-      return encodeURIComponent(value);
-    }).join('=');
-  }).join('&');
+    return isEmptyEntry(value);
+  }).map(_encodeParam).join('&');
 }
 /**
  * Handle xhr response from server
@@ -5667,9 +5779,9 @@ function _encodeParams(params, defaultParams) {
  */
 
 
-function _handleReadyStateChange(reject, resolve, _ref3) {
-  var xhr = _ref3.xhr,
-      url = _ref3.url;
+function _handleReadyStateChange(reject, resolve, _ref7) {
+  var xhr = _ref7.xhr,
+      url = _ref7.url;
 
   if (xhr.readyState !== 4) {
     return;
@@ -5700,7 +5812,15 @@ function _handleReadyStateChange(reject, resolve, _ref3) {
  */
 
 
-function _prepareUrlAndParams(url, method, params, defaultParams) {
+function _prepareUrlAndParams(_ref8, defaultParams
+/*: DefaultParamsT*/
+)
+/*: {fullUrl: string, encodedParams: string}*/
+{
+  var url = _ref8.url,
+      method = _ref8.method,
+      params = _ref8.params;
+
   var encodedParams = _encodeParams(params, defaultParams);
 
   var base = url === '/gdpr_forget_device' ? 'gdpr' : 'app';
@@ -5722,15 +5842,22 @@ function _prepareUrlAndParams(url, method, params, defaultParams) {
  */
 
 
-function _buildXhr(_ref4) {
-  var url = _ref4.url,
-      _ref4$method = _ref4.method,
-      method = _ref4$method === void 0 ? 'GET' : _ref4$method,
-      _ref4$params = _ref4.params,
-      params = _ref4$params === void 0 ? {} : _ref4$params;
-  var defaultParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function _buildXhr(_ref9, defaultParams
+/*: DefaultParamsT*/
+)
+/*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
+{
+  var url = _ref9.url,
+      _ref9$method = _ref9.method,
+      method = _ref9$method === void 0 ? 'GET' : _ref9$method,
+      _ref9$params = _ref9.params,
+      params = _ref9$params === void 0 ? {} : _ref9$params;
 
-  var _prepareUrlAndParams2 = _prepareUrlAndParams(url, method, params, defaultParams),
+  var _prepareUrlAndParams2 = _prepareUrlAndParams({
+    url: url,
+    method: method,
+    params: params
+  }, defaultParams),
       fullUrl = _prepareUrlAndParams2.fullUrl,
       encodedParams = _prepareUrlAndParams2.encodedParams;
 
@@ -5758,23 +5885,52 @@ function _buildXhr(_ref4) {
   });
 }
 /**
- * Intercept response from backend and:
- * - always check if tracking_state is set to `opted_out` and if yes disable sdk
- * - check if ask_in parameter is present in order to check if attribution have been changed
+ * Intercept response from backend
  *
  * @param {Object} result
- * @param {string} result.tracking_state
- * @param {number} result.ask_in
- * @param {Object} options
+ * @param {string} result.status
+ * @param {string} url
  * @returns {Object}
  * @private
  */
 
 
-function _interceptResponse(result, options) {
-  var isGdprRequest = isRequest(options.url, 'gdpr_forget_device');
-  var isAttributionRequest = isRequest(options.url, 'attribution');
-  var isSessionRequest = isRequest(options.url, 'session');
+function _interceptResponse(result
+/*: HttpSuccessResponseT | HttpErrorResponseT*/
+, url
+/*: UrlT*/
+)
+/*: HttpSuccessResponseT | HttpErrorResponseT*/
+{
+  if (result.status === 'success') {
+    return _interceptSuccess(result, url);
+  }
+
+  return result;
+}
+/**
+ * Intercept successful response from backend and:
+ * - always check if tracking_state is set to `opted_out` and if yes disable sdk
+ * - check if ask_in parameter is present in order to check if attribution have been changed
+ * - emit session finish event if session request
+ *
+ * @param {Object} result
+ * @param {string} result.tracking_state
+ * @param {number} result.ask_in
+ * @param {string} url
+ * @returns {Object}
+ * @private
+ */
+
+
+function _interceptSuccess(result
+/*: HttpSuccessResponseT*/
+, url)
+/*: HttpSuccessResponseT*/
+{
+  var isGdprRequest = isRequest(url, 'gdpr_forget_device');
+  var isAttributionRequest = isRequest(url, 'attribution');
+  var isSessionRequest = isRequest(url, 'session');
   var optedOut = result.tracking_state === 'opted_out';
 
   if (!isGdprRequest && optedOut) {
@@ -5800,11 +5956,15 @@ function _interceptResponse(result, options) {
  */
 
 
-function http(options) {
-  return default_params_defaultParams().then(function (params) {
-    return _buildXhr(options, params);
+function http(options
+/*: HttpRequestParamsT*/
+)
+/*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
+{
+  return default_params_defaultParams().then(function (defaultParams) {
+    return _buildXhr(options, defaultParams);
   }).then(function (result) {
-    return _interceptResponse(result, options);
+    return _interceptResponse(result, options.url);
   });
 }
 // CONCATENATED MODULE: ./src/sdk/backoff.js
@@ -5875,6 +6035,7 @@ function backOff(attempts
   return Math.round(delay);
 }
 // CONCATENATED MODULE: ./src/sdk/listeners.js
+/*:: import { type DocumentT } from './types';*/
 
 
 /*:: type EventCbT = (e: Event) => void*/
@@ -5979,7 +6140,11 @@ function off(element
 function getVisibilityApiAccess()
 /*: ?PageVisibilityApiMap*/
 {
-  if (typeof document.hidden !== 'undefined') {
+  var documentExt = (document
+  /*: DocumentT*/
+  );
+
+  if (typeof documentExt.hidden !== 'undefined') {
     return {
       hidden: 'hidden',
       visibilityChange: 'visibilitychange'
@@ -5999,10 +6164,9 @@ function getVisibilityApiAccess()
   for (var i = 0; i < accessMapEntries.length; i += 1) {
     var _accessMapEntries$i = slicedToArray_default()(accessMapEntries[i], 2),
         hidden = _accessMapEntries$i[0],
-        visibilityChange = _accessMapEntries$i[1]; // $FlowFixMe vendor prefixed props are not part of global Document type
+        visibilityChange = _accessMapEntries$i[1];
 
-
-    if (typeof document[hidden] !== 'undefined') {
+    if (typeof documentExt[hidden] !== 'undefined') {
       return {
         hidden: hidden,
         visibilityChange: visibilityChange
@@ -6040,8 +6204,9 @@ function listeners_destroy()
 // CONCATENATED MODULE: ./src/sdk/request.js
 
 
+
 var request_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
-/*:: import { type HttpResultT, type HttpContinueCbT, type BackOffStrategyT, type SessionParamsT } from './types';*/
+/*:: import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpContinueCbT, type BackOffStrategyT, type WaitT, type UrlT, type MethodT, type RequestParamsT, type HttpRequestParamsT } from './types';*/
 
 
 
@@ -6051,40 +6216,21 @@ var request_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Pr
 
 
 
-/*:: type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device'*/
-
-/*:: type MethodT ='GET' | 'POST' | 'PUT' | 'DELETE'*/
-
-/*:: type ParamsT = $Shape<{|
-  createdAt?: string,
-  initiatedBy?: string,
-  ...SessionParamsT
-|}>*/
-
-/*:: type WaitT = number*/
-
-/*:: type RequestParamsT = {|
+/*:: type RequestConfigT = {|
   url?: UrlT,
   method?: MethodT,
-  params?: ParamsT,
+  params?: RequestParamsT,
   continueCb?: HttpContinueCbT,
   strategy?: BackOffStrategyT,
-  wait?: WaitT
+  wait?: ?WaitT
 |}*/
 
-/*:: type DefaultParamsT = {|
+/*:: type DefaultConfigT = {|
   url?: UrlT,
   method: MethodT,
-  params?: ParamsT,
+  params?: RequestParamsT,
   continueCb?: HttpContinueCbT
 |}*/
-
-/*:: type ErrorResultT = $Shape<{
-  action: string,
-  response: string | {[key: string]: string},
-  message: string,
-  code: string
-}>*/
 
 /*:: type AttemptsT = number*/
 
@@ -6120,7 +6266,7 @@ var request_Request = function Request() {
    * @private
    */
   var _default
-  /*: DefaultParamsT*/
+  /*: DefaultConfigT*/
   = {
     url: url,
     method: method,
@@ -6155,7 +6301,7 @@ var request_Request = function Request() {
    */
 
   var _params
-  /*: ParamsT*/
+  /*: RequestParamsT*/
   = objectSpread2_default()({}, params);
   /**
    * Optional continue callback per instance or per request
@@ -6235,7 +6381,7 @@ var request_Request = function Request() {
    */
 
   function _prepareWait(wait
-  /*: WaitT*/
+  /*: ?WaitT*/
   )
   /*: WaitT*/
   {
@@ -6322,72 +6468,100 @@ var request_Request = function Request() {
 
 
   function _prepareRequest(_ref3)
-  /*: Promise<HttpResultT>*/
+  /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
   {
     var wait = _ref3.wait,
         retrying = _ref3.retrying;
     _wait = wait ? _prepareWait(wait) : _wait;
 
     if (_skip(wait)) {
-      return request_Promise.resolve({});
+      return request_Promise.resolve({
+        status: 'error',
+        action: 'CONTINUE',
+        response: '',
+        message: HTTP_ERRORS['SKIP'],
+        code: 'SKIP'
+      });
     }
 
     if (!_url) {
       logger.error('You must define url for the request to be sent');
       return request_Promise.reject({
-        error: 'No url specified'
+        status: 'error',
+        action: 'CONTINUE',
+        response: '',
+        message: HTTP_ERRORS['MISSING_URL'],
+        code: 'MISSING_URL'
       });
     }
 
     logger.log("".concat(retrying ? 'Re-trying' : 'Trying', " request ").concat(_url, " in ").concat(_wait, "ms"));
     _startAt = Date.now();
-    return _preRequest();
+    return _preRequest({
+      url: _url,
+      method: _method,
+      params: objectSpread2_default()({
+        attempts: 1
+      }, _params)
+    });
   }
   /**
    * Check if there is internet connect and if not then setup the timeout
    *
-   * @returns {Promise<HttpResultT>}
+   * @param {Object} options
+   * @returns {Promise}
    * @private
    */
 
 
-  function _preRequest()
-  /*: Promise<HttpResultT>*/
+  function _preRequest(options
+  /*: HttpRequestParamsT*/
+  )
+  /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
   {
     _clearTimeout();
 
     if (isConnected()) {
-      return _request();
+      return _request(options);
     }
 
     _attempts.connection += 1;
-    logger.log("No internet connectivity, trying request ".concat(_url || 'unknown', " in ").concat(NO_CONNECTION_WAIT, "ms"));
+    logger.log("No internet connectivity, trying request ".concat(options.url, " in ").concat(NO_CONNECTION_WAIT, "ms"));
     return new request_Promise(function (resolve) {
       _timeoutId = setTimeout(function () {
-        resolve(_preRequest());
+        resolve(_preRequest(options));
       }, NO_CONNECTION_WAIT);
     });
   }
   /**
    * Do the timed-out request with retry mechanism
    *
+   * @param {Object} options
    * @returns {Promise}
    * @private
    */
 
 
-  function _request()
-  /*: Promise<HttpResultT>*/
+  function _request(options
+  /*: HttpRequestParamsT*/
+  )
+  /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
   {
     return new request_Promise(function (resolve, reject) {
       _timeoutId = setTimeout(function () {
         _startAt = null;
+        var filteredParams = entries(options.params).filter(function (_ref4) {
+          var _ref5 = slicedToArray_default()(_ref4, 2),
+              value = _ref5[1];
+
+          return isEmptyEntry(value);
+        }).reduce(reducer, {});
         return http({
-          url: _url,
-          method: _method,
-          params: objectSpread2_default()({
+          url: options.url,
+          method: options.method,
+          params: objectSpread2_default()({}, filteredParams, {
             attempts: (_attempts.request ? _attempts.request + 1 : 1) + _attempts.connection
-          }, _params)
+          })
         }).then(function (result) {
           return _continue(result, resolve);
         }).catch(function (result) {
@@ -6445,7 +6619,7 @@ var request_Request = function Request() {
   function _retry(wait
   /*: WaitT*/
   )
-  /*: Promise<HttpResultT>*/
+  /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
   {
     _attempts.request += 1;
     clear();
@@ -6468,13 +6642,11 @@ var request_Request = function Request() {
 
 
   function _continue(result
-  /*: HttpResultT*/
+  /*: HttpSuccessResponseT | HttpErrorResponseT*/
   , resolve)
   /*: void*/
   {
-    result = result || {};
-
-    if (result.retry_in) {
+    if (result && result.retry_in) {
       resolve(_retry(result.retry_in));
       return;
     }
@@ -6497,23 +6669,19 @@ var request_Request = function Request() {
    */
 
 
-  function _error()
+  function _error(result
+  /*: HttpErrorResponseT*/
+  , resolve, reject)
   /*: void*/
   {
-    var result
-    /*: ErrorResultT*/
-    = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var resolve = arguments.length > 1 ? arguments[1] : undefined;
-    var reject = arguments.length > 2 ? arguments[2] : undefined;
-
-    if (result.action === 'RETRY') {
+    if (result && result.action === 'RETRY') {
       resolve(_retry(result.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined));
       return;
     }
 
     _finish(true);
 
-    reject(result);
+    reject(result || {});
   }
   /**
    * Send the request after specified or default waiting period
@@ -6528,15 +6696,15 @@ var request_Request = function Request() {
 
 
   function send()
-  /*: Promise<HttpResultT>*/
+  /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
   {
-    var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        url = _ref4.url,
-        method = _ref4.method,
-        _ref4$params = _ref4.params,
-        params = _ref4$params === void 0 ? {} : _ref4$params,
-        continueCb = _ref4.continueCb,
-        wait = _ref4.wait;
+    var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        url = _ref6.url,
+        method = _ref6.method,
+        _ref6$params = _ref6.params,
+        params = _ref6$params === void 0 ? {} : _ref6$params,
+        continueCb = _ref6.continueCb,
+        wait = _ref6.wait;
 
     _prepareParams({
       url: url,
@@ -6916,7 +7084,9 @@ function identity_destroy()
 // CONCATENATED MODULE: ./src/sdk/queue.js
 
 
+
 var queue_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+/*:: import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type WaitT, type UrlT, type MethodT, type RequestParamsT, type ActivityStateMapT } from './types';*/
 
 
 
@@ -6925,6 +7095,15 @@ var queue_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Prom
 
 
 
+
+
+/*:: type PendingT = {|
+  timestamp: number,
+  url: UrlT,
+  method?: MethodT,
+  createdAt?: number,
+  params: RequestParamsT
+|}*/
 
 /**
  * Http request instance
@@ -6932,7 +7111,6 @@ var queue_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Prom
  * @type {Object}
  * @private
  */
-
 var queue_request = request({
   strategy: 'long',
   continueCb: queue_continue
@@ -6957,11 +7135,20 @@ var queue_storeName = 'queue';
 /**
  * Current running state and task timestamp
  *
- * @type {{running: boolean, timestamp: null|number, pause: Object}}
+ * @type {{running: boolean, timestamp: void|number, pause: void|Object}}
  * @private
  */
 
-var _current = {
+var _current
+/*: {|
+  running: boolean,
+  timestamp: ?number,
+  pause: ?{|
+    timestamp: number,
+    wait: WaitT
+  |}
+|}*/
+= {
   running: false,
   timestamp: null,
   pause: null
@@ -6976,7 +7163,13 @@ var _current = {
 
 };
 
-function queue_continue(result, finish) {
+function queue_continue(result
+/*: HttpSuccessResponseT | HttpErrorResponseT*/
+, finish
+/*: HttpFinishCbT*/
+)
+/*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
+{
   var wait = result && result.continue_in || null;
   _current.pause = wait ? {
     timestamp: Date.now(),
@@ -6993,22 +7186,6 @@ function queue_continue(result, finish) {
   });
 }
 /**
- * Prepare parameters which are about to be sent with the request
- *
- * @param url
- * @param params
- * @returns {any}
- * @private
- */
-
-
-function queue_prepareParams(url, params) {
-  var baseParams = isRequest(url, 'event') ? {
-    eventCount: activity_state.current.eventCount
-  } : {};
-  return objectSpread2_default()({}, baseParams, {}, activity_state.getParams(), {}, params);
-}
-/**
  * Correct timestamp if equal or less then previous one to avoid constraint errors
  * Cases when needed:
  * - test environment
@@ -7019,10 +7196,12 @@ function queue_prepareParams(url, params) {
  */
 
 
-function _prepareTimestamp() {
+function _prepareTimestamp()
+/*: number*/
+{
   var timestamp = Date.now();
 
-  if (timestamp <= _current.timestamp) {
+  if (_current.timestamp && timestamp <= _current.timestamp) {
     timestamp = _current.timestamp + 1;
   }
 
@@ -7038,7 +7217,9 @@ function _prepareTimestamp() {
  */
 
 
-function _persist(url) {
+function _persist(url)
+/*: Promise<?ActivityStateMapT>*/
+{
   if (isRequest(url, 'session')) {
     activity_state.resetSessionOffset();
   }
@@ -7068,11 +7249,19 @@ function push(_ref) {
       timestamp = _ref2.timestamp;
 
   activity_state.updateParams(url, auto);
-  var pending = {
+  var filteredParams = entries(params).filter(function (_ref3) {
+    var _ref4 = slicedToArray_default()(_ref3, 2),
+        value = _ref4[1];
+
+    return isEmptyEntry(value);
+  }).reduce(reducer, {});
+  var pending
+  /*: PendingT*/
+  = {
     timestamp: _prepareTimestamp(),
     url: url,
     method: method,
-    params: queue_prepareParams(url, params)
+    params: objectSpread2_default()({}, activity_state.getParams(url), {}, filteredParams)
   };
 
   if (timestamp) {
@@ -7099,15 +7288,19 @@ function push(_ref) {
  */
 
 
-function _prepareToSend() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      timestamp = _ref3.timestamp,
-      createdAt = _ref3.createdAt,
-      url = _ref3.url,
-      method = _ref3.method,
-      params = _ref3.params;
+function _prepareToSend()
+/*: Promise<mixed>*/
+{
+  var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      timestamp = _ref5.timestamp,
+      createdAt = _ref5.createdAt,
+      url = _ref5.url,
+      method = _ref5.method,
+      params = _ref5.params;
 
-  var wait = arguments.length > 1 ? arguments[1] : undefined;
+  var wait
+  /*:: ?: ?WaitT*/
+  = arguments.length > 1 ? arguments[1] : undefined;
   var activityState = activity_state.current || {};
   var firstSession = url === '/session' && !activityState.installed;
   var noPending = !url && !method && !params;
@@ -7129,19 +7322,20 @@ function _prepareToSend() {
 /**
  * Check if there is waiting period required
  *
- * @returns {null|*}
+ * @returns {void|number}
  * @private
  */
 
 
-function _checkWait() {
-  if (!_current.pause) {
-    return null;
-  }
+function _checkWait()
+/*: ?WaitT*/
+{
+  var _ref6 = _current.pause || {},
+      timestamp = _ref6.timestamp,
+      wait = _ref6.wait;
 
-  var rest = Date.now() - _current.pause.timestamp;
-
-  return rest < _current.pause.wait ? _current.pause.wait - rest : null;
+  var rest = Date.now() - (timestamp || 0);
+  return rest < wait ? wait - rest : null;
 }
 /**
  * Run all pending requests
@@ -7152,10 +7346,12 @@ function _checkWait() {
  */
 
 
-function run() {
-  var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      cleanUp = _ref4.cleanUp,
-      wait = _ref4.wait;
+function run()
+/*: Promise<mixed>*/
+{
+  var _ref7 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      cleanUp = _ref7.cleanUp,
+      wait = _ref7.wait;
 
   _current.running = true;
 
@@ -7180,7 +7376,11 @@ function run() {
  */
 
 
-function setOffline(state) {
+function setOffline(state
+/*: boolean*/
+)
+/*: void*/
+{
   if (state === undefined) {
     logger.error('State not provided, true or false has to be defined');
     return;
@@ -7208,7 +7408,9 @@ function setOffline(state) {
  */
 
 
-function _cleanUp() {
+function _cleanUp()
+/*: Promise<mixed>*/
+{
   var upperBound = Date.now() - config.requestValidityWindow;
   return storage_storage.deleteBulk(queue_storeName, upperBound, 'upperBound');
 }
@@ -7220,7 +7422,9 @@ function _cleanUp() {
  */
 
 
-function queue_isRunning() {
+function queue_isRunning()
+/*: boolean*/
+{
   return _current.running;
 }
 /**
@@ -7228,7 +7432,9 @@ function queue_isRunning() {
  */
 
 
-function queue_clear() {
+function queue_clear()
+/*: void*/
+{
   return storage_storage.clear(queue_storeName);
 }
 /**
@@ -7236,7 +7442,9 @@ function queue_clear() {
  */
 
 
-function queue_destroy() {
+function queue_destroy()
+/*: void*/
+{
   queue_request.clear();
 
   _current.running = false;
@@ -7445,6 +7653,8 @@ function global_params_clear()
 
 // CONCATENATED MODULE: ./src/sdk/session.js
 var session_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+/*:: import { type DocumentT, type HttpSuccessResponseT, type HttpErrorResponseT, type GlobalParamsMapT, type SessionRequestParamsT } from './types';*/
+
 
 
 
@@ -7471,7 +7681,9 @@ var _running = false;
  * @private
  */
 
-var _idInterval;
+var _idInterval
+/*: ?IntervalID*/
+;
 /**
  * Reference to timeout id to be used for clearing
  *
@@ -7480,7 +7692,9 @@ var _idInterval;
  */
 
 
-var _idTimeout;
+var _idTimeout
+/*: ?TimeoutID*/
+;
 /**
  * Browser-specific prefixes for accessing Page Visibility API
  *
@@ -7491,6 +7705,16 @@ var _idTimeout;
 
 var _pva;
 /**
+ * Reference to the document casted to a plain object
+ *
+ * @type {Document}
+ */
+
+
+var session_documentExt = (document
+/*: DocumentT*/
+);
+/**
  * Initiate session watch:
  * - bind to visibility change event to track window state (if out of focus or closed)
  * - initiate activity state params and visibility state
@@ -7500,8 +7724,9 @@ var _pva;
  * @returns {Promise}
  */
 
-
-function watch() {
+function watch()
+/*: Promise<mixed>*/
+{
   _pva = getVisibilityApiAccess();
 
   if (_running) {
@@ -7515,10 +7740,10 @@ function watch() {
   subscribe('session:finished', _handleSessionRequestFinish);
 
   if (_pva) {
-    on(document, _pva.visibilityChange, _handleVisibilityChange);
+    on(session_documentExt, _pva.visibilityChange, _handleVisibilityChange);
   }
 
-  if (_pva && document[_pva.hidden]) {
+  if (_pva && session_documentExt[_pva.hidden]) {
     logger.log('Session request attempt canceled because the tab is still hidden');
     return session_Promise.resolve({});
   }
@@ -7533,7 +7758,9 @@ function watch() {
  */
 
 
-function session_isRunning() {
+function session_isRunning()
+/*: boolean*/
+{
   return _running;
 }
 /**
@@ -7541,7 +7768,9 @@ function session_isRunning() {
  */
 
 
-function session_destroy() {
+function session_destroy()
+/*: void*/
+{
   _running = false;
   activity_state.toBackground();
 
@@ -7549,7 +7778,7 @@ function session_destroy() {
 
   if (_pva) {
     clearTimeout(_idTimeout);
-    off(document, _pva.visibilityChange, _handleVisibilityChange);
+    off(session_documentExt, _pva.visibilityChange, _handleVisibilityChange);
   }
 }
 /**
@@ -7563,7 +7792,9 @@ function session_destroy() {
  */
 
 
-function _handleBackground() {
+function _handleBackground()
+/*: Promise<mixed>*/
+{
   _stopTimer();
 
   activity_state.updateSessionOffset();
@@ -7575,12 +7806,14 @@ function _handleBackground() {
  * - update session length
  * - check for the session and restart the timer
  *
- * @returns {Promise<any | never>}
+ * @returns {Promise}
  * @private
  */
 
 
-function _handleForeground() {
+function _handleForeground()
+/*: Promise<mixed>*/
+{
   activity_state.updateSessionLength();
   activity_state.toForeground();
   return sync().then(_checkSession);
@@ -7592,9 +7825,11 @@ function _handleForeground() {
  */
 
 
-function _handleVisibilityChange() {
+function _handleVisibilityChange()
+/*: void*/
+{
   clearTimeout(_idTimeout);
-  var handler = document[_pva.hidden] ? _handleBackground : _handleForeground;
+  var handler = _pva && session_documentExt[_pva.hidden] ? _handleBackground : _handleForeground;
   _idTimeout = setTimeout(handler, 0);
 }
 /**
@@ -7607,11 +7842,13 @@ function _handleVisibilityChange() {
  */
 
 
-function _handleSessionRequestFinish(e) {
-  var result = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  if (result.response && result.response.error) {
-    logger.error("Session was not successful, error was returned from the server: ".concat(result.response.error));
+function _handleSessionRequestFinish(e, result
+/*: HttpSuccessResponseT | HttpErrorResponseT*/
+)
+/*: ?Promise<mixed>*/
+{
+  if (result && result.status === 'error') {
+    logger.error('Session was not successful, error was returned from the server:', result.response);
     return;
   }
 
@@ -7627,7 +7864,9 @@ function _handleSessionRequestFinish(e) {
  */
 
 
-function _startTimer() {
+function _startTimer()
+/*: void*/
+{
   _stopTimer();
 
   _idInterval = setInterval(function () {
@@ -7642,31 +7881,30 @@ function _startTimer() {
  */
 
 
-function _stopTimer() {
+function _stopTimer()
+/*: void*/
+{
   clearInterval(_idInterval);
 }
 /**
  * Prepare parameters for the session tracking
  *
- * @param {Array} globalCallbackParams
- * @param {Array} globalPartnerParams
+ * @param {Array} callbackParams
+ * @param {Array} partnerParams
  * @returns {Object}
  * @private
  */
 
 
-function session_prepareParams(globalCallbackParams, globalPartnerParams) {
-  var baseParams = {};
-
-  if (globalCallbackParams.length) {
-    baseParams.callbackParams = convertToMap(globalCallbackParams);
-  }
-
-  if (globalPartnerParams.length) {
-    baseParams.partnerParams = convertToMap(globalPartnerParams);
-  }
-
-  return baseParams;
+function session_prepareParams(_ref)
+/*: SessionRequestParamsT*/
+{
+  var callbackParams = _ref.callbackParams,
+      partnerParams = _ref.partnerParams;
+  return {
+    callbackParams: callbackParams.length ? convertToMap(callbackParams) : null,
+    partnerParams: partnerParams.length ? convertToMap(partnerParams) : null
+  };
 }
 /**
  * Track session by sending the request to the server
@@ -7675,14 +7913,14 @@ function session_prepareParams(globalCallbackParams, globalPartnerParams) {
  */
 
 
-function _trackSession() {
-  return get().then(function (_ref) {
-    var callbackParams = _ref.callbackParams,
-        partnerParams = _ref.partnerParams;
+function _trackSession()
+/*: Promise<mixed>*/
+{
+  return get().then(function (globalParams) {
     push({
       url: '/session',
       method: 'POST',
-      params: session_prepareParams(callbackParams, partnerParams)
+      params: session_prepareParams(globalParams)
     }, {
       auto: true
     });
@@ -7695,7 +7933,9 @@ function _trackSession() {
  */
 
 
-function _checkSession() {
+function _checkSession()
+/*: Promise<mixed>*/
+{
   _startTimer();
 
   var activityState = activity_state.current;
@@ -7717,7 +7957,7 @@ function _checkSession() {
 
 
 var attribution_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
-/*:: import { type HttpResultT, type AttributionStateT, type AttributionWhiteListT, type ActivityStateMapT, type AttributionMapT } from './types';*/
+/*:: import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type HttpRetryCbT, type AttributionStateT, type AttributionWhiteListT, type ActivityStateMapT, type AttributionMapT } from './types';*/
 
 
 
@@ -7753,7 +7993,7 @@ var _whitelist
  * Check if new attribution is the same as old one
  *
  * @param {string} adid
- * @param {Object} attribution
+ * @param {Object=} attribution
  * @returns {boolean}
  * @private
  */
@@ -7765,7 +8005,7 @@ function _isSame(_ref)
       attribution = _ref.attribution;
   var oldAttribution = activity_state.current.attribution || {};
 
-  var anyDifferent = _whitelist.some(function (k) {
+  var anyDifferent = attribution && _whitelist.some(function (k) {
     return oldAttribution[k] !== attribution[k];
   });
 
@@ -7775,7 +8015,7 @@ function _isSame(_ref)
  * Check if attribution result is valid
  *
  * @param {string} adid
- * @param {Object} attribution
+ * @param {Object=} attribution
  * @returns {boolean}
  * @private
  */
@@ -7799,7 +8039,7 @@ function _isValid(_ref2)
 
 
 function _setAttribution(result
-/*: HttpResultT*/
+/*: HttpSuccessResponseT*/
 )
 /*: Promise<AttributionStateT>*/
 {
@@ -7842,11 +8082,20 @@ function _setAttribution(result
 
 
 function attribution_continue(result
-/*: HttpResultT*/
-, finish, retry)
-/*: Promise<HttpResultT | AttributionStateT>*/
+/*: HttpSuccessResponseT | HttpErrorResponseT*/
+, finish
+/*: HttpFinishCbT*/
+, retry
+/*: HttpRetryCbT*/
+)
+/*: Promise<HttpSuccessResponseT | HttpErrorResponseT | AttributionStateT>*/
 {
-  result = result || {};
+  if (!result || result && result.status === 'error') {
+    finish();
+    return attribution_Promise.resolve({
+      state: 'unknown'
+    });
+  }
 
   if (!result.ask_in) {
     finish();
@@ -7864,7 +8113,7 @@ function attribution_continue(result
 
 
 function check(sessionResult
-/*: HttpResultT*/
+/*: HttpSuccessResponseT*/
 )
 /*: Promise<?ActivityStateMapT>*/
 {
@@ -7898,6 +8147,7 @@ function attribution_destroy()
 
 
 // CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.js
+
 
 
 
@@ -7956,7 +8206,7 @@ function forget(force
   }
 
   gdpr_forget_device_request.send({
-    params: activity_state.getParams()
+    params: objectSpread2_default()({}, activity_state.getParams())
   }).then(function () {
     publish('sdk:gdpr-forget-me', true);
   });
@@ -7989,8 +8239,10 @@ function gdpr_forget_device_destroy()
 
 
 // CONCATENATED MODULE: ./src/sdk/scheduler.js
+
 /*:: type TaskT = {|
   method: (timestamp?: number) => mixed,
+  description: string,
   timestamp: number
 |}*/
 
@@ -8007,15 +8259,19 @@ var _tasks
  * Put the dask in the delayed list
  *
  * @param {Function} method
+ * @param {string} description
  */
 
 function delay(method
 /*: $PropertyType<TaskT, 'method'>*/
+, description
+/*: $PropertyType<TaskT, 'description'>*/
 )
 /*: void*/
 {
   _tasks.push({
     method: method,
+    description: description,
     timestamp: Date.now()
   });
 }
@@ -8031,6 +8287,7 @@ function flush()
   /*: TaskT*/
   ) {
     if (typeof task.method === 'function') {
+      logger.log("Delayed ".concat(task.description, " task is running now"));
       task.method(task.timestamp);
     }
   });
@@ -8053,7 +8310,7 @@ function scheduler_destroy()
 
 
 var event_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
-/*:: import { type EventParamsT, type GlobalParamsMapT } from './types';*/
+/*:: import { type EventParamsT, type EventRequestParamsT, type GlobalParamsMapT, type GlobalKeyValueParamsT } from './types';*/
 
 
 
@@ -8061,16 +8318,6 @@ var event_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Prom
 
 
 
-
-/*:: type keyValueT = {[key: string]: string}*/
-
-/*:: type EventRequestParamsT = {|
-  eventToken: string,
-  revenue?: string,
-  currency?: string,
-  callbackParams?: keyValueT,
-  partnerParams?: keyValueT
-|}*/
 
 /*:: type RevenueT = {
   revenue: string,
@@ -8147,11 +8394,11 @@ function event_prepareParams(params
   }, _getRevenue(params.revenue, params.currency));
 
   var eventCallbackParams
-  /*: keyValueT*/
+  /*: GlobalKeyValueParamsT*/
   = objectSpread2_default()({}, convertToMap(callbackParams), {}, convertToMap(params.callbackParams));
 
   var eventPartnerParams
-  /*: keyValueT*/
+  /*: GlobalKeyValueParamsT*/
   = objectSpread2_default()({}, convertToMap(partnerParams), {}, convertToMap(params.partnerParams));
 
   if (!isEmpty(eventCallbackParams)) {
@@ -8276,6 +8523,7 @@ function event_event(params
   });
 }
 // CONCATENATED MODULE: ./src/sdk/sdk-click.js
+/*:: import { type SdkClickRequestParamsT } from './types';*/
 
 
 
@@ -8296,6 +8544,24 @@ function _getReferrer()
   }).reduce(reducer, {})['adjust_referrer'];
 }
 /**
+ * Prepare params for the sdk click request
+ *
+ * @param {string} referrer
+ * @returns {Object}
+ * @private
+ */
+
+
+function sdk_click_prepareParams(referrer)
+/*: SdkClickRequestParamsT*/
+{
+  return {
+    clickTime: getTimestamp(),
+    source: 'web_referrer',
+    referrer: decodeURIComponent(referrer)
+  };
+}
+/**
  * Check if there are parameters to send through sdk_click request
  */
 
@@ -8309,11 +8575,7 @@ function sdkClick()
     push({
       url: '/sdk_click',
       method: 'POST',
-      params: {
-        clickTime: getTimestamp(),
-        source: 'web_referrer',
-        referrer: decodeURIComponent(referrer)
-      }
+      params: sdk_click_prepareParams(referrer)
     });
   }
 }
@@ -8806,8 +9068,8 @@ function _preCheck(description
 
   if (typeof callback === 'function') {
     if (schedule && !_isStarted) {
-      delay(callback);
-      logger.log("Calling ".concat(description, " is delayed until Adjust SDK is up"));
+      delay(callback, description);
+      logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
     } else {
       callback();
     }
