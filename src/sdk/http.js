@@ -9,7 +9,7 @@ import {
 } from './types'
 import {HTTP_ERRORS} from './constants'
 import Config from './config'
-import {isObject, isValidJson, isRequest, entries, isEmptyEntry} from './utilities'
+import {isObject, isValidJson, isRequest, entries, isEmptyEntry, reducer} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
 
@@ -42,7 +42,9 @@ function _getSuccessResponse (xhr: XMLHttpRequest, url: UrlT): HttpSuccessRespon
     response.message = result.message
   }
 
-  return response
+  return entries(response)
+    .filter(([, value]) => !!value)
+    .reduce(reducer, {})
 }
 
 /**
