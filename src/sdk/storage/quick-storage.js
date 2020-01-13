@@ -18,7 +18,7 @@ function _get (key) {
   return (value instanceof Array
     ? value
     : convertRecord({
-      storeName: 'disabled',
+      storeName: _storeNames.preferences.name,
       dir: 'right',
       record: value
     })) || null
@@ -39,7 +39,7 @@ function _set (key, value) {
       value instanceof Array
         ? value
         : convertRecord({
-          storeName: 'disabled',
+          storeName: _storeNames.preferences.name,
           dir: 'left',
           record: value
         })

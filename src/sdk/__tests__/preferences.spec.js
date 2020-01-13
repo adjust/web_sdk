@@ -3,7 +3,7 @@ import * as PubSub from '../pub-sub'
 
 describe('activity state functionality', () => {
 
-  const disabledStoreName = QuickStorage.default.storeNames.disabled.name
+  const storeName = QuickStorage.default.storeNames.preferences.name
 
   beforeAll(() => {
     jest.spyOn(PubSub, 'publish')
@@ -17,7 +17,7 @@ describe('activity state functionality', () => {
     jest.restoreAllMocks()
   })
 
-  it('gets disabled state', () => {
+  it('gets preferences', () => {
     jest.isolateModules(() => {
       const Preferences = require('../preferences').default
 
@@ -43,11 +43,11 @@ describe('activity state functionality', () => {
     jest.isolateModules(() => {
       const Preferences = require('../preferences').default
 
-      QuickStorage.default.stores[disabledStoreName] = {reason: 'general', pending: false}
+      QuickStorage.default.stores[storeName] = {sdkDisabled: {reason: 'general', pending: false}}
 
       expect(Preferences.disabled.reason).toEqual('general')
 
-      QuickStorage.default.stores[disabledStoreName] = {reason: 'gdpr', pending: false}
+      QuickStorage.default.stores[storeName] = {sdkDisabled: {reason: 'gdpr', pending: false}}
 
       expect(Preferences.disabled.reason).toEqual('general')
 
@@ -57,7 +57,7 @@ describe('activity state functionality', () => {
 
       Preferences.disabled = null
 
-      QuickStorage.default.stores[disabledStoreName] = {reason: 'gdpr', pending: false}
+      QuickStorage.default.stores[storeName] = {sdkDisabled: {reason: 'gdpr', pending: false}}
 
       Preferences.reload()
 
@@ -72,17 +72,17 @@ describe('activity state functionality', () => {
 
       Preferences.disabled = {reason: 'gdpr', pending: false}
 
-      expect(QuickStorage.default.stores[disabledStoreName]).toEqual({reason: 'gdpr', pending: false})
+      expect(QuickStorage.default.stores[storeName]).toEqual({sdkDisabled: {reason: 'gdpr', pending: false}})
 
       localStorage.clear()
 
       expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(QuickStorage.default.stores[disabledStoreName]).toBeNull()
+      expect(QuickStorage.default.stores[storeName]).toBeNull()
 
       Preferences.recover()
 
       expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(QuickStorage.default.stores[disabledStoreName]).toEqual({reason: 'gdpr', pending: false})
+      expect(QuickStorage.default.stores[storeName]).toEqual({sdkDisabled: {reason: 'gdpr', pending: false}})
     })
   })
 

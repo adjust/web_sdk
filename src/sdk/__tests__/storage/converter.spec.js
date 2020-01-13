@@ -327,54 +327,54 @@ describe('test Converter utility', () => {
         })).toEqual({internalId: 2, id: 'id2'})
       })
 
-      it('encodes and decodes disabled record', () => {
+      it('encodes and decodes preferences record', () => {
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'left',
-          record: {reason: 'general', pending: false}
-        })).toEqual({r: 1, p: 0})
+          record: {sdkDisabled: {reason: 'general', pending: false}}
+        })).toEqual({sd: {r: 1, p: 0}})
 
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'left',
-          record: {reason: 'gdpr', pending: false}
-        })).toEqual({r: 2, p: 0})
+          record: {sdkDisabled: {reason: 'gdpr', pending: false}}
+        })).toEqual({sd: {r: 2, p: 0}})
 
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'left',
-          record: {reason: 'gdpr', pending: true}
-        })).toEqual({r: 2, p: 1})
+          record: {sdkDisabled: {reason: 'gdpr', pending: true}}
+        })).toEqual({sd: {r: 2, p: 1}})
 
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'left',
-          record: {reason: 'gdpr'}
-        })).toEqual({r: 2})
+          record: {sdkDisabled: {reason: 'gdpr'}}
+        })).toEqual({sd: {r: 2}})
 
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'right',
-          record: {r: 1, p: 0}
-        })).toEqual({reason: 'general', pending: false})
+          record: {sd: {r: 1, p: 0}}
+        })).toEqual({sdkDisabled: {reason: 'general', pending: false}})
 
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'right',
-          record: {r: 2, p: 0}
-        })).toEqual({reason: 'gdpr', pending: false})
+          record: {sd: {r: 2, p: 0}}
+        })).toEqual({sdkDisabled: {reason: 'gdpr', pending: false}})
 
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'right',
-          record: {r: 2, p: 1}
-        })).toEqual({reason: 'gdpr', pending: true})
+          record: {sd: {r: 2, p: 1}}
+        })).toEqual({sdkDisabled: {reason: 'gdpr', pending: true}})
 
         expect(Converter.convertRecord({
-          storeName: 'disabled',
+          storeName: 'preferences',
           dir: 'right',
-          record: {r: 2}
-        })).toEqual({reason: 'gdpr'})
+          record: {sd: {r: 2}}
+        })).toEqual({sdkDisabled: {reason: 'gdpr'}})
 
       })
     })

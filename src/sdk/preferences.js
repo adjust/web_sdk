@@ -1,5 +1,19 @@
+// @flow
 import {publish} from './pub-sub'
 import QuickStorage from './storage/quick-storage'
+import {REASON_GDPR, REASON_GENERAL} from './constants'
+
+type SdkDisabledT = {|
+  reason: REASON_GENERAL | REASON_GDPR,
+  pending: boolean
+|}
+
+type ThirdPartySharingDisabledT = boolean
+
+type PreferencesT = {|
+  thirdPartySharingDisabled?: ThirdPartySharingDisabledT,
+  sdkDisabled?: ?SdkDisabledT
+|}
 
 /**
  * Name of the store used by preferences
@@ -7,27 +21,48 @@ import QuickStorage from './storage/quick-storage'
  * @type {string}
  * @private
  */
-let _storeName = QuickStorage.storeNames.disabled.name
+let _storeName: string = QuickStorage.storeNames.preferences.name
 
 /**
- * Reference to the disabled state
+ * Local reference to be used for recovering preserved state
  *
  * @type {Object}
  * @private
  */
-let _disabled = QuickStorage.stores[_storeName]
+let _preferences: ?PreferencesT = _getPreferences()
+
+/**
+ * Get preferences stored in the localStorage
+ *
+ * @returns {Object}
+ * @private
+ */
+function _getPreferences (): ?PreferencesT {
+  if (!_preferences) {
+    _setPreferences()
+  }
+
+  return _preferences ? {..._preferences} : null
+}
+
+/**
+ * Set local reference of the preserved preferences
+ *
+ * @private
+ */
+function _setPreferences (): void {
+  _preferences = QuickStorage.stores[_storeName]
+}
 
 /**
  * Get current disabled state
  *
  * @returns {Object|null}
  */
-function _disabledGetter () {
-  if (!_disabled) {
-    _disabled = QuickStorage.stores[_storeName]
-  }
+function _disabledGetter (): ?SdkDisabledT {
+  const preferences = _getPreferences()
 
-  return _disabled ? {..._disabled} : null
+  return preferences ? preferences.sdkDisabled : null
 }
 
 /**
@@ -35,41 +70,72 @@ function _disabledGetter () {
  *
  * @param {Object|null} value
  */
-function _disabledSetter (value) {
-  QuickStorage.stores[_storeName] = value
-  _disabled = value ? {...value} : null
+function _disabledSetter (value: ?SdkDisabledT): void {
+  const sdkDisabled = value ? {...value} : null
+
+  QuickStorage.stores[_storeName] = {..._getPreferences(), sdkDisabled}
+
+  _setPreferences()
 }
 
 /**
- * Reload current preferences from localStorage
+ * Get current third-party-sharing disabled state
+ *
+ * @returns {boolean}
+ * @private
  */
-function reload () {
-  const stored = QuickStorage.stores[_storeName]
+function _tpsGetter (): ThirdPartySharingDisabledT {
+  const preferences = _getPreferences()
 
-  if (stored && !_disabled) {
+  return preferences ? (preferences.thirdPartySharingDisabled || false) : false
+}
+
+/**
+ * Set current third-party-sharing disabled state
+ *
+ * @param {boolean} value
+ * @private
+ */
+function _tpsSetter (value: ThirdPartySharingDisabledT): void {
+  const thirdPartySharingDisabled = value || false
+
+  QuickStorage.stores[_storeName] = {..._getPreferences(), thirdPartySharingDisabled}
+
+  _setPreferences()
+}
+
+/**
+ * Reload current preferences from localStorage if changed outside of current scope (e.g. tab)
+ */
+function reload (): void {
+  const stored: PreferencesT = QuickStorage.stores[_storeName] || {}
+  const sdkDisabled: ?SdkDisabledT = (_preferences || {}).sdkDisabled || null
+
+  if (stored.sdkDisabled && !sdkDisabled) {
     publish('sdk:shutdown', true)
   }
 
-  _disabled = stored
+  _setPreferences()
 }
 
 /**
- * Recover preferences from memory
+ * Recover preferences from memory if storage was lost
  */
-function recover () {
-  if (!QuickStorage.stores[_storeName]) {
-    QuickStorage.stores[_storeName] = _disabled
+function recover (): void {
+  const stored: ?PreferencesT = QuickStorage.stores[_storeName]
+
+  if (!stored) {
+    QuickStorage.stores[_storeName] = {..._preferences}
   }
 }
 
 const Preferences = {
+  get disabled () { return _disabledGetter() },
+  set disabled (value) { return _disabledSetter(value) },
+  get thirdPartySharing () { return _tpsGetter() },
+  set thirdPartySharing (value) { return _tpsSetter(value) },
   reload,
   recover
 }
-
-Object.defineProperty(Preferences, 'disabled', {
-  get () { return _disabledGetter() },
-  set (value) { return _disabledSetter(value) }
-})
 
 export default Preferences

@@ -121,22 +121,33 @@ const _eventDeduplicationScheme = {
   }
 }
 
-const _disabledName = 'd'
-const _disabledScheme = {
-  keyPath: 'reason',
+const _preferencesName = 'p'
+const _preferencesScheme = {
   fields: {
-    reason: {
-      key: 'r',
-      values: {
-        [REASON_GENERAL]: 1,
-        [REASON_GDPR]: 2
-      }
-    },
-    pending: {
-      key: 'p',
+    thirdPartySharingDisabled: {
+      key: 'td',
       values: {
         false: 0,
         true: 1
+      }
+    },
+    sdkDisabled: {
+      key: 'sd',
+      keys: {
+        reason: {
+          key: 'r',
+          values: {
+            [REASON_GENERAL]: 1,
+            [REASON_GDPR]: 2
+          }
+        },
+        pending: {
+          key: 'p',
+          values: {
+            false: 0,
+            true: 1
+          }
+        }
       }
     }
   }
@@ -159,9 +170,9 @@ export default {
     name: _eventDeduplicationName,
     scheme: _eventDeduplicationScheme
   },
-  disabled: {
-    name: _disabledName,
-    scheme: _disabledScheme,
+  preferences: {
+    name: _preferencesName,
+    scheme: _preferencesScheme,
     permanent: true
   }
 }
