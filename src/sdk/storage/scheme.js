@@ -10,7 +10,9 @@ const _queueScheme = {
       values: {
         '/session': 1,
         '/event': 2,
-        '/gdpr_forget_device': 3
+        '/gdpr_forget_device': 3,
+        '/sdk_click': 4,
+        '/disable_third_party_sharing': 5
       }
     },
     method: {
@@ -126,9 +128,20 @@ const _preferencesScheme = {
   fields: {
     thirdPartySharingDisabled: {
       key: 'td',
-      values: {
-        false: 0,
-        true: 1
+      keys: {
+        reason: {
+          key: 'r',
+          values: {
+            [REASON_GENERAL]: 1
+          }
+        },
+        pending: {
+          key: 'p',
+          values: {
+            false: 0,
+            true: 1
+          }
+        }
       }
     },
     sdkDisabled: {

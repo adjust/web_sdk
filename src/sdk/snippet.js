@@ -41,7 +41,8 @@
     'switchBackToOnlineMode',
     'stop',
     'restart',
-    'gdprForgetMe'
+    'gdprForgetMe',
+    'disableThirdPartySharing'
   ],
   function (context, queue, methodName) {
     context[methodName] = function () {

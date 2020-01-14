@@ -8,10 +8,13 @@ type SdkDisabledT = {|
   pending: boolean
 |}
 
-type ThirdPartySharingDisabledT = boolean
+type ThirdPartySharingDisabledT = {|
+  reason: REASON_GENERAL,
+  pending: boolean
+|}
 
 type PreferencesT = {|
-  thirdPartySharingDisabled?: ThirdPartySharingDisabledT,
+  thirdPartySharingDisabled?: ?ThirdPartySharingDisabledT,
   sdkDisabled?: ?SdkDisabledT
 |}
 
@@ -81,23 +84,23 @@ function _disabledSetter (value: ?SdkDisabledT): void {
 /**
  * Get current third-party-sharing disabled state
  *
- * @returns {boolean}
+ * @returns {Object|null}
  * @private
  */
-function _tpsGetter (): ThirdPartySharingDisabledT {
+function _tpsGetter (): ?ThirdPartySharingDisabledT {
   const preferences = _getPreferences()
 
-  return preferences ? (preferences.thirdPartySharingDisabled || false) : false
+  return preferences ? preferences.thirdPartySharingDisabled : null
 }
 
 /**
  * Set current third-party-sharing disabled state
  *
- * @param {boolean} value
+ * @param {Object|null} value
  * @private
  */
-function _tpsSetter (value: ThirdPartySharingDisabledT): void {
-  const thirdPartySharingDisabled = value || false
+function _tpsSetter (value: ?ThirdPartySharingDisabledT): void {
+  const thirdPartySharingDisabled = value ? {...value} : null
 
   QuickStorage.stores[_storeName] = {..._getPreferences(), thirdPartySharingDisabled}
 

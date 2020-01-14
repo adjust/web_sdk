@@ -146,11 +146,11 @@ function _persist (url): Promise<?ActivityStateMapT> {
  * @param {number=} timestamp
  * @returns {Promise}
  */
-function push ({url, method, params}: {|url: UrlT, method: MethodT, params: RequestParamsT|}, {auto, timestamp}: {|auto?: boolean, timestamp?: number|} = {}) {
+function push ({url, method, params}: {|url: UrlT, method: MethodT, params?: RequestParamsT|}, {auto, timestamp}: {|auto?: boolean, timestamp?: number|} = {}) {
 
   ActivityState.updateParams(url, auto)
 
-  const filteredParams = entries(params)
+  const filteredParams = entries(params || {})
     .filter(([, value]) => isEmptyEntry(value))
     .reduce(reducer, {})
   const pending: PendingT = {

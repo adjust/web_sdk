@@ -70,7 +70,7 @@ export type SdkClickRequestParamsT = {|
 
 export type WaitT = number
 
-export type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device' | '/sdk_click'
+export type UrlT = '/session' | '/attribution' | '/event' | '/gdpr_forget_device' | '/sdk_click' | '/disable_third_party_sharing'
 
 export type MethodT = 'GET' | 'POST' | 'PUT' | 'DELETE'
 

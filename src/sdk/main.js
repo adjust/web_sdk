@@ -16,11 +16,13 @@ import {start, status, disable, enable, clear as identityClear, destroy as ident
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
 import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
+import {check as sharingDisableCheck, optOut as sharingOptOut, disable as sharingDisable, finish as sharingDisableFinish} from './third-party-sharing'
 import {register as listenersRegister, destroy as listenersDestroy} from './listeners'
 import {delay, flush, destroy as schedulerDestroy} from './scheduler'
 import event from './event'
 import sdkClick from './sdk-click'
 import {REASON_GDPR} from './constants'
+import ActivityState from './activity-state'
 
 type IntiConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
 
@@ -78,7 +80,10 @@ function initSdk ({logLevel, logOutput, ...options}: IntiConfigT = {}): void {
  * @param {Object} params
  */
 function trackEvent (params: EventParamsT): void {
-  _preCheck('track event', (timestamp) => event(params, timestamp), true)
+  _preCheck('track event', (timestamp) => event(params, timestamp), {
+    schedule: true,
+    stopBeforeInit: true
+  })
 }
 
 /**
@@ -185,6 +190,31 @@ function gdprForgetMe (): void {
 }
 
 /**
+ * Disable third party sharing
+ */
+function disableThirdPartySharing (): void {
+  _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
+    schedule: true,
+    stopBeforeInit: false
+  })
+}
+
+/**
+ * Handle third party sharing disable
+ *
+ * @private
+ */
+function _handleDisableThirdPartySharing (): void {
+  let done = sharingOptOut()
+
+  if (!done) {
+    return
+  }
+
+  sharingDisable()
+}
+
+/**
  * Handle GDPR-Forget-Me response
  *
  * @private
@@ -258,7 +288,13 @@ function _destroy (): void {
  * @private
  */
 function _continue (): Promise<void> {
+  const isInstalled = ActivityState.current.installed
+
   gdprForgetCheck()
+
+  if (!isInstalled) {
+    sharingDisableCheck()
+  }
 
   const sdkStatus = status()
   let message = (rest) => `Adjust SDK start has been interrupted ${rest}`
@@ -282,6 +318,10 @@ function _continue (): Promise<void> {
   return sessionWatch()
     .then(() => {
       _isStarted = true
+
+      if (isInstalled) {
+        sharingDisableCheck()
+      }
     })
 }
 
@@ -337,6 +377,7 @@ function _start (options: InitOptionsT): void {
 
   subscribe('sdk:shutdown', () => _shutdown(true))
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
+  subscribe('sdk:third-party-sharing-opt-out', sharingDisableFinish)
   subscribe('attribution:check', (e, result) => attributionCheck(result))
 
   if (typeof options.attributionCallback === 'function') {
@@ -358,7 +399,7 @@ function _start (options: InitOptionsT): void {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed, schedule?: boolean) {
+function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}) {
   if (!Storage) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -369,13 +410,13 @@ function _preCheck (description: string, callback: () => mixed, schedule?: boole
     return
   }
 
-  if (schedule && !Config.isInitialised()) {
+  if (schedule && stopBeforeInit && !Config.isInitialised()) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !_isStarted) {
+    if (schedule && !_isStarted && (stopBeforeInit || Config.isInitialised())) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
@@ -398,6 +439,7 @@ const Adjust = {
   stop,
   restart,
   gdprForgetMe,
+  disableThirdPartySharing,
   __testonly__: {
     destroy: _destroy
   }
