@@ -39,9 +39,10 @@ function _startFirstPart () {
 
   expect(PubSub.subscribe.mock.calls[0][0]).toEqual('sdk:shutdown')
   expect(PubSub.subscribe.mock.calls[1][0]).toEqual('sdk:gdpr-forget-me')
-  expect(PubSub.subscribe.mock.calls[2][0]).toEqual('attribution:check')
-  expect(PubSub.subscribe.mock.calls[3][0]).toEqual('attribution:change')
-  expect(PubSub.subscribe.mock.calls[3][1]).toEqual(config.attributionCallback)
+  expect(PubSub.subscribe.mock.calls[2][0]).toEqual('sdk:third-party-sharing-opt-out')
+  expect(PubSub.subscribe.mock.calls[3][0]).toEqual('attribution:check')
+  expect(PubSub.subscribe.mock.calls[4][0]).toEqual('attribution:change')
+  expect(PubSub.subscribe.mock.calls[4][1]).toEqual(config.attributionCallback)
 
   expect(Identity.start).toHaveBeenCalledTimes(1)
 
@@ -59,7 +60,7 @@ function expectStart () {
       expect(Scheduler.flush).toHaveBeenCalledTimes(1)
     })
 
-  return {assertions: 15, promise}
+  return {assertions: 16, promise}
 }
 
 function expectPartialStartWithGdprRequest () {
@@ -73,7 +74,7 @@ function expectPartialStartWithGdprRequest () {
       expectGdprRequest()
     })
 
-  return {assertions: 16, promise}
+  return {assertions: 17, promise}
 }
 
 function expectNotStart (restart) {
@@ -479,11 +480,13 @@ function teardown () {
   localStorage.clear()
   jest.clearAllMocks()
   Preferences.default.disabled = null
+  Preferences.default.setThirdPartySharing(null)
 }
 
 function teardownAndDisable (reason = 'general') {
   teardown()
   Preferences.default.disabled = {reason}
+  Preferences.default.setThirdPartySharing(null)
 }
 
 export default function Suite (instance) {

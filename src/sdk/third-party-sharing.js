@@ -16,7 +16,7 @@ type ThirdPartySharingStatusT = 'pending' | 'on' | 'off'
 const _logMessages = {
   running: 'Adjust SDK is running pending third-party sharing opt-out request',
   delayed: 'Adjust SDK will run third-party sharing opt-out request after initialisation',
-  pending: 'Adjust SDK is already prepared to send third-party sharing opt-out request',
+  pending: 'Adjust SDK already queued third-party sharing opt-out request',
   off: 'Third-party sharing opt-out is already done'
 }
 
@@ -27,10 +27,10 @@ const _logMessages = {
  * @private
  */
 function _status (): ThirdPartySharingStatusT {
-  const thirdPartySharing = Preferences.thirdPartySharing || {}
+  const disabled = Preferences.getThirdPartySharing() || {}
 
-  if (thirdPartySharing.reason) {
-    return thirdPartySharing.pending ? 'pending' : 'off'
+  if (disabled.reason) {
+    return disabled.pending ? 'pending' : 'off'
   }
 
   return 'on'
@@ -69,19 +69,19 @@ function optOut (force?: boolean) {
  * @returns {boolean}
  */
 function disable () {
-  const thirdPartySharing = Preferences.thirdPartySharing || {}
+  const disabled = Preferences.getThirdPartySharing() || {}
 
-  if (thirdPartySharing.reason) {
+  if (disabled.reason) {
     Logger.log(_logMessages.off)
     return false
   }
 
-  Logger.log('Third-party sharing is now disabled')
+  Logger.log('Third-party sharing disabled state is pending')
 
-  Preferences.thirdPartySharing = {
+  Preferences.setThirdPartySharing({
     reason: REASON_GENERAL,
     pending: true
-  }
+  })
 
   return false
 }
@@ -92,17 +92,19 @@ function disable () {
  * @returns {boolean}
  */
 function finish () {
-  const thirdPartySharing = Preferences.thirdPartySharing || {}
+  const disabled = Preferences.getThirdPartySharing() || {}
 
-  if (thirdPartySharing.reason && !thirdPartySharing.pending) {
+  if (disabled.reason && !disabled.pending) {
     Logger.log(_logMessages.off)
     return false
   }
 
-  Preferences.thirdPartySharing = {
+  Logger.log('Third-party sharing disabled state is now persisted')
+
+  Preferences.setThirdPartySharing({
     reason: REASON_GENERAL,
     pending: false
-  }
+  })
 }
 
 /**

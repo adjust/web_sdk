@@ -84,10 +84,10 @@ function _disabledSetter (value: ?SdkDisabledT): void {
 /**
  * Get current third-party-sharing disabled state
  *
- * @returns {Object|null}
+ * @returns {Object}
  * @private
  */
-function _tpsGetter (): ?ThirdPartySharingDisabledT {
+function getThirdPartySharing (): ?ThirdPartySharingDisabledT {
   const preferences = _getPreferences()
 
   return preferences ? preferences.thirdPartySharingDisabled : null
@@ -96,10 +96,10 @@ function _tpsGetter (): ?ThirdPartySharingDisabledT {
 /**
  * Set current third-party-sharing disabled state
  *
- * @param {Object|null} value
+ * @param {Object=} value
  * @private
  */
-function _tpsSetter (value: ?ThirdPartySharingDisabledT): void {
+function setThirdPartySharing (value: ?ThirdPartySharingDisabledT): void {
   const thirdPartySharingDisabled = value ? {...value} : null
 
   QuickStorage.stores[_storeName] = {..._getPreferences(), thirdPartySharingDisabled}
@@ -135,8 +135,8 @@ function recover (): void {
 const Preferences = {
   get disabled () { return _disabledGetter() },
   set disabled (value) { return _disabledSetter(value) },
-  get thirdPartySharing () { return _tpsGetter() },
-  set thirdPartySharing (value) { return _tpsSetter(value) },
+  getThirdPartySharing,
+  setThirdPartySharing,
   reload,
   recover
 }

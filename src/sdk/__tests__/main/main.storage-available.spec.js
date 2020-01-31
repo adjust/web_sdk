@@ -195,6 +195,72 @@ describe('main entry point - test instance initiation when storage is available'
           suite.expectAllDown()
         })
     })
+
+    describe('marketing opt-out - queue order check', () => {
+      it('disables third-party sharing before init when running the sdk for the first time', () => {
+        AdjustInstance.disableThirdPartySharing()
+        AdjustInstance.initSdk(suite.config)
+
+        expect.assertions(2)
+
+        return Utils.flushPromises()
+          .then(() => {
+            const requests = Queue.push.mock.calls
+
+            expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
+            expect(requests[1][0].url).toEqual('/session')
+          })
+      })
+
+      it('disables third-party sharing before init when not running sdk for the first time', () => {
+        return Storage.default.addItem('activityState', {uuid: 'bla', installed: true})
+          .then(() => {
+            AdjustInstance.disableThirdPartySharing()
+            AdjustInstance.initSdk(suite.config)
+
+            expect.assertions(2)
+
+            return Utils.flushPromises()
+              .then(() => {
+                const requests = Queue.push.mock.calls
+
+                expect(requests[0][0].url).toEqual('/session')
+                expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+              })
+          })
+      })
+
+      it('disables third-party sharing asynchronously after init', () => {
+        AdjustInstance.initSdk(suite.config)
+
+        expect.assertions(2)
+
+        return Utils.flushPromises()
+          .then(() => {
+            AdjustInstance.disableThirdPartySharing()
+
+            const requests = Queue.push.mock.calls
+
+            expect(requests[0][0].url).toEqual('/session')
+            expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+          })
+      })
+
+      it('disables third-party sharing synchronously after init', () => {
+        AdjustInstance.initSdk(suite.config)
+        AdjustInstance.disableThirdPartySharing()
+
+        expect.assertions(2)
+
+        return Utils.flushPromises()
+          .then(() => {
+            const requests = Queue.push.mock.calls
+
+            expect(requests[0][0].url).toEqual('/session')
+            expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+          })
+      })
+    })
   })
 
   describe('initiated instance', () => {
