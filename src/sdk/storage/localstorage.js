@@ -1,8 +1,8 @@
 import ActivityState from '../activity-state'
-import Preferences from '../preferences'
 import QuickStorage from '../storage/quick-storage'
 import SchemeMap from './scheme-map'
 import Logger from '../logger'
+import {recover as recoverPreferences} from '../preferences'
 import {entries, findIndex, isEmpty, isObject, reducer} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
@@ -60,7 +60,7 @@ function _open () {
       }
     })
 
-  Preferences.recover()
+  recoverPreferences()
 
   return {status: 'success'}
 }

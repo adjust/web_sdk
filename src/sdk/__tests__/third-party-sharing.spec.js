@@ -49,7 +49,7 @@ function expectRequest () {
     .then(() => {
       ThirdPartySharing.finish()
 
-      expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing disabled state is now persisted')
+      expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now finished')
 
       Queue.push.mockClear()
       http.default.mockClear()
@@ -75,7 +75,7 @@ describe('Third-party sharing opt-out functionality', () => {
   })
 
   afterEach(() => {
-    Preferences.default.setThirdPartySharing(null)
+    Preferences.setThirdPartySharing(null)
     jest.clearAllMocks()
     Queue.destroy()
     localStorage.clear()
@@ -93,7 +93,7 @@ describe('Third-party sharing opt-out functionality', () => {
     ThirdPartySharing.disable()
 
     expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run third-party sharing opt-out request after initialisation')
-    expect(Logger.default.log).toHaveBeenLastCalledWith('Third-party sharing disabled state is pending')
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Third-party sharing opt-out is now started')
     expectNotRequest()
 
     Config.default.set(appOptions)
@@ -120,7 +120,7 @@ describe('Third-party sharing opt-out functionality', () => {
     expect.assertions(a.assertions + 4)
 
     expect(Logger.default.log).toHaveBeenCalledTimes(2)
-    expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing disabled state is pending')
+    expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
     expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK already queued third-party sharing opt-out request')
 
     return a.promise
@@ -131,17 +131,41 @@ describe('Third-party sharing opt-out functionality', () => {
 
   it('prevents running opt-out request if third-party tracking already disabled', () => {
 
-    Preferences.default.setThirdPartySharing({reason: 'general', pending: true})
+    Preferences.setThirdPartySharing({reason: 'general', pending: true})
     ThirdPartySharing.optOut()
 
     expect(Logger.default.log).toHaveBeenCalledTimes(1)
     expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK already queued third-party sharing opt-out request')
 
-    Preferences.default.setThirdPartySharing({reason: 'general'})
+    Preferences.setThirdPartySharing({reason: 'general'})
     ThirdPartySharing.optOut()
 
     expect(Logger.default.log).toHaveBeenCalledTimes(2)
     expect(Logger.default.log).toHaveBeenLastCalledWith('Third-party sharing opt-out is already done')
+  })
+
+  it('prevents third-party-sharing disable process if already started or finished', () => {
+
+    ThirdPartySharing.disable()
+
+    expect(Logger.default.log).toHaveBeenCalledTimes(1)
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Third-party sharing opt-out is now started')
+
+    ThirdPartySharing.disable()
+
+    expect(Logger.default.log).toHaveBeenCalledTimes(2)
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Third-party sharing opt-out has already started')
+
+    ThirdPartySharing.finish()
+
+    expect(Logger.default.log).toHaveBeenCalledTimes(3)
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Third-party sharing opt-out is now finished')
+
+    ThirdPartySharing.finish()
+
+    expect(Logger.default.log).toHaveBeenCalledTimes(4)
+    expect(Logger.default.log).toHaveBeenLastCalledWith('Third-party sharing opt-out has already finished')
+
   })
 
 })

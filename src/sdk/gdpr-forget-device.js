@@ -3,8 +3,10 @@ import Request from './request'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Config from './config'
-import {status} from './identity'
+import {status} from './disable'
 import {publish} from './pub-sub'
+import {disable as sdkDisable, finish as sdkDisableFinish} from './disable'
+import {REASON_GDPR} from './constants'
 
 /**
  * Http request instance
@@ -60,6 +62,24 @@ function forget (force?: boolean): boolean {
 }
 
 /**
+ * Start disable of the sdk due to GDPR-Forget-me request
+ *
+ * @returns {boolean}
+ */
+function disable () {
+  return sdkDisable(REASON_GDPR, true)
+}
+
+/**
+ * Finish disable of the sdk due to GDRP-Forget-me request
+ *
+ * @returns {boolean}
+ */
+function finish () {
+  return sdkDisableFinish(REASON_GDPR)
+}
+
+/**
  * Check if there is pending GDPR-Forget-Me request
  */
 function check (): void {
@@ -78,6 +98,8 @@ function destroy (): void {
 
 export {
   forget,
+  disable,
+  finish,
   check,
   destroy
 }

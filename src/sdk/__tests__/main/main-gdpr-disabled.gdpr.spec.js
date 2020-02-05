@@ -44,7 +44,6 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(GlobalParams, 'clear')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Identity, 'start')
-    jest.spyOn(Identity, 'disable')
     jest.spyOn(Identity, 'destroy')
     jest.spyOn(Identity, 'clear')
     jest.spyOn(PubSub, 'subscribe')
@@ -58,7 +57,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
 
-    Preferences.default.disabled = {reason: 'gdpr'}
+    Preferences.setDisabled({reason: 'gdpr'})
   })
 
   afterEach(() => {
@@ -68,7 +67,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    Preferences.default.disabled = null
+    Preferences.setDisabled(null)
   })
 
   describe('sdk: init -> forget -> flush', () => {

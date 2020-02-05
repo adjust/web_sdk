@@ -1,9 +1,9 @@
 import Config from '../config'
 import SchemeMap from './scheme-map'
 import ActivityState from '../activity-state'
-import Preferences from '../preferences'
 import QuickStorage from '../storage/quick-storage'
 import Logger from '../logger'
+import {recover as recoverPreferences} from '../preferences'
 import {isEmpty, isObject, entries} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
@@ -84,7 +84,7 @@ function _handleUpgradeNeeded (e, reject) {
       }
     })
 
-  Preferences.recover()
+  recoverPreferences()
   QuickStorage.clear()
 }
 

@@ -4,6 +4,7 @@ import * as Session from '../../session'
 import * as event from '../../event'
 import * as sdkClick from '../../sdk-click'
 import * as Identity from '../../identity'
+import * as Disable from '../../disable'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as Storage from '../../storage/storage'
@@ -44,10 +45,9 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
     jest.spyOn(GlobalParams, 'clear')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Identity, 'start')
-    jest.spyOn(Identity, 'disable')
-    jest.spyOn(Identity, 'enable')
     jest.spyOn(Identity, 'destroy')
     jest.spyOn(Identity, 'clear')
+    jest.spyOn(Disable, 'restore')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(Attribution, 'check')
@@ -59,7 +59,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
 
-    Preferences.default.disabled = {reason: 'general'}
+    Preferences.setDisabled({reason: 'general'})
   })
 
   afterEach(() => {
@@ -69,7 +69,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
   afterAll(() => {
     jest.clearAllTimers()
     jest.restoreAllMocks()
-    Preferences.default.disabled = null
+    Preferences.setDisabled(null)
   })
 
   describe('sdk: init -> forget -> flush', () => {
@@ -117,7 +117,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.enable).toHaveBeenCalled()
+      expect(Disable.restore).toHaveBeenCalled()
 
       return a.promise
 

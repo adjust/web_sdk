@@ -62,7 +62,7 @@ function _setPreferences (): void {
  *
  * @returns {Object|null}
  */
-function _disabledGetter (): ?SdkDisabledT {
+function getDisabled (): ?SdkDisabledT {
   const preferences = _getPreferences()
 
   return preferences ? preferences.sdkDisabled : null
@@ -73,7 +73,7 @@ function _disabledGetter (): ?SdkDisabledT {
  *
  * @param {Object|null} value
  */
-function _disabledSetter (value: ?SdkDisabledT): void {
+function setDisabled (value: ?SdkDisabledT): void {
   const sdkDisabled = value ? {...value} : null
 
   QuickStorage.stores[_storeName] = {..._getPreferences(), sdkDisabled}
@@ -132,13 +132,11 @@ function recover (): void {
   }
 }
 
-const Preferences = {
-  get disabled () { return _disabledGetter() },
-  set disabled (value) { return _disabledSetter(value) },
+export {
+  getDisabled,
+  setDisabled,
   getThirdPartySharing,
   setThirdPartySharing,
   reload,
   recover
 }
-
-export default Preferences

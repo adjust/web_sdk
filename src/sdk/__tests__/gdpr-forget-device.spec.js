@@ -57,7 +57,7 @@ describe('GDPR forget device functionality', () => {
   })
 
   afterEach(() => {
-    Preferences.default.disabled = {}
+    Preferences.setDisabled(null)
     jest.clearAllMocks()
     GdprForgetDevice.destroy()
     localStorage.clear()
@@ -72,7 +72,7 @@ describe('GDPR forget device functionality', () => {
   it('queue forget device until sdk is initialised', () => {
 
     GdprForgetDevice.forget()
-    Preferences.default.disabled = {reason: 'gdpr', pending: true}
+    Preferences.setDisabled({reason: 'gdpr', pending: true})
 
     expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run GDPR Forget Me request after initialisation')
 
@@ -93,7 +93,7 @@ describe('GDPR forget device functionality', () => {
     expect.assertions(4)
 
     GdprForgetDevice.forget()
-    Preferences.default.disabled = {reason: 'gdpr', pending: true}
+    Preferences.setDisabled({reason: 'gdpr', pending: true})
 
     expectRequest()
 
@@ -110,12 +110,12 @@ describe('GDPR forget device functionality', () => {
 
   it('prevents running forget request if sdk already disabled', () => {
 
-    Preferences.default.disabled = {reason: 'general'}
+    Preferences.setDisabled({reason: 'general'})
     GdprForgetDevice.forget()
 
     expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already disabled')
 
-    Preferences.default.disabled = {reason: 'gdpr'}
+    Preferences.setDisabled({reason: 'gdpr'})
     GdprForgetDevice.forget()
 
     expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already disabled')

@@ -19,32 +19,36 @@ describe('activity state functionality', () => {
 
   it('gets preferences', () => {
     jest.isolateModules(() => {
-      const Preferences = require('../preferences').default
+      const Preferences = require('../preferences')
 
-      expect(Preferences.disabled).toBeNull()
+      expect(Preferences.getDisabled()).toBeNull()
       expect(Preferences.getThirdPartySharing()).toBeNull()
 
-      Preferences.disabled = {reason: 'gdpr', pending: false}
+      Preferences.setDisabled({reason: 'gdpr', pending: false})
       Preferences.setThirdPartySharing({reason: 'general', pending: false})
 
-      expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(Preferences.disabled.pending).toEqual(false)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'gdpr',
+        pending: false
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: false
       })
 
-      Preferences.disabled = null
+      Preferences.setDisabled(null)
       Preferences.setThirdPartySharing(null)
 
-      expect(Preferences.disabled).toBeNull()
+      expect(Preferences.getDisabled()).toBeNull()
       expect(Preferences.getThirdPartySharing()).toBeNull()
 
-      Preferences.disabled = {reason: 'gdpr', pending: true}
+      Preferences.setDisabled({reason: 'gdpr', pending: true})
       Preferences.setThirdPartySharing({reason: 'general', pending: true})
 
-      expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(Preferences.disabled.pending).toEqual(true)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'gdpr',
+        pending: true
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: true
@@ -54,15 +58,17 @@ describe('activity state functionality', () => {
 
   it('reloads in-memory variables when storage got changed outside of current tab', () => {
     jest.isolateModules(() => {
-      const Preferences = require('../preferences').default
+      const Preferences = require('../preferences')
 
       QuickStorage.default.stores[storeName] = {
         sdkDisabled: {reason: 'general', pending: false},
         thirdPartySharingDisabled: {reason: 'general', pending: true}
       }
 
-      expect(Preferences.disabled.reason).toEqual('general')
-      expect(Preferences.disabled.pending).toEqual(false)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'general',
+        pending: false
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: true
@@ -73,8 +79,10 @@ describe('activity state functionality', () => {
         thirdPartySharingDisabled: {reason: 'general', pending: false}
       }
 
-      expect(Preferences.disabled.reason).toEqual('general')
-      expect(Preferences.disabled.pending).toEqual(false)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'general',
+        pending: false
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: true
@@ -83,14 +91,16 @@ describe('activity state functionality', () => {
       Preferences.reload()
 
       expect(PubSub.publish).not.toHaveBeenCalled()
-      expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(Preferences.disabled.pending).toEqual(false)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'gdpr',
+        pending: false
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: false
       })
 
-      Preferences.disabled = null
+      Preferences.setDisabled(null)
       Preferences.setThirdPartySharing(null)
 
       QuickStorage.default.stores[storeName] = {
@@ -101,8 +111,10 @@ describe('activity state functionality', () => {
       Preferences.reload()
 
       expect(PubSub.publish).toHaveBeenCalledWith('sdk:shutdown', true)
-      expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(Preferences.disabled.pending).toEqual(true)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'gdpr',
+        pending: true
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: true
@@ -112,9 +124,9 @@ describe('activity state functionality', () => {
 
   it('recover storage from memory', () => {
     jest.isolateModules(() => {
-      const Preferences = require('../preferences').default
+      const Preferences = require('../preferences')
 
-      Preferences.disabled = {reason: 'gdpr', pending: false}
+      Preferences.setDisabled({reason: 'gdpr', pending: false})
       Preferences.setThirdPartySharing({reason: 'general', pending: true})
 
       expect(QuickStorage.default.stores[storeName]).toEqual({
@@ -124,8 +136,10 @@ describe('activity state functionality', () => {
 
       localStorage.clear()
 
-      expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(Preferences.disabled.pending).toEqual(false)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'gdpr',
+        pending: false
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: true
@@ -134,8 +148,10 @@ describe('activity state functionality', () => {
 
       Preferences.recover()
 
-      expect(Preferences.disabled.reason).toEqual('gdpr')
-      expect(Preferences.disabled.pending).toEqual(false)
+      expect(Preferences.getDisabled()).toEqual({
+        reason: 'gdpr',
+        pending: false
+      })
       expect(Preferences.getThirdPartySharing()).toEqual({
         reason: 'general',
         pending: true

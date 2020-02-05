@@ -12,16 +12,16 @@ import Logger from './logger'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
 import {subscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
-import {start, status, disable, enable, clear as identityClear, destroy as identityDestroy} from './identity'
+import {start, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
 import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
-import {check as gdprForgetCheck, forget, destroy as gdprForgetDestroy} from './gdpr-forget-device'
+import {disable, restore, status} from './disable'
+import {check as gdprForgetCheck, forget, disable as gdprDisable, finish as gdprDisableFinish, destroy as gdprForgetDestroy} from './gdpr-forget-device'
 import {check as sharingDisableCheck, optOut as sharingOptOut, disable as sharingDisable, finish as sharingDisableFinish} from './third-party-sharing'
 import {register as listenersRegister, destroy as listenersDestroy} from './listeners'
 import {delay, flush, destroy as schedulerDestroy} from './scheduler'
 import event from './event'
 import sdkClick from './sdk-click'
-import {REASON_GDPR} from './constants'
 import ActivityState from './activity-state'
 
 type IntiConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
@@ -165,7 +165,7 @@ function stop (): void {
  * Restart sdk if not GDPR forgotten
  */
 function restart (): void {
-  const done = enable()
+  const done = restore()
 
   if (done && _options) {
     _start(_options)
@@ -182,7 +182,7 @@ function gdprForgetMe (): void {
     return
   }
 
-  done = disable({reason: REASON_GDPR, pending: true})
+  done = gdprDisable()
 
   if (done && Config.isInitialised()) {
     _pause()
@@ -223,6 +223,8 @@ function _handleGdprForgetMe (): void {
   if (status() !== 'paused') {
     return
   }
+
+  gdprDisableFinish()
 
   Promise.all([
     identityClear(),

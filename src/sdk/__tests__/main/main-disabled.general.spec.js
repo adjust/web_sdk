@@ -4,6 +4,7 @@ import * as Session from '../../session'
 import * as event from '../../event'
 import * as sdkClick from '../../sdk-click'
 import * as Identity from '../../identity'
+import * as Disable from '../../disable'
 import * as GlobalParams from '../../global-params'
 import * as Logger from '../../logger'
 import * as Storage from '../../storage/storage'
@@ -40,9 +41,9 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(Logger.default, 'error')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Identity, 'start')
-    jest.spyOn(Identity, 'disable')
-    jest.spyOn(Identity, 'enable')
     jest.spyOn(Identity, 'destroy')
+    jest.spyOn(Disable, 'disable')
+    jest.spyOn(Disable, 'restore')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(Attribution, 'check')
@@ -54,7 +55,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
 
-    Preferences.default.disabled = {reason: 'general'}
+    Preferences.setDisabled({reason: 'general'})
   })
 
   afterEach(() => {
@@ -89,7 +90,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK disable process has already finished')
 
       suite.expectNotShutDown()
     })
@@ -104,7 +105,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.enable).toHaveBeenCalled()
+      expect(Disable.restore).toHaveBeenCalled()
 
       return a.promise
     })
@@ -132,7 +133,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.enable).toHaveBeenCalled()
+      expect(Disable.restore).toHaveBeenCalled()
 
       const a1 = suite.expectRunningStatic()
       const a2 = suite.expectDelayedTrackEvent()
@@ -156,8 +157,8 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalled()
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+      expect(Disable.disable).toHaveBeenCalled()
 
       suite.expectShutDown()
     })
@@ -184,9 +185,9 @@ describe('main entry point - test disable/enable when in initially disabled stat
       AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.enable).toHaveBeenCalled()
-      expect(Identity.disable).toHaveBeenCalled()
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+      expect(Disable.restore).toHaveBeenCalled()
+      expect(Disable.disable).toHaveBeenCalled()
 
       suite.expectShutDown()
 
@@ -212,7 +213,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK disable process has already finished')
 
       suite.expectNotShutDown()
     })
@@ -232,7 +233,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK disable process has already finished')
 
       suite.expectNotShutDown()
     })
@@ -247,7 +248,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.enable).toHaveBeenCalled()
+      expect(Disable.restore).toHaveBeenCalled()
 
       return a.promise
     })
@@ -264,7 +265,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.enable).toHaveBeenCalled()
+      expect(Disable.restore).toHaveBeenCalled()
 
       suite.expectNotStart()
     })
@@ -303,8 +304,8 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalled()
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+      expect(Disable.disable).toHaveBeenCalled()
 
       suite.expectShutDown()
     })
@@ -322,9 +323,9 @@ describe('main entry point - test disable/enable when in initially disabled stat
       AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.enable).toHaveBeenCalled()
-      expect(Identity.disable).toHaveBeenCalled()
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+      expect(Disable.restore).toHaveBeenCalled()
+      expect(Disable.disable).toHaveBeenCalled()
 
       suite.expectShutDown()
 
@@ -345,7 +346,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.stop()
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK disable process has already finished')
 
       suite.expectNotShutDown()
     })
@@ -356,7 +357,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.enable).toHaveBeenCalled()
+      expect(Disable.restore).toHaveBeenCalled()
 
       suite.expectNotStart()
     })
@@ -386,7 +387,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Identity.enable).toHaveBeenCalled()
+      expect(Disable.restore).toHaveBeenCalled()
 
       suite.expectNotStart()
     })
@@ -396,8 +397,8 @@ describe('main entry point - test disable/enable when in initially disabled stat
       AdjustInstance.stop()
 
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been disabled')
-      expect(Identity.disable).toHaveBeenCalled()
+      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+      expect(Disable.disable).toHaveBeenCalled()
 
       suite.expectNotShutDown()
     })

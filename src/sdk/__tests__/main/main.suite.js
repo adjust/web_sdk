@@ -377,7 +377,7 @@ function expectGdprForgetMeCallback (onlyNumOfAssertions, asyncPublish) {
     return {assertions}
   }
 
-  const oldState = Preferences.default.disabled
+  const oldState = Preferences.getDisabled()
 
   if (asyncPublish) {
     PubSub.publish('sdk:gdpr-forget-me', true)
@@ -385,20 +385,20 @@ function expectGdprForgetMeCallback (onlyNumOfAssertions, asyncPublish) {
 
   jest.runOnlyPendingTimers()
 
-  expect(Preferences.default.disabled).not.toEqual(oldState)
-  expect(Preferences.default.disabled).toEqual({reason: 'gdpr', pending: false})
+  expect(Preferences.getDisabled()).not.toEqual(oldState)
+  expect(Preferences.getDisabled()).toEqual({reason: 'gdpr', pending: false})
 
   return {assertions}
 }
 
 function expectNotGdprForgetMeCallback () {
-  const oldState = Preferences.default.disabled
+  const oldState = Preferences.getDisabled()
 
   PubSub.publish('sdk:gdpr-forget-me', true)
 
   jest.runOnlyPendingTimers()
 
-  expect(Preferences.default.disabled).toEqual(oldState)
+  expect(Preferences.getDisabled()).toEqual(oldState)
 
   return {assertions: 1}
 }
@@ -479,14 +479,14 @@ function teardown () {
   _instance.__testonly__.destroy()
   localStorage.clear()
   jest.clearAllMocks()
-  Preferences.default.disabled = null
-  Preferences.default.setThirdPartySharing(null)
+  Preferences.setDisabled(null)
+  Preferences.setThirdPartySharing(null)
 }
 
 function teardownAndDisable (reason = 'general') {
   teardown()
-  Preferences.default.disabled = {reason}
-  Preferences.default.setThirdPartySharing(null)
+  Preferences.setDisabled({reason})
+  Preferences.setThirdPartySharing(null)
 }
 
 export default function Suite (instance) {

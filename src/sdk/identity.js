@@ -2,16 +2,11 @@
 import {type ActivityStateMapT} from './types'
 import Storage from './storage/storage'
 import ActivityState from './activity-state'
-import Preferences from './preferences'
-import Logger from './logger'
-import {REASON_GDPR, REASON_GENERAL} from './constants'
+import {reload as reloadPreferences} from './preferences'
+import {REASON_GDPR} from './constants'
 import {isEmpty} from './utilities'
+import {disable, status} from './disable'
 
-type StatusT = 'on' | 'off' | 'paused'
-type ReasonT = {|
-  reason: REASON_GDPR | REASON_GENERAL,
-  pending?: boolean
-|}
 type InterceptT = {|
   exists: boolean,
   stored?: ?ActivityStateMapT
@@ -97,7 +92,7 @@ function start (): Promise<?ActivityStateMapT> {
       return Storage.addItem(_storeName, activityState)
         .then(() => {
           ActivityState.init(activityState)
-          Preferences.reload()
+          reloadPreferences()
           _starting = false
           return activityState
         })
@@ -142,80 +137,11 @@ function sync (): Promise<ActivityStateMapT> {
 
       if (_isLive() && lastActive < activityState.lastActive) {
         ActivityState.current = activityState
-        Preferences.reload()
+        reloadPreferences()
       }
 
       return activityState
     })
-}
-
-/**
- * Disable sdk due to a particular reason
- *
- * @param {string=} reason
- * @param {boolean=} pending
- * @private
- */
-function disable ({reason, pending = false}: ReasonT = {}): boolean {
-  const logReason = (reason) => reason === REASON_GDPR ? ' due to GDPR-Forget-Me request' : ''
-  const disabled = Preferences.disabled || {}
-
-  if (disabled.reason) {
-    Logger.log('Adjust SDK is already disabled' + logReason(disabled.reason))
-    return false
-  }
-
-  Logger.log('Adjust SDK has been disabled' + logReason(reason))
-
-  Preferences.disabled = {
-    reason: reason || REASON_GENERAL,
-    pending
-  }
-
-  return true
-}
-
-/**
- * Enable sdk if not GDPR forgotten
- */
-function enable (): boolean {
-  const disabled = Preferences.disabled || {}
-
-  if (disabled.reason === REASON_GDPR) {
-    Logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled')
-    return false
-  }
-
-  if (!disabled.reason) {
-    Logger.log('Adjust SDK is already enabled')
-    return false
-  }
-
-  Logger.log('Adjust SDK has been enabled')
-
-  Preferences.disabled = null
-
-  return true
-}
-
-/**
- * Get the current status of the sdk
- * - on: not disabled
- * - paused: partially disabled, waiting for the opt-out confirmation from the backend
- * - off: completely disabled
- *
- * @returns {string}
- */
-function status (): StatusT {
-  const disabled = Preferences.disabled || {}
-
-  if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
-    return 'off'
-  } else if (disabled.reason === REASON_GDPR && disabled.pending) {
-    return 'paused'
-  }
-
-  return 'on'
 }
 
 /**
@@ -225,10 +151,6 @@ function clear (): void {
   const newActivityState = {uuid: 'unknown'}
 
   ActivityState.current = newActivityState
-  Preferences.disabled = {
-    reason: REASON_GDPR,
-    pending: false
-  }
 
   return Storage.clear(_storeName)
     .then(() => Storage.addItem(_storeName, newActivityState))
@@ -245,9 +167,6 @@ export {
   start,
   persist,
   sync,
-  disable,
-  enable,
-  status,
   clear,
   destroy
 }

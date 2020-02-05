@@ -5,6 +5,7 @@ import * as Preferences from '../preferences'
 import * as Logger from '../logger'
 import * as QuickStorage from '../storage/quick-storage'
 import * as PubSub from '../pub-sub'
+import * as Disable from '../disable'
 
 jest.mock('../logger')
 
@@ -14,19 +15,18 @@ describe('test identity methods', () => {
 
   beforeAll(() => {
     jest.spyOn(PubSub, 'publish')
-    jest.spyOn(Storage.default, 'getFirst')
     jest.spyOn(Storage.default, 'addItem')
     jest.spyOn(Storage.default, 'updateItem')
     jest.spyOn(ActivityState.default, 'destroy')
     jest.spyOn(Logger.default, 'log')
-    jest.spyOn(Preferences.default, 'reload')
+    jest.spyOn(Preferences, 'reload')
   })
 
   afterEach(() => {
     jest.clearAllMocks()
     localStorage.clear()
     Identity.destroy()
-    Preferences.default.disabled = null
+    Preferences.setDisabled(null)
   })
 
   afterAll(() => {
@@ -41,138 +41,60 @@ describe('test identity methods', () => {
 
   })
 
-  describe('test toggle disable depending on initialization state', () => {
+  it('prevents identity start multiple times', () => {
 
-    afterEach(() => {
-      Storage.default.clear('activityState')
-      Storage.default.getFirst.mockClear()
-      Identity.destroy()
-    })
+    expect.assertions(3)
 
-    it('prevents identity start multiple times', () => {
+    let activityState
+    const promise = Identity.start()
 
-      expect.assertions(3)
+    Identity.start()
+      .catch(error => {
+        expect(error).toEqual({interrupted: true, message: 'Adjust SDK start already in progress'})
+      })
 
-      let activityState
-      const promise = Identity.start()
+    return promise
+      .then(as => {
+        activityState = as
+        return Storage.default.getAll('activityState')
+      })
+      .then(records => {
+        expect(records.length).toEqual(1)
+        expect(records[0]).toEqual(activityState)
+      })
 
-      Identity.start()
-        .catch(error => {
-          expect(error).toEqual({interrupted: true, message: 'Adjust SDK start already in progress'})
-        })
+  })
 
-      return promise
-        .then(as => {
-          activityState = as
-          return Storage.default.getAll('activityState')
-        })
-        .then(records => {
-          expect(records.length).toEqual(1)
-          expect(records[0]).toEqual(activityState)
-        })
+  it('checks disabled state after initiation', () => {
 
-    })
+    expect.assertions(3)
 
-    it('checks disabled state before initiation', () => {
+    return Identity.start()
+      .then(() => {
+        expect(Preferences.getDisabled()).toBeNull()
 
-      expect(Preferences.default.disabled).toBeNull()
-      expect(Identity.status()).toBe('on')
+        Disable.disable()
 
-      Identity.disable()
+        expect(Preferences.getDisabled()).toEqual({reason: 'general', pending: false})
+        expect(Disable.status()).toBe('off')
+      })
+  })
 
-      expect(Preferences.default.disabled).toEqual({reason: 'general', pending: false})
-      expect(Identity.status()).toBe('off')
+  it('checks disabled state after initiation when initially disabled', () => {
 
-      Identity.disable()
+    expect.assertions(3)
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled')
-      expect(Identity.status()).toBe('off')
+    Disable.disable()
 
-      Identity.enable()
+    return Identity.start()
+      .then(() => {
+        expect(Preferences.getDisabled()).toEqual({reason: 'general', pending: false})
+        expect(Disable.status()).toBe('off')
 
-      expect(Preferences.default.disabled).toBeNull()
-      expect(Identity.status()).toBe('on')
+        Disable.restore()
 
-      Identity.enable()
-
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already enabled')
-      expect(Identity.status()).toBe('on')
-
-    })
-
-    it('checks disabled state after initiation', () => {
-
-      expect.assertions(3)
-
-      return Identity.start()
-        .then(() => {
-          expect(Preferences.default.disabled).toBeNull()
-
-          Identity.disable()
-
-          expect(Preferences.default.disabled).toEqual({reason: 'general', pending: false})
-          expect(Identity.status()).toBe('off')
-        })
-    })
-
-    it('checks disabled state after initiation when initially disabled', () => {
-
-      expect.assertions(3)
-
-      Identity.disable()
-
-      return Identity.start()
-        .then(() => {
-          expect(Preferences.default.disabled).toEqual({reason: 'general', pending: false})
-          expect(Identity.status()).toBe('off')
-
-          Identity.enable()
-
-          expect(Preferences.default.disabled).toBeNull()
-        })
-    })
-
-    it('checks disabled state after storage has been lost', () => {
-
-      expect(Preferences.default.disabled).toBeNull()
-
-      Identity.disable()
-
-      expect(Preferences.default.disabled).toEqual({reason: 'general', pending: false})
-      expect(Identity.status()).toBe('off')
-
-      localStorage.clear()
-
-      expect(Preferences.default.disabled).toEqual({reason: 'general', pending: false})
-      expect(Identity.status()).toBe('off')
-
-    })
-
-    it('checks if disabled due to GDPR-Forget-Me request', () => {
-
-      Identity.disable({reason: 'gdpr', pending: true})
-
-      expect(Preferences.default.disabled).toEqual({reason: 'gdpr', pending: true})
-      expect(Identity.status()).toBe('paused')
-
-      Identity.enable()
-
-      expect(Preferences.default.disabled).toEqual({reason: 'gdpr', pending: true})
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled')
-      expect(Identity.status()).toBe('paused')
-
-      Identity.disable()
-
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is already disabled due to GDPR-Forget-Me request')
-      expect(Preferences.default.disabled).toEqual({reason: 'gdpr', pending: true})
-      expect(Identity.status()).toBe('paused')
-
-      Identity.clear()
-
-      expect(Preferences.default.disabled).toEqual({reason: 'gdpr', pending: false})
-      expect(Identity.status()).toBe('off')
-    })
-
+        expect(Preferences.getDisabled()).toBeNull()
+      })
   })
 
   describe('when activity state exists', () => {
@@ -225,13 +147,13 @@ describe('test identity methods', () => {
 
       expect.assertions(2)
 
-      Identity.disable()
+      Disable.disable()
 
       QuickStorage.default.stores[storeNames.preferences.name] = null
 
       return Identity.start()
         .then(() => {
-          expect(Preferences.default.disabled).toEqual({reason: 'general', pending: false})
+          expect(Preferences.getDisabled()).toEqual({reason: 'general', pending: false})
           expect(QuickStorage.default.stores[storeNames.preferences.name]).toEqual({sdkDisabled: {reason: 'general', pending: false}})
         })
     })
@@ -308,7 +230,7 @@ describe('test identity methods', () => {
         })
         .then(() => {
           expect(compareActivityState).toEqual(ActivityState.default.current)
-          expect(Preferences.default.reload).toHaveBeenCalled()
+          expect(Preferences.reload).toHaveBeenCalled()
         })
 
     })
@@ -322,14 +244,14 @@ describe('test identity methods', () => {
       return Identity.start()
         .then(activityState => {
 
-          Identity.disable()
+          Disable.disable()
 
           expect(activityState).toEqual(ActivityState.default.current)
 
           return Identity.sync()
         })
         .then(() => {
-          expect(Preferences.default.reload).not.toHaveBeenCalled()
+          expect(Preferences.reload).not.toHaveBeenCalled()
           expect(ActivityState.default.current).toEqual(cachedActivityState)
         })
 
@@ -402,12 +324,12 @@ describe('test identity methods', () => {
 
       expect.assertions(2)
 
-      Identity.disable({reason: 'gdpr'})
+      Disable.disable('gdpr')
       Identity.clear()
 
       return Utils.flushPromises()
         .then(() => {
-          Preferences.default.disabled = null
+          Preferences.setDisabled(null)
 
           return Identity.start()
         })
@@ -434,7 +356,7 @@ describe('test identity methods', () => {
 
       expect.assertions(3)
 
-      Identity.disable()
+      Disable.disable()
 
       return Identity.persist()
         .then(activityState => {
