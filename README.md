@@ -13,6 +13,7 @@ This is the guide to the Javascript SDK of Adjust™ for web apps. You can read 
 * [Offline/Online mode](#offline-online-mode)
 * [Stop/Restart SDK](#stop-restart-sdk)
 * [GDPR Forget Me](#gdpr-forget-me)
+* [Marketing Opt-out](#marketing-opt-out)
 * [License](#license)
 
 ## <a id="example-app">Example apps</a>
@@ -29,8 +30,6 @@ To do so paste the following snippet into `<head>` tag:
 !function(t,e,a,r,s,l,n,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)n(t.Adjust,t.Adjust_q,l[c]);d=e.createElement("script"),o=e.getElementsByTagName("script")[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest-test.min.js",d.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe"],function(t,e,a){t[a]=function(){e.push([a,arguments])}});
 </script>
 ```
-
-The above snippet can be used in Google Tag Manager as Custom HTML tag.
 
 Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
 
@@ -318,7 +317,7 @@ Adjust.restart();
 There is functionality available to GDPR Forget particular user. This will notify our backend behind the scene and will stop Adjust SDK from running. 
 There is one method available for this:
 
-<a id="restart">**gdprForgetMe**</a>
+<a id="gdpr-forge-me">**gdprForgetMe**</a>
 
 This method will stop Adjust SDK from running and will notify adjust backend that user wants to be GDPR forgotten.
 Once this method is run it's not possible to restart Adjust SDK anymore.
@@ -330,6 +329,20 @@ Adjust.gdprForgetMe();
 ```
 
 You can find more details [here](https://help.adjust.com/manage-data/data-privacy/gdpr)
+
+## <a id="marketing-opt-out">Marketing Opt-out</a>
+
+There is functionality for the Marketing Opt-out, which is disabling third-party sharing ability. This will notify our backed in the same manner as it does fort GDPR Forget me.
+
+There is one method available for this:
+
+<a id="disable-third-party-sharing">**disableThirdPartySharing**</a>
+
+Example:
+
+```js
+Adjust.disableThirdPartySharing();
+```
 
 ## <a id="license">License</a>
 
