@@ -2439,7 +2439,7 @@ var Config = objectSpread2_default()({}, _baseConfig, {
 // CONCATENATED MODULE: ./src/sdk/storage/scheme.js
 
 
-var _values;
+var _values2;
 
 
 var _queueName = 'q';
@@ -2452,7 +2452,9 @@ var _queueScheme = {
       values: {
         '/session': 1,
         '/event': 2,
-        '/gdpr_forget_device': 3
+        '/gdpr_forget_device': 3,
+        '/sdk_click': 4,
+        '/disable_third_party_sharing': 5
       }
     },
     method: {
@@ -2559,19 +2561,39 @@ var _eventDeduplicationScheme = {
     id: 'i'
   }
 };
-var _disabledName = 'd';
-var _disabledScheme = {
-  keyPath: 'reason',
+var _preferencesName = 'p';
+var _preferencesScheme = {
   fields: {
-    reason: {
-      key: 'r',
-      values: (_values = {}, defineProperty_default()(_values, REASON_GENERAL, 1), defineProperty_default()(_values, REASON_GDPR, 2), _values)
+    thirdPartySharingDisabled: {
+      key: 'td',
+      keys: {
+        reason: {
+          key: 'r',
+          values: defineProperty_default()({}, REASON_GENERAL, 1)
+        },
+        pending: {
+          key: 'p',
+          values: {
+            false: 0,
+            true: 1
+          }
+        }
+      }
     },
-    pending: {
-      key: 'p',
-      values: {
-        false: 0,
-        true: 1
+    sdkDisabled: {
+      key: 'sd',
+      keys: {
+        reason: {
+          key: 'r',
+          values: (_values2 = {}, defineProperty_default()(_values2, REASON_GENERAL, 1), defineProperty_default()(_values2, REASON_GDPR, 2), _values2)
+        },
+        pending: {
+          key: 'p',
+          values: {
+            false: 0,
+            true: 1
+          }
+        }
       }
     }
   }
@@ -2593,9 +2615,9 @@ var _disabledScheme = {
     name: _eventDeduplicationName,
     scheme: _eventDeduplicationScheme
   },
-  disabled: {
-    name: _disabledName,
-    scheme: _disabledScheme,
+  preferences: {
+    name: _preferencesName,
+    scheme: _preferencesScheme,
     permanent: true
   }
 });
@@ -3367,117 +3389,6 @@ var ActivityState = {
   destroy: activity_state_destroy
 };
 /* harmony default export */ var activity_state = (ActivityState);
-// CONCATENATED MODULE: ./src/sdk/pub-sub.js
-
-
-/**
- * List of events with subscribed callbacks
- *
- * @type {Object}
- * @private
- */
-
-var _list = {};
-/**
- * Reference to timeout ids so they can be cleared on destroy
- *
- * @type {Array}
- * @private
- */
-
-var _timeoutIds = [];
-/**
- * Get unique id for the callback to use for unsubscribe
- *
- * @returns {string}
- * @private
- */
-
-function _getId() {
-  return 'id' + Math.random().toString(36).substr(2, 16);
-}
-/**
- * Subscribe to a certain event
- *
- * @param {string} name
- * @param {Function} cb
- * @returns {string}
- */
-
-
-function subscribe(name, cb) {
-  var id = _getId();
-
-  if (!_list[name]) {
-    _list[name] = [];
-  }
-
-  _list[name].push({
-    id: id,
-    cb: cb
-  });
-
-  return id;
-}
-/**
- * Unsubscribe particular callback from an event
- *
- * @param {string} id
- */
-
-
-function unsubscribe(id) {
-  if (!id) {
-    return;
-  }
-
-  entries(_list).some(function (_ref) {
-    var _ref2 = slicedToArray_default()(_ref, 2),
-        callbacks = _ref2[1];
-
-    return callbacks.some(function (callback, i) {
-      if (callback.id === id) {
-        callbacks.splice(i, 1);
-        return true;
-      }
-    });
-  });
-}
-/**
- * Publish certain event with optional arguments
- *
- * @param {string} name
- * @param {*} args
- * @returns {Array}
- */
-
-
-function publish(name, args) {
-  if (!_list[name]) {
-    return [];
-  }
-
-  _list[name].forEach(function (item) {
-    if (typeof item.cb === 'function') {
-      _timeoutIds.push(setTimeout(function () {
-        return item.cb(name, args);
-      }));
-    }
-  });
-}
-/**
- * Destroy all registered events with their callbacks
- */
-
-
-function pub_sub_destroy() {
-  _timeoutIds.forEach(clearTimeout);
-
-  _timeoutIds = [];
-  _list = {};
-}
-
-
 // CONCATENATED MODULE: ./src/sdk/storage/converter.js
 
 
@@ -3693,7 +3604,7 @@ var _storeNames = scheme_map.storeNames.left;
 function _get(key) {
   var value = JSON.parse(localStorage.getItem("".concat(_storageName, ".").concat(key)));
   return (value instanceof Array ? value : convertRecord({
-    storeName: 'disabled',
+    storeName: _storeNames.preferences.name,
     dir: 'right',
     record: value
   })) || null;
@@ -3712,7 +3623,7 @@ function _set(key, value) {
     localStorage.removeItem("".concat(_storageName, ".").concat(key));
   } else {
     localStorage.setItem("".concat(_storageName, ".").concat(key), JSON.stringify(value instanceof Array ? value : convertRecord({
-      storeName: 'disabled',
+      storeName: _storeNames.preferences.name,
       dir: 'left',
       record: value
     })));
@@ -3754,38 +3665,198 @@ entries(_storeNames).forEach(function (_ref3) {
 });
 Object.freeze(QuickStorage.stores);
 /* harmony default export */ var quick_storage = (QuickStorage);
-// CONCATENATED MODULE: ./src/sdk/state.js
-
+// CONCATENATED MODULE: ./src/sdk/pub-sub.js
 
 
 /**
- * Name of the store used by disabled
- *
- * @type {string}
- * @private
- */
-
-var _storeName = quick_storage.storeNames.disabled.name;
-/**
- * Reference to the disabled state
+ * List of events with subscribed callbacks
  *
  * @type {Object}
  * @private
  */
 
-var _disabled = quick_storage.stores[_storeName];
+var _list = {};
+/**
+ * Reference to timeout ids so they can be cleared on destroy
+ *
+ * @type {Array}
+ * @private
+ */
+
+var _timeoutIds = [];
+/**
+ * Get unique id for the callback to use for unsubscribe
+ *
+ * @returns {string}
+ * @private
+ */
+
+function _getId() {
+  return 'id' + Math.random().toString(36).substr(2, 16);
+}
+/**
+ * Subscribe to a certain event
+ *
+ * @param {string} name
+ * @param {Function} cb
+ * @returns {string}
+ */
+
+
+function subscribe(name, cb) {
+  var id = _getId();
+
+  if (!_list[name]) {
+    _list[name] = [];
+  }
+
+  _list[name].push({
+    id: id,
+    cb: cb
+  });
+
+  return id;
+}
+/**
+ * Unsubscribe particular callback from an event
+ *
+ * @param {string} id
+ */
+
+
+function unsubscribe(id) {
+  if (!id) {
+    return;
+  }
+
+  entries(_list).some(function (_ref) {
+    var _ref2 = slicedToArray_default()(_ref, 2),
+        callbacks = _ref2[1];
+
+    return callbacks.some(function (callback, i) {
+      if (callback.id === id) {
+        callbacks.splice(i, 1);
+        return true;
+      }
+    });
+  });
+}
+/**
+ * Publish certain event with optional arguments
+ *
+ * @param {string} name
+ * @param {*} args
+ * @returns {Array}
+ */
+
+
+function publish(name, args) {
+  if (!_list[name]) {
+    return [];
+  }
+
+  _list[name].forEach(function (item) {
+    if (typeof item.cb === 'function') {
+      _timeoutIds.push(setTimeout(function () {
+        return item.cb(name, args);
+      }));
+    }
+  });
+}
+/**
+ * Destroy all registered events with their callbacks
+ */
+
+
+function pub_sub_destroy() {
+  _timeoutIds.forEach(clearTimeout);
+
+  _timeoutIds = [];
+  _list = {};
+}
+
+
+// CONCATENATED MODULE: ./src/sdk/preferences.js
+
+
+
+
+/*:: type SdkDisabledT = {|
+  reason: REASON_GENERAL | REASON_GDPR,
+  pending: boolean
+|}*/
+
+/*:: type ThirdPartySharingDisabledT = {|
+  reason: REASON_GENERAL,
+  pending: boolean
+|}*/
+
+/*:: type PreferencesT = {|
+  thirdPartySharingDisabled?: ?ThirdPartySharingDisabledT,
+  sdkDisabled?: ?SdkDisabledT
+|}*/
+
+/**
+ * Name of the store used by preferences
+ *
+ * @type {string}
+ * @private
+ */
+var _storeName
+/*: string*/
+= quick_storage.storeNames.preferences.name;
+/**
+ * Local reference to be used for recovering preserved state
+ *
+ * @type {Object}
+ * @private
+ */
+
+var _preferences
+/*: ?PreferencesT*/
+= _getPreferences();
+/**
+ * Get preferences stored in the localStorage
+ *
+ * @returns {Object}
+ * @private
+ */
+
+
+function _getPreferences()
+/*: ?PreferencesT*/
+{
+  if (!_preferences) {
+    _setPreferences();
+  }
+
+  return _preferences ? objectSpread2_default()({}, _preferences) : null;
+}
+/**
+ * Set local reference of the preserved preferences
+ *
+ * @private
+ */
+
+
+function _setPreferences()
+/*: void*/
+{
+  _preferences = quick_storage.stores[_storeName];
+}
 /**
  * Get current disabled state
  *
  * @returns {Object|null}
  */
 
-function _disabledGetter() {
-  if (!_disabled) {
-    _disabled = quick_storage.stores[_storeName];
-  }
 
-  return _disabled ? objectSpread2_default()({}, _disabled) : null;
+function getDisabled()
+/*: ?SdkDisabledT*/
+{
+  var preferences = _getPreferences();
+
+  return preferences ? preferences.sdkDisabled : null;
 }
 /**
  * Set current disabled state
@@ -3794,48 +3865,92 @@ function _disabledGetter() {
  */
 
 
-function _disabledSetter(value) {
-  quick_storage.stores[_storeName] = value;
-  _disabled = value ? objectSpread2_default()({}, value) : null;
+function setDisabled(value
+/*: ?SdkDisabledT*/
+)
+/*: void*/
+{
+  var sdkDisabled = value ? objectSpread2_default()({}, value) : null;
+  quick_storage.stores[_storeName] = objectSpread2_default()({}, _getPreferences(), {
+    sdkDisabled: sdkDisabled
+  });
+
+  _setPreferences();
 }
 /**
- * Reload current disabled state from localStorage
+ * Get current third-party-sharing disabled state
+ *
+ * @returns {Object}
+ * @private
  */
 
 
-function reload() {
-  var stored = quick_storage.stores[_storeName];
+function getThirdPartySharing()
+/*: ?ThirdPartySharingDisabledT*/
+{
+  var preferences = _getPreferences();
 
-  if (stored && !_disabled) {
+  return preferences ? preferences.thirdPartySharingDisabled : null;
+}
+/**
+ * Set current third-party-sharing disabled state
+ *
+ * @param {Object=} value
+ * @private
+ */
+
+
+function setThirdPartySharing(value
+/*: ?ThirdPartySharingDisabledT*/
+)
+/*: void*/
+{
+  var thirdPartySharingDisabled = value ? objectSpread2_default()({}, value) : null;
+  quick_storage.stores[_storeName] = objectSpread2_default()({}, _getPreferences(), {
+    thirdPartySharingDisabled: thirdPartySharingDisabled
+  });
+
+  _setPreferences();
+}
+/**
+ * Reload current preferences from localStorage if changed outside of current scope (e.g. tab)
+ */
+
+
+function reload()
+/*: void*/
+{
+  var stored
+  /*: PreferencesT*/
+  = quick_storage.stores[_storeName] || {};
+  var sdkDisabled
+  /*: ?SdkDisabledT*/
+  = (_preferences || {}).sdkDisabled || null;
+
+  if (stored.sdkDisabled && !sdkDisabled) {
     publish('sdk:shutdown', true);
   }
 
-  _disabled = stored;
+  _setPreferences();
 }
 /**
- * Recover states from memory
+ * Recover preferences from memory if storage was lost
  */
 
 
-function recover() {
-  if (!quick_storage.stores[_storeName]) {
-    quick_storage.stores[_storeName] = _disabled;
+function recover()
+/*: void*/
+{
+  var stored
+  /*: ?PreferencesT*/
+  = quick_storage.stores[_storeName];
+
+  if (!stored) {
+    quick_storage.stores[_storeName] = objectSpread2_default()({}, _preferences);
   }
 }
 
-var State = {
-  reload: reload,
-  recover: recover
-};
-Object.defineProperty(State, 'disabled', {
-  get: function get() {
-    return _disabledGetter();
-  },
-  set: function set(value) {
-    return _disabledSetter(value);
-  }
-});
-/* harmony default export */ var sdk_state = (State);
+
 // CONCATENATED MODULE: ./src/sdk/storage/indexeddb.js
 
 
@@ -3937,7 +4052,7 @@ function _handleUpgradeNeeded(e, reject) {
       logger.info("Migration from localStorage done for ".concat(longStoreName, " store"));
     }
   });
-  sdk_state.recover();
+  recover();
   quick_storage.clear();
 }
 /**
@@ -4574,7 +4689,7 @@ function localstorage_open() {
       quick_storage.stores[store.name] = [];
     }
   });
-  sdk_state.recover();
+  recover();
   return {
     status: 'success'
   };
@@ -5931,6 +6046,7 @@ function _interceptSuccess(result
   var isGdprRequest = isRequest(url, 'gdpr_forget_device');
   var isAttributionRequest = isRequest(url, 'attribution');
   var isSessionRequest = isRequest(url, 'session');
+  var isThirdPartySharingOptOutRequest = isRequest(url, 'disable_third_party_sharing');
   var optedOut = result.tracking_state === 'opted_out';
 
   if (!isGdprRequest && optedOut) {
@@ -5944,6 +6060,11 @@ function _interceptSuccess(result
 
   if (isSessionRequest) {
     publish('session:finished', result);
+  }
+
+  if (isThirdPartySharingOptOutRequest) {
+    publish('sdk:third-party-sharing-opt-out', true);
+    return result;
   }
 
   return result;
@@ -6777,6 +6898,180 @@ var request_Request = function Request() {
 };
 
 /* harmony default export */ var request = (request_Request);
+// CONCATENATED MODULE: ./src/sdk/disable.js
+
+
+
+/*:: type StatusT = 'on' | 'off' | 'paused'*/
+
+/*:: type ReasonT = REASON_GDPR | REASON_GENERAL*/
+
+/*:: type PendingT = boolean*/
+
+/*:: type ReasonMapT = {|
+  reason: ReasonT,
+  pending: PendingT
+|}*/
+
+/**
+ * Get the disable action name depending on the reason
+ *
+ * @param {string} reason
+ * @returns {string}
+ * @private
+ */
+var disable_disableReason = function _disableReason(reason
+/*: ReasonT*/
+) {
+  return reason === REASON_GDPR ? 'GDPR disable' : 'disable';
+};
+/**
+ * Get log messages depending on the disable reason
+ *
+ * @param {string} reason
+ * @returns {Object}
+ * @private
+ */
+
+
+var _logMessages = function _logMessages(reason
+/*: ReasonT*/
+) {
+  return {
+    start: {
+      inProgress: "Adjust SDK ".concat(disable_disableReason(reason), " process has already started"),
+      done: "Adjust SDK ".concat(disable_disableReason(reason), " process is now started")
+    },
+    finish: {
+      inProgress: "Adjust SDK ".concat(disable_disableReason(reason), " process has already finished"),
+      done: "Adjust SDK ".concat(disable_disableReason(reason), " process is now finished")
+    }
+  };
+};
+/**
+ * Start or finish disable process
+ *
+ * @param {string} reason
+ * @param {boolean} pending
+ * @param {string} expectedAction
+ * @returns {boolean}
+ * @private
+ */
+
+
+function _disable(_ref, expectedAction
+/*: 'start' | 'finish'*/
+)
+/*: boolean*/
+{
+  var reason = _ref.reason,
+      pending = _ref.pending;
+  var disabled = getDisabled() || {};
+  var action = expectedAction === 'start' && disabled.pending ? 'start' : 'finish';
+  var shouldNotStart = expectedAction === 'start' && disabled.reason;
+  var shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending;
+
+  if (shouldNotStart || shouldNotFinish) {
+    logger.log(_logMessages(disabled.reason)[action].inProgress);
+    return false;
+  }
+
+  logger.log(_logMessages(reason)[action].done);
+  setDisabled({
+    reason: reason || REASON_GENERAL,
+    pending: pending
+  });
+  return true;
+}
+/**
+ * Disable sdk due to a particular reason
+ *
+ * @param {string} reason
+ * @param {boolean} pending
+ * @private
+ */
+
+
+function disable(reason
+/*: ?ReasonT*/
+)
+/*: boolean*/
+{
+  var pending
+  /*: ?PendingT*/
+  = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  return _disable({
+    reason: reason,
+    pending: pending || false
+  }, 'start');
+}
+/**
+ * Finish disable process if previously set to pending state
+ *
+ * @param {string} reason
+ * @returns {boolean}
+ */
+
+
+function disable_finish(reason
+/*: ReasonT*/
+)
+/*: boolean*/
+{
+  return _disable({
+    reason: reason,
+    pending: false
+  }, 'finish');
+}
+/**
+ * Enable sdk if not GDPR forgotten
+ */
+
+
+function restore()
+/*: boolean*/
+{
+  var disabled = getDisabled() || {};
+
+  if (disabled.reason === REASON_GDPR) {
+    logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled');
+    return false;
+  }
+
+  if (!disabled.reason) {
+    logger.log('Adjust SDK is already enabled');
+    return false;
+  }
+
+  logger.log('Adjust SDK has been enabled');
+  setDisabled(null);
+  return true;
+}
+/**
+ * Get the current status of the sdk
+ * - on: not disabled
+ * - paused: partially disabled, waiting for the opt-out confirmation from the backend
+ * - off: completely disabled
+ *
+ * @returns {string}
+ */
+
+
+function disable_status()
+/*: StatusT*/
+{
+  var disabled = getDisabled() || {};
+
+  if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
+    return 'off';
+  } else if (disabled.reason === REASON_GDPR && disabled.pending) {
+    return 'paused';
+  }
+
+  return 'on';
+}
+
+
 // CONCATENATED MODULE: ./src/sdk/identity.js
 
 
@@ -6789,13 +7084,6 @@ var identity_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).P
 
 
 
-
-/*:: type StatusT = 'on' | 'off' | 'paused'*/
-
-/*:: type ReasonT = {|
-  reason: REASON_GDPR | REASON_GENERAL,
-  pending?: boolean
-|}*/
 
 /*:: type InterceptT = {|
   exists: boolean,
@@ -6904,7 +7192,7 @@ function identity_start()
     } : activity_state.current;
     return storage_storage.addItem(identity_storeName, activityState).then(function () {
       activity_state.init(activityState);
-      sdk_state.reload();
+      reload();
       _starting = false;
       return activityState;
     });
@@ -6919,7 +7207,7 @@ function identity_start()
 
 
 function _isLive() {
-  return identity_status() !== 'off' && activity_state.isStarted();
+  return disable_status() !== 'off' && activity_state.isStarted();
 }
 /**
  * Persist changes made directly in activity state and update lastActive flag
@@ -6961,93 +7249,11 @@ function sync()
 
     if (_isLive() && lastActive < activityState.lastActive) {
       activity_state.current = activityState;
-      sdk_state.reload();
+      reload();
     }
 
     return activityState;
   });
-}
-/**
- * Disable sdk due to a particular reason
- *
- * @param {string=} reason
- * @param {boolean=} pending
- * @private
- */
-
-
-function disable()
-/*: boolean*/
-{
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      reason = _ref.reason,
-      _ref$pending = _ref.pending,
-      pending = _ref$pending === void 0 ? false : _ref$pending;
-
-  var logReason = function logReason(reason) {
-    return reason === REASON_GDPR ? ' due to GDPR-Forget-Me request' : '';
-  };
-
-  var disabled = sdk_state.disabled || {};
-
-  if (disabled.reason) {
-    logger.log('Adjust SDK is already disabled' + logReason(disabled.reason));
-    return false;
-  }
-
-  logger.log('Adjust SDK has been disabled' + logReason(reason));
-  sdk_state.disabled = {
-    reason: reason || REASON_GENERAL,
-    pending: pending
-  };
-  return true;
-}
-/**
- * Enable sdk if not GDPR forgotten
- */
-
-
-function enable()
-/*: boolean*/
-{
-  var disabled = sdk_state.disabled || {};
-
-  if (disabled.reason === REASON_GDPR) {
-    logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled');
-    return false;
-  }
-
-  if (!disabled.reason) {
-    logger.log('Adjust SDK is already enabled');
-    return false;
-  }
-
-  logger.log('Adjust SDK has been enabled');
-  sdk_state.disabled = null;
-  return true;
-}
-/**
- * Get the current status of the sdk
- * - on: not disabled
- * - paused: partially disabled, waiting for the opt-out confirmation from the backend
- * - off: completely disabled
- *
- * @returns {string}
- */
-
-
-function identity_status()
-/*: StatusT*/
-{
-  var disabled = sdk_state.disabled || {};
-
-  if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
-    return 'off';
-  } else if (disabled.reason === REASON_GDPR && disabled.pending) {
-    return 'paused';
-  }
-
-  return 'on';
 }
 /**
  * Clear activity state store - set uuid to be unknown
@@ -7061,10 +7267,6 @@ function identity_clear()
     uuid: 'unknown'
   };
   activity_state.current = newActivityState;
-  sdk_state.disabled = {
-    reason: REASON_GDPR,
-    pending: false
-  };
   return storage_storage.clear(identity_storeName).then(function () {
     return storage_storage.addItem(identity_storeName, newActivityState);
   });
@@ -7249,7 +7451,7 @@ function push(_ref) {
       timestamp = _ref2.timestamp;
 
   activity_state.updateParams(url, auto);
-  var filteredParams = entries(params).filter(function (_ref3) {
+  var filteredParams = entries(params || {}).filter(function (_ref3) {
     var _ref4 = slicedToArray_default()(_ref3, 2),
         value = _ref4[1];
 
@@ -8154,6 +8356,8 @@ function attribution_destroy()
 
 
 
+
+
 /**
  * Http request instance
  *
@@ -8174,7 +8378,7 @@ var gdpr_forget_device_request = request({
  */
 
 
-var _logMessages = {
+var gdpr_forget_device_logMessages = {
   running: 'Adjust SDK is running pending GDPR Forget Me request',
   pending: 'Adjust SDK will run GDPR Forget Me request after initialisation',
   paused: 'Adjust SDK is already prepared to send GDPR Forget Me request',
@@ -8193,15 +8397,15 @@ function forget(force
 )
 /*: boolean*/
 {
-  var sdkStatus = identity_status();
+  var sdkStatus = disable_status();
 
   if (!force && sdkStatus !== 'on') {
-    logger.log(_logMessages[sdkStatus]);
+    logger.log(gdpr_forget_device_logMessages[sdkStatus]);
     return false;
   }
 
   if (!config.isInitialised()) {
-    logger.log(_logMessages.pending);
+    logger.log(gdpr_forget_device_logMessages.pending);
     return true;
   }
 
@@ -8214,6 +8418,26 @@ function forget(force
   return true;
 }
 /**
+ * Start disable of the sdk due to GDPR-Forget-me request
+ *
+ * @returns {boolean}
+ */
+
+
+function gdpr_forget_device_disable() {
+  return disable(REASON_GDPR, true);
+}
+/**
+ * Finish disable of the sdk due to GDRP-Forget-me request
+ *
+ * @returns {boolean}
+ */
+
+
+function gdpr_forget_device_finish() {
+  return disable_finish(REASON_GDPR);
+}
+/**
  * Check if there is pending GDPR-Forget-Me request
  */
 
@@ -8221,8 +8445,8 @@ function forget(force
 function gdpr_forget_device_check()
 /*: void*/
 {
-  if (identity_status() === 'paused') {
-    logger.log(_logMessages.running);
+  if (disable_status() === 'paused') {
+    logger.log(gdpr_forget_device_logMessages.running);
     forget(true);
   }
 }
@@ -8235,6 +8459,153 @@ function gdpr_forget_device_destroy()
 /*: void*/
 {
   gdpr_forget_device_request.clear();
+}
+
+
+// CONCATENATED MODULE: ./src/sdk/third-party-sharing.js
+
+
+
+
+
+/*:: type ThirdPartySharingStatusT = 'pending' | 'on' | 'off'*/
+
+/**
+ * Log messages used in different scenarios
+ *
+ * @type {Object}
+ * @private
+ */
+var third_party_sharing_logMessages = {
+  running: 'Adjust SDK is running pending third-party sharing opt-out request',
+  delayed: 'Adjust SDK will run third-party sharing opt-out request after initialisation',
+  pending: 'Adjust SDK already queued third-party sharing opt-out request',
+  off: 'Third-party sharing opt-out is already done',
+  start: {
+    inProgress: 'Third-party sharing opt-out has already started',
+    done: 'Third-party sharing opt-out is now started'
+  },
+  finish: {
+    inProgress: 'Third-party sharing opt-out has already finished',
+    done: 'Third-party sharing opt-out is now finished'
+  }
+  /**
+   * Get the status of the third-party sharing
+   *
+   * @returns {string}
+   * @private
+   */
+
+};
+
+function _status()
+/*: ThirdPartySharingStatusT*/
+{
+  var disabled = getThirdPartySharing() || {};
+
+  if (disabled.reason) {
+    return disabled.pending ? 'pending' : 'off';
+  }
+
+  return 'on';
+}
+/**
+ * Request third-party sharing opt-out request
+ *
+ * @param {boolean} force
+ * @returns {boolean}
+ */
+
+
+function optOut(force
+/*: boolean*/
+) {
+  var status = _status();
+
+  if (!force && status !== 'on') {
+    logger.log(third_party_sharing_logMessages[status]);
+    return false;
+  }
+
+  if (!config.isInitialised()) {
+    logger.log(third_party_sharing_logMessages.delayed);
+    return true;
+  }
+
+  push({
+    url: '/disable_third_party_sharing',
+    method: 'POST'
+  });
+  return true;
+}
+/**
+ * Start or finish thrid-party sharing disable process
+ *
+ * @param {boolean} pending
+ * @param {string} expectedAction
+ * @returns {boolean}
+ * @private
+ */
+
+
+function third_party_sharing_disable(pending
+/*: boolean*/
+, expectedAction
+/*: 'start' | 'finish'*/
+)
+/*: boolean*/
+{
+  var disabled = getThirdPartySharing() || {};
+  var action = expectedAction === 'start' && pending ? 'start' : 'finish';
+  var shouldNotStart = expectedAction === 'start' && disabled.reason;
+  var shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending;
+
+  if (shouldNotStart || shouldNotFinish) {
+    logger.log(third_party_sharing_logMessages[action].inProgress);
+    return false;
+  }
+
+  logger.log(third_party_sharing_logMessages[action].done);
+  setThirdPartySharing({
+    reason: REASON_GENERAL,
+    pending: pending
+  });
+  return true;
+}
+/**
+ * Start the third-party sharing disable process
+ *
+ * @returns {boolean}
+ */
+
+
+function sdk_third_party_sharing_disable()
+/*: boolean*/
+{
+  return third_party_sharing_disable(true, 'start');
+}
+/**
+ * Finalize the third-party sharing process
+ *
+ * @returns {boolean}
+ */
+
+
+function third_party_sharing_finish() {
+  return third_party_sharing_disable(false, 'finish');
+}
+/**
+ * Check if there s pending third-party sharing opt-out request
+ */
+
+
+function third_party_sharing_check()
+/*: void*/
+{
+  if (_status() === 'pending') {
+    logger.log(third_party_sharing_logMessages.running);
+    optOut(true);
+  }
 }
 
 
@@ -8602,6 +8973,8 @@ var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promi
 
 
 
+
+
 /*:: type IntiConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>*/
 
 /**
@@ -8675,7 +9048,10 @@ function trackEvent(params
 {
   _preCheck('track event', function (timestamp) {
     return event_event(params, timestamp);
-  }, true);
+  }, {
+    schedule: true,
+    stopBeforeInit: true
+  });
 }
 /**
  * Add global callback parameters
@@ -8811,7 +9187,7 @@ function stop()
 function restart()
 /*: void*/
 {
-  var done = enable();
+  var done = restore();
 
   if (done && main_options) {
     _start(main_options);
@@ -8831,14 +9207,42 @@ function gdprForgetMe()
     return;
   }
 
-  done = disable({
-    reason: REASON_GDPR,
-    pending: true
-  });
+  done = gdpr_forget_device_disable();
 
   if (done && config.isInitialised()) {
     _pause();
   }
+}
+/**
+ * Disable third party sharing
+ */
+
+
+function disableThirdPartySharing()
+/*: void*/
+{
+  _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
+    schedule: true,
+    stopBeforeInit: false
+  });
+}
+/**
+ * Handle third party sharing disable
+ *
+ * @private
+ */
+
+
+function _handleDisableThirdPartySharing()
+/*: void*/
+{
+  var done = optOut();
+
+  if (!done) {
+    return;
+  }
+
+  sdk_third_party_sharing_disable();
 }
 /**
  * Handle GDPR-Forget-Me response
@@ -8850,9 +9254,11 @@ function gdprForgetMe()
 function _handleGdprForgetMe()
 /*: void*/
 {
-  if (identity_status() !== 'paused') {
+  if (disable_status() !== 'paused') {
     return;
   }
+
+  gdpr_forget_device_finish();
 
   main_Promise.all([identity_clear(), global_params_clear(), queue_clear()]).then(_destroy);
 }
@@ -8923,8 +9329,14 @@ function _destroy()
 function main_continue()
 /*: Promise<void>*/
 {
+  var isInstalled = activity_state.current.installed;
   gdpr_forget_device_check();
-  var sdkStatus = identity_status();
+
+  if (!isInstalled) {
+    third_party_sharing_check();
+  }
+
+  var sdkStatus = disable_status();
 
   var message = function message(rest) {
     return "Adjust SDK start has been interrupted ".concat(rest);
@@ -8960,6 +9372,10 @@ function main_continue()
   });
   return watch().then(function () {
     _isStarted = true;
+
+    if (isInstalled) {
+      third_party_sharing_check();
+    }
   });
 }
 /**
@@ -9013,7 +9429,7 @@ function _start(options
 )
 /*: void*/
 {
-  if (identity_status() === 'off') {
+  if (disable_status() === 'off') {
     logger.log('Adjust SDK is disabled, can not start the sdk');
     return;
   }
@@ -9024,6 +9440,7 @@ function _start(options
     return _shutdown(true);
   });
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe);
+  subscribe('sdk:third-party-sharing-opt-out', third_party_sharing_finish);
   subscribe('attribution:check', function (e, result) {
     return check(result);
   });
@@ -9048,26 +9465,28 @@ function _preCheck(description
 /*: string*/
 , callback
 /*: () => mixed*/
-, schedule
-/*: boolean*/
 ) {
+  var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      schedule = _ref2.schedule,
+      stopBeforeInit = _ref2.stopBeforeInit;
+
   if (!storage_storage) {
     logger.log("Adjust SDK can not ".concat(description, ", no storage available"));
     return;
   }
 
-  if (identity_status() !== 'on') {
+  if (disable_status() !== 'on') {
     logger.log("Adjust SDK is disabled, can not ".concat(description));
     return;
   }
 
-  if (schedule && !config.isInitialised()) {
+  if (schedule && stopBeforeInit && !config.isInitialised()) {
     logger.error("Adjust SDK can not ".concat(description, ", sdk instance is not initialized"));
     return;
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !_isStarted) {
+    if (schedule && !_isStarted && (stopBeforeInit || config.isInitialised())) {
       delay(callback, description);
       logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
     } else {
@@ -9090,6 +9509,7 @@ var Adjust = {
   stop: stop,
   restart: restart,
   gdprForgetMe: gdprForgetMe,
+  disableThirdPartySharing: disableThirdPartySharing,
   __testonly__: {
     destroy: _destroy
   }
