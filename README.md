@@ -18,24 +18,24 @@ This is the guide to the Javascript SDK of Adjust™ for web apps. You can read 
 
 ## <a id="example-app">Example apps</a>
 
-You can check how SDK can be used in the web app by checking [example app][example-app] in this repository.
+You can check how our SDK can be used in the web app by checking [example app][example-app] in this repository.
 
 ## <a id="installation">Installation</a>
 
 This SDK can be used to track installs, sessions and events. Simply add the Adjust Web SDK to your web app.
 
-To do so paste the following snippet into `<head>` tag:
+To do so paste the following snippet into the `<head>` tag:
 ```html
 <script type="application/javascript">
 !function(t,e,a,r,s,l,n,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)n(t.Adjust,t.Adjust_q,l[c]);d=e.createElement("script"),o=e.getElementsByTagName("script")[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest-test.min.js",d.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe"],function(t,e,a){t[a]=function(){e.push([a,arguments])}});
 </script>
 ```
 
-Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
+The Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
 
 ## <a id="initialization">Initialization</a>
 
-In order to initialize Adjust Web SDK you must call `Adjust.initSdk` method as soon as possible:
+In order to initialize the Adjust Web SDK you must call the `Adjust.initSdk` method as soon as possible:
 
 ```js
 Adjust.initSdk({
@@ -50,17 +50,17 @@ Here is the full list of available parameters for the `initSdk` method:
 
 <a id="app-token">**appToken**</a> `string`
 
-Initialization method requires this parameter, make sure to provide valid app token
+Initialization method requires this parameter, so make sure to provide valid app token
 
 <a id="environment">**environment**</a> `string` 
 
-This param is also mandatory. Available options are `production` or `sandbox`. Use `sandbox` in case you are testing SDK locally with your web app
+This param is also mandatory. Available options are `production` or `sandbox`. Use `sandbox` in case you are testing the SDK locally with your web app
 
 ### Optional params
  
 <a id="attribution-callback">**attributionCallback**</a> `function`
 
-This param accepts function, and it's a callback function for the attribution change. Two arguments are provided to the callback, first one is internal event name (can be ignored), and the other one is the object which holds information about the changed attribution
+This param accepts function, and it's a callback function for the attribution change. Two arguments are provided to the callback, first one is an internal event name (can be ignored), and the other one is the object which holds information about the changed attribution
 
 Example:
 ```js
@@ -83,12 +83,12 @@ By default all requests go to adjust's endpoints. You are able to redirect all r
 
 <a id="event-deduplication-list-limit">**eventDeduplicationListLimit**</a> `number`
 
-By default this param is set to `10`. It's possible to override this limit but make sure that it's positive number and not too big. This will cache last `n` deduplication ids (defined by this param) and use them to deduplicate events with repeating ids
+By default this param is set to `10`. It is possible to override this limit but make sure that it is a positive number and not too big. This will cache last `n` deduplication ids (defined by this param) and use them to deduplicate events with repeating ids
 
 <a id="log-level">**logLevel**</a> `string`
 
-By default this param is set to `error`. Possible values are `none`, `error`, `info`, `verbose`. We highly recommend to use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
-Here are some more details about each log level:
+By default this param is set to `error`. Possible values are `none`, `error`, `info`, `verbose`. We highly recommend that you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
+Here are more details about each log level:
 - `verbose` - will print detailed messages in case of certain actions
 - `info` - will print only basic info messages
 - `error` - will print only error message
@@ -96,7 +96,7 @@ Here are some more details about each log level:
 
 <a id="log-output">**logOutput**</a> `string`
 
-It's possible to define html container where you want to see your logs. This is useful when testing on mobile devices and when you want to see logs directly on the screen (recommend only for testing)
+It's possible to define html container where you want to see your logs. This is useful when testing on mobile devices and when you want to see logs directly on the screen (recommended only for testing)
 
 
 ## <a id="event-tracking">Event tracking</a>
