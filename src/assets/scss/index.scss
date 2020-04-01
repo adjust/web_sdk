@@ -1,16 +1,8 @@
 @import "~normalize.css";
+@import "variables";
 @import "loader";
 @import "flex-grid";
-
-$bgColor: #eee;
-$headerBgColor: #222831;
-$logBgColor: #393e46;
-$logFontColor: #00bed5;
-$buttonBgColor: #ddd;
-$buttonHoverBgColor: #d9d9d9;
-$buttonBorderColor: #ccc;
-$buttonFontColor: #555;
-$logoSize: 42px;
+@import "../../app/tabs/tabs";
 
 html, body {
   margin: 0;
@@ -78,14 +70,14 @@ button {
   display: block;
   font-size: 15px;
   padding:  10px;
-  border: 1px solid $buttonBorderColor;
+  border: 1px solid $borderColor;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background: $buttonBgColor;
   box-shadow: none;
   outline: none;
   cursor: pointer;
-  color: $buttonFontColor;
+  color: $fontColor;
 
   &:hover {
     background: $buttonHoverBgColor;
@@ -93,20 +85,13 @@ button {
 }
 
 pre {
-  border: 1px solid $buttonBorderColor;
+  border: 1px solid $borderColor;
   background-color: #fefefe;
   padding: 10px;
   overflow: auto;
   line-height: 20px;
   color: #bbb;
   margin: 0;
-
-  &.big {
-    height: 200px;
-    color: $logFontColor;
-    background: $logBgColor;
-    border-color: $headerBgColor;
-  }
 
   &.inline {
     display: inline-block;

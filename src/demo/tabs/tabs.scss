@@ -1,0 +1,67 @@
+@import "../../assets/scss/variables";
+
+$height: 240px;
+
+.tabs {
+  @extend .flex-box-row;
+  padding: 0;
+  margin: 0;
+  background-color: $headerBgColor;
+
+  li {
+    @extend .flex-one;
+    a {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: $logFontColor;
+      text-align: center;
+      text-transform: uppercase;
+
+      &.active {
+        background-color: $logBgColor;
+      }
+    }
+  }
+}
+
+.tab {
+  display: none;
+  border: 1px solid $headerBgColor;
+  height: $height;
+
+  &.active {
+    display: block;
+  }
+}
+
+.log {
+  color: $logFontColor;
+  background: $logBgColor;
+  border-color: $headerBgColor;
+  padding: 10px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.config {
+  @extend .log;
+  border: none;
+}
+
+#log-tab-container {
+  overflow: auto;
+}
+
+#app-config-tab-container {
+  overflow: auto;
+  padding: 0;
+
+  & > .flex-box-row {
+    height: 100%;
+  }
+
+  form {
+    padding: 10px;
+  }
+}
