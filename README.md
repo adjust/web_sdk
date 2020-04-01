@@ -1,6 +1,6 @@
 ## Summary
 
-This is the guide to the Javascript SDK of Adjust™ for web apps. You can read more about Adjust™ at [adjust.com].
+This is the guide to the Javascript SDK of Adjust™ for web sites or web apps. You can read more about Adjust™ at [adjust.com].
 
 ## Table of contents
 
