@@ -7,9 +7,6 @@ const FlowWebpackPlugin = require('flow-webpack-plugin')
 const webpack = require('webpack')
 
 module.exports = () => ({
-  devServer: {
-    host: '0.0.0.0'
-  },
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'demo'),

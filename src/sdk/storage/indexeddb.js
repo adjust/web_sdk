@@ -487,6 +487,32 @@ function clear (storeName) {
 }
 
 /**
+ * Close db connection and delete the db
+ * WARNING: should be used only by adjust's demo app!
+ *
+ * @returns {Promise}
+ * @private
+ */
+function __delete () {
+  const indexedDB = _getIDB()
+
+  destroy()
+
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(_dbName)
+
+    request.onerror = error => _overrideError(reject, error)
+
+    request.onsuccess = e => {
+      resolve(e.result)
+    }
+
+    request.onerror = e => reject(e.target)
+    request.onblocked = e => reject(e.target)
+  })
+}
+
+/**
  * Close the database and destroy the reference to it
  */
 function destroy () {
@@ -510,6 +536,7 @@ export {
   trimItems,
   count,
   clear,
-  destroy
+  destroy,
+  __delete
 }
 
