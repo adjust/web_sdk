@@ -5,7 +5,7 @@ const ACTION_SYMBOLS = {
 const ACTION_KEY_CLS = 'key-input'
 const ACTION_VALUE_CLS = 'value-input'
 
-function _createNode (name, classes = [], content, attrs) {
+function _createNode (name, classes = [], content, attrs = {}) {
   const element = document.createElement(name)
 
   element.classList.add(...classes)
@@ -31,7 +31,7 @@ function _createInput (inputCls, label, value = '') {
   return keyParent
 }
 
-function _createPair (handle, isLast, param = {}) {
+function _appendPair (parent, handle, isLast, param = {}) {
   const group = _createNode('div', ['flex-box-row', 'form-row-group'])
   const keyInput = _createInput(ACTION_KEY_CLS, 'Key', param.key)
   const valueInput = _createInput(ACTION_VALUE_CLS, 'Value', param.value)
@@ -43,7 +43,7 @@ function _createPair (handle, isLast, param = {}) {
   group.appendChild(valueInput)
   group.appendChild(action)
 
-  return group
+  parent.appendChild(group)
 }
 
 const KeyValueParams = (id, params = []) => {
@@ -57,12 +57,11 @@ const KeyValueParams = (id, params = []) => {
     if (_params.length) {
       _params.forEach((param, idx) => {
         const isLast = idx === params.length - 1
-        const pair = _createPair(isLast ? _handleAdd : _handleRemove, isLast, param)
-        _parent.appendChild(pair)
+        const handle = isLast ? _handleAdd : _handleRemove
+        _appendPair(_parent, handle, isLast, param)
       })
     } else {
-      const pair = _createPair(_handleAdd, true)
-      _parent.appendChild(pair)
+      _appendPair(_parent, _handleAdd, true)
     }
   }
 
@@ -75,6 +74,18 @@ const KeyValueParams = (id, params = []) => {
         return key && value ? {key, value} : null
       })
       .filter(row => !!row)
+  }
+
+  function reset () {
+    Array.from(_parent.querySelectorAll('.form-row-group'))
+      .map(row => {
+        const action = row.querySelector('button')
+        const handle = action.classList.contains('add') ? _handleAdd : _handleRemove
+        action.removeEventListener('click', handle, false)
+        row.remove()
+      })
+
+    _appendPair(_parent, _handleAdd, true)
   }
 
   function _handleRemove (e) {
@@ -92,9 +103,7 @@ const KeyValueParams = (id, params = []) => {
       return
     }
 
-    const pair = _createPair(_handleAdd, true)
-
-    _parent.appendChild(pair)
+    _appendPair(_parent, _handleAdd, true)
     _swapAction(row)
   }
 
@@ -111,7 +120,8 @@ const KeyValueParams = (id, params = []) => {
 
   return {
     init,
-    query
+    query,
+    reset
   }
 }
 
