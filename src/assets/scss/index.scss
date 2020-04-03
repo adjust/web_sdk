@@ -2,12 +2,14 @@
 @import "variables";
 @import "loader";
 @import "flex-grid";
-@import "../../app/tabs/tabs";
+@import "../../demo/tabs/tabs";
+@import "../../demo/key-value-params/key-value-params";
 
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  min-width: 900px;
 }
 
 body {
@@ -71,14 +73,13 @@ button {
   font-size: 15px;
   padding:  10px;
   border: 1px solid $borderColor;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
   background: $buttonBgColor;
   box-shadow: none;
   outline: none;
   cursor: pointer;
   color: $fontColor;
 
+  &.active,
   &:hover {
     background: $buttonHoverBgColor;
   }

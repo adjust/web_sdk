@@ -1,0 +1,38 @@
+.key-value-params {
+  h3 {
+    font-weight: normal;
+    color: $fontColor;
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .form-row-group {
+    margin-bottom: 10px;
+    align-items: center;
+  }
+
+  .form-row {
+     //margin: 0 5px 0 0;
+    margin-bottom: 0;
+
+    label {
+      align-self: center;
+      margin-right: 2px;
+    }
+  }
+
+  button {
+    padding: 5px 10px;
+    margin-left: 5px;
+
+    &.remove {
+      border-color: #bb622c;
+      background-color: #ff812e;
+      color: #fff;
+
+      &:hover {
+        background-color: #f37d2e;
+      }
+    }
+  }
+}
