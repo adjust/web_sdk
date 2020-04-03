@@ -93,32 +93,109 @@ pre {
   line-height: 20px;
   color: #bbb;
   margin: 0;
-
-  &.inline {
-    display: inline-block;
-    min-height: 21px;
-    margin: 0 0 0 -4px;
-    width: 150px;
-    vertical-align: middle;
-    padding: 8px 10px;
-    border-left: none;
-  }
-}
-
-.section {
-  width: 460px;
-  margin: 0 auto 20px;
-
-  button {
-    display: inline-block;
-    vertical-align: middle;
-    width: 270px;
-    text-align: left;
-  }
 }
 
 .actions {
   overflow: auto;
-  padding-top: 20px;
+  padding: 20px;
 }
+
+.action-block {
+  position: relative;
+  margin: 0 auto 10px;
+  text-align: center;
+
+  button {
+    display: inline-block;
+  }
+}
+
+.form-input {
+  width: 100px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.action {
+  width: $actionWidth;
+
+  .action-wrap & {
+    width: auto;
+    margin-right: 0;
+  }
+}
+
+.action-wrap {
+  width: $actionWidth;
+  margin: 0 auto;
+}
+
+.side-form {
+  width: 100%;
+  height: 260px;
+  background-color: $bgColorLight;
+  border: 1px solid $borderColor;
+  display: none;
+  text-align: left;
+  margin: 10px auto 0;
+
+  &.show {
+    display: block;
+  }
+
+  form {
+    padding: 10px;
+    overflow: auto;
+
+    button[type=submit] {
+      float: right;
+    }
+  }
+
+  & > .flex-box-row {
+    height: 100%;
+  }
+}
+
+.form-row {
+  margin-bottom: 10px;
+
+  label {
+    display: block;
+    color: $fontColor;
+    font-size: 14px;
+  }
+
+  input,
+  select {
+    border: 1px solid $borderColor;
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+
+    &:active,
+    &:focus {
+      border-color: $borderColorActive;
+      outline: none;
+    }
+
+    &:disabled,
+    &::-webkit-input-placeholder {
+      color: #ccc;
+    }
+  }
+
+  input {
+    padding: 0 5px;
+  }
+}
+
+.flex-box-row {
+  & > .flex-one:not(:last-child):not(.action) {
+    margin-right: 10px;
+  }
+}
+
+
+
 

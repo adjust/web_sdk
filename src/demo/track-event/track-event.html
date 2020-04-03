@@ -1,0 +1,52 @@
+<div class="action-block">
+  <div class="action-wrap flex-box-row">
+    <button id="track-event-button" class="action flex-one">Track Event</button>
+    <button type="button" id="event-side-form-toggle" class="form-toggle flex-auto">...</button>
+  </div>
+
+  <div class="side-form" id="event-side-form">
+    <div class="flex-box-row">
+      <form class="flex-two" id="event-config-form">
+        <div class="flex-box-row">
+          <div class="flex-one">
+            <div class="form-row">
+              <label for="event-token">Event Token</label>
+              <input type="text" id="event-token">
+            </div>
+
+            <div class="form-row">
+              <label for="revenue">Revenue</label>
+              <input type="number" min="0" id="revenue">
+            </div>
+          </div>
+
+          <div class="flex-one">
+            <div class="form-row">
+              <label for="currency">Currency</label>
+              <input type="text" id="currency">
+            </div>
+
+            <div class="form-row">
+              <label for="deduplication-id">Deduplication ID</label>
+              <input type="text" id="deduplication-id">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div id="event-callback-params" class="key-value-params form-row flex-one">
+            <h3>Callback Params</h3>
+          </div>
+
+          <div id="event-partner-params" class="key-value-params form-row flex-one">
+            <h3>Partner params</h3>
+          </div>
+        </div>
+
+        <button type="submit">Save and Run</button>
+      </form>
+
+      <pre class="flex-one config" id="event-config-json"></pre>
+    </div>
+  </div>
+</div>

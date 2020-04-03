@@ -5,9 +5,14 @@
   </div>
 
   <div class="actions flex-one">
-    <div class="section">
-      <button id="event" class="action">Track Event</button>
-      <pre id="event-log" class="inline"></pre>
+    ${require('../demo/track-event/track-event.html')}
+
+    <div class="action-block">
+      <div class="action-wrap flex-box-row">
+        <button id="addgcp-button" class="action flex-one">Add Global Callback Params</button>
+        <button type="button" id="addgcp-toggle" class="form-toggle flex-auto">...</button>
+      </div>
+      <div class="side-form" id="addgcp-side-form"></div>
     </div>
 
     <div class="section">
