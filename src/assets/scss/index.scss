@@ -116,8 +116,10 @@ pre {
 
 .form-input {
   width: 100px;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border: 1px solid $borderColor;
+  border-left: none;
+  outline: none;
+  padding-left: 5px;
 }
 
 .action {

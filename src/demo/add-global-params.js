@@ -1,7 +1,8 @@
-import KeyValueParams from '../key-value-params/key-value-params'
+import KeyValueParams from './key-value-params/key-value-params'
 
-const AddGlobalParams = (id, addHandle) => {
+const AddGlobalParams = (id, handle) => {
   const _id = id
+  const _handle = handle
   let _parent = null
   const _ui = {}
   let _disabled = false
@@ -37,7 +38,7 @@ const AddGlobalParams = (id, addHandle) => {
       _disabled = false
       _ui.submitButton.classList.remove('loading')
       _ui.submitButton.disabled = false
-      addHandle(_params.query())
+      _handle(_params.query())
 
       _handleToggle()
       _params.reset()

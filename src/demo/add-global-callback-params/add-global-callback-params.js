@@ -1,5 +1,5 @@
 import Adjust from '../../sdk/main'
-import AddGlobalParams from '../add-global-params/add-global-params'
+import AddGlobalParams from '../add-global-params'
 
 function init () {
   AddGlobalParams('addgcp', Adjust.addGlobalCallbackParameters)()
