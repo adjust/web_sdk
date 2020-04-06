@@ -1,6 +1,16 @@
 <div class="action-block" id="removegpp">
-  <div class="action-wrap flex-box-row">
-    <button type="button" class="action flex-one">Remove Global Partner Param</button>
-    <input type="text" class="form-input flex-auto">
+  <button type="button" class="action with-dots">Remove Global Partner Parameter <span>...</span></button>
+
+  <div class="side-form narrow">
+    <div class="flex-box-row">
+      <form class="flex-one">
+        <div class="form-row">
+          <label>Key</label>
+          <input type="text">
+        </div>
+        <button type="submit">Run</button>
+      </form>
+      <pre class="flex-two config">Adjust.removeGlobalPartnerParameter()</pre>
+    </div>
   </div>
 </div>

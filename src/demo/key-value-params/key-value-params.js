@@ -46,7 +46,7 @@ function _appendPair (parent, handle, isLast, param = {}) {
   parent.appendChild(group)
 }
 
-const KeyValueParams = (id, params = []) => {
+const KeyValueParams = (id, params = [], onChange) => {
   const _id = id
   const _params = params
   let _parent = null
@@ -92,6 +92,10 @@ const KeyValueParams = (id, params = []) => {
     const action = e.target
     action.removeEventListener('click', _handleRemove, false)
     action.parentNode.remove()
+
+    if (typeof onChange === 'function') {
+      onChange()
+    }
   }
 
   function _handleAdd (e) {
@@ -105,6 +109,10 @@ const KeyValueParams = (id, params = []) => {
 
     _appendPair(_parent, _handleAdd, true)
     _swapAction(row)
+
+    if (typeof onChange === 'function') {
+      onChange()
+    }
   }
 
   function _swapAction (parent) {

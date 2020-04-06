@@ -1,8 +1,13 @@
 <div class="action-block" id="addgcp">
-  <button type="button" class="action flex-one">Add Global Callback Params</button>
+  <button type="button" class="action with-dots">Add Global Callback Parameters <span>...</span></button>
 
-  <form class="side-form narrow">
-    <div id="addgcp-params" class="key-value-params form-row"></div>
-    <button type="submit">Run</button>
-  </form>
+  <div class="side-form fixed">
+    <div class="flex-box-row">
+      <form class="flex-one">
+        <div id="addgcp-params" class="key-value-params form-row"></div>
+        <button type="submit">Run</button>
+      </form>
+      <pre class="flex-two config">Adjust.addGlobalCallbackParameters([])</pre>
+    </div>
+  </div>
 </div>

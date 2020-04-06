@@ -71,13 +71,7 @@ function _handleSave (e) {
       _disabled = false
       _ui.submitButton.classList.remove('loading')
       _ui.submitButton.disabled = false
-
-      _handleTab({target: {id: 'log-tab'}})
-      Adjust.__testonly__.destroy()
-      Adjust.initSdk({
-        ...appConfig,
-        attributionCallback: _handleAttributionChange
-      })
+      window.location.reload()
     })
 }
 
@@ -108,7 +102,7 @@ function _prepareForm () {
 }
 
 function _setJson (appConfig) {
-  _ui.appConfigJson.textContent = JSON.stringify(appConfig, undefined, 2)
+  _ui.appConfigJson.textContent = `Adjust.initSdk(${JSON.stringify(appConfig, undefined, 2)})`
 }
 
 export default init

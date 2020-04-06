@@ -113,7 +113,7 @@ function _prepareForm () {
 }
 
 function _setJson (eventConfig) {
-  _ui.eventConfigJson.textContent = JSON.stringify(eventConfig, undefined, 2)
+  _ui.eventConfigJson.textContent = `Adjust.trackEvent(${JSON.stringify(eventConfig, undefined, 2)})`
 }
 
 export default init

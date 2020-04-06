@@ -1,8 +1,7 @@
-import Adjust from '../../sdk/main'
 import RemoveGlobalParam from '../remove-global-param'
 
 function init () {
-  RemoveGlobalParam('removegpp', Adjust.removeGlobalPartnerParameter)()
+  RemoveGlobalParam('removegpp', 'removeGlobalPartnerParameter')()
 }
 
 export default init

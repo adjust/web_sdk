@@ -27,4 +27,6 @@ const basicEventConfig = {
   // ]
 }
 
-main(appConfig, basicEventConfig)
+window.addEventListener('DOMContentLoaded', () => {
+  main(appConfig, basicEventConfig)
+})

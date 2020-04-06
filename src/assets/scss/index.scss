@@ -114,16 +114,14 @@ pre {
   }
 }
 
-.form-input {
-  width: 100px;
-  border: 1px solid $borderColor;
-  border-left: none;
-  outline: none;
-  padding-left: 5px;
-}
-
 .action {
   width: $actionWidth;
+
+  &.with-dots {
+    span {
+      float: right;
+    }
+  }
 
   .action-wrap & {
     width: auto;
@@ -142,16 +140,25 @@ pre {
   border: 1px solid $borderColor;
   display: none;
   text-align: left;
-  margin: 10px auto 0;
+  margin: 0 auto;
 
   &.show {
     display: block;
   }
 
   &.narrow {
-    width: 500px;
-    padding: 10px;
+    width: 700px;
+    height: 125px;
     overflow: auto;
+  }
+
+  &.simple {
+    width: 398px;
+    padding: 0;
+  }
+
+  &.fixed {
+    height: 310px;
   }
 
   form {
@@ -206,6 +213,10 @@ pre {
   & > .flex-one:not(:last-child):not(.action) {
     margin-right: 10px;
   }
+}
+
+.code {
+  font-family: monospace;
 }
 
 
