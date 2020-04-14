@@ -1,4 +1,3 @@
-import AdjustConfig from '../sdk/config'
 import Config from './config'
 import {setItem, getItem} from './storage'
 
@@ -32,7 +31,7 @@ function _prepare () {
 }
 
 function _persist () {
-  const divider = `[${AdjustConfig.namespace}] `
+  const divider = '\n'
   const rows = _logContainer.innerText.split(divider)
   const final = divider + rows.slice(Math.max(rows.length - 3000, 1)).join(divider)
 
@@ -40,8 +39,12 @@ function _persist () {
 }
 
 function write (entry) {
-  _logContainer.textContent += [`[${Config.namespace}]`, entry].join(' ') + '\n'
+  const now = (new Date()).toISOString()
+
+  _logContainer.textContent += [`[${Config.namespace}]`, now, entry].join(' ') + '\n'
   _logContainer.scrollTop = _logContainer.scrollHeight
+
+  _persist()
 }
 
 export {

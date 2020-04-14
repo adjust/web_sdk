@@ -24,15 +24,5 @@
   button {
     padding: 5px 10px;
     margin-left: 5px;
-
-    &.remove {
-      border-color: #bb622c;
-      background-color: #ff812e;
-      color: #fff;
-
-      &:hover {
-        background-color: #f37d2e;
-      }
-    }
   }
 }

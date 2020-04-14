@@ -65,3 +65,13 @@ $height: 240px;
     padding: 10px;
   }
 }
+
+.inline-actions {
+  button {
+    display: inline-block;
+  }
+
+  #reset {
+    float: right;
+  }
+}

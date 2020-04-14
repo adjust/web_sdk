@@ -20,9 +20,6 @@ function setItem (key, value, plainText) {
 function clear () {
   localStorage.clear()
   return __delete()
-    .then(() => {
-      write('The storage is deleted and the sdk is re-initiated')
-    })
     .catch(error => {
       write('There was an error while attempting to delete the storage, please refresh')
       throw error

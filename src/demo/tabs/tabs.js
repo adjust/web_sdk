@@ -8,6 +8,7 @@ const _form = {}
 const _active = {}
 let _disabled = false
 let _defaultAppConfig = {}
+let _timeoutId = null
 
 function init (defaultAppConfig) {
   _defaultAppConfig = {...defaultAppConfig}
@@ -19,6 +20,7 @@ function init (defaultAppConfig) {
   _ui.appConfigForm = document.getElementById('app-config-form')
   _ui.appConfigJson = document.getElementById('app-config-json')
   _ui.submitButton = _ui.appConfigForm.querySelector('button[type="submit"]')
+  _ui.resetButton = _ui.appConfigForm.querySelector('#reset')
 
   _prepareForm()
 
@@ -28,6 +30,7 @@ function init (defaultAppConfig) {
   _ui.logTab.addEventListener('click', _handleTab, false)
   _ui.appConfigTab.addEventListener('click', _handleTab, false)
   _ui.appConfigForm.addEventListener('submit', _handleSave, false)
+  _ui.resetButton.addEventListener('click', _handleReset, false)
 }
 
 function _handleTab (e) {
@@ -65,13 +68,41 @@ function _handleSave (e) {
     .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
 
   _setJson(appConfig)
+  setItem('appConfig', appConfig)
+  clearTimeout(_timeoutId)
+  _timeoutId = setTimeout(() => {
+    _disabled = false
+    _ui.submitButton.classList.remove('loading')
+    _ui.submitButton.disabled = false
+
+    _handleTab({target: {id: 'log-tab'}})
+    Adjust.__testonly__.destroy()
+    Adjust.initSdk({
+      ...appConfig,
+      attributionCallback: _handleAttributionChange
+    })
+  })
+}
+
+function _handleReset () {
+  if (_disabled) {
+    return
+  }
+
+  _disabled = true
+  _ui.resetButton.classList.add('loading')
+  _ui.resetButton.disabled = true
+
+  const appConfig = {..._defaultAppConfig}
+
+  _setJson(appConfig)
   clear()
     .then(() => {
       setItem('appConfig', appConfig)
-      _disabled = false
-      _ui.submitButton.classList.remove('loading')
-      _ui.submitButton.disabled = false
-      window.location.reload()
+      write('The storage is deleted and the sdk is re-initiated')
+      setTimeout(() => {
+        window.location.reload()
+      })
     })
 }
 
@@ -81,7 +112,7 @@ function _handleAttributionChange (e, result) {
 }
 
 function _prepareForm () {
-  const appConfig = getItem('appConfig') || _defaultAppConfig
+  const appConfig = getItem('appConfig') || {..._defaultAppConfig}
 
   Adjust.initSdk({
     ...appConfig,

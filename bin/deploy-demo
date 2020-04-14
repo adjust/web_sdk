@@ -1,0 +1,15 @@
+#!/bin/bash
+FOLDER='./style/current/public/web-sdk-demo';
+SERVER='dashboard@jenkins-2.adjust.com';
+
+echo "--- clean demo folder ---";
+rm -rf ./demo/*
+
+echo "--- build demo folder ---";
+npm run build:demo
+
+echo "--- create deploy folder ---"
+ssh ${SERVER} "[ -d $FOLDER ] || mkdir -p $FOLDER"
+
+echo "--- copy files to $SERVER:$FOLDER ---"
+rsync -a ./demo/ ${SERVER}:${FOLDER} --delete

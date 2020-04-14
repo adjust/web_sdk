@@ -87,6 +87,16 @@ button {
   &.active {
     background: $buttonActiveBgColor;
   }
+
+  &.remove {
+    border-color: #bb622c;
+    background-color: #ff812e;
+    color: #fff;
+
+    &:hover {
+      background-color: #f37d2e;
+    }
+  }
 }
 
 pre {

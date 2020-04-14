@@ -66,7 +66,7 @@ function _handleSave (e) {
 }
 
 function _handleTrackEvent () {
-  const eventConfig = getItem('eventConfig') || _defaultEventConfig
+  const eventConfig = getItem('eventConfig') || {..._defaultEventConfig}
 
   if (_disabled) {
     return
@@ -94,7 +94,7 @@ function _handleToggle (e) {
 }
 
 function _prepareForm () {
-  const eventConfig = getItem('eventConfig') || _defaultEventConfig
+  const eventConfig = getItem('eventConfig') || {..._defaultEventConfig}
 
   _form.eventToken = _ui.eventConfigForm.querySelector('#event-token')
   _form.revenue = _ui.eventConfigForm.querySelector('#revenue')
