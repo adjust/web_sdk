@@ -4,7 +4,8 @@ import {
   type LogOptionsT,
   type EventParamsT,
   type GlobalParamsT,
-  type CustomErrorT
+  type CustomErrorT,
+  type ActivityStateMapT
 } from './types'
 import Config from './config'
 import Storage from './storage/storage'
@@ -286,10 +287,13 @@ function _destroy (): void {
 /**
  * Check the sdk status and proceed with certain actions
  *
+ * @param {Object} activityState
  * @returns {Promise|boolean}
  * @private
  */
-function _continue (): Promise<void> {
+function _continue (activityState: ActivityStateMapT): Promise<void> {
+  Logger.log(`Adjust SDK is starting with web_uuid set to ${activityState.uuid}`)
+
   const isInstalled = ActivityState.current.installed
 
   gdprForgetCheck()
