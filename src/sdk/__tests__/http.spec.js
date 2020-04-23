@@ -453,7 +453,7 @@ describe('perform api requests', () => {
 
           expect(mockXHR.open).toHaveBeenCalledWith('POST', 'app/some-url', true)
           expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
-          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-type', 'application/x-www-form-urlencoded')
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Content-Type', 'application/x-www-form-urlencoded')
           expect(mockXHR.send).toHaveBeenCalledWith(`${defaultParamsString}&some=thing&very=nice`)
 
           mockXHR.onreadystatechange()

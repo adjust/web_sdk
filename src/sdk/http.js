@@ -9,6 +9,7 @@ import {
 } from './types'
 import {HTTP_ERRORS} from './constants'
 import Config from './config'
+import Logger from './logger'
 import {isObject, isValidJson, isRequest, entries, isEmptyEntry, reducer} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
@@ -74,8 +75,8 @@ function _getErrorResponse (xhr: XMLHttpRequest, code: ErrorCodeT, proceed: bool
  * @returns {string}
  * @private
  */
-function _encodeParam ([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<ParamsWithAttemptsT>]): string {
-  const encodedKey = encodeURIComponent(key.replace(/([A-Z])/g, ($1) => `_${$1.toLowerCase()}`))
+function _encodeParam ([key, value]: [string, $Values<ParamsWithAttemptsT>]): string {
+  const encodedKey = encodeURIComponent(key)
   let encodedValue = value
 
   if (typeof value === 'string') {
@@ -90,6 +91,22 @@ function _encodeParam ([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<Params
 }
 
 /**
+ * Creates the log key with some spaces appended to it
+ *
+ * @param {string} header
+ * @param {string} str
+ * @returns {string}
+ * @private
+ */
+function _logKey (header: string, str: string): string {
+  const spaces = header
+    .slice(0, header.length - str.length - 1)
+    .split('')
+    .reduce(acc => acc.concat(' '), '')
+  return `${str}${spaces}:`
+}
+
+/**
  * Encode key-value pairs to be used in url
  *
  * @param {Object} params
@@ -98,9 +115,19 @@ function _encodeParam ([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<Params
  * @private
  */
 function _encodeParams (params: ParamsWithAttemptsT, defaultParams: DefaultParamsT): string {
-  return entries({...Config.getBaseParams(), ...defaultParams, ...params})
+  const logParamsHeader = 'REQUEST PARAMETERS:'
+  const toSnakeCase = key => key.replace(/([A-Z])/g, ($1) => `_${$1.toLowerCase()}`)
+  const allParams =
+    entries({...Config.getBaseParams(), ...defaultParams, ...params})
+      .map(([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<ParamsWithAttemptsT>]) => ([toSnakeCase(key), value]))
+
+  Logger.log(logParamsHeader)
+  return allParams
     .filter(([, value]) => isEmptyEntry(value))
-    .map(_encodeParam)
+    .map(([key, value]) => {
+      Logger.log(_logKey(logParamsHeader, key), value)
+      return _encodeParam([key, value])
+    })
     .join('&')
 }
 
@@ -159,6 +186,28 @@ function _prepareUrlAndParams ({url, method, params}: HttpRequestParamsT, defaul
 }
 
 /**
+ * Set headers for the xhr object
+ *
+ * @param {XMLHttpRequest} xhr
+ * @param {string} method
+ * @private
+ */
+function _prepareHeaders (xhr: XMLHttpRequest, method: $PropertyType<HttpRequestParamsT, 'method'>): void {
+  const logHeader = 'REQUEST HEADERS:'
+  const headers = [
+    ['Client-SDK', `js${Config.version}`],
+    ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']
+  ]
+
+  Logger.log(logHeader)
+  headers
+    .forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value)
+      Logger.log(_logKey(logHeader, key), value)
+    })
+}
+
+/**
  * Build xhr to perform all kind of api requests
  *
  * @param {string} url
@@ -174,11 +223,7 @@ function _buildXhr ({url, method = 'GET', params = {}}: HttpRequestParamsT, defa
     let xhr = new XMLHttpRequest()
 
     xhr.open(method, fullUrl, true)
-    xhr.setRequestHeader('Client-SDK', `js${Config.version}`)
-    if (method === 'POST') {
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-    }
-
+    _prepareHeaders(xhr, method)
     xhr.onreadystatechange = () => _handleReadyStateChange(reject, resolve, {xhr, url})
     xhr.onerror = () => reject(_getErrorResponse(xhr, 'TRANSACTION_ERROR'))
 
