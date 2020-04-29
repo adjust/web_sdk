@@ -142,7 +142,7 @@ Adjust.trackEvent({
 
 设置货币识别码后，Adjust 会自动将收入转化为您所选的报告币种。请 [在此][currency-conversion] 了解更多货币换算相关信息。
 
-进一步了解收入和事件跟踪相关信息，欢迎参阅[事件跟踪指南](https://zh.help.adjust.com/tracking/app-events)。
+进一步了解收入和事件跟踪相关信息，欢迎参阅[事件跟踪指南](https://zh.help.adjust.com/tracking/revenue-events)。
 
 <a id="callback-params">**callbackParams**</a> `数组`
 
