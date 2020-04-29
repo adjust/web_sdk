@@ -140,13 +140,13 @@ Adjust.trackEvent({
 
 When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here][currency-conversion].
 
-You can read more about revenue and event tracking in the [event tracking guide](https://docs.adjust.com/en/event-tracking/#tracking-purchases-and-revenues).
+You can read more about revenue and event tracking in the [event tracking guide](https://help.adjust.com/tracking/app-events).
 
 <a id="callback-params">**callbackParams**</a> `array`
 
 You can register a callback URL for your events in your [dashboard]. We will send a GET request to that URL whenever the event is tracked. You can add callback parameters to that event by adding `callbackParams` parameter to the map object passed to `trackEvent` method. We will then append these parameters to your callback URL.
 
-For example, suppose you have registered the URL `http://www.mydomain.com/callback` then track an event like this:
+For example, suppose you have registered the URL `https://www.mydomain.com/callback` then track an event like this:
 
 ```js
 Adjust.trackEvent({
@@ -160,7 +160,7 @@ Adjust.trackEvent({
 
 In that case we would track the event and send a request to:
 
-    http://www.mydomain.com/callback?key=value&foo=bar
+    https://www.mydomain.com/callback?key=value&foo=bar
 
 Please note that we don't store any of your custom parameters, but only append them to your callbacks, thus without a callback they will not be saved nor sent to you.
 
@@ -332,7 +332,7 @@ You can find more details [here](https://help.adjust.com/manage-data/data-privac
 
 ## <a id="marketing-opt-out">Marketing Opt-out</a>
 
-There is functionality for the Marketing Opt-out, which is disabling third-party sharing ability. This will notify our backed in the same manner as it does fort GDPR Forget me.
+There is functionality for the Marketing Opt-out, which is disabling third-party sharing ability. This will notify our backed in the same manner as it does for GDPR Forget me.
 
 There is one method available for this:
 
@@ -348,7 +348,7 @@ Adjust.disableThirdPartySharing();
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2019 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2020 Adjust GmbH, https://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -370,9 +370,9 @@ SOFTWARE.
 
 
 [adjust.com]:   https://adjust.com
-[dashboard]:    http://adjust.com
+[dashboard]:    https://adjust.com
 [example-app]:  src/demo.html
 
-[callbacks-guide]:      https://docs.adjust.com/en/callbacks
-[special-partners]:     https://docs.adjust.com/en/special-partners
-[currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[callbacks-guide]:      https://help.adjust.com/manage-data/raw-data-exports/callbacks
+[special-partners]:     https://help.adjust.com/dashboard/integrated-partners
+[currency-conversion]:  https://help.adjust.com/tracking/revenue-events/currency-conversion
