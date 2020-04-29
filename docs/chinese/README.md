@@ -2,6 +2,8 @@
 
 这是 Adjust™ 的网站和网络应用 Javascript SDK 包。您可以在 [adjust.com] 了解更多有关 Adjust™ 的信息。
 
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+
 ## 目录
 
 * [应用示例](#example-app)
@@ -24,10 +26,10 @@
 
 本 SDK 可用于跟踪安装、会话和事件。您只需将 Adjust Web SDK 添加至自己的网络应用中即可。
 
-要添加 Adjust Web SDK，请将下列代码片段复制至 `<head>标签：
+要添加 Adjust Web SDK，请将下列代码片段复制至 `<head>` 标签：
 ```html
 <script type="application/javascript">
-!function(t,e,a,r,s,l,n,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)n(t.Adjust,t.Adjust_q,l[c]);d=e.createElement("script"),o=e.getElementsByTagName("script")[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest-test.min.js",d.onload=function(){for(vare=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe"],function(t,e,a){t[a]=function(){e.push([a,arguments])}});
+!function(t,e,a,r,s,l,n,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)n(t.Adjust,t.Adjust_q,l[c]);d=e.createElement("script"),o=e.getElementsByTagName("script")[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest-test.min.js",d.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe"],function(t,e,a){t[a]=function(){e.push([a,arguments])}});
 </script>
 ```
 
@@ -35,7 +37,7 @@ Adjust Web SDK 在每个页面应当仅加载一次，每次页面加载应当�
 
 ## <a id="initialization">初始化</a>
 
-要初始化 Adjust Web SDK，您必须尽快调用` Adjust.initSdk`方法：
+要初始化 Adjust Web SDK，您必须尽快调用 `Adjust.initSdk`方法：
 
 ```js
 Adjust.initSdk({
@@ -87,7 +89,7 @@ Adjust.initSdk({
 
 <a id="log-level">**logLevel**</a> `字符串`
 
-该参数默认为 `error`。可能的参数值有 `none`、`error`、info`、`verbose`。在进行测试时，我们强烈建议您使用 `verbose`，以便查看精准的日志，确保集成能正确完成。
+该参数默认为 `error`。可能的参数值有 `none`、`error`、`info`、`verbose`。在进行测试时，我们强烈建议您使用 `verbose`，以便查看精准的日志，确保集成能正确完成。
 每种日志级别的详情如下：
 - `verbose` - 在有特定操作时会输出详细信息
 - `info` - 只会输出基本信息
@@ -101,7 +103,7 @@ Adjust.initSdk({
 
 ## <a id="event-tracking">事件跟踪</a>
 
-您可以借助 Adjust 跟踪事件。例如，您想跟踪特定按钮的所有点击。要达到这个目的，您需要在自己的 [控制面板] 中创建新的事件识别码。这个新识别码拥有关联的事件识别码，例如类似于`abc123`。要在您的网络应用中跟踪该事件，请进行下列操作：
+您可以借助 Adjust 跟踪事件。例如，您想跟踪特定按钮的所有点击。要达到这个目的，您需要在自己的 [控制面板][dashboard] 中创建新的事件识别码。这个新识别码拥有关联的事件识别码，例如类似于`abc123`。要在您的网络应用中跟踪该事件，请进行下列操作：
 
 ```js
 Adjust.trackEvent({
@@ -110,7 +112,7 @@ Adjust.trackEvent({
 ```
 
 请务必先[初始化](#initialization) Adjust SDK，再进行事件跟踪。
-请在此查阅适用于` trackEvent` 办法的可用参数完整列表：
+请在此查阅适用于 `trackEvent` 办法的可用参数完整列表：
 
 ### 必要参数
 
@@ -122,11 +124,11 @@ Adjust.trackEvent({
 
 <a id="revenue">**revenue**</a> `数值`
 
-如果您想将收入金额附加到某一事件中 (例如，您希望跟踪发生在网络应用中的某类购买)，就要为该参数提供正数值。您还必须提供 [`币种`](#currency) 参数，详细描述请参见下一节
+如果您想将收入金额附加到某一事件中 (例如，您希望跟踪发生在网络应用中的某类购买)，就要为该参数提供正数值。您还必须提供 [`currency`](#currency) 参数，详细描述请参见下一节
 
 <a id="currency">**currency**</a> `字符串`
 
-如果您想跟踪收入事件，就需要提供此参数。请使用有效的货币代码，如`EUR`、USD` 等。
+如果您想跟踪收入事件，就需要提供此参数。请使用有效的货币代码，如`EUR`、`USD` 等。
 
 示例：
 
@@ -138,15 +140,15 @@ Adjust.trackEvent({
 })
 ```
 
-设置货币识别码后，Adjust 会自动将收入转化为您所选的报告币种。请[在此][currency-conversion]了解更多货币换算相关信息。
+设置货币识别码后，Adjust 会自动将收入转化为您所选的报告币种。请 [在此][currency-conversion] 了解更多货币换算相关信息。
 
-进一步了解收入和事件跟踪相关信息，欢迎参阅[事件跟踪指南](https://docs.adjust.com/en/event-tracking/#tracking-purchases-and-revenues)。
+进一步了解收入和事件跟踪相关信息，欢迎参阅[事件跟踪指南](https://zh.help.adjust.com/tracking/app-events)。
 
 <a id="callback-params">**callbackParams**</a> `数组`
 
-您可以在 [控制面板] 中为事件设置回传 URL。这样，只要跟踪到事件，我们就会向该 URL 发送 GET 请求。您可以将` callbackParams` 参数附加至传递到 trackEvent` 方法的映射对象中，从而向该事件附加回传参数。然后我们会将这些参数附加至您的回传 URL。
+您可以在 [控制面板] 中为事件设置回传 URL。这样，只要跟踪到事件，我们就会向该 URL 发送 GET 请求。您可以将 `callbackParams` 参数附加至传递到 `trackEvent` 方法的映射对象中，从而向该事件附加回传参数。然后我们会将这些参数附加至您的回传 URL。
 
-例如，假设您输入了 URL `http://www.mydomain.com/callback`则使用以下方式跟踪事件：
+例如，假设您输入了 URL `https://www.mydomain.com/callback`则使用以下方式跟踪事件：
 
 ```js
 Adjust.trackEvent({
@@ -160,7 +162,7 @@ Adjust.trackEvent({
 
 在这种情况下，我们会跟踪该事件并发送请求至：
 
-    http://www.mydomain.com/callback?key=value&foo=bar
+    https://www.mydomain.com/callback?key=value&foo=bar
 
 请注意，我们不会存储您的任何自定义参数，而是仅将这些参数附加到您的回传中。所以如果没有设置回传，这些参数不会被保存，也不会被发送给您。
 
@@ -169,7 +171,7 @@ Adjust.trackEvent({
 <a id="partner-params">**partnerParams**</a> `数组`
 
 在 Adjust 控制面板中启用了相关功能后，您还可以添加与合作伙伴共享的参数。
-这里的原理与上文提到的回传参数原理类似，但要将` partnerParams` 参数添加到传递给 `trackEvent` 方法的映射对象中，实现合作伙伴参数的附加：
+这里的原理与上文提到的回传参数原理类似，但要将 `partnerParams` 参数添加到传递给 `trackEvent` 方法的映射对象中，实现合作伙伴参数的附加：
 
 ```js
 Adjust.trackEvent({
@@ -312,12 +314,12 @@ Adjust.restart();
 ``` 
 
 
-##<a id="gdpr-forget-me">GDPR 被遗忘权</a>
+## <a id="gdpr-forget-me">GDPR 被遗忘权</a>
 
 若要行使特定用户的 GDPR 被遗忘权，可以使用该功能。我们的后端会收到通知，中止 Adjust SDK 的运行。 
 可用的方法有一种：
 
-<a id="gdpr-forge-me">**gdprForgetMe**</a>
+<a id="gdpr-forget-me">**gdprForgetMe**</a>
 
 使用该方法，可停止 Adjust SDK 的运行，并通知 Adjust 后端，用户希望行使自己的 GDPR 被遗忘权。
 以此方法停用 Adjust SDK 后，就无法再度启用。
@@ -348,7 +350,7 @@ Adjust.disableThirdPartySharing();
 
 Adjust SDK 已获得 MIT 许可。
 
-版权所有 (c) 2019 Adjust GmbH，http://www.adjust.com
+版权所有 (c) 2020 Adjust GmbH，https://www.adjust.com
 
 特此授权，持有本软件及相关文档文件（下称“本软件”）的任何人
 均可无限制地处理本软件，
@@ -369,10 +371,16 @@ Adjust SDK 已获得 MIT 许可。
 或其他责任。
 
 
+
 [adjust.com]:   https://adjust.com
-[dashboard]:    http://adjust.com
+[dashboard]:   https://adjust.com
 [example-app]:  src/demo.html
 
-[callbacks-guide]:      https://docs.adjust.com/en/callbacks
-[special-partners]：https://docs.adjust.com/en/special-partners
-[currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[callbacks-guide]:    https://zh.help.adjust.com/manage-data/raw-data-exports/callbacks
+[special-partners]:   https://zh.help.adjust.com/dashboard/integrated-partners
+[currency-conversion]: https://zh.help.adjust.com/tracking/revenue-events/currency-conversion
+
+[en-readme]:  ../../README.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
