@@ -2,6 +2,8 @@
 
 본 문서는 웹사이트 또는 웹앱을 위한 Adjust™ Javascript SDK 용 가이드입니다. Adjust™에 대한 자세한 정보는 [adjust.com]에서 확인하십시오.
 
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+
 ## 목차
 
 * [앱 예시](#example-apps)
@@ -87,7 +89,7 @@ Adjust.initSdk({
 
 <a id="log-level">**logLevel**</a> `string`
 
-기본적으로 이 파라미터는 error로 설정되어 있습니다. 사용가능한 값으로는 none`, `error`, `info`, `verbose`이 있습니다.  정확한 로그를 보고 연동이 제대로 되었는지 확인을 위한 테스트를 진행할 때는 verbose를 사용하는 것을 적극 권장합니다.
+기본적으로 이 파라미터는 error로 설정되어 있습니다. 사용가능한 값으로는 `none`, `error`, `info`, `verbose`이 있습니다.  정확한 로그를 보고 연동이 제대로 되었는지 확인을 위한 테스트를 진행할 때는 verbose를 사용하는 것을 적극 권장합니다.
 각 로그 수준에 대한 세부 정보는 아래를 참고하십시오.
 - `verbose` - 특정 동작의 경우 세부적인 메세지를 출력합니다 
 - `info` - 기본적인 정보 메세지만을 출력합니다
@@ -140,13 +142,13 @@ Adjust.trackEvent({
 
 사용자가 통화 토큰을 설정하면 Adjust는 사용자가 대시보드에 설정한 통화에 따라 수신되는 매출을 리포팅 매출로 자동 변환합니다. [통화 변환과 관련해서는 여기에서][currency-conversion] 자세히 읽어보시길 바랍니다.
 
-[이벤트 트래킹 가이드](https://docs.adjust.com/en/event-tracking/#tracking-purchases-and-revenues)에서 매출과 이벤트 트래킹에 대한 자세한 내용을 확인하실 수 있습니다.
+[이벤트 트래킹 가이드](https://help.adjust.com/tracking/app-events)에서 매출과 이벤트 트래킹에 대한 자세한 내용을 확인하실 수 있습니다.
 
 <a id="callback-params">**callbackParams**</a> `array`
 
 [대시보드]에서 이벤트를 위한 콜백 URL을 등록할 수 있습니다. 그러면 Adjust는 이벤트가 트래킹될 때마다 해당 URL에 GET 요청을 보냅니다. callback_params 파라미터를 trackEvent 메서드로 전달된 맵 객체에 추가하여 해당 이벤트에 콜백 파라미터를 추가할 수 있습니다. 그런 다음 Adjust는 이러한 파라미터를 사용자의 콜백 URL에 추가합니다.
 
-예를 들어, 사용자가 http://www.mydomain.com/callback URL을 등록했으며 다음과 같은 이벤트를 트래킹한다고 가정해 보겠습니다.
+예를 들어, 사용자가 https://www.mydomain.com/callback URL을 등록했으며 다음과 같은 이벤트를 트래킹한다고 가정해 보겠습니다.
 
 ```js
 Adjust.trackEvent({
@@ -160,7 +162,7 @@ Adjust.trackEvent({
 
 이 경우, Adjust가 이벤트를 추적하여 다음으로 요청을 전송합니다.
 
-    http://www.mydomain.com/callback?key=value&foo=bar
+    https://www.mydomain.com/callback?key=value&foo=bar
 
 Adjust는 커스텀 파라미터를 보관하지 않으며, 콜백에 추가만 하기때문에 대시보드에서 추가적인 콜백설정을 하지 않았다 커스텀 파라미터가 저장되거나 사용자에게 전송되지 않습니다.
 
@@ -348,7 +350,7 @@ Adjust.disableThirdPartySharing();
 
 Adjust SDK는 MIT 라이센스 하에 사용이 허가됩니다.
 
-Copyright (c) 2019 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2020 Adjust GmbH, https://www.adjust.com
 
 다음 조건하에서 본 소프트웨어와 관련 문서 파일
 (이하 "소프트웨어")의 사본을 보유한 제3자에게 소프트웨어의
@@ -369,10 +371,15 @@ Copyright (c) 2019 Adjust GmbH, http://www.adjust.com
 않습니다.
 
 
-[adjust.com]: http://adjust.com
-[dashboard]:  http://adjust.com
+[adjust.com]: https://adjust.com
+[dashboard]:  https://adjust.com
 [example-app]:  src/demo.html
 
-[callbacks-guide]:          https://docs.adjust.com/en/callbacks
-[special-partners]:        https://docs.adjust.com/en/special-partners
-[currency-conversion]:      https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[callbacks-guide]:      https://help.adjust.com/manage-data/raw-data-exports/callbacks
+[special-partners]:     https://help.adjust.com/dashboard/integrated-partners
+[currency-conversion]:  https://help.adjust.com/tracking/revenue-events/currency-conversion
+
+[en-readme]:  ../../README.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
