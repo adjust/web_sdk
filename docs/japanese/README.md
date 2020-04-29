@@ -142,7 +142,7 @@ Adjust.trackEvent({
 
 通貨コードを設定すると、Adjustは計測された課金金額を設定されたレポート通貨に自動換算します。[通貨換算についての詳細はこちら][currency-conversion]をご覧ください。
 
-収益とイベントトラッキングの詳細については、[イベントトラッキングガイド](https://ja.help.adjust.com/tracking/app-events) をご覧ください。
+収益とイベントトラッキングの詳細については、[イベントトラッキングガイド](https://ja.help.adjust.com/tracking/revenue-events) をご覧ください。
 
 <a id="callback-params">**callbackParams**</a> `array`
 
