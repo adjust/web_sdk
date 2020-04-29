@@ -2,6 +2,8 @@
 
 This is the guide to the Javascript SDK of Adjust™ for web sites or web apps. You can read more about Adjust™ at [adjust.com].
 
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+
 ## Table of contents
 
 * [Example apps](#example-app)
@@ -376,3 +378,8 @@ SOFTWARE.
 [callbacks-guide]:      https://help.adjust.com/manage-data/raw-data-exports/callbacks
 [special-partners]:     https://help.adjust.com/dashboard/integrated-partners
 [currency-conversion]:  https://help.adjust.com/tracking/revenue-events/currency-conversion
+
+[en-readme]:  README.md
+[zh-readme]:  doc/chinese/README.md
+[ja-readme]:  doc/japanese/README.md
+[ko-readme]:  doc/korean/README.md
