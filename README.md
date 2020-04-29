@@ -142,7 +142,7 @@ Adjust.trackEvent({
 
 When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here][currency-conversion].
 
-You can read more about revenue and event tracking in the [event tracking guide](https://help.adjust.com/tracking/app-events).
+You can read more about revenue and event tracking in the [event tracking guide](https://help.adjust.com/tracking/revenue-events).
 
 <a id="callback-params">**callbackParams**</a> `array`
 
