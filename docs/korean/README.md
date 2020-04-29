@@ -142,7 +142,7 @@ Adjust.trackEvent({
 
 사용자가 통화 토큰을 설정하면 Adjust는 사용자가 대시보드에 설정한 통화에 따라 수신되는 매출을 리포팅 매출로 자동 변환합니다. [통화 변환과 관련해서는 여기에서][currency-conversion] 자세히 읽어보시길 바랍니다.
 
-[이벤트 트래킹 가이드](https://help.adjust.com/tracking/app-events)에서 매출과 이벤트 트래킹에 대한 자세한 내용을 확인하실 수 있습니다.
+[이벤트 트래킹 가이드](https://help.adjust.com/tracking/revenue-events)에서 매출과 이벤트 트래킹에 대한 자세한 내용을 확인하실 수 있습니다.
 
 <a id="callback-params">**callbackParams**</a> `array`
 
