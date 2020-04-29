@@ -2,9 +2,11 @@
 
 これは、WebサイトまたはWebアプリ用のAdjust™のJavascript SDKガイドです。Adjust™については、[adjust.com]をご覧ください。
 
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+
 ## 目次
 
-* [サンプルアプリ](#example-apps)
+* [サンプルアプリ](#example-app)
 * [導入方法](＃installation)
 * [初期化](#initialization)   
 * [イベントトラッキング](#event-tracking)
@@ -27,8 +29,8 @@ Adjust Web SDKをWebアプリに実装することで、インストール、セ
 はじめに、`<head>`タグに次のスニペットを貼り付けます。
 ```html
 <script type="application/javascript">
-!function(t,e,a,r,s,l,n,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)n(t.Adjust,t.Adjust_q,l[c]);d=e.createElement("script"),o=e.getElementsByTagName("script")[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest-test.min.js",d.onload=function(){for(vare=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe"],function(t,e,a){t[a]=function(){e.push([a,arguments])}});
-</script> 
+!function(t,e,a,r,s,l,n,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)n(t.Adjust,t.Adjust_q,l[c]);d=e.createElement("script"),o=e.getElementsByTagName("script")[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest-test.min.js",d.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe"],function(t,e,a){t[a]=function(){e.push([a,arguments])}});
+</script>
 ```
 
 Adjust Web SDKはページごとに1回だけ読み込まれ、ページの読み込みごとに1回起動される必要があります。
@@ -140,13 +142,13 @@ Adjust.trackEvent({
 
 通貨コードを設定すると、Adjustは計測された課金金額を設定されたレポート通貨に自動換算します。[通貨換算についての詳細はこちら][currency-conversion]をご覧ください。
 
-収益とイベントトラッキングの詳細については、[イベントトラッキングガイド]（https://docs.adjust.com/jp/event-tracking/#tracking-purchases-and-revenues）をご覧ください。
+収益とイベントトラッキングの詳細については、[イベントトラッキングガイド](https://ja.help.adjust.com/tracking/app-events) をご覧ください。
 
 <a id="callback-params">**callbackParams**</a> `array`
 
 [管理画面]でイベントのコールバックURLを登録できます。イベントがトラッキングされるたびに、そのURLにGETリクエストが送信されます。`trackEvent`メソッドに渡されたマップオブジェクトに`callbackParams`パラメーターを追加することで、そのイベントにコールバックパラメーターを追加できます。その後、これらのパラメーターをコールバックURLに追加します。
 
-たとえば、URL `http://www.mydomain.com/callback`が登録されていて、次のようにイベントをトラッキングするとします。
+たとえば、URL `https://www.mydomain.com/callback`が登録されていて、次のようにイベントをトラッキングするとします。
 
 ```js
 Adjust.trackEvent({
@@ -160,7 +162,7 @@ Adjust.trackEvent({
 
 この場合、Adjustは以下のGETリクエストを送信します。
 
-    http://www.mydomain.com/callback?key=value&foo=bar
+    https://www.mydomain.com/callback?key=value&foo=bar
 
 Adjustはカスタムパラメーターを保存せず、コールバックへの追加だけを行います。コールバックが登録されていない場合は、保存も送信もされないことに注意してください。
 
@@ -328,7 +330,7 @@ EUの一般データ保護規則（GDPR)に従い、ユーザーが忘れられ�
 ```Adjust.gdprForgetMe();
 ```
 
-詳細については、[こちら]（https://help.adjust.com/manage-data/data-privacy/gdpr）をご覧ください。
+詳細については、[こちら](https://help.adjust.com/manage-data/data-privacy/gdpr) をご覧ください。
 
 ## <a id="marketing-opt-out">マーケティング（広告）のオプトアウト</a>
 
@@ -348,7 +350,7 @@ Adjust.disableThirdPartySharing();
 
 Adjust SDKはMITライセンスを適用しています。
 
-Copyright (c) 2019 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2020 Adjust GmbH, https://www.adjust.com
 
 以下に定める条件に従い、本ソフトウェアおよび関連文書のファイル(以下「ソフトウェア」) の複製を取得する全ての人に対し、
 ソフトウェアを無制限に扱うことを無償で許可します。
@@ -370,9 +372,14 @@ Copyright (c) 2019 Adjust GmbH, http://www.adjust.com
 
 
 [adjust.com]:   https://adjust.com
-[dashboard]:    http://adjust.com
+[dashboard]:    https://adjust.com
 [example-app]:  src/demo.html
 
-[callbacks-guide]:      https://docs.adjust.com/en/callbacks
-[special-partners]:        https://docs.adjust.com/en/special-partners
-[currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[callbacks-guide]:    https://ja.help.adjust.com/manage-data/raw-data-exports/callbacks
+[special-partners]:   https://ja.help.adjust.com/dashboard/integrated-partners
+[currency-conversion]: https://ja.help.adjust.com/tracking/revenue-events/currency-conversion
+
+[en-readme]:  ../../README.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
