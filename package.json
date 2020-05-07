@@ -17,7 +17,7 @@
     "flow": "flow status --quiet"
   },
   "private": true,
-  "main": "dist/sdk.js",
+  "main": "src/sdk/main.js",
   "keywords": [],
   "author": "Adjust GmbH",
   "license": "MIT",

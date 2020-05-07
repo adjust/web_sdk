@@ -1,0 +1,23 @@
+*.DS_Store
+.DS_Store
+*Thumbs.db
+.idea
+node_modules/
+coverage/
+npm-debug.log
+package-lock.json
+.babelrc
+.editorconfig
+.eslintrc
+.flowconfig
+.gitignore
+
+# Adjust Web SDK
+bin/
+demo/
+dist/
+src/sdk/__mocks__/
+src/sdk/__tests__/
+webpack.demo.config.js
+webpack.sdk.config.js
+jest.config.js
