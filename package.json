@@ -16,7 +16,6 @@
     "test:all": "npm-run-all test lint flow",
     "flow": "flow status --quiet"
   },
-  "private": true,
   "main": "src/sdk/main.js",
   "keywords": [],
   "author": "Adjust GmbH",
