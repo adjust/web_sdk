@@ -3,9 +3,8 @@ import Request from './request'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Config from './config'
-import {status} from './disable'
 import {publish} from './pub-sub'
-import {disable as sdkDisable, finish as sdkDisableFinish} from './disable'
+import {status, disable as sdkDisable, finish as sdkDisableFinish} from './disable'
 import {REASON_GDPR} from './constants'
 
 /**
