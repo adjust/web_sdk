@@ -1,6 +1,6 @@
 {
   "name": "@adjustcom/adjust-web-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This is the guide to the Javascript SDK of Adjust™ for web sites or web apps. You can read more about Adjust™ at [adjust.com].",
   "scripts": {
     "build:demo": "webpack --mode production --config webpack.demo.config.js",
@@ -14,9 +14,10 @@
     "test:watch": "TZ=UTC jest --watchAll",
     "test:coverage": "TZ=UTC jest --coverage",
     "test:all": "npm-run-all test lint flow",
-    "flow": "flow status --quiet"
+    "flow": "flow status --quiet",
+    "prepublishOnly": "npm run test:all"
   },
-  "main": "src/sdk/main.js",
+  "main": "dist/adjust-latest-test.js",
   "keywords": [],
   "author": "Adjust GmbH",
   "license": "MIT",
@@ -60,12 +61,17 @@
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.6.3",
-    "normalize.css": "^8.0.1"
+    "@babel/runtime": "^7.6.3"
   },
   "directories": {
     "doc": "docs"
   },
+  "files": [
+    "dist/adjust-latest-test.js",
+    "dist/adjust-latest-test.min.js",
+    "docs/**/*",
+    "CHANGELOG.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/adjust/web_sdk_dev.git"
