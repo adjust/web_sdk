@@ -25,7 +25,7 @@ pipeline {
     }
     stage('Deploy Production') {
       steps {
-        sh "rsync -e 'ssh -o StrictHostKeyChecking=no' -va --delete ./demo/ dashboard@jenkins-2.adjust.com:/home/dashboard/web-sdk-demo/current/public"
+        sh "rsync -e 'ssh -o StrictHostKeyChecking=no' -va --rsync-path='mkdir -p /home/dashboard/web-sdk-demo/current/public/ && rsync' --delete ./demo/ dashboard@jenkins-2.adjust.com://home/dashboard/web-sdk-demo/current/public/"
       }
     }
   }
