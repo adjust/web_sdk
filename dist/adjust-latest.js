@@ -1785,6 +1785,7 @@ __webpack_require__.d(indexeddb_namespaceObject, "trimItems", function() { retur
 __webpack_require__.d(indexeddb_namespaceObject, "count", function() { return indexeddb_count; });
 __webpack_require__.d(indexeddb_namespaceObject, "clear", function() { return indexeddb_clear; });
 __webpack_require__.d(indexeddb_namespaceObject, "destroy", function() { return indexeddb_destroy; });
+__webpack_require__.d(indexeddb_namespaceObject, "__delete", function() { return __delete; });
 var localstorage_namespaceObject = {};
 __webpack_require__.r(localstorage_namespaceObject);
 __webpack_require__.d(localstorage_namespaceObject, "isSupported", function() { return localstorage_isSupported; });
@@ -2307,7 +2308,7 @@ var _allowedConfig
  */
 
 var _baseConfig = {
-  namespace: "adjust-sdk" || false,
+  namespace: "@adjustcom/adjust-web-sdk" || false,
   version: "5.0.0" || false,
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
@@ -4597,6 +4598,39 @@ function indexeddb_clear(storeName) {
   });
 }
 /**
+ * Close db connection and delete the db
+ * WARNING: should be used only by adjust's demo app!
+ *
+ * @returns {Promise}
+ * @private
+ */
+
+
+function __delete() {
+  var indexedDB = _getIDB();
+
+  indexeddb_destroy();
+  return new _Promise(function (resolve, reject) {
+    var request = indexedDB.deleteDatabase(_dbName);
+
+    request.onerror = function (error) {
+      return _overrideError(reject, error);
+    };
+
+    request.onsuccess = function (e) {
+      resolve(e.result);
+    };
+
+    request.onerror = function (e) {
+      return reject(e.target);
+    };
+
+    request.onblocked = function (e) {
+      return reject(e.target);
+    };
+  });
+}
+/**
  * Close the database and destroy the reference to it
  */
 
@@ -5756,6 +5790,7 @@ var http_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promi
 
 
 
+
 /*:: type ParamsWithAttemptsT = $PropertyType<HttpRequestParamsT, 'params'>*/
 
 /**
@@ -5844,9 +5879,7 @@ function _encodeParam(_ref3)
       key = _ref4[0],
       value = _ref4[1];
 
-  var encodedKey = encodeURIComponent(key.replace(/([A-Z])/g, function ($1) {
-    return "_".concat($1.toLowerCase());
-  }));
+  var encodedKey = encodeURIComponent(key);
   var encodedValue = value;
 
   if (typeof value === 'string') {
@@ -5858,6 +5891,28 @@ function _encodeParam(_ref3)
   }
 
   return [encodedKey, encodedValue].join('=');
+}
+/**
+ * Creates the log key with some spaces appended to it
+ *
+ * @param {string} header
+ * @param {string} str
+ * @returns {string}
+ * @private
+ */
+
+
+function _logKey(header
+/*: string*/
+, str
+/*: string*/
+)
+/*: string*/
+{
+  var spaces = header.slice(0, header.length - str.length - 1).split('').reduce(function (acc) {
+    return acc.concat(' ');
+  }, '');
+  return "".concat(str).concat(spaces, ":");
 }
 /**
  * Encode key-value pairs to be used in url
@@ -5876,12 +5931,35 @@ function _encodeParams(params
 )
 /*: string*/
 {
-  return entries(objectSpread2_default()({}, config.getBaseParams(), {}, defaultParams, {}, params)).filter(function (_ref5) {
+  var logParamsHeader = 'REQUEST PARAMETERS:';
+
+  var toSnakeCase = function toSnakeCase(key) {
+    return key.replace(/([A-Z])/g, function ($1) {
+      return "_".concat($1.toLowerCase());
+    });
+  };
+
+  var allParams = entries(objectSpread2_default()({}, config.getBaseParams(), {}, defaultParams, {}, params)).map(function (_ref5) {
     var _ref6 = slicedToArray_default()(_ref5, 2),
+        key = _ref6[0],
         value = _ref6[1];
 
+    return [toSnakeCase(key), value];
+  });
+  logger.log(logParamsHeader);
+  return allParams.filter(function (_ref7) {
+    var _ref8 = slicedToArray_default()(_ref7, 2),
+        value = _ref8[1];
+
     return isEmptyEntry(value);
-  }).map(_encodeParam).join('&');
+  }).map(function (_ref9) {
+    var _ref10 = slicedToArray_default()(_ref9, 2),
+        key = _ref10[0],
+        value = _ref10[1];
+
+    logger.log(_logKey(logParamsHeader, key), value);
+    return _encodeParam([key, value]);
+  }).join('&');
 }
 /**
  * Handle xhr response from server
@@ -5894,9 +5972,9 @@ function _encodeParams(params
  */
 
 
-function _handleReadyStateChange(reject, resolve, _ref7) {
-  var xhr = _ref7.xhr,
-      url = _ref7.url;
+function _handleReadyStateChange(reject, resolve, _ref11) {
+  var xhr = _ref11.xhr,
+      url = _ref11.url;
 
   if (xhr.readyState !== 4) {
     return;
@@ -5927,14 +6005,14 @@ function _handleReadyStateChange(reject, resolve, _ref7) {
  */
 
 
-function _prepareUrlAndParams(_ref8, defaultParams
+function _prepareUrlAndParams(_ref12, defaultParams
 /*: DefaultParamsT*/
 )
 /*: {fullUrl: string, encodedParams: string}*/
 {
-  var url = _ref8.url,
-      method = _ref8.method,
-      params = _ref8.params;
+  var url = _ref12.url,
+      method = _ref12.method,
+      params = _ref12.params;
 
   var encodedParams = _encodeParams(params, defaultParams);
 
@@ -5947,6 +6025,34 @@ function _prepareUrlAndParams(_ref8, defaultParams
   };
 }
 /**
+ * Set headers for the xhr object
+ *
+ * @param {XMLHttpRequest} xhr
+ * @param {string} method
+ * @private
+ */
+
+
+function _prepareHeaders(xhr
+/*: XMLHttpRequest*/
+, method
+/*: $PropertyType<HttpRequestParamsT, 'method'>*/
+)
+/*: void*/
+{
+  var logHeader = 'REQUEST HEADERS:';
+  var headers = [['Client-SDK', "js".concat(config.version)], ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']];
+  logger.log(logHeader);
+  headers.forEach(function (_ref13) {
+    var _ref14 = slicedToArray_default()(_ref13, 2),
+        key = _ref14[0],
+        value = _ref14[1];
+
+    xhr.setRequestHeader(key, value);
+    logger.log(_logKey(logHeader, key), value);
+  });
+}
+/**
  * Build xhr to perform all kind of api requests
  *
  * @param {string} url
@@ -5957,16 +6063,16 @@ function _prepareUrlAndParams(_ref8, defaultParams
  */
 
 
-function _buildXhr(_ref9, defaultParams
+function _buildXhr(_ref15, defaultParams
 /*: DefaultParamsT*/
 )
 /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
 {
-  var url = _ref9.url,
-      _ref9$method = _ref9.method,
-      method = _ref9$method === void 0 ? 'GET' : _ref9$method,
-      _ref9$params = _ref9.params,
-      params = _ref9$params === void 0 ? {} : _ref9$params;
+  var url = _ref15.url,
+      _ref15$method = _ref15.method,
+      method = _ref15$method === void 0 ? 'GET' : _ref15$method,
+      _ref15$params = _ref15.params,
+      params = _ref15$params === void 0 ? {} : _ref15$params;
 
   var _prepareUrlAndParams2 = _prepareUrlAndParams({
     url: url,
@@ -5979,11 +6085,8 @@ function _buildXhr(_ref9, defaultParams
   return new http_Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest();
     xhr.open(method, fullUrl, true);
-    xhr.setRequestHeader('Client-SDK', "js".concat(config.version));
 
-    if (method === 'POST') {
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    }
+    _prepareHeaders(xhr, method);
 
     xhr.onreadystatechange = function () {
       return _handleReadyStateChange(reject, resolve, {
@@ -7169,7 +7272,7 @@ function _intercept(stored
 
 
 function identity_start()
-/*: Promise<?ActivityStateMapT>*/
+/*: Promise<ActivityStateMapT>*/
 {
   if (_starting) {
     return identity_Promise.reject({
@@ -8357,7 +8460,6 @@ function attribution_destroy()
 
 
 
-
 /**
  * Http request instance
  *
@@ -8955,7 +9057,7 @@ function sdkClick()
 
 
 var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
-/*:: import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT } from './types';*/
+/*:: import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT } from './types';*/
 
 
 
@@ -9321,14 +9423,18 @@ function _destroy()
 /**
  * Check the sdk status and proceed with certain actions
  *
+ * @param {Object} activityState
  * @returns {Promise|boolean}
  * @private
  */
 
 
-function main_continue()
+function main_continue(activityState
+/*: ActivityStateMapT*/
+)
 /*: Promise<void>*/
 {
+  logger.log("Adjust SDK is starting with web_uuid set to ".concat(activityState.uuid));
   var isInstalled = activity_state.current.installed;
   gdpr_forget_device_check();
 
