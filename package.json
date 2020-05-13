@@ -1,12 +1,13 @@
 {
   "name": "@adjustcom/adjust-web-sdk",
-  "version": "0.0.2",
+  "version": "5.0.0",
   "description": "This is the guide to the Javascript SDK of Adjust™ for web sites or web apps. You can read more about Adjust™ at [adjust.com].",
   "scripts": {
     "build:demo": "webpack --mode production --config webpack.demo.config.js",
     "build:sdk": "webpack --config webpack.sdk.config.js",
     "build:snippet": "terser ./src/sdk/snippet.js -o ./dist/sdk.snippet.min.js -c -m",
     "build": "npm-run-all build:sdk build:demo build:snippet",
+    "clean": "rm -rf ./demo/*",
     "start": "webpack-dev-server --content-base dist --hot --mode development --config webpack.demo.config.js",
     "lint": "eslint ./src --ext .js",
     "lint:fix": "npm run lint -- --fix",
@@ -74,10 +75,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adjust/web_sdk_dev.git"
+    "url": "git+https://github.com/adjust/web_sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/adjust/web_sdk_dev/issues"
+    "url": "https://github.com/adjust/web_sdk/issues"
   },
-  "homepage": "https://github.com/adjust/web_sdk_dev#readme"
+  "homepage": "https://github.com/adjust/web_sdk#readme"
 }
