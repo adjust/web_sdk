@@ -2308,7 +2308,7 @@ var _allowedConfig
  */
 
 var _baseConfig = {
-  namespace: "@adjustcom/adjust-web-sdk" || false,
+  namespace: "adjust-sdk" || false,
   version: "5.0.0" || false,
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
