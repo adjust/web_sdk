@@ -17,7 +17,7 @@
     "flow": "flow status --quiet",
     "prepublishOnly": "npm run test:all"
   },
-  "main": "dist/adjust-latest-test.js",
+  "main": "dist/adjust-latest.js",
   "keywords": [],
   "author": "Adjust GmbH",
   "license": "MIT",
@@ -67,8 +67,8 @@
     "doc": "docs"
   },
   "files": [
-    "dist/adjust-latest-test.js",
-    "dist/adjust-latest-test.min.js",
+    "dist/adjust-latest.js",
+    "dist/adjust-latest.min.js",
     "docs/**/*",
     "CHANGELOG.md"
   ],

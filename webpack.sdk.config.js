@@ -9,10 +9,8 @@ const version = packageJson.version
 module.exports = () => ({
   mode: 'production',
   entry: {
-    'adjust-latest-test': path.resolve(__dirname, 'src/sdk/main.js'),
-    [`adjust-${version}-test`]: path.resolve(__dirname, 'src/sdk/main.js'),
-    'adjust-latest-test.min': path.resolve(__dirname, 'src/sdk/main.js'),
-    [`adjust-${version}-test.min`]: path.resolve(__dirname, 'src/sdk/main.js')
+    'adjust-latest': path.resolve(__dirname, 'src/sdk/main.js'),
+    'adjust-latest.min': path.resolve(__dirname, 'src/sdk/main.js')
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

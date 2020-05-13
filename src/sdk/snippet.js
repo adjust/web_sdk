@@ -26,7 +26,7 @@
   window,
   document,
   'script',
-  'https://cdn.adjust.com/adjust-latest-test.min.js',
+  'https://cdn.adjust.com/adjust-latest.min.js',
   'Adjust',
   [
     'initSdk',
