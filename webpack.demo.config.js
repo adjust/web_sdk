@@ -5,6 +5,9 @@ const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
 const webpack = require('webpack')
+const packageJson = require('./package.json')
+const namespace = 'adjust-sdk'
+const version = packageJson.version
 
 module.exports = () => ({
   mode: 'production',
@@ -30,8 +33,8 @@ module.exports = () => ({
       chunkFilename: '[id].css'
     }),
     new webpack.DefinePlugin({
-      __ADJUST__NAMESPACE: JSON.stringify(require('./package.json').name),
-      __ADJUST__SDK_VERSION: JSON.stringify(require('./package.json').version)
+      __ADJUST__NAMESPACE: JSON.stringify(namespace),
+      __ADJUST__SDK_VERSION: JSON.stringify(version)
     }),
     new FlowWebpackPlugin()
   ],

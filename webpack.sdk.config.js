@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
 const packageJson = require('./package.json')
-const namespace = packageJson.name
+const namespace = 'adjust-sdk'
 const version = packageJson.version
 
 module.exports = () => ({
