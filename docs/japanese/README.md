@@ -26,7 +26,10 @@ Webアプリの[サンプルアプリ][example-app]がこのリポジトリに�
 
 Adjust Web SDKをWebアプリに実装することで、インストール、セッション、イベントをトラッキングできます。
 
-はじめに、`<head>`タグに次のスニペットを貼り付けます。
+AdjustのSDKは全てのモジュール定義の下で公開されているため、CommonJSおよびAMD環境で動作し、CDNを利用して読み込まれた場合は global `Adjust`を利用することもできます。  
+
+CDNでAdjustSDKを遅延ロードするためには、以下のコードを`<head>`タグに貼り付けます。  
+
 ```html
 <script type="application/javascript">
 !function(t,a,e,r,s,l,d,n,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)d(t.Adjust,t.Adjust_q,l[c]);n=a.createElement("script"),o=a.getElementsByTagName("script")[0],n.async=!0,n.src="https://cdn.adjust.com/adjust-latest.min.js",n.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},o.parentNode.insertBefore(n,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing"],function(t,a,e){t[e]=function(){a.push([e,arguments])}});
@@ -34,6 +37,14 @@ Adjust Web SDKをWebアプリに実装することで、インストール、セ
 ```
 
 Adjust Web SDKはページごとに1回だけ読み込まれ、ページの読み込みごとに1回起動される必要があります。
+
+CDNを利用してSDKをロードするときは、縮小バージョンを使用することを推奨します。そうすることで、   `https://cdn.adjust.com/adjust-5.0.0.min.js` のような特定のバージョンをターゲットにしたり、あるいは   ターゲットファイルを変更せずに自動更新する場合は、最新バージョン    `https：//adjust.com/adjust-latest.min.js` をターゲットにすることが可能です。   SDKファイルはキャッシュされるため即時に提供され、更新は30分ごとに行われます。すぐに更新する必要がある場合は、必ず特定のバージョンをターゲットにしてください。  
+
+また、NPMを利用してSDKをインストールすることも可能です：
+
+```
+npm install @adjustcom/adjust-web-sdk --save
+```
 
 ## <a id="initialization">初期化</a>
 
