@@ -26,7 +26,10 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 本 SDK 可用于跟踪安装、会话和事件。您只需将 Adjust Web SDK 添加至自己的网络应用中即可。
 
-要添加 Adjust Web SDK，请将下列代码片段复制至 `<head>` 标签：
+我们的 SDK 暴露在所有模块定义下，所以可在 CommonJS 和 AMD 环境中使用；通过 CDN 加载时，亦在全局 `Adjust` 下可用。
+
+若需通过 CDN 延迟加载 Adjust Web SDK，请将下列代码片段复制到 `<head>` 标签：
+
 ```html
 <script type="application/javascript">
 !function(t,a,e,r,s,l,d,n,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)d(t.Adjust,t.Adjust_q,l[c]);n=a.createElement("script"),o=a.getElementsByTagName("script")[0],n.async=!0,n.src="https://cdn.adjust.com/adjust-latest.min.js",n.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},o.parentNode.insertBefore(n,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing"],function(t,a,e){t[e]=function(){a.push([e,arguments])}});
@@ -34,6 +37,14 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 ```
 
 Adjust Web SDK 在每个页面应当仅加载一次，每次页面加载应当初始化一次。
+
+在通过 CDN 加载 SDK 时，我们建议您使用精简版本。您可以定向特定版本，如 `https://cdn.adjust.com/adjust-5.0.0.min.js`；如果您需要自动更新，不想变更目标文件，也可以定向最新版本：`https://cdn.adjust.com/adjust-latest.min.js` 。SDK 文件均有缓存，因此能以最快速度获取，缓存每半小时刷新一次。如果您想立即获得更新，请务必定向特定版本。
+
+您也可以通过 NPM 安装我们的 SDK：
+
+```
+npm install @adjustcom/adjust-web-sdk --save
+```
 
 ## <a id="initialization">初始化</a>
 
