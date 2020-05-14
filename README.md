@@ -380,6 +380,6 @@ SOFTWARE.
 [currency-conversion]:  https://help.adjust.com/tracking/revenue-events/currency-conversion
 
 [en-readme]:  README.md
-[zh-readme]:  doc/chinese/README.md
-[ja-readme]:  doc/japanese/README.md
-[ko-readme]:  doc/korean/README.md
+[zh-readme]:  docs/chinese/README.md
+[ja-readme]:  docs/japanese/README.md
+[ko-readme]:  docs/korean/README.md
