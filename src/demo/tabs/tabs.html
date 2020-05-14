@@ -1,0 +1,70 @@
+<ul class="tabs">
+  <li><a href="#" class="active" id="log-tab">Log</a></li>
+  <li><a href="#" id="app-config-tab">App Config</a></li>
+</ul>
+
+<div class="tab active" id="log-tab-container">
+  <pre class="log" id="log"></pre>
+</div>
+
+<div class="tab" id="app-config-tab-container">
+  <div class="flex-box-row">
+    <form class="flex-two" id="app-config-form">
+      <div class="flex-box-row">
+        <div class="flex-one">
+          <div class="form-row">
+            <label for="app-token">App Token</label>
+            <input type="text" id="app-token">
+          </div>
+
+          <div class="form-row">
+            <label for="environment">Environment</label>
+            <select id="environment">
+              <option value="sandbox">sandbox</option>
+              <option value="production">production</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="default-tracker">Default Tracker</label>
+            <input type="text" id="default-tracker">
+          </div>
+
+          <div class="form-row">
+            <label for="custom-url">Custom URL</label>
+            <input type="text" id="custom-url">
+          </div>
+        </div>
+
+        <div class="flex-one">
+          <div class="form-row">
+            <label for="log-level">Log Level</label>
+            <select id="log-level">
+              <option value="verbose">verbose</option>
+              <option value="info">info</option>
+              <option value="error">error</option>
+              <option value="none">none</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="log-output">Log Output</label>
+            <input type="text" id="log-output" disabled>
+          </div>
+
+          <div class="form-row">
+            <label for="event-deduplication-list-limit">Event Deduplication List Limit</label>
+            <input type="number" min="0" id="event-deduplication-list-limit" placeholder="default is 10">
+          </div>
+
+          <div class="form-row inline-actions">
+            <button type="submit">Save and re-init</button>
+            <button type="button" class="remove" id="reset">Reset</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <pre class="flex-one config" id="app-config-json"></pre>
+  </div>
+</div>

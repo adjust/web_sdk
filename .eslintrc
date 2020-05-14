@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:flowtype/recommended"
+  ],
+  "plugins": ["flowtype"],
+  "globals": {
+    "Promise": true,
+    "__ADJUST__NAMESPACE": true,
+    "__ADJUST__SDK_VERSION": true,
+    "Utils": true
+  },
+  "rules": {
+    "semi": ["error", "never"],
+    "space-before-function-paren": ["error", "always"],
+    "quotes": ["error", "single"],
+    "prefer-arrow-callback": "error",
+    "prefer-object-spread": "error"
+  }
+}

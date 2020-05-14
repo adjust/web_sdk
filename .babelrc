@@ -1,0 +1,20 @@
+{
+  "presets": [
+    "@babel/preset-flow",
+    ["@babel/preset-env", {
+      "targets": ["> 0.25%", "not dead"]
+    }]
+  ],
+  "plugins": [
+    "es6-promise",
+    "@babel/plugin-transform-flow-comments",
+    ["@babel/plugin-transform-runtime", {
+      "version": "7.6.2"
+    }]
+  ],
+  "env": {
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs"]
+    }
+  }
+}

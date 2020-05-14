@@ -1,0 +1,59 @@
+@mixin flex($values) {
+  -webkit-box-flex: $values;
+  -moz-box-flex:  $values;
+  -webkit-flex:  $values;
+  -ms-flex:  $values;
+  flex:  $values;
+}
+
+@mixin flex-box() {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+@mixin flex-direction($value) {
+  -webkit-flex-direction: $value;
+  -ms-flex-direction: $value;
+  flex-direction: $value;
+
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  box-direction: normal;
+
+  @if $value == 'row' {
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    box-orient: horizontal;
+  } @else {
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+  }
+}
+
+.flex-box-column {
+  @include flex-box();
+  @include flex-direction(column);
+}
+
+.flex-box-row {
+  @include flex-box();
+  @include flex-direction(row);
+}
+
+.flex-auto {
+  @include flex(0 0 auto);
+}
+
+.flex-one {
+  @include flex(1 1 0%);
+  min-height: 0;
+  min-width: 0;
+}
+
+.flex-two {
+  @include flex(2);
+}
