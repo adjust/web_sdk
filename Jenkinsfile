@@ -18,12 +18,20 @@ pipeline {
       }
     }
     stage('Build Production') {
+      when {
+        branch "master"
+      }
+
       steps {
         sh "npm run clean"
         sh "npm run build:demo"
       }
     }
     stage('Deploy Production') {
+      when {
+        branch "master"
+      }
+
       steps {
         sh "rsync -e 'ssh -o StrictHostKeyChecking=no' -va --rsync-path='mkdir -p /home/dashboard/web-sdk-demo/current/public/ && rsync' --delete ./demo/ dashboard@jenkins-2.adjust.com://home/dashboard/web-sdk-demo/current/public/"
       }
