@@ -147,8 +147,8 @@ Track event 메서드에는 이 파라미터가 필요하므로 올바른 이벤
 ```js
 Adjust.trackEvent({
   // ... 필수 파라미터를 포함하는 다른 파라미터가 여기에 들어갑니다
-  매출: 110,
-  통화: 'EUR'
+  revenue: 110,
+  currency: 'EUR'
 })
 ```
 
