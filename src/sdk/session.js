@@ -164,12 +164,12 @@ function _handleVisibilityChange (): void {
 /**
  * Handle session request finish; update installed state
  *
- * @param {Object} e
+ * @param {string} e
  * @param {Object} result
  * @returns {Promise|void}
  * @private
  */
-function _handleSessionRequestFinish (e, result: HttpSuccessResponseT | HttpErrorResponseT): ?Promise<mixed> {
+function _handleSessionRequestFinish (e: string, result: HttpSuccessResponseT | HttpErrorResponseT): ?Promise<mixed> {
   if (result && result.status === 'error') {
     Logger.error('Session was not successful, error was returned from the server:', result.response)
     return

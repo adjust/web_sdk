@@ -1,7 +1,4 @@
 // @flow
-declare var __ADJUST__NAMESPACE: string
-declare var __ADJUST__SDK_VERSION: string
-
 import {
   type BaseParamsT,
   type CustomConfigT,
@@ -10,6 +7,7 @@ import {
   type BaseParamsMandatoryListT,
   type CustomConfigListT
 } from './types'
+import Globals from './globals'
 import {MINUTE, SECOND, DAY} from './constants'
 import {buildList, reducer} from './utilities'
 import Logger from './logger'
@@ -81,12 +79,10 @@ const _allowedConfig: CustomConfigListT = [
  * }}
  */
 const _baseConfig = {
-  namespace: __ADJUST__NAMESPACE || 'adjust-sdk',
-  version: __ADJUST__SDK_VERSION || '0.0.0',
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
   requestValidityWindow: 28 * DAY,
-  baseUrl: process.env.NODE_ENV === 'test'
+  baseUrl: Globals.env === 'test'
     ? {app: 'app', gdpr: 'gdpr'}
     : {app: 'https://app.adjust.com', gdpr: 'https://gdpr.adjust.com'}
 }

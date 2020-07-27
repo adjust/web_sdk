@@ -380,7 +380,7 @@ function expectGdprForgetMeCallback (onlyNumOfAssertions, asyncPublish) {
   const oldState = Preferences.getDisabled()
 
   if (asyncPublish) {
-    PubSub.publish('sdk:gdpr-forget-me', true)
+    PubSub.publish('sdk:gdpr-forget-me')
   }
 
   jest.runOnlyPendingTimers()
@@ -394,7 +394,7 @@ function expectGdprForgetMeCallback (onlyNumOfAssertions, asyncPublish) {
 function expectNotGdprForgetMeCallback () {
   const oldState = Preferences.getDisabled()
 
-  PubSub.publish('sdk:gdpr-forget-me', true)
+  PubSub.publish('sdk:gdpr-forget-me')
 
   jest.runOnlyPendingTimers()
 

@@ -1,3 +1,4 @@
+// @flow
 /**
  * Prepend zero to be used in certain format
  *
@@ -6,7 +7,7 @@
  * @returns {string}
  * @private
  */
-function _prependZero (value, power = 1) {
+function _prependZero (value: number, power: number = 1): string {
   let formatted = value + ''
 
   for (let i = 1; i <= power; i += 1) {
@@ -20,11 +21,12 @@ function _prependZero (value, power = 1) {
 
 /**
  * Get formatted date (YYYY-MM-DD)
+ *
  * @param date
  * @returns {string}
  * @private
  */
-function _getDate (date) {
+function _getDate (date: Date): string {
   const day = _prependZero(date.getDate())
   const month = _prependZero(date.getMonth() + 1)
   const year = date.getFullYear()
@@ -39,7 +41,7 @@ function _getDate (date) {
  * @returns {string}
  * @private
  */
-function _getTime (date) {
+function _getTime (date: Date): string {
   const hours = _prependZero(date.getHours(), 1)
   const minutes = _prependZero(date.getMinutes())
   const seconds = _prependZero(date.getSeconds())
@@ -55,7 +57,7 @@ function _getTime (date) {
  * @returns {string}
  * @private
  */
-function _getTimezone (date) {
+function _getTimezone (date: Date): string {
   const offsetInMinutes = date.getTimezoneOffset()
   const hoursOffset = _prependZero(Math.floor(Math.abs(offsetInMinutes) / 60))
   const minutesOffset = _prependZero(Math.abs(offsetInMinutes) % 60)
@@ -70,7 +72,7 @@ function _getTimezone (date) {
  * @param {number=} timestamp
  * @returns {string}
  */
-function getTimestamp (timestamp) {
+function getTimestamp (timestamp?: number): string {
   const d = timestamp ? new Date(timestamp) : new Date()
   const date = _getDate(d)
   const time = _getTime(d)
@@ -86,7 +88,7 @@ function getTimestamp (timestamp) {
  * @param {number} d2
  * @returns {number}
  */
-function timePassed (d1, d2) {
+function timePassed (d1: number, d2: number): number {
   if (isNaN(d1) || isNaN(d2)) {
     return 0
   }

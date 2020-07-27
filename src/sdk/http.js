@@ -9,6 +9,7 @@ import {
 } from './types'
 import {HTTP_ERRORS} from './constants'
 import Config from './config'
+import Globals from './globals'
 import Logger from './logger'
 import {isObject, isValidJson, isRequest, entries, isEmptyEntry, reducer} from './utilities'
 import {publish} from './pub-sub'
@@ -195,7 +196,7 @@ function _prepareUrlAndParams ({url, method, params}: HttpRequestParamsT, defaul
 function _prepareHeaders (xhr: XMLHttpRequest, method: $PropertyType<HttpRequestParamsT, 'method'>): void {
   const logHeader = 'REQUEST HEADERS:'
   const headers = [
-    ['Client-SDK', `js${Config.version}`],
+    ['Client-SDK', `js${Globals.version}`],
     ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']
   ]
 
@@ -269,7 +270,7 @@ function _interceptSuccess (result: HttpSuccessResponseT, url): HttpSuccessRespo
   const optedOut = result.tracking_state === 'opted_out'
 
   if (!isGdprRequest && optedOut) {
-    publish('sdk:gdpr-forget-me', true)
+    publish('sdk:gdpr-forget-me')
     return result
   }
 
@@ -282,7 +283,7 @@ function _interceptSuccess (result: HttpSuccessResponseT, url): HttpSuccessRespo
   }
 
   if (isThirdPartySharingOptOutRequest) {
-    publish('sdk:third-party-sharing-opt-out', true)
+    publish('sdk:third-party-sharing-opt-out')
     return result
   }
 

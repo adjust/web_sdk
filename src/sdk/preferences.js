@@ -115,7 +115,7 @@ function reload (): void {
   const sdkDisabled: ?SdkDisabledT = (_preferences || {}).sdkDisabled || null
 
   if (stored.sdkDisabled && !sdkDisabled) {
-    publish('sdk:shutdown', true)
+    publish('sdk:shutdown')
   }
 
   _setPreferences()

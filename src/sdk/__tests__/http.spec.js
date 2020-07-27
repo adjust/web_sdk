@@ -572,7 +572,7 @@ describe('perform api requests', () => {
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me')
       })
 
       return Utils.flushPromises()
@@ -713,7 +713,7 @@ describe('perform api requests', () => {
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me')
       })
 
       return Utils.flushPromises()
@@ -760,7 +760,7 @@ describe('perform api requests', () => {
         expect(result).toEqual({
           status: 'success'
         })
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:third-party-sharing-opt-out', true)
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:third-party-sharing-opt-out')
       })
 
       return Utils.flushPromises()

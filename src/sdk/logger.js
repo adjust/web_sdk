@@ -1,5 +1,10 @@
-import Config from './config'
+// @flow
+import Globals from './globals'
 import {isObject} from './utilities'
+import {type LogOptionsT} from './types'
+
+type LogLevelT = $PropertyType<LogOptionsT, 'logLevel'>
+type MethodNameT = 'log' | 'info' | 'error' | 'warn'
 
 const LEVEL_NONE = 'none'
 const LEVEL_ERROR = 'error'
@@ -36,18 +41,6 @@ const _envLogLevels = {
 }
 
 /**
- * Available logger methods
- *
- * @type {Array}
- * @private
- */
-const _methods = [
-  {name: 'log', level: LEVEL_VERBOSE},
-  {name: 'info', level: LEVEL_INFO},
-  {name: 'error', level: LEVEL_ERROR}
-]
-
-/**
  * Current logger level
  */
 let _level = _getDefaultLogLevel()
@@ -66,8 +59,8 @@ let _output = ''
  * @returns {string}
  * @private
  */
-function _getDefaultLogLevel () {
-  return _envLogLevels[process.env.NODE_ENV] || LEVEL_ERROR
+function _getDefaultLogLevel (): LogLevelT {
+  return _envLogLevels[Globals.env] || LEVEL_ERROR
 }
 
 /**
@@ -76,57 +69,65 @@ function _getDefaultLogLevel () {
  * @param {string=} logLevel
  * @param {string=} logOutput
  */
-function setLogLevel (logLevel, logOutput) {
-
+function setLogLevel (logLevel: LogLevelT, logOutput: string): void {
   const exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1
 
   if (!exists) {
-    _log('error', 'You must set one of the available log levels: verbose, info, error or none')
+    _log('error', 'error', 'You must set one of the available log levels: verbose, info, error or none')
     return
   }
 
   _level = logLevel || _getDefaultLogLevel()
   _output = logOutput
 
-  _log('info', `Log level set to ${_level}`)
+  _log('info', logLevel, `Log level set to ${_level}`)
 }
 
 /**
  * Output the message to the console
  *
  * @param {string} methodName
- * @param {string} args
+ * @param {string} logLevel
+ * @param {Array} args
  * @private
  */
-function _log (methodName, ...args) {
-  const now = (new Date()).toISOString()
-  const message = [`[${Config.namespace}]`, now, `${methodName.toUpperCase()}:`, ...args]
-  const outputContainer = _output ? document.querySelector(_output) : null
-
-  console[methodName].apply(null, message) // eslint-disable-line
-
-  if (outputContainer) {
-    const [namespace, time, prefix, ...rest] = message
-    const spaces = methodName === 'log' ? '  ' : (methodName === 'info' ? ' ' : '')
-    outputContainer.textContent += `${namespace} ${time} ${prefix}${spaces} ${rest.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`
-    outputContainer.scrollTop = outputContainer.scrollHeight
+function _log<T> (methodName: MethodNameT, logLevel: LogLevelT, ...args: Array<T>): void {
+  if (_levels[_level] < _levels[logLevel]) {
+    return
   }
 
+  const time = (new Date()).toISOString()
+  const spaces = methodName === 'log' ? '  ' : (methodName === 'info' ? ' ' : '')
+  const messagePrefix = [`[${Globals.namespace}]`, time, `${methodName.toUpperCase()}:${spaces}`]
+  const outputContainer = _output ? document.querySelector(_output) : null
+
+  console[methodName].apply(null, [...messagePrefix, ...args]) // eslint-disable-line
+
+  if (outputContainer) {
+    outputContainer.textContent += `${messagePrefix.join(' ')} ${args.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`
+    outputContainer.scrollTop = outputContainer.scrollHeight
+  }
+}
+
+/**
+ * Apply predefined log level and return log method
+ *
+ * @param {string} name
+ * @param {string} logLevel
+ * @returns {Array} args
+ * @private
+ */
+function _applyLevel (name: MethodNameT, logLevel: LogLevelT) {
+  return <T>(...args: Array<T>) => {
+    _log(name, logLevel, ...args)
+  }
 }
 
 const Logger = {
-  setLogLevel
+  setLogLevel,
+  log: _applyLevel('log', LEVEL_VERBOSE),
+  info: _applyLevel('info', LEVEL_INFO),
+  error: _applyLevel('error', LEVEL_ERROR)
 }
-
-_methods.forEach(method => {
-  Object.defineProperty(Logger, method.name, {
-    writable: false,
-    value: (...message) => {
-      if (_levels[_level] >= _levels[method.level]) {
-        _log(method.name, ...message)
-      }
-    }
-  })
-})
 
 export default Logger

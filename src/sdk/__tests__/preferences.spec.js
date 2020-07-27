@@ -110,7 +110,7 @@ describe('activity state functionality', () => {
 
       Preferences.reload()
 
-      expect(PubSub.publish).toHaveBeenCalledWith('sdk:shutdown', true)
+      expect(PubSub.publish).toHaveBeenCalledWith('sdk:shutdown')
       expect(Preferences.getDisabled()).toEqual({
         reason: 'gdpr',
         pending: true

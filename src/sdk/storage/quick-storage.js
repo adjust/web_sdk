@@ -1,9 +1,9 @@
 import {convertRecord} from './converter'
 import {entries} from '../utilities'
-import Config from '../config'
+import Globals from '../globals'
 import SchemeMap from './scheme-map'
 
-const _storageName = Config.namespace
+const _storageName = Globals.namespace
 const _storeNames = SchemeMap.storeNames.left
 
 /**
