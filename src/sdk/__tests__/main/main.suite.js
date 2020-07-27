@@ -49,7 +49,7 @@ function _startFirstPart () {
   return Utils.flushPromises()
 }
 
-function expectStart () {
+function expectStart_Async () {
   const promise = _startFirstPart()
     .then(() => {
       expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
@@ -63,7 +63,7 @@ function expectStart () {
   return {assertions: 16, promise}
 }
 
-function expectPartialStartWithGdprRequest () {
+function expectPartialStartWithGdprRequest_Async () {
   const promise = _startFirstPart()
     .then(() => {
       expect(GdprForgetDevice.check).toHaveBeenCalledTimes(1)
@@ -95,7 +95,7 @@ function expectNotStart (restart) {
 
 }
 
-function expectDelayedTrackEvent () {
+function expectDelayedTrackEvent_Async () {
 
   _instance.trackEvent({eventToken: 'bla123'})
 
@@ -344,7 +344,7 @@ function _expectNotDestroy () {
   expect(Logger.default.log).not.toHaveBeenCalledWith('Adjust SDK instance has been destroyed')
 }
 
-function expectClearAndDestroy (onlyNumOfAssertions) {
+function expectClearAndDestroy_Async (onlyNumOfAssertions) {
   const assertions = 14
 
   if (onlyNumOfAssertions) {
@@ -360,7 +360,7 @@ function expectClearAndDestroy (onlyNumOfAssertions) {
   return {assertions, promise}
 }
 
-function expectNotClearAndDestroy () {
+function expectNotClearAndDestroy_Async () {
   expect(Identity.clear).not.toHaveBeenCalled()
   expect(GlobalParams.clear).not.toHaveBeenCalled()
   expect(Queue.clear).not.toHaveBeenCalled()
@@ -403,7 +403,7 @@ function expectNotGdprForgetMeCallback () {
   return {assertions: 1}
 }
 
-function expectAllUp () {
+function expectAllUp_Async () {
   const baseParams = Config.default.getBaseParams()
 
   expect(baseParams.appToken).toEqual('some-app-token')
@@ -494,10 +494,10 @@ export default function Suite (instance) {
 
   return {
     config,
-    expectStart,
-    expectPartialStartWithGdprRequest,
+    expectStart_Async,
+    expectPartialStartWithGdprRequest_Async,
     expectNotStart,
-    expectDelayedTrackEvent,
+    expectDelayedTrackEvent_Async,
     expectRunningTrackEvent,
     expectNotRunningTrackEvent,
     expectNotRunningTrackEventWhenNoInstance,
@@ -510,11 +510,11 @@ export default function Suite (instance) {
     expectShutDown,
     expectPartialShutDown,
     expectNotShutDown,
-    expectClearAndDestroy,
-    expectNotClearAndDestroy,
+    expectClearAndDestroy_Async,
+    expectNotClearAndDestroy_Async,
     expectGdprForgetMeCallback,
     expectNotGdprForgetMeCallback,
-    expectAllUp,
+    expectAllUp_Async,
     expectAllDown,
     expectGdprRequest,
     expectNotGdprRequest,

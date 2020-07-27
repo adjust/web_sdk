@@ -100,27 +100,26 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
     it('flush forget-me event but ignores it', () => {
       const a1 = suite.expectNotGdprForgetMeCallback()
-      const a2 = suite.expectNotClearAndDestroy()
+      const a2 = suite.expectNotClearAndDestroy_Async()
 
-      expect.assertions(a1.assertions + a2.assertions)
-
-      return a2.promise
+      return a2.promise.then(() => {
+        expect.assertions(a1.assertions + a2.assertions)
+      })
     })
 
     it('enables sdk with restart', () => {
 
       AdjustInstance.restart()
 
-      const a = suite.expectStart()
-
-      expect.assertions(3 + a.assertions)
-
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
       expect(Disable.restore).toHaveBeenCalled()
 
-      return a.promise
+      const a = suite.expectStart_Async()
 
+      return a.promise.then(() => {
+        expect.assertions(3 + a.assertions)
+      })
     })
   })
 
@@ -138,11 +137,11 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
       Logger.default.log.mockClear()
 
       const a1 = suite.expectNotGdprForgetMeCallback()
-      const a2 = suite.expectNotClearAndDestroy()
+      const a2 = suite.expectNotClearAndDestroy_Async()
 
-      expect.assertions(1 + a1.assertions + a2.assertions)
-
-      return a2.promise
+      return a2.promise.then(() => {
+        expect.assertions(1 + a1.assertions + a2.assertions)
+      })
     })
 
     it('prevents running all static methods and track event', () => {
@@ -186,11 +185,11 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
     it('flush forget-me event but ignores it', () => {
       const a1 = suite.expectNotGdprForgetMeCallback()
-      const a2 = suite.expectNotClearAndDestroy()
+      const a2 = suite.expectNotClearAndDestroy_Async()
 
-      expect.assertions(a1.assertions + a2.assertions)
-
-      return a2.promise
+      return a2.promise.then(() => {
+        expect.assertions(a1.assertions + a2.assertions)
+      })
     })
 
   })
@@ -204,11 +203,11 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
     it('flush forget-me event but ignores it', () => {
       const a1 = suite.expectNotGdprForgetMeCallback()
-      const a2 = suite.expectNotClearAndDestroy()
+      const a2 = suite.expectNotClearAndDestroy_Async()
 
-      expect.assertions(a1.assertions + a2.assertions)
-
-      return a2.promise
+      return a2.promise.then(() => {
+        expect.assertions(a1.assertions + a2.assertions)
+      })
     })
 
     it('initiates but prevents all static methods and track event and fails to run forget-me request', () => {

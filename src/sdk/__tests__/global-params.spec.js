@@ -80,7 +80,7 @@ describe('global parameters functionality', () => {
       {key: 'key1', value: 'last value1'}
     ], 'callback')
       .then(result => {
-        expect(result).toEqual([
+        expect(result).toEqualArrayIgnoringOrder([
           ['key1', 'callback'],
           ['key2', 'callback']
         ])
@@ -250,7 +250,7 @@ describe('global parameters functionality', () => {
       .then(() => GlobalParams.add(partnerParams, 'partner'))
       .then(() => GlobalParams.removeAll('callback'))
       .then(result => {
-        expect(result).toEqual(callbackParams.map(p => [p.key, 'callback']))
+        expect(result).toEqualArrayIgnoringOrder(callbackParams.map(p => [p.key, 'callback']))
         return GlobalParams.get()
       })
       .then(({callbackParams, partnerParams}) => {
@@ -263,7 +263,7 @@ describe('global parameters functionality', () => {
         return GlobalParams.removeAll('partner')
       })
       .then(result => {
-        expect(result).toEqual(partnerParams.map(p => [p.key, 'partner']))
+        expect(result).toEqualArrayIgnoringOrder(partnerParams.map(p => [p.key, 'partner']))
         return GlobalParams.get()
       })
       .then(({callbackParams, partnerParams}) => {

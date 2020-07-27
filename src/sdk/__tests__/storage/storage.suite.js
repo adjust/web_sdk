@@ -588,7 +588,7 @@ export default function Suite (Storage) {
           return Storage.deleteBulk('globalParams', 'partner')
         })
         .then(deleted => {
-          expect(deleted).toEqual([
+          expect(deleted).toEqualArrayIgnoringOrder([
             ['key1', 'partner'],
             ['key2', 'partner']
           ])
@@ -606,7 +606,7 @@ export default function Suite (Storage) {
           return Storage.deleteBulk('globalParams', 'callback')
         })
         .then(deleted => {
-          expect(deleted).toEqual([
+          expect(deleted).toEqualArrayIgnoringOrder([
             ['key1', 'callback'],
             ['key2', 'callback'],
             ['key3', 'callback'],
@@ -817,7 +817,7 @@ export default function Suite (Storage) {
 
         return Storage.addBulk('globalParams', globalParamsSet1)
           .then(result => {
-            expect(result).toEqual([
+            expect(result).toEqualArrayIgnoringOrder([
               ['bla', 'callback'],
               ['key1', 'callback'],
               ['eto', 'partner']
@@ -874,7 +874,7 @@ export default function Suite (Storage) {
             return Storage.addBulk('globalParams', globalParamsSet2, true)
           })
           .then(result => {
-            expect(result).toEqual([
+            expect(result).toEqualArrayIgnoringOrder([
               ['key1', 'callback'],
               ['par', 'partner'],
               ['bla', 'partner'],
