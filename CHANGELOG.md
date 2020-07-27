@@ -1,3 +1,9 @@
+### Version 5.1.0 (xxth July 2020)
+#### Added
+- Added external device ID support.
+
+---
+
 ### Version 5.0.0 (15th May 2020)
 #### Added
 - New major SDK update.

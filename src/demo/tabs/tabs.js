@@ -126,6 +126,7 @@ function _prepareForm () {
   _form.logLevel = _ui.appConfigForm.querySelector('#log-level')
   _form.logOutput = _ui.appConfigForm.querySelector('#log-output')
   _form.eventDeduplicationListLimit = _ui.appConfigForm.querySelector('#event-deduplication-list-limit')
+  _form.externalDeviceId = _ui.appConfigForm.querySelector('#external-device-id')
 
   Object.keys(_form).map(key => _form[key].value = appConfig[key] || '')
 

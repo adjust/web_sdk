@@ -100,6 +100,7 @@ describe('test global config', () => {
           appToken: '123abc',
           environment: 'sandbox',
           defaultTracker: 'tracker',
+          externalDeviceId: 'external-device-id',
           customUrl: 'http://some-url.com',
           eventDeduplicationListLimit: 11,
           something: 'else'
@@ -109,7 +110,8 @@ describe('test global config', () => {
         expect(Config.default.getBaseParams()).toEqual({
           appToken: '123abc',
           environment: 'sandbox',
-          defaultTracker: 'tracker'
+          defaultTracker: 'tracker',
+          externalDeviceId: 'external-device-id'
         })
         expect(Config.default.getCustomConfig()).toEqual({
           customUrl: 'http://some-url.com',

@@ -17,6 +17,7 @@ import Logger from './logger'
  * - app token
  * - environment
  * - default tracker
+ * - external device ID
  *
  * @type {Object}
  * @private
@@ -52,7 +53,8 @@ const _mandatory: BaseParamsMandatoryListT = [
  */
 const _allowedParams: BaseParamsListT = [
   ..._mandatory,
-  'defaultTracker'
+  'defaultTracker',
+  'externalDeviceId'
 ]
 
 /**
