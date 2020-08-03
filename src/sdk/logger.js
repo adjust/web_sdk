@@ -101,7 +101,7 @@ function _log<T> (methodName: MethodNameT, logLevel: LogLevelT, ...args: Array<T
   const messagePrefix = [`[${Globals.namespace}]`, time, `${methodName.toUpperCase()}:${spaces}`]
   const outputContainer = _output ? document.querySelector(_output) : null
 
-  console[methodName].apply(null, [...messagePrefix, ...args]) // eslint-disable-line
+  console[methodName](...messagePrefix, ...args) // eslint-disable-line
 
   if (outputContainer) {
     outputContainer.textContent += `${messagePrefix.join(' ')} ${args.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`
