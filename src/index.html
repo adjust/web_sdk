@@ -6,7 +6,29 @@
 </head>
 <body class="flex-box-column">
 <div class="main flex-box-column flex-one">
-  ${require('./templates/main.html')}
+  <div class="content flex-one flex-box-column">
+    <div class="flex-auto">
+      <h1><i class="adjust-logo"></i> <span>Web SDK Demo</span></h1>
+      ${require('./demo/tabs/tabs.html')}
+    </div>
+
+    <div class="actions flex-one">
+      ${require('./demo/track-event/track-event.html')}
+      ${require('./demo/add-global-callback-params/add-global-callback-params.html')}
+      ${require('./demo/add-global-partner-params/add-global-partner-params.html')}
+      ${require('./demo/remove-global-callback-param/remove-global-callback-param.html')}
+      ${require('./demo/remove-global-partner-param/remove-global-partner-param.html')}
+      ${require('./demo/clear-global-callback-params/clear-global-callback-params.html')}
+      ${require('./demo/clear-global-partner-params/clear-global-partner-params.html')}
+      ${require('./demo/switch-to-offline-mode/switch-to-offline-mode.html')}
+      ${require('./demo/switch-back-to-online-mode/switch-back-to-online-mode.html')}
+      ${require('./demo/stop/stop.html')}
+      ${require('./demo/restart/restart.html')}
+      ${require('./demo/gdpr-forget-me/gdpr-forget-me.html')}
+      ${require('./demo/disable-third-party-sharing/disable-third-party-sharing.html')}
+    </div>
+  </div>
+
 </div>
 </body>
 </html>
