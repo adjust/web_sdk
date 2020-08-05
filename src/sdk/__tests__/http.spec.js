@@ -324,6 +324,50 @@ describe('perform api requests', () => {
         })
     })
 
+    it('performs GET request with externalDeviceId parameter', () => {
+
+      Config.default.set({externalDeviceId: 'my-id', ...appParams})
+
+      const defaultParamsStringWithExternalDeviceId = [
+        'app_token=123abc',
+        'environment=sandbox',
+        'external_device_id=my-id',
+        'created_at=some-time',
+        'sent_at=some-time',
+        'web_uuid=some-uuid',
+        'tracking_enabled=true',
+        'platform=web',
+        'language=en',
+        'country=gb',
+        'machine_type=macos',
+        'queue_size=0'
+      ].join('&')
+
+      expect.assertions(4)
+
+      expect(http.default({
+        url: '/some-other-url',
+        params: {
+          bla: 'truc'
+        }
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
+
+      return Utils.flushPromises()
+        .then(() => {
+
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/some-other-url?${defaultParamsStringWithExternalDeviceId}&bla=truc`, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+
+          Config.default.set(appParams)
+        })
+    })
+
     it('performs gdpr_forget_device request', () => {
       expect.assertions(4)
 
@@ -572,7 +616,7 @@ describe('perform api requests', () => {
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me')
       })
 
       return Utils.flushPromises()
@@ -713,7 +757,7 @@ describe('perform api requests', () => {
         })
         expect(PubSub.publish).not.toHaveBeenCalledWith('attribution:check', result)
         expect(PubSub.publish).not.toHaveBeenCalledWith('session:finished', result)
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me')
       })
 
       return Utils.flushPromises()
@@ -760,7 +804,7 @@ describe('perform api requests', () => {
         expect(result).toEqual({
           status: 'success'
         })
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:third-party-sharing-opt-out', true)
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:third-party-sharing-opt-out')
       })
 
       return Utils.flushPromises()

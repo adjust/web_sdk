@@ -155,7 +155,8 @@ export type EventParamsT = {|
 export type BaseParamsT = $ReadOnly<$Shape<{
   appToken: string,
   environment: 'production' | 'sandbox',
-  defaultTracker: string
+  defaultTracker: string,
+  externalDeviceId: string
 }>>
 
 export type CustomConfigT = $ReadOnly<$Shape<{
@@ -172,6 +173,7 @@ export type InitOptionsT = $ReadOnly<$Shape<{|
   appToken: $PropertyType<BaseParamsT, 'appToken'>,
   environment: $PropertyType<BaseParamsT, 'environment'>,
   defaultTracker: $PropertyType<BaseParamsT, 'defaultTracker'>,
+  externalDeviceId: $PropertyType<BaseParamsT, 'externalDeviceId'>,
   customUrl: $PropertyType<CustomConfigT, 'customUrl'>,
   eventDeduplicationListLimit: $PropertyType<CustomConfigT, 'eventDeduplicationListLimit'>,
   attributionCallback: (string, Object) => mixed

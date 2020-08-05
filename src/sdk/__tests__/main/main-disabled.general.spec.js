@@ -99,15 +99,15 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.restart()
 
-      const a = suite.expectStart()
-
-      expect.assertions(3 + a.assertions)
-
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
       expect(Disable.restore).toHaveBeenCalled()
 
-      return a.promise
+      const a = suite.expectStart_Async()
+
+      return a.promise.then(()=>{
+        expect.assertions(3 + a.assertions)
+      })
     })
   })
 
@@ -136,12 +136,12 @@ describe('main entry point - test disable/enable when in initially disabled stat
       expect(Disable.restore).toHaveBeenCalled()
 
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent()
-      const a3 = suite.expectStart()
+      const a2 = suite.expectDelayedTrackEvent_Async()
+      const a3 = suite.expectStart_Async()
 
-      expect.assertions(3 + a1.assertions + a2.assertions + a3.assertions)
-
-      return a2.promise
+      return Promise.all([a2.promise, a3.promise]).then(()=>{
+        expect.assertions(3 + a1.assertions + a2.assertions + a3.assertions)
+      })
     })
 
     it('fails to enable already enabled sdk', () => {
@@ -242,15 +242,15 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       AdjustInstance.restart()
 
-      const a = suite.expectStart()
-
-      expect.assertions(3 + a.assertions)
-
       expect(Logger.default.log).toHaveBeenCalledTimes(1)
       expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
       expect(Disable.restore).toHaveBeenCalled()
 
-      return a.promise
+      const a = suite.expectStart_Async()
+
+      return a.promise.then(()=>{
+        expect.assertions(3 + a.assertions)
+      })
     })
   })
 
@@ -283,12 +283,12 @@ describe('main entry point - test disable/enable when in initially disabled stat
       AdjustInstance.initSdk(suite.config)
 
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent()
-      const a3 = suite.expectStart()
+      const a2 = suite.expectDelayedTrackEvent_Async()
+      const a3 = suite.expectStart_Async()
 
-      expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-
-      return a2.promise
+      return Promise.all([a2.promise, a3.promise]).then(()=>{
+        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+      })
     })
 
     it('fails to enable already enabled sdk', () => {
@@ -367,12 +367,12 @@ describe('main entry point - test disable/enable when in initially disabled stat
       AdjustInstance.initSdk(suite.config)
 
       const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent()
-      const a3 = suite.expectStart()
+      const a2 = suite.expectDelayedTrackEvent_Async()
+      const a3 = suite.expectStart_Async()
 
-      expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-
-      return a2.promise
+      return Promise.all([a2.promise, a3.promise]).then(()=>{
+        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+      })
     })
   })
 

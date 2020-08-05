@@ -54,7 +54,7 @@ function forget (force?: boolean): boolean {
   _request.send({
     params: {...ActivityState.getParams()}
   }).then(() => {
-    publish('sdk:gdpr-forget-me', true)
+    publish('sdk:gdpr-forget-me')
   })
 
   return true

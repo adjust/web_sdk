@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -140,11 +140,11 @@ module.exports = _objectSpread2;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayWithHoles = __webpack_require__(5);
+var arrayWithHoles = __webpack_require__(10);
 
-var iterableToArrayLimit = __webpack_require__(14);
+var iterableToArrayLimit = __webpack_require__(11);
 
-var nonIterableRest = __webpack_require__(6);
+var nonIterableRest = __webpack_require__(12);
 
 function _slicedToArray(arr, i) {
   return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || nonIterableRest();
@@ -1351,17 +1351,17 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(12), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8), __webpack_require__(9)))
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayWithoutHoles = __webpack_require__(15);
+var arrayWithoutHoles = __webpack_require__(13);
 
-var iterableToArray = __webpack_require__(7);
+var iterableToArray = __webpack_require__(14);
 
-var nonIterableSpread = __webpack_require__(16);
+var nonIterableSpread = __webpack_require__(15);
 
 function _toConsumableArray(arr) {
   return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
@@ -1371,39 +1371,9 @@ module.exports = _toConsumableArray;
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports) {
-
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
-module.exports = _arrayWithHoles;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance");
-}
-
-module.exports = _nonIterableRest;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-}
-
-module.exports = _iterableToArray;
-
-/***/ }),
-/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var objectWithoutPropertiesLoose = __webpack_require__(11);
+var objectWithoutPropertiesLoose = __webpack_require__(7);
 
 function _objectWithoutProperties(source, excluded) {
   if (source == null) return {};
@@ -1427,7 +1397,7 @@ function _objectWithoutProperties(source, excluded) {
 module.exports = _objectWithoutProperties;
 
 /***/ }),
-/* 9 */
+/* 6 */
 /***/ (function(module, exports) {
 
 function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
@@ -1449,23 +1419,7 @@ function _typeof(obj) {
 module.exports = _typeof;
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayWithHoles = __webpack_require__(5);
-
-var iterableToArray = __webpack_require__(7);
-
-var nonIterableRest = __webpack_require__(6);
-
-function _toArray(arr) {
-  return arrayWithHoles(arr) || iterableToArray(arr) || nonIterableRest();
-}
-
-module.exports = _toArray;
-
-/***/ }),
-/* 11 */
+/* 7 */
 /***/ (function(module, exports) {
 
 function _objectWithoutPropertiesLoose(source, excluded) {
@@ -1486,7 +1440,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 module.exports = _objectWithoutPropertiesLoose;
 
 /***/ }),
-/* 12 */
+/* 8 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -1676,7 +1630,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 13 */
+/* 9 */
 /***/ (function(module, exports) {
 
 var g;
@@ -1702,7 +1656,17 @@ module.exports = g;
 
 
 /***/ }),
-/* 14 */
+/* 10 */
+/***/ (function(module, exports) {
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+module.exports = _arrayWithHoles;
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports) {
 
 function _iterableToArrayLimit(arr, i) {
@@ -1738,7 +1702,17 @@ function _iterableToArrayLimit(arr, i) {
 module.exports = _iterableToArrayLimit;
 
 /***/ }),
-/* 15 */
+/* 12 */
+/***/ (function(module, exports) {
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+}
+
+module.exports = _nonIterableRest;
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports) {
 
 function _arrayWithoutHoles(arr) {
@@ -1754,7 +1728,17 @@ function _arrayWithoutHoles(arr) {
 module.exports = _arrayWithoutHoles;
 
 /***/ }),
-/* 16 */
+/* 14 */
+/***/ (function(module, exports) {
+
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+module.exports = _iterableToArray;
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports) {
 
 function _nonIterableSpread() {
@@ -1764,7 +1748,7 @@ function _nonIterableSpread() {
 module.exports = _nonIterableSpread;
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1808,7 +1792,7 @@ var objectSpread2 = __webpack_require__(0);
 var objectSpread2_default = /*#__PURE__*/__webpack_require__.n(objectSpread2);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/objectWithoutProperties.js
-var objectWithoutProperties = __webpack_require__(8);
+var objectWithoutProperties = __webpack_require__(5);
 var objectWithoutProperties_default = /*#__PURE__*/__webpack_require__.n(objectWithoutProperties);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
@@ -1819,6 +1803,22 @@ var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
 var toConsumableArray = __webpack_require__(4);
 var toConsumableArray_default = /*#__PURE__*/__webpack_require__.n(toConsumableArray);
 
+// CONCATENATED MODULE: ./src/sdk/globals.js
+/*:: declare var __ADJUST__NAMESPACE: string*/
+
+/*:: declare var __ADJUST__SDK_VERSION: string*/
+
+/*:: declare var process: {|
+  env: {|
+    NODE_ENV: 'development' | 'production' | 'test'
+  |}
+|}*/
+var Globals = {
+  namespace: "adjust-sdk" || false,
+  version: "5.1.0" || false,
+  env: "production"
+};
+/* harmony default export */ var globals = (Globals);
 // CONCATENATED MODULE: ./src/sdk/constants.js
 var SECOND = 1000;
 var MINUTE = SECOND * 60;
@@ -1840,7 +1840,7 @@ var defineProperty = __webpack_require__(2);
 var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
-var helpers_typeof = __webpack_require__(9);
+var helpers_typeof = __webpack_require__(6);
 var typeof_default = /*#__PURE__*/__webpack_require__.n(helpers_typeof);
 
 // CONCATENATED MODULE: ./src/sdk/utilities.js
@@ -2067,17 +2067,18 @@ function isEmptyEntry(value) {
 }
 
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/toArray.js
-var toArray = __webpack_require__(10);
-var toArray_default = /*#__PURE__*/__webpack_require__.n(toArray);
-
 // CONCATENATED MODULE: ./src/sdk/logger.js
-
 
 
 var _levels2;
 
 
+
+/*:: import { type LogOptionsT } from './types';*/
+
+/*:: type LogLevelT = $PropertyType<LogOptionsT, 'logLevel'>*/
+
+/*:: type MethodNameT = 'log' | 'info' | 'error' | 'warn'*/
 
 var LEVEL_NONE = 'none';
 var LEVEL_ERROR = 'error';
@@ -2108,26 +2109,10 @@ var _envLogLevels = {
   production: LEVEL_ERROR,
   test: LEVEL_VERBOSE
   /**
-   * Available logger methods
-   *
-   * @type {Array}
-   * @private
+   * Current logger level
    */
 
 };
-var _methods = [{
-  name: 'log',
-  level: LEVEL_VERBOSE
-}, {
-  name: 'info',
-  level: LEVEL_INFO
-}, {
-  name: 'error',
-  level: LEVEL_ERROR
-}];
-/**
- * Current logger level
- */
 
 var _level = _getDefaultLogLevel();
 /**
@@ -2146,8 +2131,10 @@ var _output = '';
  * @private
  */
 
-function _getDefaultLogLevel() {
-  return _envLogLevels["production"] || LEVEL_ERROR;
+function _getDefaultLogLevel()
+/*: LogLevelT*/
+{
+  return _envLogLevels[globals.env] || LEVEL_ERROR;
 }
 /**
  * Set logger level, fallback to default log level
@@ -2157,11 +2144,17 @@ function _getDefaultLogLevel() {
  */
 
 
-function setLogLevel(logLevel, logOutput) {
+function setLogLevel(logLevel
+/*: LogLevelT*/
+, logOutput
+/*: string*/
+)
+/*: void*/
+{
   var exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1;
 
   if (!exists) {
-    _log('error', 'You must set one of the available log levels: verbose, info, error or none');
+    _log('error', 'error', 'You must set one of the available log levels: verbose, info, error or none');
 
     return;
   }
@@ -2169,69 +2162,86 @@ function setLogLevel(logLevel, logOutput) {
   _level = logLevel || _getDefaultLogLevel();
   _output = logOutput;
 
-  _log('info', "Log level set to ".concat(_level));
+  _log('info', logLevel, "Log level set to ".concat(_level));
 }
 /**
  * Output the message to the console
  *
  * @param {string} methodName
- * @param {string} args
+ * @param {string} logLevel
+ * @param {Array} args
  * @private
  */
 
 
-function _log(methodName) {
-  var now = new Date().toISOString();
+function _log
+/*:: <T>*/
+(methodName
+/*: MethodNameT*/
+, logLevel
+/*: LogLevelT*/
+)
+/*: void*/
+{
+  var _console;
 
-  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
+  if (_levels[_level] < _levels[logLevel]) {
+    return;
   }
 
-  var message = ["[".concat(config.namespace, "]"), now, "".concat(methodName.toUpperCase(), ":")].concat(args);
+  var time = new Date().toISOString();
+  var spaces = methodName === 'log' ? '  ' : methodName === 'info' ? ' ' : '';
+  var messagePrefix = ["[".concat(globals.namespace, "]"), time, "".concat(methodName.toUpperCase(), ":").concat(spaces)];
   var outputContainer = _output ? document.querySelector(_output) : null;
-  console[methodName].apply(null, message); // eslint-disable-line
+
+  for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+    args[_key - 2] = arguments[_key];
+  }
+
+  (_console = console)[methodName].apply(_console, messagePrefix.concat(args)); // eslint-disable-line
+
 
   if (outputContainer) {
-    var _message = toArray_default()(message),
-        namespace = _message[0],
-        time = _message[1],
-        prefix = _message[2],
-        rest = _message.slice(3);
-
-    var spaces = methodName === 'log' ? '  ' : methodName === 'info' ? ' ' : '';
-    outputContainer.textContent += "".concat(namespace, " ").concat(time, " ").concat(prefix).concat(spaces, " ").concat(rest.map(function (m) {
+    outputContainer.textContent += "".concat(messagePrefix.join(' '), " ").concat(args.map(function (m) {
       return isObject(m) ? JSON.stringify(m) : m;
     }).join(' '), "\n");
     outputContainer.scrollTop = outputContainer.scrollHeight;
   }
 }
+/**
+ * Apply predefined log level and return log method
+ *
+ * @param {string} name
+ * @param {string} logLevel
+ * @returns {Array} args
+ * @private
+ */
+
+
+function _applyLevel(name
+/*: MethodNameT*/
+, logLevel
+/*: LogLevelT*/
+) {
+  return function () {
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    _log.apply(void 0, [name, logLevel].concat(args));
+  };
+}
 
 var Logger = {
-  setLogLevel: setLogLevel
+  setLogLevel: setLogLevel,
+  log: _applyLevel('log', LEVEL_VERBOSE),
+  info: _applyLevel('info', LEVEL_INFO),
+  error: _applyLevel('error', LEVEL_ERROR)
 };
-
-_methods.forEach(function (method) {
-  Object.defineProperty(Logger, method.name, {
-    writable: false,
-    value: function value() {
-      if (_levels[_level] >= _levels[method.level]) {
-        for (var _len2 = arguments.length, message = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          message[_key2] = arguments[_key2];
-        }
-
-        _log.apply(void 0, [method.name].concat(message));
-      }
-    }
-  });
-});
-
 /* harmony default export */ var logger = (Logger);
 // CONCATENATED MODULE: ./src/sdk/config.js
-/*:: declare var __ADJUST__NAMESPACE: string*/
-
-/*:: declare var __ADJUST__SDK_VERSION: string*/
-
 /*:: import { type BaseParamsT, type CustomConfigT, type InitOptionsT, type BaseParamsListT, type BaseParamsMandatoryListT, type CustomConfigListT } from './types';*/
+
 
 
 
@@ -2243,6 +2253,7 @@ _methods.forEach(function (method) {
  * - app token
  * - environment
  * - default tracker
+ * - external device ID
  *
  * @type {Object}
  * @private
@@ -2282,7 +2293,7 @@ var _mandatory
 
 var _allowedParams
 /*: BaseParamsListT*/
-= [].concat(_mandatory, ['defaultTracker']);
+= [].concat(_mandatory, ['defaultTracker', 'externalDeviceId']);
 /**
  * Allowed configuration overrides
  *
@@ -2308,12 +2319,13 @@ var _allowedConfig
  */
 
 var _baseConfig = {
-  namespace: "adjust-sdk" || false,
-  version: "5.0.0" || false,
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
   requestValidityWindow: 28 * DAY,
-  baseUrl:  false ? undefined : {
+  baseUrl: globals.env === 'test' ? {
+    app: 'app',
+    gdpr: 'gdpr'
+  } : {
     app: 'https://app.adjust.com',
     gdpr: 'https://gdpr.adjust.com'
   }
@@ -2865,8 +2877,14 @@ var StoreNames = _getStoreNames();
  * @returns {string}
  * @private
  */
-function _prependZero(value) {
-  var power = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+function _prependZero(value
+/*: number*/
+)
+/*: string*/
+{
+  var power
+  /*: number*/
+  = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
   var formatted = value + '';
 
   for (var i = 1; i <= power; i += 1) {
@@ -2879,13 +2897,18 @@ function _prependZero(value) {
 }
 /**
  * Get formatted date (YYYY-MM-DD)
+ *
  * @param date
  * @returns {string}
  * @private
  */
 
 
-function _getDate(date) {
+function _getDate(date
+/*: Date*/
+)
+/*: string*/
+{
   var day = _prependZero(date.getDate());
 
   var month = _prependZero(date.getMonth() + 1);
@@ -2902,7 +2925,11 @@ function _getDate(date) {
  */
 
 
-function _getTime(date) {
+function _getTime(date
+/*: Date*/
+)
+/*: string*/
+{
   var hours = _prependZero(date.getHours(), 1);
 
   var minutes = _prependZero(date.getMinutes());
@@ -2922,7 +2949,11 @@ function _getTime(date) {
  */
 
 
-function _getTimezone(date) {
+function _getTimezone(date
+/*: Date*/
+)
+/*: string*/
+{
   var offsetInMinutes = date.getTimezoneOffset();
 
   var hoursOffset = _prependZero(Math.floor(Math.abs(offsetInMinutes) / 60));
@@ -2940,7 +2971,11 @@ function _getTimezone(date) {
  */
 
 
-function getTimestamp(timestamp) {
+function getTimestamp(timestamp
+/*: number*/
+)
+/*: string*/
+{
   var d = timestamp ? new Date(timestamp) : new Date();
 
   var date = _getDate(d);
@@ -2960,7 +2995,13 @@ function getTimestamp(timestamp) {
  */
 
 
-function timePassed(d1, d2) {
+function timePassed(d1
+/*: number*/
+, d2
+/*: number*/
+)
+/*: number*/
+{
   if (isNaN(d1) || isNaN(d2)) {
     return 0;
   }
@@ -3592,7 +3633,7 @@ function decodeErrorMessage(_ref10) {
 
 
 
-var _storageName = config.namespace;
+var _storageName = globals.namespace;
 var _storeNames = scheme_map.storeNames.left;
 /**
  * Get the value for specified key
@@ -3669,13 +3710,17 @@ Object.freeze(QuickStorage.stores);
 // CONCATENATED MODULE: ./src/sdk/pub-sub.js
 
 
+/*:: type CallbackT<T> = {|
+  id: string,
+  cb: (string, T) => mixed
+|}*/
+
 /**
  * List of events with subscribed callbacks
  *
  * @type {Object}
  * @private
  */
-
 var _list = {};
 /**
  * Reference to timeout ids so they can be cleared on destroy
@@ -3692,7 +3737,9 @@ var _timeoutIds = [];
  * @private
  */
 
-function _getId() {
+function _getId()
+/*: string*/
+{
   return 'id' + Math.random().toString(36).substr(2, 16);
 }
 /**
@@ -3704,17 +3751,29 @@ function _getId() {
  */
 
 
-function subscribe(name, cb) {
+function subscribe
+/*:: <T>*/
+(name
+/*: string*/
+, cb
+/*: $PropertyType<CallbackT<T>, 'cb'>*/
+)
+/*: string*/
+{
   var id = _getId();
+
+  var callback
+  /*: CallbackT<T>*/
+  = {
+    id: id,
+    cb: cb
+  };
 
   if (!_list[name]) {
     _list[name] = [];
   }
 
-  _list[name].push({
-    id: id,
-    cb: cb
-  });
+  _list[name].push(callback);
 
   return id;
 }
@@ -3725,7 +3784,11 @@ function subscribe(name, cb) {
  */
 
 
-function unsubscribe(id) {
+function unsubscribe(id
+/*: string*/
+)
+/*: void*/
+{
   if (!id) {
     return;
   }
@@ -3734,7 +3797,11 @@ function unsubscribe(id) {
     var _ref2 = slicedToArray_default()(_ref, 2),
         callbacks = _ref2[1];
 
-    return callbacks.some(function (callback, i) {
+    return callbacks.some(function (callback
+    /*: CallbackT<T>*/
+    , i
+    /*: number*/
+    ) {
       if (callback.id === id) {
         callbacks.splice(i, 1);
         return true;
@@ -3751,12 +3818,22 @@ function unsubscribe(id) {
  */
 
 
-function publish(name, args) {
+function publish
+/*:: <T>*/
+(name
+/*: string*/
+, args
+/*: T*/
+)
+/*: void*/
+{
   if (!_list[name]) {
-    return [];
+    return;
   }
 
-  _list[name].forEach(function (item) {
+  _list[name].forEach(function (item
+  /*: CallbackT<T>*/
+  ) {
     if (typeof item.cb === 'function') {
       _timeoutIds.push(setTimeout(function () {
         return item.cb(name, args);
@@ -3769,7 +3846,9 @@ function publish(name, args) {
  */
 
 
-function pub_sub_destroy() {
+function pub_sub_destroy()
+/*: void*/
+{
   _timeoutIds.forEach(clearTimeout);
 
   _timeoutIds = [];
@@ -3929,7 +4008,7 @@ function reload()
   = (_preferences || {}).sdkDisabled || null;
 
   if (stored.sdkDisabled && !sdkDisabled) {
-    publish('sdk:shutdown', true);
+    publish('sdk:shutdown');
   }
 
   _setPreferences();
@@ -3967,7 +4046,7 @@ var _Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise :
 
 
 
-var _dbName = config.namespace;
+var _dbName = globals.namespace;
 var _dbVersion = 1;
 
 var _db;
@@ -5260,7 +5339,7 @@ var storage_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Pr
  * @private
  */
 
-var storage_methods = {
+var _methods = {
   getAll: _getAll,
   getFirst: _getFirst,
   getItem: _getItem,
@@ -5543,7 +5622,7 @@ function _clear(storage, storeName) {
 
 
 function _augment(storage) {
-  return entries(storage_methods).map(function (_ref) {
+  return entries(_methods).map(function (_ref) {
     var _ref2 = slicedToArray_default()(_ref, 2),
         methodName = _ref2[0],
         method = _ref2[1];
@@ -5783,6 +5862,7 @@ function default_params_defaultParams()
 
 var http_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
 /*:: import { type UrlT, type DefaultParamsT, type HttpSuccessResponseT, type HttpErrorResponseT, type HttpRequestParamsT, type ErrorCodeT } from './types';*/
+
 
 
 
@@ -6041,7 +6121,7 @@ function _prepareHeaders(xhr
 /*: void*/
 {
   var logHeader = 'REQUEST HEADERS:';
-  var headers = [['Client-SDK', "js".concat(config.version)], ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']];
+  var headers = [['Client-SDK', "js".concat(globals.version)], ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']];
   logger.log(logHeader);
   headers.forEach(function (_ref13) {
     var _ref14 = slicedToArray_default()(_ref13, 2),
@@ -6153,7 +6233,7 @@ function _interceptSuccess(result
   var optedOut = result.tracking_state === 'opted_out';
 
   if (!isGdprRequest && optedOut) {
-    publish('sdk:gdpr-forget-me', true);
+    publish('sdk:gdpr-forget-me');
     return result;
   }
 
@@ -6166,7 +6246,7 @@ function _interceptSuccess(result
   }
 
   if (isThirdPartySharingOptOutRequest) {
-    publish('sdk:third-party-sharing-opt-out', true);
+    publish('sdk:third-party-sharing-opt-out');
     return result;
   }
 
@@ -8140,14 +8220,16 @@ function _handleVisibilityChange()
 /**
  * Handle session request finish; update installed state
  *
- * @param {Object} e
+ * @param {string} e
  * @param {Object} result
  * @returns {Promise|void}
  * @private
  */
 
 
-function _handleSessionRequestFinish(e, result
+function _handleSessionRequestFinish(e
+/*: string*/
+, result
 /*: HttpSuccessResponseT | HttpErrorResponseT*/
 )
 /*: ?Promise<mixed>*/
@@ -8514,7 +8596,7 @@ function forget(force
   gdpr_forget_device_request.send({
     params: objectSpread2_default()({}, activity_state.getParams())
   }).then(function () {
-    publish('sdk:gdpr-forget-me', true);
+    publish('sdk:gdpr-forget-me');
   });
 
   return true;
@@ -9077,7 +9159,7 @@ var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promi
 
 
 
-/*:: type IntiConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>*/
+/*:: type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>*/
 
 /**
  * In-memory parameters to be used if restarting
@@ -9523,6 +9605,7 @@ function main_error(error
  * @param {string} options.appToken
  * @param {string} options.environment
  * @param {string=} options.defaultTracker
+ * @param {string=} options.externalDeviceId
  * @param {string=} options.customUrl
  * @param {number=} options.eventDeduplicationListLimit
  * @param {Function=} options.attributionCallback

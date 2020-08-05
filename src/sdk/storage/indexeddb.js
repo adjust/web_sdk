@@ -1,4 +1,4 @@
-import Config from '../config'
+import Globals from '../globals'
 import SchemeMap from './scheme-map'
 import ActivityState from '../activity-state'
 import QuickStorage from '../storage/quick-storage'
@@ -7,7 +7,7 @@ import {recover as recoverPreferences} from '../preferences'
 import {isEmpty, isObject, entries} from '../utilities'
 import {convertRecord, convertStoreName} from './converter'
 
-const _dbName = Config.namespace
+const _dbName = Globals.namespace
 const _dbVersion = 1
 let _db
 

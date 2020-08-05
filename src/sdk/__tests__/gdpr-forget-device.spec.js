@@ -104,7 +104,7 @@ describe('GDPR forget device functionality', () => {
 
     return Utils.flushPromises()
       .then(() => {
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me', true)
+        expect(PubSub.publish).toHaveBeenCalledWith('sdk:gdpr-forget-me')
       })
   })
 

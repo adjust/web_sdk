@@ -8,7 +8,8 @@ const appConfig = {
   logLevel: 'verbose', // none, error, info, verbose
   logOutput: '#log',
   // defaultTracker: 'YOUR_DEFAULT_TRACKER',
-  // customUrl: 'YOUR_CUSTOM_URL'
+  // externalDeviceId: 'YOUR_EXTERNAL_DEVICE_ID',
+  // customUrl: 'YOUR_CUSTOM_URL',
   // eventDeduplicationListLimit: 'YOUR_EVENT_DEDUPLICATION_LIST_LIMIT'
 }
 

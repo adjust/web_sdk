@@ -1,3 +1,12 @@
+### Version 5.1.0 (5th August 2020)
+#### Added
+- Added external device ID support.
+
+#### Fixed
+- Fixed SDK initialization in IE11.
+
+---
+
 ### Version 5.0.0 (15th May 2020)
 #### Added
 - New major SDK update.

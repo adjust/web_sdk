@@ -419,11 +419,11 @@ describe('main entry point - test instance initiation when storage is available'
 
     it('sets basic configuration', () => {
 
-      const a = suite.expectStart()
+      const a = suite.expectStart_Async()
 
-      expect.assertions(a.assertions)
-
-      return a.promise
+      return a.promise.then(() => {
+        expect.assertions(a.assertions)
+      })
     })
 
     it('calls client-defined attribution callback when attribution is changed', () => {

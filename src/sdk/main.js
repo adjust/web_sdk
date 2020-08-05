@@ -25,7 +25,7 @@ import event from './event'
 import sdkClick from './sdk-click'
 import ActivityState from './activity-state'
 
-type IntiConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
+type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
 
 /**
  * In-memory parameters to be used if restarting
@@ -50,7 +50,7 @@ let _isStarted: boolean = false
  * @param {string} logLevel
  * @param {string} logOutput
  */
-function initSdk ({logLevel, logOutput, ...options}: IntiConfigT = {}): void {
+function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
 
   Logger.setLogLevel(logLevel, logOutput)
 
@@ -366,6 +366,7 @@ function _error (error: CustomErrorT | Error) {
  * @param {string} options.appToken
  * @param {string} options.environment
  * @param {string=} options.defaultTracker
+ * @param {string=} options.externalDeviceId
  * @param {string=} options.customUrl
  * @param {number=} options.eventDeduplicationListLimit
  * @param {Function=} options.attributionCallback
