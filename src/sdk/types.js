@@ -165,7 +165,7 @@ export type CustomConfigT = $ReadOnly<$Shape<{
 }>>
 
 export type LogOptionsT = $ReadOnly<$Shape<{|
-  logLevel: 'none' | 'error' | 'info' | 'verbose',
+  logLevel: 'none' | 'error' | 'warning' | 'info' | 'verbose',
   logOutput: string
 |}>>
 
