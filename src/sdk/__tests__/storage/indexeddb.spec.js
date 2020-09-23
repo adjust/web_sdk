@@ -17,7 +17,7 @@ describe('IndexedDB usage', () => {
   global.IDBKeyRange = IDBKeyRange
 
   beforeAll(() => {
-    jest.spyOn(Logger.default, 'error')
+    jest.spyOn(Logger.default, 'warn')
   })
 
   afterAll(() => {
@@ -29,14 +29,14 @@ describe('IndexedDB usage', () => {
     let supported = IndexedDB.isSupported()
 
     expect(supported).toBeTruthy()
-    expect(Logger.default.error).not.toHaveBeenCalled()
+    expect(Logger.default.warn).not.toHaveBeenCalled()
 
     delete global.indexedDB
 
     supported = IndexedDB.isSupported()
 
     expect(supported).toBeFalsy()
-    expect(Logger.default.error).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
+    expect(Logger.default.warn).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
 
     global.indexedDB = fakeIDB
 
@@ -51,7 +51,7 @@ describe('IndexedDB usage', () => {
     platformSpy.mockReturnValue('iPhone')
 
     expect(IndexedDB.isSupported()).toBeFalsy()
-    expect(Logger.default.error).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
+    expect(Logger.default.warn).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
 
     IndexedDB.getAll('activityState')
       .catch(error => {

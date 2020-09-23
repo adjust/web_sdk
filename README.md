@@ -99,10 +99,11 @@ By default this param is set to `10`. It is possible to override this limit but 
 
 <a id="log-level">**logLevel**</a> `string`
 
-By default this param is set to `error`. Possible values are `none`, `error`, `info`, `verbose`. We highly recommend that you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
+By default this param is set to `error`. Possible values are `none`, `error`, `warning`, `info`, `verbose`. We highly recommend that you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
 Here are more details about each log level:
 - `verbose` - will print detailed messages in case of certain actions
-- `info` - will print only basic info messages
+- `info` - will print only basic info messages, warnings and errors
+- `warning` - will print only warning and error messages
 - `error` - will print only error message
 - `none` - won't print anything
 

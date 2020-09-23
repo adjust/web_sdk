@@ -7,6 +7,7 @@ describe('test Logger functionality', () => {
   beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {})
     jest.spyOn(console, 'info').mockImplementation(() => {})
+    jest.spyOn(console, 'warn').mockImplementation(() => {})
     jest.spyOn(console, 'error').mockImplementation(() => {})
 
     Utils.mockDate(new Date(2019, 9, 14))
@@ -33,7 +34,7 @@ describe('test Logger functionality', () => {
         expect(console.info).toHaveBeenLastCalledWith('[adjust-sdk]', today, 'INFO: ', 'Log level set to error')
 
         Logger.default.setLogLevel('not-existing-level')
-        expect(console.error).toHaveBeenLastCalledWith('[adjust-sdk]', today, 'ERROR:', 'You must set one of the available log levels: verbose, info, error or none')
+        expect(console.error).toHaveBeenLastCalledWith('[adjust-sdk]', today, 'ERROR:', 'You must set one of the available log levels: verbose, info, warning, error or none')
 
         Logger.default.setLogLevel()
       })
@@ -45,6 +46,9 @@ describe('test Logger functionality', () => {
 
         Logger.default.info('Some', 'info')
         expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', today, 'INFO: ', 'Some', 'info')
+
+        Logger.default.warn('Some', 'warning', 'message')
+        expect(console.warn).toHaveBeenCalledWith('[adjust-sdk]', today, 'WARN: ', 'Some', 'warning', 'message')
 
         Logger.default.error('Some', 'error', 'message')
         expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', today, 'ERROR:', 'Some', 'error', 'message')
@@ -66,6 +70,11 @@ describe('test Logger functionality', () => {
       it('prints info messages', () => {
         Logger.default.info('Some message')
         expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', today, 'INFO: ', 'Some message')
+      })
+
+      it('prints warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).toHaveBeenCalledWith('[adjust-sdk]', today, 'WARN: ', 'Some warning')
       })
 
       it('prints error messages', () => {
@@ -95,6 +104,11 @@ describe('test Logger functionality', () => {
         expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', today, 'INFO: ', 'Some message')
       })
 
+      it('prints warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).toHaveBeenCalledWith('[adjust-sdk]', today, 'WARN: ', 'Some warning')
+      })
+
       it('prints error messages', () => {
         Logger.default.error('Some error message')
         expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', today, 'ERROR:', 'Some error message')
@@ -120,6 +134,11 @@ describe('test Logger functionality', () => {
       it('does not print info messages', () => {
         Logger.default.info('Some message')
         expect(console.info).not.toHaveBeenCalled()
+      })
+
+      it('does not print warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).not.toHaveBeenCalled()
       })
 
       it('prints error messages', () => {
@@ -148,6 +167,11 @@ describe('test Logger functionality', () => {
         expect(console.info).not.toHaveBeenCalled()
       })
 
+      it('does not print warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).not.toHaveBeenCalled()
+      })
+
       it('prints error messages', () => {
         Logger.default.error('Some error message')
         expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', today, 'ERROR:', 'Some error message')
@@ -172,6 +196,11 @@ describe('test Logger functionality', () => {
       it('prints info messages', () => {
         Logger.default.info('Some message')
         expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', today, 'INFO: ', 'Some message')
+      })
+
+      it('prints warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).toHaveBeenCalledWith('[adjust-sdk]', today, 'WARN: ', 'Some warning')
       })
 
       it('prints error messages', () => {
@@ -200,6 +229,42 @@ describe('test Logger functionality', () => {
         expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', today, 'INFO: ', 'Some message')
       })
 
+      it('prints warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).toHaveBeenCalledWith('[adjust-sdk]', today, 'WARN: ', 'Some warning')
+      })
+
+      it('prints error messages', () => {
+        Logger.default.error('Some error message')
+        expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', today, 'ERROR:', 'Some error message')
+      })
+    })
+  })
+
+  describe('explicit warning log level', () => {
+    jest.isolateModules(() => {
+      const Logger = require('../logger')
+
+      beforeAll(() => {
+        Logger.default.setLogLevel('warning')
+      })
+
+      it('does not print verbose messages', () => {
+        Logger.default.log('Some message with looooong explanation')
+        expect(console.log).not.toHaveBeenCalled()
+
+      })
+
+      it('does not print info messages', () => {
+        Logger.default.info('Some message')
+        expect(console.log).not.toHaveBeenCalled()
+      })
+
+      it('prints warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).toHaveBeenCalledWith('[adjust-sdk]', today, 'WARN: ', 'Some warning')
+      })
+
       it('prints error messages', () => {
         Logger.default.error('Some error message')
         expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', today, 'ERROR:', 'Some error message')
@@ -226,6 +291,11 @@ describe('test Logger functionality', () => {
         expect(console.log).not.toHaveBeenCalled()
       })
 
+      it('does not prints warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).not.toHaveBeenCalled()
+      })
+
       it('prints error messages', () => {
         Logger.default.error('Some error message')
         expect(console.error).toHaveBeenCalledWith('[adjust-sdk]', today, 'ERROR:', 'Some error message')
@@ -250,6 +320,11 @@ describe('test Logger functionality', () => {
       it('does not print info messages', () => {
         Logger.default.info('Some message')
         expect(console.log).not.toHaveBeenCalled()
+      })
+
+      it('does not prints warning messages', () => {
+        Logger.default.warn('Some warning')
+        expect(console.warn).not.toHaveBeenCalled()
       })
 
       it('prints error messages', () => {
@@ -292,6 +367,15 @@ describe('test Logger functionality', () => {
         history.push(`[adjust-sdk] ${today} INFO:  Some message`)
 
         expect(console.info).toHaveBeenCalledWith('[adjust-sdk]', today, 'INFO: ', 'Some message')
+        expect(logContainer.textContent).toEqual(history.join('\n') + '\n')
+      })
+
+      it('prints warning messages', () => {
+        Logger.default.warn('Some warning')
+
+        history.push(`[adjust-sdk] ${today} WARN:  Some warning`)
+
+        expect(console.warn).toHaveBeenCalledWith('[adjust-sdk]', today, 'WARN: ', 'Some warning')
         expect(logContainer.textContent).toEqual(history.join('\n') + '\n')
       })
 

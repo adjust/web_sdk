@@ -22,7 +22,7 @@ function isSupported () {
   const supported = !!indexedDB && !iOS
 
   if (!supported) {
-    Logger.error('IndexedDB is not supported in this browser')
+    Logger.warn('IndexedDB is not supported in this browser')
   }
 
   return supported

@@ -8,6 +8,7 @@ type MethodNameT = 'log' | 'info' | 'error' | 'warn'
 
 const LEVEL_NONE = 'none'
 const LEVEL_ERROR = 'error'
+const LEVEL_WARNING = 'warning'
 const LEVEL_INFO = 'info'
 const LEVEL_VERBOSE = 'verbose'
 
@@ -24,8 +25,22 @@ const LEVEL_VERBOSE = 'verbose'
 const _levels = {
   [LEVEL_NONE]: -1,
   [LEVEL_ERROR]: 0,
-  [LEVEL_INFO]: 1,
-  [LEVEL_VERBOSE]: 2
+  [LEVEL_WARNING]: 1,
+  [LEVEL_INFO]: 2,
+  [LEVEL_VERBOSE]: 3
+}
+
+/**
+ * Spaces placed after log level tag in console to align messages.
+ *
+ * @type {Object}
+ * @private
+ */
+const _spaces = {
+  'log': '  ',
+  'info': ' ',
+  'warn': ' ',
+  'error': ''
 }
 
 /**
@@ -73,7 +88,7 @@ function setLogLevel (logLevel: LogLevelT, logOutput: string): void {
   const exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1
 
   if (!exists) {
-    _log('error', 'error', 'You must set one of the available log levels: verbose, info, error or none')
+    _log('error', 'error', 'You must set one of the available log levels: verbose, info, warning, error or none')
     return
   }
 
@@ -97,7 +112,7 @@ function _log<T> (methodName: MethodNameT, logLevel: LogLevelT, ...args: Array<T
   }
 
   const time = (new Date()).toISOString()
-  const spaces = methodName === 'log' ? '  ' : (methodName === 'info' ? ' ' : '')
+  const spaces = _spaces[methodName]
   const messagePrefix = [`[${Globals.namespace}]`, time, `${methodName.toUpperCase()}:${spaces}`]
   const outputContainer = _output ? document.querySelector(_output) : null
 
@@ -127,6 +142,7 @@ const Logger = {
   setLogLevel,
   log: _applyLevel('log', LEVEL_VERBOSE),
   info: _applyLevel('info', LEVEL_INFO),
+  warn: _applyLevel('warn', LEVEL_WARNING),
   error: _applyLevel('error', LEVEL_ERROR)
 }
 

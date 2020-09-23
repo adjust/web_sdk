@@ -23,7 +23,7 @@ function isSupported () {
     storage.removeItem(uid)
     return !!(result && storage)
   } catch (exception) {
-    Logger.error('LocalStorage is not supported in this browser')
+    Logger.warn('LocalStorage is not supported in this browser')
     return false
   }
 
