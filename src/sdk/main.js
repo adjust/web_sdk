@@ -11,7 +11,7 @@ import Config from './config'
 import Storage from './storage/storage'
 import Logger from './logger'
 import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
-import {subscribe, destroy as pubSubDestroy} from './pub-sub'
+import {subscribe, unsubscribe, destroy as pubSubDestroy} from './pub-sub'
 import {watch as sessionWatch, destroy as sessionDestroy} from './session'
 import {start, clear as identityClear, destroy as identityDestroy} from './identity'
 import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
@@ -42,6 +42,14 @@ let _options: ?InitOptionsT = null
  * @private
  */
 let _isStarted: boolean = false
+
+/**
+ * Flag to mark if sdk is installed to delay public methods until SDK is ready to perform them
+ *
+ * @type {boolean}
+ * @private
+ */
+let _isInstalled: boolean = false
 
 /**
  * Initiate the instance with parameters
@@ -326,9 +334,21 @@ function _continue (activityState: ActivityStateMapT): Promise<void> {
       _isStarted = true
 
       if (isInstalled) {
+        _handleSdkInstalled()
         sharingDisableCheck()
       }
     })
+}
+
+/**
+ * Handles SDK installed and runs delayed tasks
+ */
+function _handleSdkInstalled () {
+  _isInstalled = true
+  
+  flush()
+
+  unsubscribe('sdk:installed')
 }
 
 /**
@@ -382,6 +402,7 @@ function _start (options: InitOptionsT): void {
 
   listenersRegister()
 
+  subscribe('sdk:installed', _handleSdkInstalled)
   subscribe('sdk:shutdown', () => _shutdown(true))
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
   subscribe('sdk:third-party-sharing-opt-out', sharingDisableFinish)
@@ -394,7 +415,6 @@ function _start (options: InitOptionsT): void {
   start()
     .then(_continue)
     .then(sdkClick)
-    .then(flush)
     .catch(_error)
 }
 
@@ -423,7 +443,7 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !_isStarted && (stopBeforeInit || Config.isInitialised())) {
+    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || Config.isInitialised())) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {

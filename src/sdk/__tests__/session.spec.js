@@ -52,6 +52,7 @@ describe('test session functionality', () => {
     jest.spyOn(PubSub, 'publish')
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(ActivityState.default, 'updateInstalled')
+    jest.spyOn(ActivityState.default, 'updateSessionLength')
 
     pvaSpy = jest.spyOn(Listeners, 'getVisibilityApiAccess')
   })
@@ -564,7 +565,7 @@ describe('test session functionality', () => {
 
       activityState = ActivityState.default.current
 
-      expect.assertions(68)
+      expect.assertions(76)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
       expect(activityState.timeSpent).toEqual(0)
@@ -665,6 +666,10 @@ describe('test session functionality', () => {
           return Utils.flushPromises()
         })
         .then(() => {
+          expect(Identity.sync).toHaveBeenCalledTimes(1)
+          expect(ActivityState.default.updateSessionLength).toHaveBeenCalledTimes(1)
+
+          expect(ActivityState.default.current.lastInterval).toEqual(1740) // 29m
 
           expect(setInterval).toHaveBeenCalledTimes(2)
           expect(clearInterval).toHaveBeenCalledTimes(3)
@@ -723,16 +728,24 @@ describe('test session functionality', () => {
           return Utils.flushPromises()
         })
         .then(() => {
-          goToForeground()
-
           activityState = ActivityState.default.current
 
           expect(Identity.persist).toHaveBeenCalledTimes(15)
           expect(activityState.timeSpent).toEqual(720) // 2m + 4m + 6m
           expect(activityState.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
-          expect(activityState.lastInterval).toEqual(1860) // 31m
 
-          return Utils.flushPromises()
+          goToForeground() // immediately resolves Identity.sync promise
+          expect(Identity.sync).toHaveBeenCalledTimes(2) // it's a second time when going foreground
+
+          return Promise.resolve() // resolving second promise from chain (corresponds to Identity.sync().then())
+            .then(() => {
+              expect(ActivityState.default.updateSessionLength).toHaveBeenCalledTimes(2)
+              expect(ActivityState.default.current.lastActive).toEqual(currentTime)
+              expect(ActivityState.default.current.timeSpent).toEqual(720) // 2m + 4m + 6m
+              expect(ActivityState.default.current.sessionLength).toEqual(2460) // 2m + (5m + 10m + 14m) + 4m + 6m
+              expect(ActivityState.default.current.lastInterval).toEqual(1860) // 31m
+            })
+            .then(Utils.flushPromises) // resolving pending promises
         })
         .then(() => Storage.default.getFirst('activityState'))
         .then(record => {

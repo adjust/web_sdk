@@ -88,45 +88,85 @@ describe('main entry point - test instance initiation when storage is available'
       expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK can not track event, sdk instance is not initialized')
     })
 
-    it('runs session first and then sdk-click request and track event', () => {
+    it('runs session first and then sdk-click request and track event after sdk was installed', () => {
+
+      global.history.pushState({}, '', '?adjust_referrer=param%3Dvalue&something=else')
+
+      expect.assertions(6)
+
+      AdjustInstance.initSdk(suite.config)
+      expect(PubSub.subscribe).toHaveBeenCalledWith('sdk:installed', expect.any(Function))
+
+      AdjustInstance.trackEvent({eventToken: 'bla123'})
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Running track event is delayed until Adjust SDK is up')
+
+      return Utils.flushPromises()
+        .then(() => {
+
+          let requests = Queue.push.mock.calls.map(call => call[0].url)
+
+          expect(requests[0]).toEqual('/session')
+          expect(requests[1]).toEqual('/sdk_click')
+
+          PubSub.publish('sdk:installed')
+          jest.runOnlyPendingTimers()
+          
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Delayed track event task is running now')
+
+          return Utils.flushPromises()
+            .then(() => {
+              requests = Queue.push.mock.calls.map(call => call[0].url)
+              expect(requests[2]).toEqual('/event')
+
+              global.history.pushState({}, '', '?')
+            })
+        })
+    })
+
+    it('runs session first and then sdk-click request', () => {
 
       global.history.pushState({}, '', '?adjust_referrer=param%3Dvalue&something=else')
 
       AdjustInstance.initSdk(suite.config)
-      AdjustInstance.trackEvent({eventToken: 'bla123'})
 
-      expect.assertions(3)
+      expect.assertions(2)
 
       return Utils.flushPromises()
         .then(() => {
+          PubSub.publish('sdk:installed')
+          jest.runOnlyPendingTimers()
 
           const requests = Queue.push.mock.calls.map(call => call[0].url)
 
           expect(requests[0]).toEqual('/session')
           expect(requests[1]).toEqual('/sdk_click')
-          expect(requests[2]).toEqual('/event')
 
           global.history.pushState({}, '', '?')
         })
     })
 
     it('respect the order of events tracked', () => {
+      expect.assertions(9)
 
       AdjustInstance.initSdk(suite.config)
 
-      AdjustInstance.trackEvent({eventToken: 'bla1'})
-      AdjustInstance.trackEvent({eventToken: 'bla2'})
-
-      expect.assertions(9)
-
       return Utils.flushPromises()
         .then(() => {
-
-          AdjustInstance.trackEvent({eventToken: 'bla3'})
-          AdjustInstance.trackEvent({eventToken: 'bla4'})
-          AdjustInstance.trackEvent({eventToken: 'bla5'})
+          PubSub.publish('sdk:installed')
+          jest.runOnlyPendingTimers()
+          
+          AdjustInstance.trackEvent({eventToken: 'bla1'})
+          AdjustInstance.trackEvent({eventToken: 'bla2'})
 
           return Utils.flushPromises()
+            .then(() => {
+
+            AdjustInstance.trackEvent({eventToken: 'bla3'})
+            AdjustInstance.trackEvent({eventToken: 'bla4'})
+            AdjustInstance.trackEvent({eventToken: 'bla5'})
+
+            return Utils.flushPromises()
+          })
         })
         .then(() => {
           const requests = Queue.push.mock.calls
@@ -164,6 +204,9 @@ describe('main entry point - test instance initiation when storage is available'
 
       return Utils.flushPromises()
         .then(() => {
+          PubSub.publish('sdk:installed')
+          jest.runOnlyPendingTimers()
+
           // for example disable has been done in another tab
           PubSub.publish('sdk:shutdown')
 
@@ -205,6 +248,9 @@ describe('main entry point - test instance initiation when storage is available'
 
         return Utils.flushPromises()
           .then(() => {
+            PubSub.publish('sdk:installed')
+            jest.runOnlyPendingTimers()
+
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
@@ -223,6 +269,9 @@ describe('main entry point - test instance initiation when storage is available'
 
             return Utils.flushPromises()
               .then(() => {
+                PubSub.publish('sdk:installed')
+                jest.runOnlyPendingTimers()
+
                 const requests = Queue.push.mock.calls
 
                 expect(requests.length).toBe(2)
@@ -239,6 +288,9 @@ describe('main entry point - test instance initiation when storage is available'
 
         return Utils.flushPromises()
           .then(() => {
+            PubSub.publish('sdk:installed')
+            jest.runOnlyPendingTimers()
+
             AdjustInstance.disableThirdPartySharing()
 
             const requests = Queue.push.mock.calls
@@ -257,6 +309,9 @@ describe('main entry point - test instance initiation when storage is available'
 
         return Utils.flushPromises()
           .then(() => {
+            PubSub.publish('sdk:installed')
+            jest.runOnlyPendingTimers()
+
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
@@ -280,6 +335,9 @@ describe('main entry point - test instance initiation when storage is available'
 
           return Utils.flushPromises()
             .then(() => {
+              PubSub.publish('sdk:installed')
+              jest.runOnlyPendingTimers()
+
               const requests = Queue.push.mock.calls
 
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
@@ -302,6 +360,9 @@ describe('main entry point - test instance initiation when storage is available'
 
           return Utils.flushPromises()
             .then(() => {
+              PubSub.publish('sdk:installed')
+              jest.runOnlyPendingTimers()
+
               const requests = Queue.push.mock.calls
 
               expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
@@ -327,6 +388,9 @@ describe('main entry point - test instance initiation when storage is available'
 
           return Utils.flushPromises()
             .then(() => {
+              PubSub.publish('sdk:installed')
+              jest.runOnlyPendingTimers()
+
               const requests = Queue.push.mock.calls
 
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
@@ -350,6 +414,9 @@ describe('main entry point - test instance initiation when storage is available'
 
           return Utils.flushPromises()
             .then(() => {
+              PubSub.publish('sdk:installed')
+              jest.runOnlyPendingTimers()
+
               AdjustInstance.disableThirdPartySharing()
 
               const requests = Queue.push.mock.calls
@@ -373,6 +440,9 @@ describe('main entry point - test instance initiation when storage is available'
 
           return Utils.flushPromises()
             .then(() => {
+              PubSub.publish('sdk:installed')
+              jest.runOnlyPendingTimers()
+
               AdjustInstance.disableThirdPartySharing()
 
               const requests = Queue.push.mock.calls
@@ -395,6 +465,9 @@ describe('main entry point - test instance initiation when storage is available'
 
           return Utils.flushPromises()
             .then(() => {
+              PubSub.publish('sdk:installed')
+              jest.runOnlyPendingTimers()
+
               AdjustInstance.disableThirdPartySharing()
               AdjustInstance.disableThirdPartySharing()
 
