@@ -32,15 +32,18 @@ module.exports = () => ({
     }),
     new FlowWebpackPlugin()
   ],
+  resolve: {
+    extensions: ['.ts', '.js', '.json']
+  },
   module: {
     rules: [{
       use: 'eslint-loader',
-      test: /\.js$/,
+      test: /\.(js|ts)$/,
       enforce: 'pre',
       exclude: /node_modules/
     }, {
       use: 'babel-loader',
-      test: /\.js$/,
+      test: /\.(js|ts)$/,
       exclude: /node_modules/
     }]
   }

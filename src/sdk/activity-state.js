@@ -310,7 +310,7 @@ function destroy (): void {
 
 const ActivityState = {
   get current () { return currentGetter() },
-  set current (value) { return currentSetter(value) },
+  set current (value) { currentSetter(value) },
   init,
   isStarted,
   toForeground,
