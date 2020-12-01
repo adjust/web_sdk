@@ -69,7 +69,7 @@ entries(_storeNames)
   .forEach(([, store]) => {
     Object.defineProperty(QuickStorage.stores, store.name, {
       get () { return _get(store.name) },
-      set (value) { return _set(store.name, value) }
+      set (value) { _set(store.name, value) }
     })
   })
 
