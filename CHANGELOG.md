@@ -1,3 +1,13 @@
+### Version 5.1.1 (14th December 2020)
+#### Added
+- Added `warning` log level to make non-critical issues look less frightening.
+
+#### Fixed
+- Fixed state synchronization issues between multiple tabs.
+- Fixed issue with switching the SDK offline and online which could cause requests loss.
+
+---
+
 ### Version 5.1.0 (5th August 2020)
 #### Added
 - Added external device ID support.
