@@ -26,5 +26,14 @@
     "quotes": ["error", "single"],
     "prefer-arrow-callback": "error",
     "prefer-object-spread": "error"
-  }
+  },
+
+  "overrides": [{
+    "files": ["*.ts"],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "rules": {
+      "semi": ["error", "never"]
+    }
+  }]
 }

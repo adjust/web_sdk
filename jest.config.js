@@ -1,9 +1,9 @@
 module.exports = {
   testMatch: [
-    '<rootDir>/src/sdk/**/?(*.)(spec|test).{js,jsx}'
+    '<rootDir>/src/sdk/**/?(*.)(spec|test).{js,ts}'
   ],
   transform: {
-    '^.+\\.(js|jsx)$': 'babel-jest'
+    '^.+\\.(js|ts)$': 'babel-jest'
   },
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',

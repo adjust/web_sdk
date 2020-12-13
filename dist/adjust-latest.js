@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -119,13 +119,13 @@ function _objectSpread2(target) {
     var source = arguments[i] != null ? arguments[i] : {};
 
     if (i % 2) {
-      ownKeys(source, true).forEach(function (key) {
+      ownKeys(Object(source), true).forEach(function (key) {
         defineProperty(target, key, source[key]);
       });
     } else if (Object.getOwnPropertyDescriptors) {
       Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
-      ownKeys(source).forEach(function (key) {
+      ownKeys(Object(source)).forEach(function (key) {
         Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
@@ -140,14 +140,16 @@ module.exports = _objectSpread2;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayWithHoles = __webpack_require__(10);
+var arrayWithHoles = __webpack_require__(12);
 
-var iterableToArrayLimit = __webpack_require__(11);
+var iterableToArrayLimit = __webpack_require__(13);
 
-var nonIterableRest = __webpack_require__(12);
+var unsupportedIterableToArray = __webpack_require__(5);
+
+var nonIterableRest = __webpack_require__(14);
 
 function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || nonIterableRest();
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
 }
 
 module.exports = _slicedToArray;
@@ -1351,20 +1353,22 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(10), __webpack_require__(11)))
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayWithoutHoles = __webpack_require__(13);
+var arrayWithoutHoles = __webpack_require__(15);
 
-var iterableToArray = __webpack_require__(14);
+var iterableToArray = __webpack_require__(16);
 
-var nonIterableSpread = __webpack_require__(15);
+var unsupportedIterableToArray = __webpack_require__(5);
+
+var nonIterableSpread = __webpack_require__(17);
 
 function _toConsumableArray(arr) {
-  return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
 }
 
 module.exports = _toConsumableArray;
@@ -1373,7 +1377,40 @@ module.exports = _toConsumableArray;
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var objectWithoutPropertiesLoose = __webpack_require__(7);
+var arrayLikeToArray = __webpack_require__(6);
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
+}
+
+module.exports = _unsupportedIterableToArray;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+module.exports = _arrayLikeToArray;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var objectWithoutPropertiesLoose = __webpack_require__(9);
 
 function _objectWithoutProperties(source, excluded) {
   if (source == null) return {};
@@ -1397,19 +1434,19 @@ function _objectWithoutProperties(source, excluded) {
 module.exports = _objectWithoutProperties;
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
-function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
-
 function _typeof(obj) {
-  if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
+  "@babel/helpers - typeof";
+
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
     module.exports = _typeof = function _typeof(obj) {
-      return _typeof2(obj);
+      return typeof obj;
     };
   } else {
     module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
     };
   }
 
@@ -1419,7 +1456,7 @@ function _typeof(obj) {
 module.exports = _typeof;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 function _objectWithoutPropertiesLoose(source, excluded) {
@@ -1440,7 +1477,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 module.exports = _objectWithoutPropertiesLoose;
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -1630,7 +1667,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var g;
@@ -1656,7 +1693,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 function _arrayWithHoles(arr) {
@@ -1666,14 +1703,11 @@ function _arrayWithHoles(arr) {
 module.exports = _arrayWithHoles;
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports) {
 
 function _iterableToArrayLimit(arr, i) {
-  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-    return;
-  }
-
+  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
   var _arr = [];
   var _n = true;
   var _d = false;
@@ -1702,57 +1736,56 @@ function _iterableToArrayLimit(arr, i) {
 module.exports = _iterableToArrayLimit;
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports) {
 
 function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
 module.exports = _nonIterableRest;
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports) {
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeToArray = __webpack_require__(6);
 
 function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
-  }
+  if (Array.isArray(arr)) return arrayLikeToArray(arr);
 }
 
 module.exports = _arrayWithoutHoles;
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports) {
 
 function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
 }
 
 module.exports = _iterableToArray;
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports) {
 
 function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
 module.exports = _nonIterableSpread;
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
+
+// NAMESPACE OBJECT: ./src/sdk/storage/indexeddb.ts
 var indexeddb_namespaceObject = {};
 __webpack_require__.r(indexeddb_namespaceObject);
 __webpack_require__.d(indexeddb_namespaceObject, "isSupported", function() { return isSupported; });
@@ -1770,6 +1803,8 @@ __webpack_require__.d(indexeddb_namespaceObject, "count", function() { return in
 __webpack_require__.d(indexeddb_namespaceObject, "clear", function() { return indexeddb_clear; });
 __webpack_require__.d(indexeddb_namespaceObject, "destroy", function() { return indexeddb_destroy; });
 __webpack_require__.d(indexeddb_namespaceObject, "__delete", function() { return __delete; });
+
+// NAMESPACE OBJECT: ./src/sdk/storage/localstorage.js
 var localstorage_namespaceObject = {};
 __webpack_require__.r(localstorage_namespaceObject);
 __webpack_require__.d(localstorage_namespaceObject, "isSupported", function() { return localstorage_isSupported; });
@@ -1792,7 +1827,7 @@ var objectSpread2 = __webpack_require__(0);
 var objectSpread2_default = /*#__PURE__*/__webpack_require__.n(objectSpread2);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/objectWithoutProperties.js
-var objectWithoutProperties = __webpack_require__(5);
+var objectWithoutProperties = __webpack_require__(7);
 var objectWithoutProperties_default = /*#__PURE__*/__webpack_require__.n(objectWithoutProperties);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
@@ -1815,7 +1850,7 @@ var toConsumableArray_default = /*#__PURE__*/__webpack_require__.n(toConsumableA
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || false,
-  version: "5.1.0" || false,
+  version: "5.1.1" || false,
   env: "production"
 };
 /* harmony default export */ var globals = (Globals);
@@ -1840,7 +1875,7 @@ var defineProperty = __webpack_require__(2);
 var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
-var helpers_typeof = __webpack_require__(6);
+var helpers_typeof = __webpack_require__(8);
 var typeof_default = /*#__PURE__*/__webpack_require__.n(helpers_typeof);
 
 // CONCATENATED MODULE: ./src/sdk/utilities.js
@@ -1943,7 +1978,7 @@ function findIndex(array, key, value) {
 function convertToMap() {
   var array = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   return array.reduce(function (acc, o) {
-    return objectSpread2_default()({}, acc, defineProperty_default()({}, o.key, o.value));
+    return objectSpread2_default()(objectSpread2_default()({}, acc), {}, defineProperty_default()({}, o.key, o.value));
   }, {});
 }
 /**
@@ -2002,7 +2037,7 @@ function reducer(acc, _ref) {
       key = _ref2[0],
       value = _ref2[1];
 
-  return objectSpread2_default()({}, acc, defineProperty_default()({}, key, value));
+  return objectSpread2_default()(objectSpread2_default()({}, acc), {}, defineProperty_default()({}, key, value));
 }
 /**
  * Extract enumerable properties in requested format from the object
@@ -2082,6 +2117,7 @@ var _levels2;
 
 var LEVEL_NONE = 'none';
 var LEVEL_ERROR = 'error';
+var LEVEL_WARNING = 'warning';
 var LEVEL_INFO = 'info';
 var LEVEL_VERBOSE = 'verbose';
 /**
@@ -2095,7 +2131,21 @@ var LEVEL_VERBOSE = 'verbose';
  * @private
  */
 
-var _levels = (_levels2 = {}, defineProperty_default()(_levels2, LEVEL_NONE, -1), defineProperty_default()(_levels2, LEVEL_ERROR, 0), defineProperty_default()(_levels2, LEVEL_INFO, 1), defineProperty_default()(_levels2, LEVEL_VERBOSE, 2), _levels2);
+var _levels = (_levels2 = {}, defineProperty_default()(_levels2, LEVEL_NONE, -1), defineProperty_default()(_levels2, LEVEL_ERROR, 0), defineProperty_default()(_levels2, LEVEL_WARNING, 1), defineProperty_default()(_levels2, LEVEL_INFO, 2), defineProperty_default()(_levels2, LEVEL_VERBOSE, 3), _levels2);
+/**
+ * Spaces placed after log level tag in console to align messages.
+ *
+ * @type {Object}
+ * @private
+ */
+
+
+var _spaces = {
+  'log': '  ',
+  'info': ' ',
+  'warn': ' ',
+  'error': ''
+};
 /**
  * Default logger level per environment
  *
@@ -2103,16 +2153,14 @@ var _levels = (_levels2 = {}, defineProperty_default()(_levels2, LEVEL_NONE, -1)
  * @private
  */
 
-
 var _envLogLevels = {
   development: LEVEL_VERBOSE,
   production: LEVEL_ERROR,
   test: LEVEL_VERBOSE
-  /**
-   * Current logger level
-   */
-
 };
+/**
+ * Current logger level
+ */
 
 var _level = _getDefaultLogLevel();
 /**
@@ -2154,7 +2202,7 @@ function setLogLevel(logLevel
   var exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1;
 
   if (!exists) {
-    _log('error', 'error', 'You must set one of the available log levels: verbose, info, error or none');
+    _log('error', 'error', 'You must set one of the available log levels: verbose, info, warning, error or none');
 
     return;
   }
@@ -2190,7 +2238,7 @@ function _log
   }
 
   var time = new Date().toISOString();
-  var spaces = methodName === 'log' ? '  ' : methodName === 'info' ? ' ' : '';
+  var spaces = _spaces[methodName];
   var messagePrefix = ["[".concat(globals.namespace, "]"), time, "".concat(methodName.toUpperCase(), ":").concat(spaces)];
   var outputContainer = _output ? document.querySelector(_output) : null;
 
@@ -2236,14 +2284,16 @@ var Logger = {
   setLogLevel: setLogLevel,
   log: _applyLevel('log', LEVEL_VERBOSE),
   info: _applyLevel('info', LEVEL_INFO),
+  warn: _applyLevel('warn', LEVEL_WARNING),
   error: _applyLevel('error', LEVEL_ERROR)
 };
 /* harmony default export */ var logger = (Logger);
 // CONCATENATED MODULE: ./src/sdk/config.js
+
+
+
+
 /*:: import { type BaseParamsT, type CustomConfigT, type InitOptionsT, type BaseParamsListT, type BaseParamsMandatoryListT, type CustomConfigListT } from './types';*/
-
-
-
 
 
 
@@ -2329,13 +2379,12 @@ var _baseConfig = {
     app: 'https://app.adjust.com',
     gdpr: 'https://gdpr.adjust.com'
   }
-  /**
-   * Check of configuration has been initialized
-   *
-   * @returns {boolean}
-   */
-
 };
+/**
+ * Check of configuration has been initialized
+ *
+ * @returns {boolean}
+ */
 
 function isInitialised()
 /*: boolean*/
@@ -2439,7 +2488,7 @@ function destroy()
   _customConfig = {};
 }
 
-var Config = objectSpread2_default()({}, _baseConfig, {
+var Config = objectSpread2_default()(objectSpread2_default()({}, _baseConfig), {}, {
   set: set,
   getBaseParams: getBaseParams,
   getCustomConfig: getCustomConfig,
@@ -2717,9 +2766,9 @@ function _flipStoreScheme(storeName, key, scheme) {
       return _getShortKey(storeName, key);
     })
   } : {};
-  return objectSpread2_default()({
+  return objectSpread2_default()(objectSpread2_default()(objectSpread2_default()({
     key: key
-  }, values, {}, keys, {}, composite);
+  }, values), keys), composite);
 }
 /**
  * Flip general scheme recursivelly
@@ -3011,8 +3060,9 @@ function timePassed(d1
 
 
 // CONCATENATED MODULE: ./src/sdk/activity-state.js
-/*:: import { type UrlT, type ActivityStateMapT, type CommonRequestParams } from './types';*/
 
+
+/*:: import { type UrlT, type ActivityStateMapT, type CommonRequestParams } from './types';*/
 
 
 
@@ -3124,7 +3174,7 @@ function _update(params
 )
 /*: void*/
 {
-  _activityState = objectSpread2_default()({}, _activityState, {}, params);
+  _activityState = objectSpread2_default()(objectSpread2_default()({}, _activityState), params);
 }
 /**
  * Set active flag to true when going foreground
@@ -3413,7 +3463,7 @@ var ActivityState = {
   },
 
   set current(value) {
-    return currentSetter(value);
+    currentSetter(value);
   },
 
   init: init,
@@ -3528,7 +3578,7 @@ function convertRecord(_ref2) {
         key = _ref6[0],
         value = _ref6[1];
 
-    return objectSpread2_default()({}, acc, defineProperty_default()({}, key, value));
+    return objectSpread2_default()(objectSpread2_default()({}, acc), {}, defineProperty_default()({}, key, value));
   }, {});
 }
 /**
@@ -3701,7 +3751,7 @@ entries(_storeNames).forEach(function (_ref3) {
       return _get(store.name);
     },
     set: function set(value) {
-      return _set(store.name, value);
+      _set(store.name, value);
     }
   });
 });
@@ -3951,7 +4001,7 @@ function setDisabled(value
 /*: void*/
 {
   var sdkDisabled = value ? objectSpread2_default()({}, value) : null;
-  quick_storage.stores[_storeName] = objectSpread2_default()({}, _getPreferences(), {
+  quick_storage.stores[_storeName] = objectSpread2_default()(objectSpread2_default()({}, _getPreferences()), {}, {
     sdkDisabled: sdkDisabled
   });
 
@@ -3986,7 +4036,7 @@ function setThirdPartySharing(value
 /*: void*/
 {
   var thirdPartySharingDisabled = value ? objectSpread2_default()({}, value) : null;
-  quick_storage.stores[_storeName] = objectSpread2_default()({}, _getPreferences(), {
+  quick_storage.stores[_storeName] = objectSpread2_default()(objectSpread2_default()({}, _getPreferences()), {}, {
     thirdPartySharingDisabled: thirdPartySharingDisabled
   });
 
@@ -4031,7 +4081,7 @@ function recover()
 }
 
 
-// CONCATENATED MODULE: ./src/sdk/storage/indexeddb.js
+// CONCATENATED MODULE: ./src/sdk/storage/indexeddb.ts
 
 
 
@@ -4049,7 +4099,9 @@ var _Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise :
 var _dbName = globals.namespace;
 var _dbVersion = 1;
 
-var _db;
+var _db
+/*: IDBDatabase | null*/
+;
 /**
  * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
  *
@@ -4057,14 +4109,16 @@ var _db;
  */
 
 
-function isSupported() {
+function isSupported()
+/*: boolean*/
+{
   var indexedDB = _getIDB();
 
   var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
   var supported = !!indexedDB && !iOS;
 
   if (!supported) {
-    logger.error('IndexedDB is not supported in this browser');
+    logger.warn('IndexedDB is not supported in this browser');
   }
 
   return supported;
@@ -4077,7 +4131,9 @@ function isSupported() {
  */
 
 
-function _getIDB() {
+function _getIDB()
+/*: IDBFactory*/
+{
   return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 }
 /**
@@ -4091,7 +4147,11 @@ function _getIDB() {
  */
 
 
-function _handleUpgradeNeeded(e, reject) {
+function _handleUpgradeNeeded(e
+/*: IDBVersionChangeEvent*/
+, reject
+/*: Function*/
+) {
   var db = e.target.result;
   e.target.transaction.onerror = reject;
   e.target.transaction.onabort = reject;
@@ -4201,7 +4261,11 @@ function _open() {
  */
 
 
-function _getTranStore(_ref5, reject) {
+function _getTranStore(_ref5, reject
+/*: Function*/
+)
+/*: {transaction: IDBTransaction, store: IDBObjectStore, index: IDBIndex, options: any}*/
+{
   var storeName = _ref5.storeName,
       mode = _ref5.mode;
 
@@ -4755,7 +4819,7 @@ function localstorage_isSupported() {
     storage.removeItem(uid);
     return !!(result && storage);
   } catch (exception) {
-    logger.error('LocalStorage is not supported in this browser');
+    logger.warn('LocalStorage is not supported in this browser');
     return false;
   }
 }
@@ -5352,16 +5416,15 @@ var _methods = {
   trimItems: _trimItems,
   count: _count,
   clear: _clear
-  /**
-   * Extends storage's getAll method by decoding returned records
-   *
-   * @param {Object} storage
-   * @param {string} storeName
-   * @returns {Promise}
-   * @private
-   */
-
 };
+/**
+ * Extends storage's getAll method by decoding returned records
+ *
+ * @param {Object} storage
+ * @param {string} storeName
+ * @returns {Promise}
+ * @private
+ */
 
 function _getAll(storage, storeName) {
   return storage.getAll(storeName).then(function (records) {
@@ -5853,7 +5916,7 @@ function default_params_defaultParams()
 /*: Promise<DefaultParamsT>*/
 {
   return _getQueueSize().then(function (queueSize) {
-    return objectSpread2_default()({}, _getCreatedAt(), {}, _getSentAt(), {}, _getWebUuid(), {}, _getTrackEnabled(), {}, _getPlatform(), {}, _getLanguage(), {}, _getMachineType(), {}, queueSize);
+    return objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
   });
 }
 // CONCATENATED MODULE: ./src/sdk/http.js
@@ -6019,7 +6082,7 @@ function _encodeParams(params
     });
   };
 
-  var allParams = entries(objectSpread2_default()({}, config.getBaseParams(), {}, defaultParams, {}, params)).map(function (_ref5) {
+  var allParams = entries(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()({}, config.getBaseParams()), defaultParams), params)).map(function (_ref5) {
     var _ref6 = slicedToArray_default()(_ref5, 2),
         key = _ref6[0],
         value = _ref6[1];
@@ -6297,16 +6360,15 @@ var _options = {
     delay: 100,
     maxDelay: 300
   }
-  /**
-   * Get random number in provided range
-   *
-   * @param {number} min
-   * @param {number} max
-   * @returns {number}
-   * @private
-   */
-
 };
+/**
+ * Get random number in provided range
+ *
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ * @private
+ */
 
 function _randomInRange(min, max) {
   return Math.random() * (max - min) + min;
@@ -6339,8 +6401,9 @@ function backOff(attempts
   return Math.round(delay);
 }
 // CONCATENATED MODULE: ./src/sdk/listeners.js
-/*:: import { type DocumentT } from './types';*/
 
+
+/*:: import { type DocumentT } from './types';*/
 
 /*:: type EventCbT = (e: Event) => void*/
 
@@ -6576,14 +6639,14 @@ var request_Request = function Request() {
     method: method,
     params: params,
     continueCb: continueCb
-    /**
-     * Url param per instance or per request
-     *
-     * @type {string}
-     * @private
-     */
-
   };
+  /**
+   * Url param per instance or per request
+   *
+   * @type {string}
+   * @private
+   */
+
   var _url
   /*: ?UrlT*/
   = url;
@@ -6653,14 +6716,13 @@ var request_Request = function Request() {
   = {
     request: DEFAULT_ATTEMPTS,
     connection: DEFAULT_ATTEMPTS
-    /**
-     * Waiting time for the request to be sent
-     *
-     * @type {number}
-     * @private
-     */
-
   };
+  /**
+   * Waiting time for the request to be sent
+   *
+   * @type {number}
+   * @private
+   */
 
   var _wait
   /*: WaitT*/
@@ -6863,7 +6925,7 @@ var request_Request = function Request() {
         return http({
           url: options.url,
           method: options.method,
-          params: objectSpread2_default()({}, filteredParams, {
+          params: objectSpread2_default()(objectSpread2_default()({}, filteredParams), {}, {
             attempts: (_attempts.request ? _attempts.request + 1 : 1) + _attempts.connection
           })
         }).then(function (result) {
@@ -7268,6 +7330,7 @@ var identity_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).P
 
 
 
+
 /*:: type InterceptT = {|
   exists: boolean,
   stored?: ?ActivityStateMapT
@@ -7406,7 +7469,7 @@ function persist()
     return identity_Promise.resolve(null);
   }
 
-  var activityState = objectSpread2_default()({}, activity_state.current, {
+  var activityState = objectSpread2_default()(objectSpread2_default()({}, activity_state.current), {}, {
     lastActive: Date.now()
   });
 
@@ -7428,9 +7491,18 @@ function sync()
   return storage_storage.getFirst(identity_storeName).then(function (activityState
   /*: ActivityStateMapT*/
   ) {
-    var lastActive = activity_state.current.lastActive || 0;
+    var current = activity_state.current;
+    var lastActive = current.lastActive || 0;
 
     if (_isLive() && lastActive < activityState.lastActive) {
+      // Checking if another SDK instance was installed while this one was in backgound
+      var installedUpdated = !current.installed && activityState.installed;
+      var sessionCountUpdated = (current.sessionCount || 0) < (activityState.sessionCount || 0);
+
+      if (installedUpdated || sessionCountUpdated) {
+        publish('sdk:installed');
+      }
+
       activity_state.current = activityState;
       reload();
     }
@@ -7537,16 +7609,15 @@ var _current
   running: false,
   timestamp: null,
   pause: null
-  /**
-   * Remove from the top and continue running pending requests
-   *
-   * @param {Object} result
-   * @param {Function} finish
-   * @returns {Promise}
-   * @private
-   */
-
 };
+/**
+ * Remove from the top and continue running pending requests
+ *
+ * @param {Object} result
+ * @param {Function} finish
+ * @returns {Promise}
+ * @private
+ */
 
 function queue_continue(result
 /*: HttpSuccessResponseT | HttpErrorResponseT*/
@@ -7646,7 +7717,7 @@ function push(_ref) {
     timestamp: _prepareTimestamp(),
     url: url,
     method: method,
-    params: objectSpread2_default()({}, activity_state.getParams(url), {}, filteredParams)
+    params: objectSpread2_default()(objectSpread2_default()({}, activity_state.getParams(url)), filteredParams)
   };
 
   if (timestamp) {
@@ -7698,7 +7769,7 @@ function _prepareToSend()
   return queue_request.send({
     url: url,
     method: method,
-    params: objectSpread2_default()({}, params, {
+    params: objectSpread2_default()(objectSpread2_default()({}, params), {}, {
       createdAt: getTimestamp(createdAt || timestamp)
     }),
     wait: wait || _checkWait()
@@ -7737,6 +7808,10 @@ function run()
   var _ref7 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       cleanUp = _ref7.cleanUp,
       wait = _ref7.wait;
+
+  if (_current.running) {
+    return queue_Promise.resolve({});
+  }
 
   _current.running = true;
 
@@ -7871,15 +7946,14 @@ var global_params_storeName = 'globalParams';
 var global_params_error = {
   short: 'No type provided',
   long: 'Global parameter type not provided, `callback` or `partner` types are available'
-  /**
-   * Omit type parameter from the collection
-   *
-   * @param {Array} params
-   * @returns {Array}
-   * @private
-   */
-
 };
+/**
+ * Omit type parameter from the collection
+ *
+ * @param {Array} params
+ * @returns {Array}
+ * @private
+ */
 
 function _omitType(params)
 /*: Array<GlobalParamsT>*/
@@ -8199,9 +8273,10 @@ function _handleBackground()
 function _handleForeground()
 /*: Promise<mixed>*/
 {
-  activity_state.updateSessionLength();
-  activity_state.toForeground();
-  return sync().then(_checkSession);
+  return sync().then(function () {
+    activity_state.updateSessionLength();
+    activity_state.toForeground();
+  }).then(_checkSession);
 }
 /**
  * Handle visibility change and perform appropriate actions
@@ -8240,6 +8315,7 @@ function _handleSessionRequestFinish(e
   }
 
   activity_state.updateInstalled();
+  publish('sdk:installed');
   return persist();
 }
 /**
@@ -8446,7 +8522,7 @@ function _setAttribution(result
   }).reduce(reducer, {
     adid: result.adid
   });
-  activity_state.current = objectSpread2_default()({}, activity_state.current, {
+  activity_state.current = objectSpread2_default()(objectSpread2_default()({}, activity_state.current), {}, {
     attribution: attribution
   });
   return persist().then(function () {
@@ -8567,14 +8643,13 @@ var gdpr_forget_device_logMessages = {
   pending: 'Adjust SDK will run GDPR Forget Me request after initialisation',
   paused: 'Adjust SDK is already prepared to send GDPR Forget Me request',
   off: 'Adjust SDK is already disabled'
-  /**
-   * Request GDPR-Forget-Me in order to disable sdk
-   *
-   * @param {boolean} force
-   * @returns {boolean}
-   */
-
 };
+/**
+ * Request GDPR-Forget-Me in order to disable sdk
+ *
+ * @param {boolean} force
+ * @returns {boolean}
+ */
 
 function forget(force
 /*: boolean*/
@@ -8673,14 +8748,13 @@ var third_party_sharing_logMessages = {
     inProgress: 'Third-party sharing opt-out has already finished',
     done: 'Third-party sharing opt-out is now finished'
   }
-  /**
-   * Get the status of the third-party sharing
-   *
-   * @returns {string}
-   * @private
-   */
-
 };
+/**
+ * Get the status of the third-party sharing
+ *
+ * @returns {string}
+ * @private
+ */
 
 function _status()
 /*: ThirdPartySharingStatusT*/
@@ -8950,11 +9024,11 @@ function event_prepareParams(params
 
   var eventCallbackParams
   /*: GlobalKeyValueParamsT*/
-  = objectSpread2_default()({}, convertToMap(callbackParams), {}, convertToMap(params.callbackParams));
+  = objectSpread2_default()(objectSpread2_default()({}, convertToMap(callbackParams)), convertToMap(params.callbackParams));
 
   var eventPartnerParams
   /*: GlobalKeyValueParamsT*/
-  = objectSpread2_default()({}, convertToMap(partnerParams), {}, convertToMap(params.partnerParams));
+  = objectSpread2_default()(objectSpread2_default()({}, convertToMap(partnerParams)), convertToMap(params.partnerParams));
 
   if (!isEmpty(eventCallbackParams)) {
     globalParams.callbackParams = eventCallbackParams;
@@ -8964,7 +9038,7 @@ function event_prepareParams(params
     globalParams.partnerParams = eventPartnerParams;
   }
 
-  return objectSpread2_default()({}, baseParams, {}, globalParams);
+  return objectSpread2_default()(objectSpread2_default()({}, baseParams), globalParams);
 }
 /**
  * Get event deduplication ids
@@ -9178,6 +9252,16 @@ var main_options
  */
 
 var _isStarted
+/*: boolean*/
+= false;
+/**
+ * Flag to mark if sdk is installed to delay public methods until SDK is ready to perform them
+ *
+ * @type {boolean}
+ * @private
+ */
+
+var _isInstalled
 /*: boolean*/
 = false;
 /**
@@ -9562,9 +9646,21 @@ function main_continue(activityState
     _isStarted = true;
 
     if (isInstalled) {
+      _handleSdkInstalled();
+
       third_party_sharing_check();
     }
   });
+}
+/**
+ * Handles SDK installed and runs delayed tasks
+ */
+
+
+function _handleSdkInstalled() {
+  _isInstalled = true;
+  flush();
+  unsubscribe('sdk:installed');
 }
 /**
  * Handle error coming from the chain of commands
@@ -9625,6 +9721,7 @@ function _start(options
 
   config.set(options);
   register();
+  subscribe('sdk:installed', _handleSdkInstalled);
   subscribe('sdk:shutdown', function () {
     return _shutdown(true);
   });
@@ -9638,7 +9735,7 @@ function _start(options
     subscribe('attribution:change', options.attributionCallback);
   }
 
-  identity_start().then(main_continue).then(sdkClick).then(flush).catch(main_error);
+  identity_start().then(main_continue).then(sdkClick).catch(main_error);
 }
 /**
  * Check if it's possible to run provided method
@@ -9675,7 +9772,7 @@ function _preCheck(description
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !_isStarted && (stopBeforeInit || config.isInitialised())) {
+    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || config.isInitialised())) {
       delay(callback, description);
       logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
     } else {

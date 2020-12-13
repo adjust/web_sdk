@@ -6,6 +6,7 @@ import {reload as reloadPreferences} from './preferences'
 import {REASON_GDPR} from './constants'
 import {isEmpty} from './utilities'
 import {disable, status} from './disable'
+import {publish} from './pub-sub'
 
 type InterceptT = {|
   exists: boolean,
@@ -133,9 +134,18 @@ function persist (): Promise<?ActivityStateMapT> {
 function sync (): Promise<ActivityStateMapT> {
   return Storage.getFirst(_storeName)
     .then((activityState: ActivityStateMapT) => {
-      const lastActive = ActivityState.current.lastActive || 0
+      const current = ActivityState.current
+      const lastActive = current.lastActive || 0
 
       if (_isLive() && lastActive < activityState.lastActive) {
+        
+        // Checking if another SDK instance was installed while this one was in backgound
+        const installedUpdated = !current.installed && activityState.installed
+        const sessionCountUpdated = (current.sessionCount || 0) < (activityState.sessionCount || 0)
+        if (installedUpdated || sessionCountUpdated) {
+          publish('sdk:installed')
+        }
+
         ActivityState.current = activityState
         reloadPreferences()
       }

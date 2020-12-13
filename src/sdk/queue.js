@@ -225,6 +225,10 @@ function _checkWait (): ?WaitT {
  * @returns {Promise}
  */
 function run ({cleanUp, wait}: {cleanUp?: boolean, wait?: ?WaitT} = {}): Promise<mixed> {
+  if (_current.running) {
+    return Promise.resolve({})
+  }
+
   _current.running = true
 
   let chain = Promise.resolve({})

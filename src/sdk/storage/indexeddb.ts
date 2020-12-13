@@ -9,20 +9,20 @@ import {convertRecord, convertStoreName} from './converter'
 
 const _dbName = Globals.namespace
 const _dbVersion = 1
-let _db
+let _db: IDBDatabase | null
 
 /**
  * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
  *
  * @returns {boolean}
  */
-function isSupported () {
+function isSupported (): boolean {
   const indexedDB = _getIDB()
   const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
   const supported = !!indexedDB && !iOS
 
   if (!supported) {
-    Logger.error('IndexedDB is not supported in this browser')
+    Logger.warn('IndexedDB is not supported in this browser')
   }
 
   return supported
@@ -34,7 +34,7 @@ function isSupported () {
  * @returns {IDBFactory}
  * @private
  */
-function _getIDB () {
+function _getIDB (): IDBFactory {
   return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
 }
 
@@ -47,7 +47,7 @@ function _getIDB () {
  * @param {Function} reject
  * @private
  */
-function _handleUpgradeNeeded (e, reject) {
+function _handleUpgradeNeeded (e: IDBVersionChangeEvent, reject: Function) {
 
   const db = e.target.result
 
@@ -142,7 +142,7 @@ function _open () {
  * @returns {{transaction, store: IDBObjectStore, index: IDBIndex}}
  * @private
  */
-function _getTranStore ({storeName, mode}, reject) {
+function _getTranStore ({storeName, mode}: {storeName: string, mode: string}, reject: Function): {transaction: IDBTransaction, store: IDBObjectStore, index: IDBIndex, options: any} {
 
   const transaction = _db.transaction([storeName], mode)
   const store = transaction.objectStore(storeName)

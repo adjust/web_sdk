@@ -30,7 +30,7 @@ function setGlobalProp (o, prop) {
   Object.defineProperty(o, prop, {
     configurable: true,
     get () { return undefined },
-    set (v) { return v }
+    set (v) { v }
   })
 }
 

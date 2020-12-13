@@ -28,7 +28,7 @@ This SDK can be used to track installs, sessions and events. Simply add the Adju
 
 Our sdk is exposed under all module definitions, so it works under CommonJS and AMD environments and is also available through global `Adjust` when loaded through CDN.
 
-To lazy load the Adjust Web SDK through CDN paste the following snippet into the `<head>` tag:
+To lazy <a id="loading-snippet">load the Adjust Web SDK through CDN</a> paste the following snippet into the `<head>` tag:
 ```html
 <script type="application/javascript">
 !function(t,a,e,r,s,l,d,n,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)d(t.Adjust,t.Adjust_q,l[c]);n=a.createElement("script"),o=a.getElementsByTagName("script")[0],n.async=!0,n.src="https://cdn.adjust.com/adjust-latest.min.js",n.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},o.parentNode.insertBefore(n,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing"],function(t,a,e){t[e]=function(){a.push([e,arguments])}});
@@ -37,7 +37,7 @@ To lazy load the Adjust Web SDK through CDN paste the following snippet into the
 
 The Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
 
-When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.1.0.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.   
+When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.1.1.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.   
 
 It's also possible to install our sdk through NPM:
 
@@ -99,10 +99,11 @@ By default this param is set to `10`. It is possible to override this limit but 
 
 <a id="log-level">**logLevel**</a> `string`
 
-By default this param is set to `error`. Possible values are `none`, `error`, `info`, `verbose`. We highly recommend that you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
+By default this param is set to `error`. Possible values are `none`, `error`, `warning`, `info`, `verbose`. We highly recommend that you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
 Here are more details about each log level:
 - `verbose` - will print detailed messages in case of certain actions
-- `info` - will print only basic info messages
+- `info` - will print only basic info messages, warnings and errors
+- `warning` - will print only warning and error messages
 - `error` - will print only error message
 - `none` - won't print anything
 

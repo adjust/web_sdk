@@ -37,12 +37,13 @@ function _startFirstPart () {
 
   expect(Listeners.register).toHaveBeenCalledTimes(1)
 
-  expect(PubSub.subscribe.mock.calls[0][0]).toEqual('sdk:shutdown')
-  expect(PubSub.subscribe.mock.calls[1][0]).toEqual('sdk:gdpr-forget-me')
-  expect(PubSub.subscribe.mock.calls[2][0]).toEqual('sdk:third-party-sharing-opt-out')
-  expect(PubSub.subscribe.mock.calls[3][0]).toEqual('attribution:check')
-  expect(PubSub.subscribe.mock.calls[4][0]).toEqual('attribution:change')
-  expect(PubSub.subscribe.mock.calls[4][1]).toEqual(config.attributionCallback)
+  expect(PubSub.subscribe.mock.calls[0][0]).toEqual('sdk:installed')
+  expect(PubSub.subscribe.mock.calls[1][0]).toEqual('sdk:shutdown')
+  expect(PubSub.subscribe.mock.calls[2][0]).toEqual('sdk:gdpr-forget-me')
+  expect(PubSub.subscribe.mock.calls[3][0]).toEqual('sdk:third-party-sharing-opt-out')
+  expect(PubSub.subscribe.mock.calls[4][0]).toEqual('attribution:check')
+  expect(PubSub.subscribe.mock.calls[5][0]).toEqual('attribution:change')
+  expect(PubSub.subscribe.mock.calls[5][1]).toEqual(config.attributionCallback)
 
   expect(Identity.start).toHaveBeenCalledTimes(1)
 
@@ -57,7 +58,6 @@ function expectStart_Async () {
       expect(Queue.run).toHaveBeenCalledWith({cleanUp: true})
       expect(Session.watch).toHaveBeenCalledTimes(1)
       expect(sdkClick.default).toHaveBeenCalledTimes(1)
-      expect(Scheduler.flush).toHaveBeenCalledTimes(1)
     })
 
   return {assertions: 16, promise}
@@ -74,7 +74,7 @@ function expectPartialStartWithGdprRequest_Async () {
       expectGdprRequest()
     })
 
-  return {assertions: 17, promise}
+  return {assertions: 18, promise}
 }
 
 function expectNotStart (restart) {
@@ -104,10 +104,15 @@ function expectDelayedTrackEvent_Async () {
 
   const promise = Utils.flushPromises()
     .then(() => {
+      PubSub.publish('sdk:installed')
+      jest.runOnlyPendingTimers()
+  
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Delayed track event task is running now')
+
       expect(event.default).toHaveBeenCalledWith({eventToken: 'bla123'}, expect.any(Number))
     })
 
-  return {assertions: 3, promise}
+  return {assertions: 4, promise}
 }
 
 function expectRunningTrackEvent () {

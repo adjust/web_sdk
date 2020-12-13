@@ -10,7 +10,7 @@ jest.mock('../../logger')
 describe('LocalStorage usage', () => {
 
   beforeAll(() => {
-    jest.spyOn(Logger.default, 'error')
+    jest.spyOn(Logger.default, 'warn')
   })
 
   afterAll(() => {
@@ -25,14 +25,14 @@ describe('LocalStorage usage', () => {
     let supported = LocalStorage.isSupported()
 
     expect(supported).toBeTruthy()
-    expect(Logger.default.error).not.toHaveBeenCalled()
+    expect(Logger.default.warn).not.toHaveBeenCalled()
 
     delete global.localStorage
 
     supported = LocalStorage.isSupported()
 
     expect(supported).toBeFalsy()
-    expect(Logger.default.error).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
+    expect(Logger.default.warn).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
 
     return Storage.default.getItem('activityState')
       .catch(error => {

@@ -142,10 +142,12 @@ function _handleBackground (): Promise<mixed> {
  * @private
  */
 function _handleForeground (): Promise<mixed> {
-  ActivityState.updateSessionLength()
-  ActivityState.toForeground()
-
-  return sync().then(_checkSession)
+  return sync()
+    .then(() => {
+      ActivityState.updateSessionLength()
+      ActivityState.toForeground()
+    })
+    .then(_checkSession)
 }
 
 /**
@@ -176,6 +178,7 @@ function _handleSessionRequestFinish (e: string, result: HttpSuccessResponseT | 
   }
 
   ActivityState.updateInstalled()
+  publish('sdk:installed')
 
   return persist()
 }
