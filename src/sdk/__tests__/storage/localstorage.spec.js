@@ -1,9 +1,10 @@
 import * as LocalStorage from '../../storage/localstorage'
-import * as Storage from '../../storage/storage'
+import Storage from '../../storage/storage'
 import * as Identity from '../../identity'
 import * as ActivityState from '../../activity-state'
 import * as Logger from '../../logger'
 import Suite from './storage.suite'
+import { STORAGE_TYPES } from '../../constants'
 
 jest.mock('../../logger')
 
@@ -11,6 +12,9 @@ describe('LocalStorage usage', () => {
 
   beforeAll(() => {
     jest.spyOn(Logger.default, 'warn')
+
+    return Storage.init()
+      .then(() => Logger.default.warn.mockClear())
   })
 
   afterAll(() => {
@@ -34,18 +38,18 @@ describe('LocalStorage usage', () => {
     expect(supported).toBeFalsy()
     expect(Logger.default.warn).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
 
-    return Storage.default.getItem('activityState')
+    return Storage.getItem('activityState')
       .catch(error => {
         expect(error.name).toEqual('LSNotSupported')
         expect(error.message).toEqual('LocalStorage is not supported')
 
-        return Storage.default.getAll('activityState')
+        return Storage.getAll('activityState')
       })
       .catch(error => {
         expect(error.name).toEqual('LSNotSupported')
         expect(error.message).toEqual('LocalStorage is not supported')
 
-        return Storage.default.clear('activityState')
+        return Storage.clear('activityState')
       })
       .catch(error => {
         expect(error.name).toEqual('LSNotSupported')
@@ -62,19 +66,19 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(4)
 
-    expect(Storage.default.type).toBe('localStorage')
+    expect(Storage.getType()).toBe(STORAGE_TYPES.LOCAL_STORAGE)
 
     return Identity.start()
       .then(() => {
 
-        Storage.default.destroy()
+        Storage.destroy()
         localStorage.clear()
 
         activityState = ActivityState.default.current
 
         expect(activityState.uuid).toBeDefined()
 
-        return Storage.default.getFirst('activityState')
+        return Storage.getFirst('activityState')
       })
       .then(stored => {
 
@@ -87,16 +91,21 @@ describe('LocalStorage usage', () => {
   })
 
   describe('run common tests for LocalStorage implementation', () => {
+
+    beforeAll(() => {
+      return Storage.init()
+    })
+
     afterEach(() => {
       localStorage.clear()
-      Storage.default.destroy()
+      Storage.destroy()
     })
 
     it('sets storage type to localStorage', () => {
-      expect(Storage.default.type).toBe('localStorage')
+      expect(Storage.getType()).toBe(STORAGE_TYPES.LOCAL_STORAGE)
     })
 
-    Suite(Storage.default)()
+    Suite(() => Storage)()
   })
 
 })

@@ -1,8 +1,16 @@
 import * as IndexedDB from './indexeddb'
 import * as LocalStorage from './localstorage'
 import Logger from '../logger'
-import {reducer, entries} from '../utilities'
-import {convertRecord, convertRecords, convertValues, encodeValue, convertStoreName, decodeErrorMessage} from './converter'
+import { reducer, entries } from '../utilities'
+import {
+  convertRecord,
+  convertRecords,
+  convertValues,
+  encodeValue,
+  convertStoreName,
+  decodeErrorMessage
+} from './converter'
+import { STORAGE_TYPES } from '../constants'
 
 /**
  * Methods to extend
@@ -22,7 +30,8 @@ const _methods = {
   deleteBulk: _deleteBulk,
   trimItems: _trimItems,
   count: _count,
-  clear: _clear
+  clear: _clear,
+  destroy: _destroy
 }
 
 /**
@@ -192,28 +201,59 @@ function _clear (storage, storeName) {
 }
 
 /**
+ * Calls storage's destroy method
+ *
+ * @param {Object} storage
+ * @private
+ */
+function _destroy (storage) {
+  return storage.destroy()
+}
+
+/**
  * Augment whitelisted methods with encoding/decoding functionality
  *
  * @param {Object} storage
  * @returns {Object}
  * @private
  */
-function _augment (storage) {
+function _augment () {
   return entries(_methods)
     .map(([methodName, method]) => {
       return [methodName, (storeName, ...args) => {
-        return method.call(null, storage, convertStoreName({storeName, dir: 'left'}), ...args)
+        return init().then(storage => {
+          if (storage) {
+            return method.call(null, storage, convertStoreName({ storeName, dir: 'left' }), ...args)
+          }
+        })
       }]
     })
     .reduce(reducer, {})
 }
 
 /**
+ * Type of available storage
+ */
+let type
+
+/**
+ * Returns type of used storage which is one of possible values INDEXED_DB, LOCAL_STORAGE or NO_STORAGE if there is no
+ * storage available
+ */
+function getType () {
+  return type
+}
+
+/**
+ * Cached promise of Storage initialization
+ */
+let _initializationPromise = null
+
+/**
  * Check which storage is available and pick it up
  * Prefer indexedDB over localStorage
  *
- * @returns {{
- * isSupported,
+ * @returns Promise<{
  * getAll,
  * getFirst,
  * getItem,
@@ -227,33 +267,42 @@ function _augment (storage) {
  * count,
  * clear,
  * destroy
- * }|null}
+ * }|null>
  */
 function init () {
   let storage
-  let type
 
-  if (IndexedDB.isSupported()) {
-    storage = IndexedDB
-    type = 'indexedDB'
-  } else if (LocalStorage.isSupported()) {
-    storage = LocalStorage
-    type = 'localStorage'
+  if (_initializationPromise) {
+    return _initializationPromise
+  } else {
+    _initializationPromise = IndexedDB.isSupported()
+      .then(supported => {
+        if (supported) {
+          storage = IndexedDB
+          type = STORAGE_TYPES.INDEXED_DB
+        } else if (LocalStorage.isSupported()) {
+          storage = LocalStorage
+          type = STORAGE_TYPES.LOCAL_STORAGE
+        }
+
+        if (!type) {
+          type = STORAGE_TYPES.NO_STORAGE
+          Logger.error('There is no storage available, app will run with minimum set of features')
+          return null
+        }
+
+        return {
+          type,
+          ...storage
+        }
+      })
   }
 
-  if (type) {
-    return {
-      type,
-      isSupported: storage.isSupported,
-      destroy: storage.destroy,
-      ..._augment(storage)
-    }
-  }
-
-  Logger.error('There is no storage available, app will run with minimum set of features')
-  return null
-
+  return _initializationPromise
 }
 
-export default init()
-
+export default {
+  init,
+  getType,
+  ..._augment()
+}

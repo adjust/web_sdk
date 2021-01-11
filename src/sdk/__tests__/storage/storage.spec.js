@@ -1,4 +1,5 @@
 import * as Logger from '../../logger'
+import { STORAGE_TYPES } from '../../constants'
 
 jest.mock('../../logger')
 
@@ -6,7 +7,7 @@ describe('test storage availability', () => {
 
   function mockAvailability (idbSupport, lsSupport) {
     jest.doMock('../../storage/indexeddb', () => ({
-      isSupported () { return idbSupport }
+      isSupported () { return Promise.resolve(idbSupport) }
     }))
     jest.doMock('../../storage/localstorage', () => ({
       isSupported () { return lsSupport }
@@ -34,8 +35,13 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).toBeNull()
-      expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
+      return Storage.init()
+        .then(storage => {
+
+          expect(storage).toBeNull()
+
+          expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
+        })
     })
   })
 
@@ -48,8 +54,11 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).not.toBeNull()
-      expect(Storage.type).toBe('indexedDB')
+      return Storage.init()
+        .then(storage => {
+          expect(storage).not.toBeNull()
+          expect(Storage.getType()).toBe(STORAGE_TYPES.INDEXED_DB)
+        })
     })
   })
 
@@ -62,8 +71,11 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).not.toBeNull()
-      expect(Storage.type).toBe('localStorage')
+      return Storage.init()
+        .then(storage => {
+          expect(storage).not.toBeNull()
+          expect(Storage.getType()).toBe(STORAGE_TYPES.LOCAL_STORAGE)
+        })
     })
   })
 
@@ -76,8 +88,11 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).not.toBeNull()
-      expect(Storage.type).toBe('indexedDB')
+      return Storage.init()
+        .then(storage => {
+          expect(storage).not.toBeNull()
+          expect(Storage.getType()).toBe(STORAGE_TYPES.INDEXED_DB)
+        })
     })
   })
 

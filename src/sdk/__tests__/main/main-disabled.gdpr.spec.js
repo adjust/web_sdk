@@ -80,11 +80,17 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
     it('initiates and prevents running all static methods and track event', () => {
       AdjustInstance.initSdk(suite.config)
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
+      expect.assertions(28)
 
-      suite.expectNotStart()
-      suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      return Utils.flushPromises()
+        .then(() => {
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
+
+          suite.expectNotStart()
+          suite.expectNotRunningStatic()
+          suite.expectNotRunningTrackEvent()
+        })
     })
 
     it('fails to run forget-me request', () => {
@@ -132,16 +138,20 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
       AdjustInstance.initSdk(suite.config)
 
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
+      return Utils.flushPromises()
+        .then(() => {
 
-      Logger.default.log.mockClear()
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not start the sdk')
 
-      const a1 = suite.expectNotGdprForgetMeCallback()
-      const a2 = suite.expectNotClearAndDestroy_Async()
+          Logger.default.log.mockClear()
 
-      return a2.promise.then(() => {
-        expect.assertions(1 + a1.assertions + a2.assertions)
-      })
+          const a1 = suite.expectNotGdprForgetMeCallback()
+          const a2 = suite.expectNotClearAndDestroy_Async()
+
+          return a2.promise.then(() => {
+            expect.assertions(1 + a1.assertions + a2.assertions)
+          })
+        })
     })
 
     it('prevents running all static methods and track event', () => {
@@ -171,16 +181,22 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
       AdjustInstance.initSdk(suite.config)
 
-      expect(Logger.default.log).toHaveBeenCalledTimes(1)
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
+      expect.assertions(30)
 
-      suite.expectNotStart()
-      suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      return Utils.flushPromises()
+        .then(() => {
 
-      jest.runOnlyPendingTimers()
+          expect(Logger.default.log).toHaveBeenCalledTimes(1)
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 
-      expect(http.default).not.toHaveBeenCalled()
+          suite.expectNotStart()
+          suite.expectNotRunningStatic()
+          suite.expectNotRunningTrackEvent()
+
+          jest.runOnlyPendingTimers()
+
+          expect(http.default).not.toHaveBeenCalled()
+        })
     })
 
     it('flush forget-me event but ignores it', () => {
@@ -214,16 +230,22 @@ describe('main entry point - test GDPR-Forget-Me when in initially disabled stat
 
       AdjustInstance.initSdk(suite.config)
 
-      expect(Logger.default.log).toHaveBeenCalledTimes(1)
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
+      expect.assertions(30)
 
-      suite.expectNotStart()
-      suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      return Utils.flushPromises()
+        .then(() => {
 
-      jest.runOnlyPendingTimers()
+          expect(Logger.default.log).toHaveBeenCalledTimes(1)
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
 
-      expect(http.default).not.toHaveBeenCalled()
+          suite.expectNotStart()
+          suite.expectNotRunningStatic()
+          suite.expectNotRunningTrackEvent()
+
+          jest.runOnlyPendingTimers()
+
+          expect(http.default).not.toHaveBeenCalled()
+        })
     })
   })
 

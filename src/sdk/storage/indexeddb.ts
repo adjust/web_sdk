@@ -12,20 +12,69 @@ const _dbVersion = 1
 let _db: IDBDatabase | null
 
 /**
+ * Cached promise of IndexedDB validation
+ */
+let _isSupportedPromise: Promise<boolean> | null = null
+
+/**
+ * Tries to open temporary database
+ * 
+ * @returns {Promise<boolean>}
+ */
+function _tryOpen (): Promise<boolean>{
+
+  return new Promise((resolve) => {
+    const DB_CHECK_NAME = 'validate-db-openable'
+    const indexedDB = _getIDB()
+
+    if (!indexedDB) {
+      resolve(false)
+    }
+
+    const request = indexedDB.open(DB_CHECK_NAME)
+
+    request.onsuccess = () => {
+      request.result.close()
+      indexedDB.deleteDatabase(DB_CHECK_NAME)
+      resolve(true)
+    }
+    request.onerror = () => resolve(false)
+  })
+}
+
+/**
  * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
  *
- * @returns {boolean}
+ * @returns {Promise}
  */
-function isSupported (): boolean {
-  const indexedDB = _getIDB()
-  const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
-  const supported = !!indexedDB && !iOS
+function isSupported (): Promise<boolean> {
+  if (_isSupportedPromise) {
+    return _isSupportedPromise
+  } else {
+    _isSupportedPromise = new Promise((resolve) => {
+      const indexedDB = _getIDB()
+      const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
+      const supported = !!indexedDB && !iOS
 
-  if (!supported) {
-    Logger.warn('IndexedDB is not supported in this browser')
+      if (!supported) {
+        Logger.warn('IndexedDB is not supported in this browser')
+        resolve(false)
+      } else {
+        const dbOpenablePromise = _tryOpen()
+          .then((dbOpenable) => {
+            if (!dbOpenable) {
+              Logger.warn('IndexedDB is not supported in this browser')
+            }
+
+            return dbOpenable
+          })
+
+        resolve(dbOpenablePromise)
+      }
+    })
   }
 
-  return supported
+  return _isSupportedPromise
 }
 
 /**
@@ -114,23 +163,28 @@ function _open () {
 
   const indexedDB = _getIDB()
 
-  if (!isSupported()) {
-    return Promise.reject({name: 'IDBNotSupported', message: 'IndexedDB is not supported'})
-  }
+  return isSupported()
+    .then(supported => {
+      if (!supported) {
+        return Promise.reject({name: 'IDBNotSupported', message: 'IndexedDB is not supported'})
+      }
 
-  return new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
 
-    if (_db) {
-      resolve({success: true})
-      return
-    }
+        if (_db) {
+          resolve({ success: true })
+        }
 
-    const request = indexedDB.open(_dbName, _dbVersion)
+        const request = indexedDB.open(_dbName, _dbVersion)
 
-    request.onupgradeneeded = e => _handleUpgradeNeeded(e, reject)
-    request.onsuccess = e => _handleOpenSuccess(e, resolve)
-    request.onerror = reject
-  })
+        request.onupgradeneeded = e => _handleUpgradeNeeded(e, reject)
+        request.onsuccess = e => _handleOpenSuccess(e, resolve)
+        request.onerror = reject
+      })
+    })
+    .catch(() => {
+      return Promise.reject({name: 'IDBNotSupported', message: 'IndexedDB is not supported'})
+    })
 }
 
 /**

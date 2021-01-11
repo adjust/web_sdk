@@ -76,13 +76,18 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent_Async()
-      const a3 = suite.expectStart_Async()
+      return Utils.flushPromises()
+        .then(() => {
+          jest.runOnlyPendingTimers()
 
-      return Promise.all([a2.promise, a3.promise]).then(()=>{
-        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-      })
+          const a1 = suite.expectRunningStatic()
+          const a2 = suite.expectDelayedTrackEvent_Async()
+          const a3 = suite.expectStart_Async()
+
+          expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+
+          return Promise.all([a2.promise, a3.promise])
+        })
     })
 
     it('disables sdk with shutdown', () => {
@@ -131,20 +136,19 @@ describe('main entry point - test enable/disable when in initially enabled state
     })
 
     it('initiates, disables and enables one after another', () => {
-      expect.assertions(5)
+      expect.assertions(4)
 
       AdjustInstance.initSdk(suite.config)
-      AdjustInstance.stop()
-      AdjustInstance.restart()
-
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
-      expect(Disable.disable).toHaveBeenCalled()
-      expect(Disable.restore).toHaveBeenCalled()
 
       return Utils.flushPromises()
         .then(() => {
-          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start already in progress')
+          AdjustInstance.stop()
+          AdjustInstance.restart()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been enabled')
+          expect(Disable.disable).toHaveBeenCalled()
+          expect(Disable.restore).toHaveBeenCalled()
         })
     })
 
@@ -166,13 +170,18 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent_Async()
-      const a3 = suite.expectStart_Async()
+      return Utils.flushPromises()
+        .then(() => {
+          jest.runOnlyPendingTimers()
 
-      return Promise.all([a2.promise, a3.promise]).then(()=>{
-        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-      })
+          const a1 = suite.expectRunningStatic()
+          const a2 = suite.expectDelayedTrackEvent_Async()
+          const a3 = suite.expectStart_Async()
+
+          expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+
+          return Promise.all([a2.promise, a3.promise])
+        })
     })
 
     it('fails to enable already enabled sdk', () => {
@@ -225,11 +234,17 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
+      expect.assertions(28)
 
-      suite.expectNotStart()
-      suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      return Utils.flushPromises()
+        .then(() => {
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
+
+          suite.expectNotStart()
+          suite.expectNotRunningStatic()
+          suite.expectNotRunningTrackEvent()
+        })
     })
 
     it('fails to disable already disabled sdk', () => {
@@ -284,13 +299,18 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent_Async()
-      const a3 = suite.expectStart_Async()
+      return Utils.flushPromises()
+        .then(() => {
+          jest.runOnlyPendingTimers()
 
-      return Promise.all([a2.promise, a3.promise]).then(()=>{
-        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-      })
+          const a1 = suite.expectRunningStatic()
+          const a2 = suite.expectDelayedTrackEvent_Async()
+          const a3 = suite.expectStart_Async()
+
+          expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+
+          return Promise.all([a2.promise, a3.promise])
+        })
     })
 
     it('fails again to enable already enabled sdk', () => {
@@ -322,13 +342,17 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.restart()
       AdjustInstance.initSdk(suite.config)
-      AdjustInstance.stop()
-
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already enabled')
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
-      expect(Disable.disable).toHaveBeenCalled()
 
       return Utils.flushPromises()
+        .then(() => {
+          AdjustInstance.stop()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is already enabled')
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+          expect(Disable.disable).toHaveBeenCalled()
+
+          return Utils.flushPromises()
+        })
     })
 
     it('ensures that everything is shutdown', () => {
@@ -367,13 +391,18 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent_Async()
-      const a3 = suite.expectStart_Async()
+      return Utils.flushPromises()
+        .then(() => {
+          jest.runOnlyPendingTimers()
 
-      return Promise.all([a2.promise, a3.promise]).then(()=>{
-        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-      })
+          const a1 = suite.expectRunningStatic()
+          const a2 = suite.expectDelayedTrackEvent_Async()
+          const a3 = suite.expectStart_Async()
+
+          expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+
+          return Promise.all([a2.promise, a3.promise])
+        })
     })
   })
 
@@ -406,11 +435,17 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
+      expect.assertions(28)
 
-      suite.expectNotStart()
-      suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      return Utils.flushPromises()
+        .then(() => {
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is disabled, can not start the sdk')
+
+          suite.expectNotStart()
+          suite.expectNotRunningStatic()
+          suite.expectNotRunningTrackEvent()
+        })
     })
   })
 

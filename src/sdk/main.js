@@ -24,6 +24,7 @@ import {delay, flush, destroy as schedulerDestroy} from './scheduler'
 import event from './event'
 import sdkClick from './sdk-click'
 import ActivityState from './activity-state'
+import { STORAGE_TYPES } from './constants'
 
 type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
 
@@ -34,6 +35,14 @@ type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
  * @private
  */
 let _options: ?InitOptionsT = null
+
+/**
+ * Flag to mark id sdk is in starting process
+ * 
+ * @type {boolean}
+ * @private
+ */
+let _isInitializing: boolean = false
 
 /**
  * Flag to mark if sdk is started
@@ -59,15 +68,9 @@ let _isInstalled: boolean = false
  * @param {string} logOutput
  */
 function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
+  _isInitializing = true
 
   Logger.setLogLevel(logLevel, logOutput)
-
-  if (!Storage) {
-    Logger.error('Adjust SDK can not start, there is no storage available')
-    return
-  }
-
-  Logger.info(`Available storage is ${Storage.type}`)
 
   if (Config.isInitialised()) {
     Logger.error('You already initiated your instance')
@@ -78,9 +81,20 @@ function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
     return
   }
 
-  _options = {...options}
+  Storage.init()
+    .then(availableStorage => {
 
-  _start(options)
+      if (!availableStorage) {
+        Logger.error('Adjust SDK can not start, there is no storage available')
+        return
+      }
+
+      Logger.info(`Available storage is ${availableStorage.type}`)
+
+      _options = { ...options }
+
+      _start(options)
+    })
 }
 
 /**
@@ -252,6 +266,7 @@ function _handleGdprForgetMe (): void {
  * @private
  */
 function _pause (): void {
+  _isInitializing = false
   _isStarted = false
 
   schedulerDestroy()
@@ -284,6 +299,8 @@ function _shutdown (async): void {
  * @private
  */
 function _destroy (): void {
+  _isInstalled = false
+
   _shutdown()
   gdprForgetDestroy()
 
@@ -331,6 +348,7 @@ function _continue (activityState: ActivityStateMapT): Promise<void> {
 
   return sessionWatch()
     .then(() => {
+      _isInitializing = false
       _isStarted = true
 
       if (isInstalled) {
@@ -427,7 +445,7 @@ function _start (options: InitOptionsT): void {
  * @private
  */
 function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}) {
-  if (!Storage) {
+  if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
   }
@@ -437,13 +455,15 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
     return
   }
 
-  if (schedule && stopBeforeInit && !Config.isInitialised()) {
+  const initCalled = _isInitializing || Config.isInitialised()
+
+  if (schedule && stopBeforeInit && !initCalled) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || Config.isInitialised())) {
+    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || initCalled)) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {

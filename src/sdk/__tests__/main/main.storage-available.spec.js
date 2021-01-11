@@ -74,11 +74,20 @@ describe('main entry point - test instance initiation when storage is available'
 
       AdjustInstance.initSdk()
 
-      expect(Logger.default.error).toHaveBeenLastCalledWith('You must define appToken and environment')
+      expect.assertions(2)
 
-      AdjustInstance.initSdk({appToken: 'a-token'})
+      return Utils.flushPromises()
+        .then(() => {
 
-      expect(Logger.default.error).toHaveBeenLastCalledWith('You must define environment')
+          expect(Logger.default.error).toHaveBeenLastCalledWith('You must define appToken and environment')
+
+          AdjustInstance.initSdk({appToken: 'a-token'})
+
+          return Utils.flushPromises()
+            .then(() => {
+              expect(Logger.default.error).toHaveBeenLastCalledWith('You must define environment')
+            })
+        })
     })
 
     it('logs an error and return when trying to track event before init', () => {
@@ -95,30 +104,34 @@ describe('main entry point - test instance initiation when storage is available'
       expect.assertions(6)
 
       AdjustInstance.initSdk(suite.config)
-      expect(PubSub.subscribe).toHaveBeenCalledWith('sdk:installed', expect.any(Function))
-
-      AdjustInstance.trackEvent({eventToken: 'bla123'})
-      expect(Logger.default.log).toHaveBeenLastCalledWith('Running track event is delayed until Adjust SDK is up')
 
       return Utils.flushPromises()
         .then(() => {
+          expect(PubSub.subscribe).toHaveBeenCalledWith('sdk:installed', expect.any(Function))
 
-          let requests = Queue.push.mock.calls.map(call => call[0].url)
-
-          expect(requests[0]).toEqual('/session')
-          expect(requests[1]).toEqual('/sdk_click')
-
-          PubSub.publish('sdk:installed')
-          jest.runOnlyPendingTimers()
-          
-          expect(Logger.default.log).toHaveBeenLastCalledWith('Delayed track event task is running now')
+          AdjustInstance.trackEvent({eventToken: 'bla123'})
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Running track event is delayed until Adjust SDK is up')
 
           return Utils.flushPromises()
             .then(() => {
-              requests = Queue.push.mock.calls.map(call => call[0].url)
-              expect(requests[2]).toEqual('/event')
 
-              global.history.pushState({}, '', '?')
+              let requests = Queue.push.mock.calls.map(call => call[0].url)
+
+              expect(requests[0]).toEqual('/session')
+              expect(requests[1]).toEqual('/sdk_click')
+
+              PubSub.publish('sdk:installed')
+              jest.runOnlyPendingTimers()
+
+              expect(Logger.default.log).toHaveBeenLastCalledWith('Delayed track event task is running now')
+
+              return Utils.flushPromises()
+                .then(() => {
+                  requests = Queue.push.mock.calls.map(call => call[0].url)
+                  expect(requests[2]).toEqual('/event')
+
+                  global.history.pushState({}, '', '?')
+                })
             })
         })
     })
@@ -215,8 +228,8 @@ describe('main entry point - test instance initiation when storage is available'
           expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start has been interrupted due to multiple synchronous start attempt')
           expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been shutdown due to asynchronous disable')
 
-          suite.expectShutDown()
           suite.expectAllDown()
+          suite.expectShutDown()
         })
     })
 
@@ -234,8 +247,8 @@ describe('main entry point - test instance initiation when storage is available'
       return Utils.flushPromises()
         .then(() => {
           expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK start has been canceled due to an error', {error: 'An error!'})
-          suite.expectShutDown()
           suite.expectAllDown()
+          suite.expectShutDown()
         })
     })
 
@@ -298,13 +311,14 @@ describe('main entry point - test instance initiation when storage is available'
             expect(requests.length).toBe(2)
             expect(requests[0][0].url).toEqual('/session')
             expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+
+            return Utils.flushPromises()
           })
       })
 
       it('disables third-party sharing synchronously after init', () => {
         AdjustInstance.initSdk(suite.config)
         AdjustInstance.disableThirdPartySharing()
-
         expect.assertions(3)
 
         return Utils.flushPromises()
@@ -317,6 +331,8 @@ describe('main entry point - test instance initiation when storage is available'
             expect(requests.length).toBe(2)
             expect(requests[0][0].url).toEqual('/session')
             expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+
+            return Utils.flushPromises()
           })
       })
 
@@ -344,61 +360,76 @@ describe('main entry point - test instance initiation when storage is available'
               expect(requests.length).toBe(2)
               expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
               expect(requests[1][0].url).toEqual('/session')
+
+              return Utils.flushPromises()
             })
         })
 
         it('prevents multiple opt-out requests when requesting opt-out multiple times synchronously after init', () => {
+          expect.assertions(8)
+
           AdjustInstance.initSdk(suite.config)
-          AdjustInstance.disableThirdPartySharing()
-          AdjustInstance.disableThirdPartySharing()
-
-          expect.assertions(9)
-
-          expect(Logger.default.log).toHaveBeenCalledTimes(2)
-          expect(Logger.default.log.mock.calls[0][0]).toEqual('Running disable third-party sharing is delayed until Adjust SDK is up')
-          expect(Logger.default.log.mock.calls[1][0]).toEqual('Running disable third-party sharing is delayed until Adjust SDK is up')
 
           return Utils.flushPromises()
             .then(() => {
-              PubSub.publish('sdk:installed')
-              jest.runOnlyPendingTimers()
 
-              const requests = Queue.push.mock.calls
+              AdjustInstance.disableThirdPartySharing()
+              AdjustInstance.disableThirdPartySharing()
 
-              expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
-              expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-              expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/session')
-              expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+              const logCallsCount = Logger.default.log.mock.calls.length
+              expect(Logger.default.log).toHaveBeenNthCalledWith(logCallsCount - 1, 'Running disable third-party sharing is delayed until Adjust SDK is up')
+              expect(Logger.default.log).toHaveBeenNthCalledWith(logCallsCount, 'Running disable third-party sharing is delayed until Adjust SDK is up')
+
+              return Utils.flushPromises()
+                .then(() => {
+                  PubSub.publish('sdk:installed')
+                  jest.runOnlyPendingTimers()
+
+                  const requests = Queue.push.mock.calls
+
+                  expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
+                  expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
+                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
+                  expect(requests.length).toBe(2)
+                  expect(requests[0][0].url).toEqual('/session')
+                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+
+                  return Utils.flushPromises()
+                })
             })
         })
 
         it('prevents multiple opt-out requests when requesting opt-out multiple times synchronously before and after init', () => {
           AdjustInstance.disableThirdPartySharing()
           AdjustInstance.initSdk(suite.config)
-          AdjustInstance.disableThirdPartySharing()
-
-          expect.assertions(10)
-
-          expect(Logger.default.log).toHaveBeenCalledTimes(3)
-          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run third-party sharing opt-out request after initialisation')
-          expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-          expect(Logger.default.log).toHaveBeenCalledWith('Running disable third-party sharing is delayed until Adjust SDK is up')
 
           return Utils.flushPromises()
             .then(() => {
-              PubSub.publish('sdk:installed')
-              jest.runOnlyPendingTimers()
 
-              const requests = Queue.push.mock.calls
+              AdjustInstance.disableThirdPartySharing()
 
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
-              expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-              expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-              expect(requests[1][0].url).toEqual('/session')
+              expect.assertions(9)
+
+              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run third-party sharing opt-out request after initialisation')
+              expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
+              expect(Logger.default.log).toHaveBeenCalledWith('Running disable third-party sharing is delayed until Adjust SDK is up')
+
+              return Utils.flushPromises()
+                .then(() => {
+                  PubSub.publish('sdk:installed')
+                  jest.runOnlyPendingTimers()
+
+                  const requests = Queue.push.mock.calls
+
+                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
+                  expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
+                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
+                  expect(requests.length).toBe(2)
+                  expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
+                  expect(requests[1][0].url).toEqual('/session')
+
+                  return Utils.flushPromises()
+                })
             })
         })
 
@@ -406,9 +437,8 @@ describe('main entry point - test instance initiation when storage is available'
           AdjustInstance.disableThirdPartySharing()
           AdjustInstance.initSdk(suite.config)
 
-          expect.assertions(8)
+          expect.assertions(7)
 
-          expect(Logger.default.log).toHaveBeenCalledTimes(2)
           expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run third-party sharing opt-out request after initialisation')
           expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
 
@@ -426,58 +456,69 @@ describe('main entry point - test instance initiation when storage is available'
               expect(requests.length).toBe(2)
               expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
               expect(requests[1][0].url).toEqual('/session')
+
+              return Utils.flushPromises()
             })
         })
 
         it('prevents multiple opt-out requests when requesting opt-out multiple times synchronously and then asynchronously after init', () => {
           AdjustInstance.initSdk(suite.config)
-          AdjustInstance.disableThirdPartySharing()
-
-          expect.assertions(8)
-
-          expect(Logger.default.log).toHaveBeenCalledTimes(1)
-          expect(Logger.default.log).toHaveBeenCalledWith('Running disable third-party sharing is delayed until Adjust SDK is up')
 
           return Utils.flushPromises()
             .then(() => {
-              PubSub.publish('sdk:installed')
-              jest.runOnlyPendingTimers()
+              expect.assertions(7)
 
               AdjustInstance.disableThirdPartySharing()
 
-              const requests = Queue.push.mock.calls
+              expect(Logger.default.log).toHaveBeenLastCalledWith('Running disable third-party sharing is delayed until Adjust SDK is up')
 
-              expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
-              expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-              expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/session')
-              expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+              return Utils.flushPromises()
+                .then(() => {
+                  PubSub.publish('sdk:installed')
+                  jest.runOnlyPendingTimers()
+
+                  AdjustInstance.disableThirdPartySharing()
+
+                  const requests = Queue.push.mock.calls
+
+                  expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
+                  expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
+                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
+                  expect(requests.length).toBe(2)
+                  expect(requests[0][0].url).toEqual('/session')
+                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+
+                  return Utils.flushPromises()
+                })
             })
         })
 
         it('prevents multiple opt-out requests when requesting opt-out multiple times asynchronously after init', () => {
           AdjustInstance.initSdk(suite.config)
 
-          expect.assertions(6)
-
-          expect(Logger.default.log).not.toHaveBeenCalled()
+          expect.assertions(5)
 
           return Utils.flushPromises()
             .then(() => {
-              PubSub.publish('sdk:installed')
-              jest.runOnlyPendingTimers()
 
-              AdjustInstance.disableThirdPartySharing()
-              AdjustInstance.disableThirdPartySharing()
+              return Utils.flushPromises()
+                .then(() => {
+                  PubSub.publish('sdk:installed')
+                  jest.runOnlyPendingTimers()
 
-              const requests = Queue.push.mock.calls
+                  AdjustInstance.disableThirdPartySharing()
+                  AdjustInstance.disableThirdPartySharing()
 
-              expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-              expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/session')
-              expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                  const requests = Queue.push.mock.calls
+
+                  expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
+                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
+                  expect(requests.length).toBe(2)
+                  expect(requests[0][0].url).toEqual('/session')
+                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+
+                  return Utils.flushPromises()
+                })
             })
         })
       })
@@ -488,6 +529,7 @@ describe('main entry point - test instance initiation when storage is available'
     beforeAll(() => {
       suite.teardown()
       AdjustInstance.initSdk(suite.config)
+      return Utils.flushPromises()
     })
 
     it('sets basic configuration', () => {
@@ -510,13 +552,16 @@ describe('main entry point - test instance initiation when storage is available'
         environment: 'sandbox'
       })
 
-      const baseParams = Config.default.getBaseParams()
+      return Utils.flushPromises()
+        .then(() => {
 
-      expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
-      expect(AdjustInstance).toBe(OtherInstance)
-      expect(baseParams.appToken).toEqual('some-app-token')
-      expect(baseParams.environment).toEqual('production')
+          const baseParams = Config.default.getBaseParams()
 
+          expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
+          expect(AdjustInstance).toBe(OtherInstance)
+          expect(baseParams.appToken).toEqual('some-app-token')
+          expect(baseParams.environment).toEqual('production')
+        })
     })
 
     it('runs all static methods', () => {
@@ -524,10 +569,8 @@ describe('main entry point - test instance initiation when storage is available'
     })
 
     it('runs track event', () => {
-      suite.expectRunningTrackEvent()
+      return suite.expectRunningTrackEvent_Async().promise
     })
 
   })
 })
-
-
