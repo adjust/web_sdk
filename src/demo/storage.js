@@ -1,6 +1,4 @@
-import {__delete} from '../sdk/storage/indexeddb'
 import Config from './config'
-import {write} from './log'
 
 const _storageName = Config.namespace
 
@@ -19,11 +17,6 @@ function setItem (key, value, plainText) {
 
 function clear () {
   localStorage.clear()
-  return __delete()
-    .catch(error => {
-      write('There was an error while attempting to delete the storage, please refresh')
-      throw error
-    })
 }
 
 export {

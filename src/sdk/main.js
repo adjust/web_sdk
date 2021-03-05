@@ -38,7 +38,7 @@ let _options: ?InitOptionsT = null
 
 /**
  * Flag to mark id sdk is in starting process
- * 
+ *
  * @type {boolean}
  * @private
  */
@@ -84,7 +84,7 @@ function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
   Storage.init()
     .then(availableStorage => {
 
-      if (!availableStorage) {
+      if (availableStorage.type === STORAGE_TYPES.NO_STORAGE) {
         Logger.error('Adjust SDK can not start, there is no storage available')
         return
       }
@@ -363,7 +363,7 @@ function _continue (activityState: ActivityStateMapT): Promise<void> {
  */
 function _handleSdkInstalled () {
   _isInstalled = true
-  
+
   flush()
 
   unsubscribe('sdk:installed')
@@ -472,6 +472,10 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
   }
 }
 
+function _clearDatabase () {
+  return Storage.deleteDatabase()
+}
+
 const Adjust = {
   initSdk,
   trackEvent,
@@ -488,7 +492,8 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   __testonly__: {
-    destroy: _destroy
+    destroy: _destroy,
+    clearDatabase: _clearDatabase
   }
 }
 

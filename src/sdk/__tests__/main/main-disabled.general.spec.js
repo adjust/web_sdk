@@ -55,7 +55,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
 
-    Preferences.setDisabled({reason: 'general'})
+    Preferences.setDisabled({ reason: 'general' })
   })
 
   afterEach(() => {
@@ -110,7 +110,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       const a = suite.expectStart_Async()
 
-      return a.promise.then(()=>{
+      return a.promise.then(() => {
         expect.assertions(3 + a.assertions)
       })
     })
@@ -270,7 +270,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
       const a = suite.expectStart_Async()
 
-      return a.promise.then(()=>{
+      return a.promise.then(() => {
         expect.assertions(3 + a.assertions)
       })
     })
@@ -407,9 +407,12 @@ describe('main entry point - test disable/enable when in initially disabled stat
           const a2 = suite.expectDelayedTrackEvent_Async()
           const a3 = suite.expectStart_Async()
 
-          return Promise.all([a2.promise, a3.promise]).then(() => {
-            expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-          })
+          return Promise.all([a2.promise, a3.promise])
+            .then(() => {
+              expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+
+              return Utils.flushPromises()
+            })
         })
     })
   })
@@ -442,7 +445,6 @@ describe('main entry point - test disable/enable when in initially disabled stat
     })
 
     it('initiates and prevents running all static methods and track event', () => {
-
       AdjustInstance.initSdk(suite.config)
 
       return Utils.flushPromises()
@@ -458,5 +460,3 @@ describe('main entry point - test disable/enable when in initially disabled stat
     })
   })
 })
-
-

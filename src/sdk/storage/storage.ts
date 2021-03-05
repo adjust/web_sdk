@@ -1,8 +1,9 @@
-import * as IndexedDB from './indexeddb'
-import * as LocalStorage from './localstorage'
+import { IndexedDB } from './indexeddb'
+import { LocalStorage } from './localstorage'
 import Logger from '../logger'
 import { reducer, entries } from '../utilities'
 import {
+  Direction,
   convertRecord,
   convertRecords,
   convertValues,
@@ -11,6 +12,18 @@ import {
   decodeErrorMessage
 } from './converter'
 import { STORAGE_TYPES } from '../constants'
+import { IStorage } from './types'
+
+enum StorageType {
+  noStorage = STORAGE_TYPES.NO_STORAGE,
+  indexedDB = STORAGE_TYPES.INDEXED_DB,
+  localStorage = STORAGE_TYPES.LOCAL_STORAGE
+}
+
+type Storage = {
+  type: StorageType;
+  storage: Nullable<IStorage>;
+}
 
 /**
  * Methods to extend
@@ -31,7 +44,8 @@ const _methods = {
   trimItems: _trimItems,
   count: _count,
   clear: _clear,
-  destroy: _destroy
+  destroy: _destroy,
+  deleteDatabase: _deleteDatabase
 }
 
 /**
@@ -42,9 +56,9 @@ const _methods = {
  * @returns {Promise}
  * @private
  */
-function _getAll (storage, storeName) {
+function _getAll(storage, storeName) {
   return storage.getAll(storeName)
-    .then(records => convertRecords({storeName, dir: 'right', records}))
+    .then(records => convertRecords({ storeName, dir: Direction.right, records }))
 }
 
 /**
@@ -55,9 +69,9 @@ function _getAll (storage, storeName) {
  * @returns {Promise}
  * @private
  */
-function _getFirst (storage, storeName) {
+function _getFirst(storage, storeName) {
   return storage.getFirst(storeName)
-    .then(record => convertRecord({storeName, dir: 'right', record}))
+    .then(record => convertRecord({ storeName, dir: Direction.right, record }))
 }
 
 /**
@@ -69,10 +83,10 @@ function _getFirst (storage, storeName) {
  * @returns {Promise}
  * @private
  */
-function _getItem (storage, storeName, target) {
-  return storage.getItem(storeName, convertValues({storeName, dir: 'left', target}))
-    .then(record => convertRecord({storeName, dir: 'right', record}))
-    .catch(error => Promise.reject(decodeErrorMessage({storeName, error})))
+function _getItem(storage, storeName, target) {
+  return storage.getItem(storeName, convertValues({ storeName, dir: Direction.left, target }))
+    .then(record => convertRecord({ storeName, dir: Direction.right, record }))
+    .catch(error => Promise.reject(decodeErrorMessage({ storeName, error })))
 }
 
 /**
@@ -84,9 +98,9 @@ function _getItem (storage, storeName, target) {
  * @returns {Promise}
  * @private
  */
-function _filterBy (storage, storeName, target) {
+function _filterBy(storage, storeName, target) {
   return storage.filterBy(storeName, encodeValue(target))
-    .then(records => convertRecords({storeName, dir: 'right', records}))
+    .then(records => convertRecords({ storeName, dir: Direction.right, records }))
 }
 
 /**
@@ -98,10 +112,10 @@ function _filterBy (storage, storeName, target) {
  * @returns {Promise}
  * @private
  */
-function _addItem (storage, storeName, record) {
-  return storage.addItem(storeName, convertRecord({storeName, dir: 'left', record}))
-    .then(target => convertValues({storeName, dir: 'right', target}))
-    .catch(error => Promise.reject(decodeErrorMessage({storeName, error})))
+function _addItem(storage, storeName, record) {
+  return storage.addItem(storeName, convertRecord({ storeName, dir: Direction.left, record }))
+    .then(target => convertValues({ storeName, dir: Direction.right, target }))
+    .catch(error => Promise.reject(decodeErrorMessage({ storeName, error })))
 }
 
 /**
@@ -114,10 +128,10 @@ function _addItem (storage, storeName, record) {
  * @returns {Promise}
  * @private
  */
-function _addBulk (storage, storeName, records, overwrite) {
-  return storage.addBulk(storeName, convertRecords({storeName, dir: 'left', records}), overwrite)
-    .then(values => values.map(target => convertValues({storeName, dir: 'right', target})))
-    .catch(error => Promise.reject(decodeErrorMessage({storeName, error})))
+function _addBulk(storage, storeName, records, overwrite) {
+  return storage.addBulk(storeName, convertRecords({ storeName, dir: Direction.left, records }), overwrite)
+    .then(values => values.map(target => convertValues({ storeName, dir: Direction.right, target })))
+    .catch(error => Promise.reject(decodeErrorMessage({ storeName, error })))
 }
 
 /**
@@ -129,9 +143,9 @@ function _addBulk (storage, storeName, records, overwrite) {
  * @returns {Promise}
  * @private
  */
-function _updateItem (storage, storeName, record) {
-  return storage.updateItem(storeName, convertRecord({storeName, dir: 'left', record}))
-    .then(target => convertValues({storeName, dir: 'right', target}))
+function _updateItem(storage, storeName, record) {
+  return storage.updateItem(storeName, convertRecord({ storeName, dir: Direction.left, record }))
+    .then(target => convertValues({ storeName, dir: Direction.right, target }))
 }
 
 /**
@@ -143,9 +157,9 @@ function _updateItem (storage, storeName, record) {
  * @returns {Promise}
  * @private
  */
-function _deleteItem (storage, storeName, target) {
-  return storage.deleteItem(storeName, convertValues({storeName, dir: 'left', target}))
-    .then(target => convertValues({storeName, dir: 'right', target}))
+function _deleteItem(storage, storeName, target) {
+  return storage.deleteItem(storeName, convertValues({ storeName, dir: Direction.left, target }))
+    .then(target => convertValues({ storeName, dir: Direction.right, target }))
 }
 
 /**
@@ -158,9 +172,9 @@ function _deleteItem (storage, storeName, target) {
  * @returns {Promise}
  * @private
  */
-function _deleteBulk (storage, storeName, target, condition) {
+function _deleteBulk(storage, storeName, target, condition) {
   return storage.deleteBulk(storeName, encodeValue(target), condition)
-    .then(records => records.map(record => convertValues({storeName, dir: 'right', target: record})))
+    .then(records => records.map(record => convertValues({ storeName, dir: Direction.right, target: record })))
 }
 
 /**
@@ -172,7 +186,7 @@ function _deleteBulk (storage, storeName, target, condition) {
  * @returns {Promise}
  * @private
  */
-function _trimItems (storage, storeName, length) {
+function _trimItems(storage, storeName, length) {
   return storage.trimItems(storeName, length)
 }
 
@@ -184,7 +198,7 @@ function _trimItems (storage, storeName, length) {
  * @returns {Promise}
  * @private
  */
-function _count (storage, storeName) {
+function _count(storage, storeName) {
   return storage.count(storeName)
 }
 
@@ -196,7 +210,7 @@ function _count (storage, storeName) {
  * @returns {Promise}
  * @private
  */
-function _clear (storage, storeName) {
+function _clear(storage, storeName) {
   return storage.clear(storeName)
 }
 
@@ -206,8 +220,18 @@ function _clear (storage, storeName) {
  * @param {Object} storage
  * @private
  */
-function _destroy (storage) {
+function _destroy(storage) {
   return storage.destroy()
+}
+
+/**
+ * Calls storage's deleteDatabase method
+ *
+ * @param {Object} storage
+ * @private
+ */
+function _deleteDatabase(storage) {
+  return storage.deleteDatabase()
 }
 
 /**
@@ -217,15 +241,17 @@ function _destroy (storage) {
  * @returns {Object}
  * @private
  */
-function _augment () {
+function _augment() {
+
   return entries(_methods)
     .map(([methodName, method]) => {
       return [methodName, (storeName, ...args) => {
-        return init().then(storage => {
-          if (storage) {
-            return method.call(null, storage, convertStoreName({ storeName, dir: 'left' }), ...args)
-          }
-        })
+        return init()
+          .then(({ storage }) => {
+            if (storage) {
+              return method.call(null, storage, convertStoreName({ storeName, dir: Direction.left }), ...args)
+            }
+          })
       }]
     })
     .reduce(reducer, {})
@@ -234,66 +260,49 @@ function _augment () {
 /**
  * Type of available storage
  */
-let type
+let type: StorageType
 
 /**
  * Returns type of used storage which is one of possible values INDEXED_DB, LOCAL_STORAGE or NO_STORAGE if there is no
  * storage available
  */
-function getType () {
+function getType(): StorageType {
   return type
 }
 
 /**
  * Cached promise of Storage initialization
  */
-let _initializationPromise = null
+let _initializationPromise: Nullable<Promise<Storage>> = null
 
 /**
  * Check which storage is available and pick it up
  * Prefer indexedDB over localStorage
- *
- * @returns Promise<{
- * getAll,
- * getFirst,
- * getItem,
- * filterBy,
- * addItem,
- * addBulk,
- * updateItem,
- * deleteItem,
- * deleteBulk,
- * trimItems,
- * count,
- * clear,
- * destroy
- * }|null>
  */
-function init () {
-  let storage
+function init(): Promise<Storage> {
+  let storage: Nullable<IStorage> = null
 
-  if (_initializationPromise) {
+  if (_initializationPromise !== null) {
     return _initializationPromise
   } else {
-    _initializationPromise = IndexedDB.isSupported()
-      .then(supported => {
-        if (supported) {
-          storage = IndexedDB
-          type = STORAGE_TYPES.INDEXED_DB
-        } else if (LocalStorage.isSupported()) {
-          storage = LocalStorage
-          type = STORAGE_TYPES.LOCAL_STORAGE
+    _initializationPromise = Promise.all([IndexedDB.isSupported(), LocalStorage.isSupported()])
+      .then(([idbSupported, lsSupported]) => {
+        if (idbSupported) {
+          storage = new IndexedDB()
+          type = StorageType.indexedDB
+        } else if (lsSupported) {
+          storage = new LocalStorage()
+          type = StorageType.localStorage
         }
 
         if (!type) {
-          type = STORAGE_TYPES.NO_STORAGE
+          type = StorageType.noStorage
           Logger.error('There is no storage available, app will run with minimum set of features')
-          return null
         }
 
         return {
           type,
-          ...storage
+          storage
         }
       })
   }

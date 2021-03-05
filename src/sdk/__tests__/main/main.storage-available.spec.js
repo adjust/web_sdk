@@ -167,7 +167,7 @@ describe('main entry point - test instance initiation when storage is available'
         .then(() => {
           PubSub.publish('sdk:installed')
           jest.runOnlyPendingTimers()
-          
+
           AdjustInstance.trackEvent({eventToken: 'bla1'})
           AdjustInstance.trackEvent({eventToken: 'bla2'})
 
@@ -204,6 +204,8 @@ describe('main entry point - test instance initiation when storage is available'
       AdjustInstance.initSdk(newConfig)
 
       suite.expectNotAttributionCallback()
+
+      return Utils.flushPromises()
     })
 
     it('shuts down asynchronously', () => {
@@ -211,7 +213,7 @@ describe('main entry point - test instance initiation when storage is available'
       const shutDownNumOfAssertions = suite.expectShutDown(true).assertions
       const allDownNumOfAssertions = suite.expectAllDown(true).assertions
 
-      expect.assertions(2 + shutDownNumOfAssertions + allDownNumOfAssertions)
+      expect.assertions(1 + shutDownNumOfAssertions + allDownNumOfAssertions)
 
       AdjustInstance.initSdk(suite.config)
 
@@ -225,7 +227,6 @@ describe('main entry point - test instance initiation when storage is available'
 
           jest.runOnlyPendingTimers()
 
-          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK start has been interrupted due to multiple synchronous start attempt')
           expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been shutdown due to asynchronous disable')
 
           suite.expectAllDown()

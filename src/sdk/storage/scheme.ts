@@ -1,7 +1,45 @@
-import {REASON_GDPR, REASON_GENERAL} from '../constants'
+import { REASON_GDPR, REASON_GENERAL } from '../constants'
+
+type StoreFieldScheme = string // Just a short name for the field
+  | { // Field with predefined values
+    key: string; // Short name of the field
+    values: { [key: string]: number | string }; // Map of possible values
+  }
+  | { // Field containing a nested one
+    key: string; // Short name of the field
+    keys: { [key: string]: StoreFieldScheme } // Field scheme
+  }
+  | { // Composite key, stored as a field because of IE doesn't support composite keys feature
+    key: string; // Short name of the composite key
+    composite: Array<string> // Names (not short) of fields used to generate a key
+  }
+
+interface StoreKeyOptions {
+  keyPath?: string;
+  autoIncrement?: boolean;
+}
+
+interface StoreScheme extends StoreKeyOptions {
+  index?: string | Array<string>;
+  fields: { [key: string]: StoreFieldScheme };
+}
+
+interface Store {
+  name: string;
+  scheme: StoreScheme;
+  permanent?: boolean;
+}
+
+interface Scheme {
+  queue: Store;
+  activityState: Store;
+  globalParams: Store;
+  eventDeduplication: Store;
+  preferences: Store;
+}
 
 const _queueName = 'q'
-const _queueScheme = {
+const _queueScheme: StoreScheme = {
   keyPath: 'timestamp',
   autoIncrement: false,
   fields: {
@@ -45,7 +83,7 @@ const _queueScheme = {
 }
 
 const _activityStateName = 'as'
-const _activityStateScheme = {
+const _activityStateScheme: StoreScheme = {
   keyPath: 'uuid',
   autoIncrement: false,
   fields: {
@@ -92,7 +130,7 @@ const _activityStateScheme = {
 }
 
 const _globalParamsName = 'gp'
-const _globalParamsScheme = {
+const _globalParamsScheme: StoreScheme = {
   keyPath: 'keyType',
   autoIncrement: false,
   index: 'type',
@@ -114,7 +152,7 @@ const _globalParamsScheme = {
 }
 
 const _eventDeduplicationName = 'ed'
-const _eventDeduplicationScheme = {
+const _eventDeduplicationScheme: StoreScheme = {
   keyPath: 'internalId',
   autoIncrement: true,
   fields: {
@@ -124,7 +162,7 @@ const _eventDeduplicationScheme = {
 }
 
 const _preferencesName = 'p'
-const _preferencesScheme = {
+const _preferencesScheme: StoreScheme = {
   fields: {
     thirdPartySharingDisabled: {
       key: 'td',
@@ -166,7 +204,7 @@ const _preferencesScheme = {
   }
 }
 
-export default {
+const scheme: Scheme = {
   queue: {
     name: _queueName,
     scheme: _queueScheme
@@ -189,3 +227,5 @@ export default {
     permanent: true
   }
 }
+
+export default scheme

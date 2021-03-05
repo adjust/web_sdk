@@ -46,7 +46,7 @@ describe('main entry point - test instance initiation when storage is not availa
   it('prevents initiation if storage is not available', () => {
     jest.doMock('../../storage/storage', () => {
       return {
-        init: () => Promise.resolve(null),
+        init: () => Promise.resolve({ storage: null, type: STORAGE_TYPES.NO_STORAGE }),
         getType: () => STORAGE_TYPES.NO_STORAGE
       }
     })

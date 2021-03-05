@@ -1,17 +1,16 @@
 import * as Logger from '../../logger'
 import { STORAGE_TYPES } from '../../constants'
+import * as IndexedDB from '../../storage/indexeddb'
+import * as LocalStorage from '../../storage/localstorage'
 
 jest.mock('../../logger')
 
 describe('test storage availability', () => {
 
   function mockAvailability (idbSupport, lsSupport) {
-    jest.doMock('../../storage/indexeddb', () => ({
-      isSupported () { return Promise.resolve(idbSupport) }
-    }))
-    jest.doMock('../../storage/localstorage', () => ({
-      isSupported () { return lsSupport }
-    }))
+    IndexedDB.IndexedDB.isSupported = jest.fn(() => Promise.resolve(idbSupport))
+    LocalStorage.LocalStorage.isSupported = jest.fn(() => Promise.resolve(lsSupport))
+
   }
 
   beforeAll(() => {
@@ -37,8 +36,7 @@ describe('test storage availability', () => {
 
       return Storage.init()
         .then(storage => {
-
-          expect(storage).toBeNull()
+          expect(storage.type).toBe(STORAGE_TYPES.NO_STORAGE)
 
           expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
         })

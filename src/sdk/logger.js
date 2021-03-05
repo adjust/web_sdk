@@ -106,7 +106,7 @@ function setLogLevel (logLevel: LogLevelT, logOutput: string): void {
  * @param {Array} args
  * @private
  */
-function _log<T> (methodName: MethodNameT, logLevel: LogLevelT, ...args: Array<T>): void {
+function _log (methodName: MethodNameT, logLevel: LogLevelT, ...args: Array<mixed>): void {
   if (_levels[_level] < _levels[logLevel]) {
     return
   }
@@ -129,11 +129,11 @@ function _log<T> (methodName: MethodNameT, logLevel: LogLevelT, ...args: Array<T
  *
  * @param {string} name
  * @param {string} logLevel
- * @returns {Array} args
+ * @returns {Function: (Array) => void}
  * @private
  */
 function _applyLevel (name: MethodNameT, logLevel: LogLevelT) {
-  return <T>(...args: Array<T>) => {
+  return (...args: Array<mixed>) => {
     _log(name, logLevel, ...args)
   }
 }

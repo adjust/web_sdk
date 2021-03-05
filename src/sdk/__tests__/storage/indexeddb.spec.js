@@ -1,7 +1,6 @@
 import fakeIDB from 'fake-indexeddb'
 import * as IDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange'
 import * as QuickStorage from '../../storage/quick-storage'
-import * as Logger from '../../logger'
 import * as SchemeMap from '../../storage/scheme-map'
 import Suite from './storage.suite'
 import { STORAGE_TYPES } from '../../constants'
@@ -18,13 +17,20 @@ describe('IndexedDB usage', () => {
   })
 
   describe('testing indexedDB support', () => {
-    beforeAll(() => {
-      jest.spyOn(Logger.default, 'warn')
-    })
+    let Logger
 
-    it('checks if indexedDB is supported', () => {
-      jest.isolateModules(() => {
-        const IndexedDB = require('../../storage/indexeddb')
+    jest.isolateModules(() => {
+      beforeEach(() => {
+        jest.resetModules()
+
+        Logger = require('../../logger')
+        jest.spyOn(Logger.default, 'warn')
+      })
+
+      it('checks if indexedDB is supported', () => {
+        expect.assertions(2)
+
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
 
         return IndexedDB.isSupported()
           .then(supported => {
@@ -33,13 +39,13 @@ describe('IndexedDB usage', () => {
             expect(Logger.default.warn).not.toHaveBeenCalled()
           })
       })
-    })
 
-    it('caches result of indexedDB support', () => {
-      jest.isolateModules(() => {
+      it('caches result of indexedDB support', () => {
+        expect.assertions(4)
+
         jest.spyOn(global.indexedDB, 'open')
 
-        const IndexedDB = require('../../storage/indexeddb')
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
 
         return IndexedDB.isSupported()
           .then(supported => {
@@ -52,11 +58,11 @@ describe('IndexedDB usage', () => {
             expect(global.indexedDB.open).toHaveBeenCalledTimes(1)
           })
       })
-    })
 
-    it('throws error if indexedDB is not supported', () => {
-      jest.isolateModules(() => {
-        const IndexedDB = require('../../storage/indexeddb')
+      it('throws error if indexedDB is not supported', () => {
+        expect.assertions(3)
+
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
 
         delete global.indexedDB
 
@@ -70,24 +76,25 @@ describe('IndexedDB usage', () => {
             global.indexedDB = fakeIDB
           })
       })
-    })
 
-    it('forces no-support of indexedDB on iOS devices', () => {
-      jest.isolateModules(() => {
-        const IndexedDB = require('../../storage/indexeddb')
+      it('forces no-support of indexedDB on iOS devices', (done) => {
+        expect.assertions(2)
+
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
 
         Utils.setGlobalProp(global.navigator, 'platform')
         const platformSpy = jest.spyOn(global.navigator, 'platform', 'get')
         platformSpy.mockReturnValue('iPhone')
-
-        expect.assertions(2)
 
         return IndexedDB.isSupported()
           .then(supported => {
             expect(supported).toBeFalsy()
             expect(Logger.default.warn).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
           })
-          .then(() => platformSpy.mockRestore())
+          .then(() => {
+            platformSpy.mockRestore()
+            done()
+          })
       })
     })
   })
@@ -179,16 +186,16 @@ describe('IndexedDB usage', () => {
         const storeNames = SchemeMap.default.storeNames.left
 
         const queueSet = [
-          {t: 1, u: '/url'},
-          {t: 2, u: 2}
+          { t: 1, u: '/url' },
+          { t: 2, u: 2 }
         ]
         const activityStateSet = [
-          {u: 1, la: 12345, at: {a: 'blabla', tt: '123abc', tn: 'tracker', nt: 'bla'}}
+          { u: 1, la: 12345, at: { a: 'blabla', tt: '123abc', tn: 'tracker', nt: 'bla' } }
         ]
         const globalParamsSet = [
-          {kt: 'key-11', k: 'key-1', v: 'value-1', t: 1},
-          {kt: 'key-21', k: 'key-2', v: 'value-2', t: 1},
-          {kt: 'key-32', k: 'key-3', v: 'value-3', t: 2}
+          { kt: 'key-11', k: 'key-1', v: 'value-1', t: 1 },
+          { kt: 'key-21', k: 'key-2', v: 'value-2', t: 1 },
+          { kt: 'key-32', k: 'key-3', v: 'value-3', t: 2 }
         ]
 
         beforeEach(() => {
@@ -240,8 +247,8 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {timestamp: 1, url: '/url'},
-                {timestamp: 2, url: '/event'}
+                { timestamp: 1, url: '/url' },
+                { timestamp: 2, url: '/event' }
               ])
               expect(QuickStorage.default.stores[storeNames.queue.name]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
@@ -251,9 +258,9 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback'},
-                {keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback'},
-                {keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner'}
+                { keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback' },
+                { keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback' },
+                { keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner' }
               ])
             })
         })
@@ -290,8 +297,8 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {timestamp: 1, url: '/url'},
-                {timestamp: 2, url: '/event'}
+                { timestamp: 1, url: '/url' },
+                { timestamp: 2, url: '/event' }
               ])
               expect(QuickStorage.default.stores[storeNames.queue.name]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
@@ -301,9 +308,9 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback'},
-                {keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback'},
-                {keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner'}
+                { keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback' },
+                { keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback' },
+                { keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner' }
               ])
             })
         })
