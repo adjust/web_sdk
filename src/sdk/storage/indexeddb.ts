@@ -44,6 +44,8 @@ class IndexedDBWrapper implements IStorage {
 
   private notSupportedError = { name: 'IDBNotSupported', message: 'IndexedDB is not supported' }
 
+  private noConnectionError = { name: 'NoDatabaseConnection', message: 'Cannot open a transaction' }
+
   /**
    * Cached promise of IndexedDB validation
    */
@@ -60,14 +62,18 @@ class IndexedDBWrapper implements IStorage {
       if (!db) {
         resolve(false)
       } else {
-        const request = db.open(IndexedDBWrapper.dbValidationName)
+        try {
+          const request = db.open(IndexedDBWrapper.dbValidationName)
 
-        request.onsuccess = () => {
-          request.result.close()
-          db.deleteDatabase(IndexedDBWrapper.dbValidationName)
-          resolve(true)
+          request.onsuccess = () => {
+            request.result.close()
+            db.deleteDatabase(IndexedDBWrapper.dbValidationName)
+            resolve(true)
+          }
+          request.onerror = () => resolve(false)
+        } catch (error) {
+          resolve(false)
         }
-        request.onerror = () => resolve(false)
       }
     })
   }
@@ -211,26 +217,20 @@ class IndexedDBWrapper implements IStorage {
   /**
    * Get transaction and the store
    */
-  private getTranStore({ storeName, mode }: { storeName: string, mode: IDBTransactionMode }): Promise<Transaction> {
-    return new Promise((resolve, reject) => {
-      if (!this.indexedDbConnection) {
-        reject({ name: 'NoDatabaseConnection', message: 'Cannot open a transaction' })
-      } else {
-        const transaction: IDBTransaction = this.indexedDbConnection.transaction([storeName], mode)
-        const store = transaction.objectStore(storeName)
-        const options = SchemeMap.right[convertStoreName({ storeName, dir: Direction.right })]
-        let index
+  private getTransactionStore({ storeName, mode }: { storeName: string, mode: IDBTransactionMode }, reject: (reason: any) => void, db: IDBDatabase): Transaction {
+    const transaction: IDBTransaction = db.transaction([storeName], mode)
+    const store = transaction.objectStore(storeName)
+    const options = SchemeMap.right[convertStoreName({ storeName, dir: Direction.right })]
+    let index
 
-        if (options.index) {
-          index = store.index(`${options.index}Index`)
-        }
+    if (options.index) {
+      index = store.index(`${options.index}Index`)
+    }
 
-        transaction.onerror = reject
-        transaction.onabort = reject
+    transaction.onerror = reject
+    transaction.onabort = reject
 
-        resolve({ transaction, store, index, options })
-      }
-    })
+    return { transaction, store, index, options }
   }
 
   /**
@@ -277,21 +277,25 @@ class IndexedDBWrapper implements IStorage {
    */
   private initRequest({ storeName, target = null, action, mode = 'readonly' as IDBTransactionMode }: Request): Promise<any> {
     return this.open()
-      .then(() => this.getTranStore({ storeName, mode }))
-      .then(({ store, options }: Transaction) => {
+      .then(() => {
         return new Promise((resolve, reject) => {
-          const request = store[action](this.prepareTarget(options, target, action))
-          const result = this.prepareResult(options, target)
+          if (!this.indexedDbConnection) {
+            reject(this.noConnectionError)
+          } else {
+            const { store, options } = this.getTransactionStore({ storeName, mode }, reject, this.indexedDbConnection)
+            const request = store[action](this.prepareTarget(options, target, action))
+            const result = this.prepareResult(options, target)
 
-          request.onsuccess = () => {
-            if (action === Action.get && !request.result) {
-              reject({ name: 'NotRecordFoundError', message: `Requested record not found in "${storeName}" store` })
-            } else {
-              resolve(result || request.result || target)
+            request.onsuccess = () => {
+              if (action === Action.get && !request.result) {
+                reject({ name: 'NotRecordFoundError', message: `Requested record not found in "${storeName}" store` })
+              } else {
+                resolve(result || request.result || target)
+              }
             }
-          }
 
-          request.onerror = error => this.overrideError(reject, error)
+            request.onerror = error => this.overrideError(reject, error)
+          }
         })
       })
   }
@@ -305,29 +309,32 @@ class IndexedDBWrapper implements IStorage {
     }
 
     return this.open()
-      .then(() => this.getTranStore({ storeName, mode }))
-      .then(({ transaction, store, options }: Transaction) => {
+      .then(() => {
         return new Promise((resolve, reject) => {
+          if (!this.indexedDbConnection) {
+            reject(this.noConnectionError)
+          } else {
+            const { transaction, store, options } = this.getTransactionStore({ storeName, mode }, reject, this.indexedDbConnection)
+            const result = new Array<any>()
+            let current = target[0]
 
-          const result = new Array<any>()
-          let current = target[0]
+            transaction.oncomplete = () => resolve(result)
 
-          transaction.oncomplete = () => resolve(result)
+            const request = (req) => {
+              req.onerror = error => this.overrideError(reject, error)
+              req.onsuccess = () => {
+                result.push(this.prepareResult(options, current) || req.result)
 
-          const request = (req) => {
-            req.onerror = error => this.overrideError(reject, error)
-            req.onsuccess = () => {
-              result.push(this.prepareResult(options, current) || req.result)
+                current = target[result.length]
 
-              current = target[result.length]
-
-              if (result.length < target.length) {
-                request(store[action](this.prepareTarget(options, current, action)))
+                if (result.length < target.length) {
+                  request(store[action](this.prepareTarget(options, current, action)))
+                }
               }
             }
-          }
 
-          request(store[action](this.prepareTarget(options, current, action)))
+            request(store[action](this.prepareTarget(options, current, action)))
+          }
         })
       })
   }
@@ -337,32 +344,37 @@ class IndexedDBWrapper implements IStorage {
    */
   private openCursor({ storeName, action, range, firstOnly = false, mode = 'readonly' }: Request): Promise<any | Array<any>> {
     return this.open()
-      .then(() => this.getTranStore({ storeName, mode }))
-      .then(({ transaction, store, index, options }: Transaction) => {
+      .then(() => {
         return new Promise((resolve, reject) => {
-          const cursorRequest: OpenIDBCursorRequest = (index || store).openCursor(range)
-          const items = new Array<any>()
+          if (!this.indexedDbConnection) {
+            reject(this.noConnectionError)
+          } else {
+            const { transaction, store, index, options } = this.getTransactionStore({ storeName, mode }, reject, this.indexedDbConnection)
 
-          transaction.oncomplete = () => resolve(firstOnly ? items[0] : items)
+            const cursorRequest: OpenIDBCursorRequest = (index || store).openCursor(range)
+            const items = new Array<any>()
 
-          cursorRequest.onsuccess = e => {
-            const cursor = e.target.result
+            transaction.oncomplete = () => resolve(firstOnly ? items[0] : items)
 
-            if (cursor) {
-              if (action === Action.delete) {
-                cursor.delete()
-                items.push(this.prepareResult(options, cursor.value) || cursor.value[options.keyPath])
-              } else {
-                items.push(cursor.value)
-              }
+            cursorRequest.onsuccess = e => {
+              const cursor = e.target.result
 
-              if (!firstOnly) {
-                cursor.continue()
+              if (cursor) {
+                if (action === Action.delete) {
+                  cursor.delete()
+                  items.push(this.prepareResult(options, cursor.value) || cursor.value[options.keyPath])
+                } else {
+                  items.push(cursor.value)
+                }
+
+                if (!firstOnly) {
+                  cursor.continue()
+                }
               }
             }
-          }
 
-          cursorRequest.onerror = error => this.overrideError(reject, error)
+            cursorRequest.onerror = error => this.overrideError(reject, error)
+          }
         })
       })
   }
@@ -453,13 +465,18 @@ class IndexedDBWrapper implements IStorage {
    */
   count(storeName: string): Promise<number> {
     return this.open()
-      .then(() => this.getTranStore({ storeName, mode: 'readonly' }))
-      .then(({ store }: Transaction) => {
+      .then(() => {
         return new Promise((resolve, reject) => {
-          const request = store.count()
+          if (!this.indexedDbConnection) {
+            reject(this.noConnectionError)
+          } else {
+            const { store } = this.getTransactionStore({ storeName, mode: 'readonly' }, reject, this.indexedDbConnection)
 
-          request.onsuccess = () => resolve(request.result)
-          request.onerror = error => this.overrideError(reject, error)
+            const request = store.count()
+
+            request.onsuccess = () => resolve(request.result)
+            request.onerror = error => this.overrideError(reject, error)
+          }
         })
       })
   }
