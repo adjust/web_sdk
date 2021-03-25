@@ -553,16 +553,12 @@ describe('main entry point - test instance initiation when storage is available'
         environment: 'sandbox'
       })
 
-      return Utils.flushPromises()
-        .then(() => {
+      const baseParams = Config.default.getBaseParams()
 
-          const baseParams = Config.default.getBaseParams()
-
-          expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
-          expect(AdjustInstance).toBe(OtherInstance)
-          expect(baseParams.appToken).toEqual('some-app-token')
-          expect(baseParams.environment).toEqual('production')
-        })
+      expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
+      expect(AdjustInstance).toBe(OtherInstance)
+      expect(baseParams.appToken).toEqual('some-app-token')
+      expect(baseParams.environment).toEqual('production')
     })
 
     it('runs all static methods', () => {

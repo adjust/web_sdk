@@ -42,7 +42,7 @@ let _options: ?InitOptionsT = null
  * @type {boolean}
  * @private
  */
-let _isInitializing: boolean = false
+let _isInitialising: boolean = false
 
 /**
  * Flag to mark if sdk is started
@@ -68,11 +68,9 @@ let _isInstalled: boolean = false
  * @param {string} logOutput
  */
 function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
-  _isInitializing = true
-
   Logger.setLogLevel(logLevel, logOutput)
 
-  if (Config.isInitialised()) {
+  if (_isInitialised()) {
     Logger.error('You already initiated your instance')
     return
   }
@@ -80,6 +78,8 @@ function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
   if (Config.hasMissing(options)) {
     return
   }
+
+  _isInitialising = true
 
   Storage.init()
     .then(availableStorage => {
@@ -258,6 +258,15 @@ function _handleGdprForgetMe (): void {
 }
 
 /**
+ * Check if sdk initialisation was started
+ *
+ * @private
+ */
+function _isInitialised (): boolean {
+  return _isInitialising || Config.isInitialised()
+}
+
+/**
  * Pause sdk by canceling:
  * - queue execution
  * - session watch
@@ -266,7 +275,7 @@ function _handleGdprForgetMe (): void {
  * @private
  */
 function _pause (): void {
-  _isInitializing = false
+  _isInitialising = false
   _isStarted = false
 
   schedulerDestroy()
@@ -348,7 +357,7 @@ function _continue (activityState: ActivityStateMapT): Promise<void> {
 
   return sessionWatch()
     .then(() => {
-      _isInitializing = false
+      _isInitialising = false
       _isStarted = true
 
       if (isInstalled) {
@@ -455,15 +464,13 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
     return
   }
 
-  const initCalled = _isInitializing || Config.isInitialised()
-
-  if (schedule && stopBeforeInit && !initCalled) {
+  if (schedule && stopBeforeInit && !_isInitialised()) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || initCalled)) {
+    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || _isInitialised())) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
