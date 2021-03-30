@@ -38,6 +38,8 @@ interface Scheme {
   preferences: Store;
 }
 
+type ShortStoreName = 'q' | 'as' | 'gp' | 'ed' | 'p'
+
 const _queueName = 'q'
 const _queueScheme: StoreScheme = {
   keyPath: 'timestamp',
@@ -227,5 +229,7 @@ const scheme: Scheme = {
     permanent: true
   }
 }
+
+export { ShortStoreName }
 
 export default scheme
