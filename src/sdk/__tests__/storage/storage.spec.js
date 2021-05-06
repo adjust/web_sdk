@@ -5,12 +5,16 @@ import * as LocalStorage from '../../storage/localstorage'
 
 jest.mock('../../logger')
 
+jest.mock('../../storage/indexeddb')
+jest.mock('../../storage/localstorage')
+
 describe('test storage availability', () => {
 
   function mockAvailability (idbSupport, lsSupport) {
-    IndexedDB.IndexedDB.isSupported = jest.fn(() => Promise.resolve(idbSupport))
-    LocalStorage.LocalStorage.isSupported = jest.fn(() => Promise.resolve(lsSupport))
+    jest.spyOn(IndexedDB.IndexedDB, 'isSupported').mockImplementation(() => Promise.resolve(idbSupport))
+    jest.spyOn(IndexedDB.IndexedDB.prototype, 'setCustomName').mockImplementation(() => Promise.resolve())
 
+    jest.spyOn(LocalStorage.LocalStorage, 'isSupported').mockImplementation(() => Promise.resolve(lsSupport))
   }
 
   beforeAll(() => {

@@ -1,12 +1,12 @@
 import Globals from '../globals'
 import SchemeMap from './scheme-map'
 import ActivityState from '../activity-state'
-import QuickStorage from '../storage/quick-storage'
+import QuickStorage from './quick-storage'
 import Logger from '../logger'
 import { recover as recoverPreferences } from '../preferences'
-import { isEmpty, isObject, entries } from '../utilities'
+import { isEmpty, isObject, entries, values } from '../utilities'
 import { Direction, convertRecord, convertStoreName } from './converter'
-import { IStorage, Error } from './types'
+import { IStorage } from './types'
 
 enum Action {
   add = 'add',
@@ -36,13 +36,19 @@ type Transaction = {
 class IndexedDBWrapper implements IStorage {
   private static dbValidationName = 'validate-db-openable'
 
-  private dbName = Globals.namespace
+  private dbDefaultName = Globals.namespace
+
+  private dbName = this.dbDefaultName
 
   private dbVersion = 1
+
+  private idbFactory: IDBFactory
 
   private indexedDbConnection: Nullable<IDBDatabase> = null
 
   private notSupportedError = { name: 'IDBNotSupported', message: 'IndexedDB is not supported' }
+
+  private databaseOpenError = { name: 'CannotOpenDatabaseError', message: 'Cannot open a database' }
 
   private noConnectionError = { name: 'NoDatabaseConnection', message: 'Cannot open a transaction' }
 
@@ -54,26 +60,20 @@ class IndexedDBWrapper implements IStorage {
   /**
    * Tries to open a temporary database
    */
-  private static tryOpen(): Promise<boolean> {
+  private static tryOpen(db: IDBFactory): Promise<boolean> {
 
     return new Promise((resolve) => {
-      const db = IndexedDBWrapper.getIndexedDB()
+      try {
+        const request = db.open(IndexedDBWrapper.dbValidationName)
 
-      if (!db) {
-        resolve(false)
-      } else {
-        try {
-          const request = db.open(IndexedDBWrapper.dbValidationName)
-
-          request.onsuccess = () => {
-            request.result.close()
-            db.deleteDatabase(IndexedDBWrapper.dbValidationName)
-            resolve(true)
-          }
-          request.onerror = () => resolve(false)
-        } catch (error) {
-          resolve(false)
+        request.onsuccess = () => {
+          request.result.close()
+          db.deleteDatabase(IndexedDBWrapper.dbValidationName)
+          resolve(true)
         }
+        request.onerror = () => resolve(false)
+      } catch (error) {
+        resolve(false)
       }
     })
   }
@@ -88,13 +88,12 @@ class IndexedDBWrapper implements IStorage {
       IndexedDBWrapper.isSupportedPromise = new Promise(resolve => {
         const indexedDB = IndexedDBWrapper.getIndexedDB()
         const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
-        const supported = !!indexedDB && !iOS
 
-        if (!supported) {
+        if (!indexedDB || iOS) {
           Logger.warn('IndexedDB is not supported in this browser')
           resolve(false)
         } else {
-          const dbOpenablePromise = IndexedDBWrapper.tryOpen()
+          const dbOpenablePromise = IndexedDBWrapper.tryOpen(indexedDB)
             .then((dbOpenable) => {
               if (!dbOpenable) {
                 Logger.warn('IndexedDB is not supported in this browser')
@@ -119,6 +118,154 @@ class IndexedDBWrapper implements IStorage {
       window.mozIndexedDB ||
       window.webkitIndexedDB ||
       window.msIndexedDB
+  }
+
+  constructor() {
+    const idb = IndexedDBWrapper.getIndexedDB()
+    if (!idb) {
+      throw this.notSupportedError
+    }
+
+    this.idbFactory = idb
+  }
+
+  /**
+   * Sets custom name if provided and migrates database
+   */
+  setCustomName(customName?: string): Promise<void> {
+    if (customName && customName.length > 0) {
+      this.dbName = `${Globals.namespace}-${customName}`
+      return this.migrateDb(this.dbDefaultName, this.dbName)
+    }
+
+    return Promise.resolve()
+  }
+
+  /**
+   * Opens database with defined name and resolves with database connection if successed
+   * @param name name of database to open
+   * @param version optional version of database schema
+   * @param upgradeCallback optional `IDBOpenRequest.onupgradeneeded` event handler
+   */
+  private openDatabase(name: string, version?: number, upgradeCallback?: (event: IDBVersionChangeEvent, reject: () => void) => void): Promise<IDBDatabase> {
+
+    return IndexedDBWrapper.isSupported()
+      .then(supported => {
+        if (!supported) {
+          return Promise.reject(this.notSupportedError)
+        } else {
+
+          return new Promise((resolve, reject) => {
+            const request = this.idbFactory.open(name, version)
+
+            if (upgradeCallback) {
+              request.onupgradeneeded = (event) => upgradeCallback(event, reject)
+            }
+
+            request.onsuccess = (event: IDBOpenDBEvent) => {
+              const connection = event.target.result
+              if (connection) {
+                resolve(connection)
+              } else {
+                reject(this.databaseOpenError)
+              }
+            }
+
+            request.onerror = reject
+          })
+        }
+      })
+  }
+
+  /**
+   * Checks if database with passed name exists
+   */
+  private databaseExists(name: string): Promise<boolean> {
+    return new Promise((resolve: (result: boolean) => void) => {
+      let existed = true
+
+      this.openDatabase(name, undefined, () => { existed = false })
+        .then(connection => {
+          connection.close()
+
+          if (existed) {
+            return
+          }
+
+          // We didn't have this database before the check, so remove it
+          return this.deleteDatabaseByName(name)
+        })
+        .then(() => resolve(existed))
+    })
+  }
+
+  private cloneData(defaultDbConnection: IDBDatabase, customDbConnection: IDBDatabase): Promise<void> {
+
+    // Function to clone a single store
+    const cloneStore = (storeName: string) => {
+      const connection = this.indexedDbConnection
+      this.indexedDbConnection = defaultDbConnection
+
+      return this.getAll(storeName) // Get all records from default-named database
+        .then((records: Array<any>) => {
+          this.indexedDbConnection = customDbConnection
+
+          if (records.length < 1) { // There is no records in the store
+            return
+          }
+
+          return this.addBulk(storeName, records, true) // Put all records into custom-named database
+        })
+        .then(() => {
+          this.indexedDbConnection = connection // Restore initial state
+        })
+    }
+
+    // Get names of stores
+    const storeNames: string[] = values(SchemeMap.storeNames.left)
+      .filter(store => !store.permanent)
+      .map(store => store.name)
+
+    const cloneStorePromises = storeNames.map(name => () => cloneStore(name))
+
+    // Run clone operations one by one
+    return cloneStorePromises.reduce(
+      (previousTask, currentTask) => previousTask.then(currentTask),
+      Promise.resolve()
+    )
+  }
+
+  /**
+   * Migrates created database with default name to custom
+   * The IndexedDb API doesn't provide method to rename existing database so we have to create a new database, clone
+   * data and remove the old one.
+   */
+  private migrateDb(defaultName: string, customName: string): Promise<void> {
+    return this.databaseExists(defaultName)
+      .then((defaultExists) => {
+        if (defaultExists) {
+          // Migration hadn't finished yet
+          return Promise.all([
+            this.openDatabase(defaultName, this.dbVersion, this.handleUpgradeNeeded), // Open the default database, migrate version if needed
+            this.openDatabase(customName, this.dbVersion, this.handleUpgradeNeeded), // Open or create a new database, migrate version if needed
+          ])
+            .then(([defaultDbConnection, customDbConnection]) => {
+              return this.cloneData(defaultDbConnection, customDbConnection)
+                .then(() => {
+                  this.indexedDbConnection = customDbConnection
+
+                  defaultDbConnection.close()
+                  return this.deleteDatabaseByName(defaultName)
+                })
+            })
+            .then(() => Logger.info('Database migration finished'))
+
+        } else {
+          // There is no default-named database, let's just create or open a custom-named one
+          return this.openDatabase(customName, this.dbVersion, this.handleUpgradeNeeded)
+            .then(customDbConnection => { this.indexedDbConnection = customDbConnection })
+        }
+      })
   }
 
   /**
@@ -167,50 +314,18 @@ class IndexedDBWrapper implements IStorage {
   }
 
   /**
-   * Handle successful database opening
-   */
-  private handleOpenSuccess(e: IDBOpenDBEvent, resolve: (value: { success: boolean }) => void, reject: (reason: Error) => void) {
-    this.indexedDbConnection = e.target.result
-
-    if (!this.indexedDbConnection) {
-      reject(this.notSupportedError)
-      return
-    }
-
-    resolve({ success: true })
-
-    this.indexedDbConnection.onclose = () => this.destroy
-  }
-
-  /**
    * Open the database connection and create store if not existent
    */
-  private open(): Promise<any> {
+  private open(): Promise<{ success: boolean }> {
+    if (this.indexedDbConnection) {
+      return Promise.resolve({ success: true })
+    }
 
-    const indexedDB = IndexedDBWrapper.getIndexedDB()
-
-    return IndexedDBWrapper.isSupported()
-      .then(supported => {
-        if (!supported || !indexedDB) {
-          return Promise.reject(this.notSupportedError)
-        }
-
-        return new Promise((resolve: ({ success: boolean }) => void, reject) => {
-
-          if (this.indexedDbConnection) {
-            resolve({ success: true })
-            return
-          }
-
-          const request = indexedDB.open(this.dbName, this.dbVersion)
-
-          request.onupgradeneeded = e => this.handleUpgradeNeeded(e, reject)
-          request.onsuccess = e => this.handleOpenSuccess(e, resolve, reject)
-          request.onerror = reject
-        })
-      })
-      .catch(() => {
-        return Promise.reject(this.notSupportedError)
+    return this.openDatabase(this.dbName, this.dbVersion, this.handleUpgradeNeeded)
+      .then(connection => {
+        this.indexedDbConnection = connection
+        this.indexedDbConnection.onclose = () => this.destroy
+        return ({ success: true })
       })
   }
 
@@ -379,6 +494,16 @@ class IndexedDBWrapper implements IStorage {
       })
   }
 
+  private deleteDatabaseByName(dbName: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const request = this.idbFactory.deleteDatabase(dbName)
+
+      request.onerror = error => this.overrideError(reject, error)
+      request.onsuccess = resolve
+      request.onblocked = e => reject(e.target)
+    })
+  }
+
   /**
    * Get all records from particular store
    */
@@ -503,22 +628,9 @@ class IndexedDBWrapper implements IStorage {
    * WARNING: should be used only by adjust's demo app!
    */
   deleteDatabase(): Promise<any> {
-    const indexedDB = IndexedDBWrapper.getIndexedDB()
-
     this.destroy()
 
-    return new Promise((resolve, reject) => {
-      if (!indexedDB) {
-        reject(this.notSupportedError)
-      } else {
-        const request = indexedDB.deleteDatabase(this.dbName)
-
-        request.onerror = error => this.overrideError(reject, error)
-
-        request.onsuccess = resolve
-        request.onblocked = e => reject(e.target)
-      }
-    })
+    return this.deleteDatabaseByName(this.dbName)
   }
 
 }

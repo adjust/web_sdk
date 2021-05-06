@@ -161,7 +161,8 @@ export type BaseParamsT = $ReadOnly<$Shape<{
 
 export type CustomConfigT = $ReadOnly<$Shape<{
   customUrl: string,
-  eventDeduplicationListLimit: number
+  eventDeduplicationListLimit: number,
+  namespace: string
 }>>
 
 export type LogOptionsT = $ReadOnly<$Shape<{|
@@ -176,6 +177,7 @@ export type InitOptionsT = $ReadOnly<$Shape<{|
   externalDeviceId: $PropertyType<BaseParamsT, 'externalDeviceId'>,
   customUrl: $PropertyType<CustomConfigT, 'customUrl'>,
   eventDeduplicationListLimit: $PropertyType<CustomConfigT, 'eventDeduplicationListLimit'>,
+  namespace: $PropertyType<CustomConfigT, 'namespace'>,
   attributionCallback: (string, Object) => mixed
 |}>>
 

@@ -10,7 +10,8 @@ const appConfig = {
   // defaultTracker: 'YOUR_DEFAULT_TRACKER',
   // externalDeviceId: 'YOUR_EXTERNAL_DEVICE_ID',
   // customUrl: 'YOUR_CUSTOM_URL',
-  // eventDeduplicationListLimit: 'YOUR_EVENT_DEDUPLICATION_LIST_LIMIT'
+  // eventDeduplicationListLimit: 'YOUR_EVENT_DEDUPLICATION_LIST_LIMIT',
+  // namespace: 'YOUR_CUSTOM_STORAGE_NAMESPACE'
 }
 
 const basicEventConfig = {

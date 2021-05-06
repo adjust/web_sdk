@@ -2,7 +2,7 @@ export default function Suite (getStorageCb) {
 
   return () => {
     describe('storage common tests', () => {
-      
+
       let Storage = null
 
       beforeAll(() => { Storage = getStorageCb() })

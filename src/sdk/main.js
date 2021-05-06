@@ -81,7 +81,7 @@ function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
 
   _isInitialising = true
 
-  Storage.init()
+  Storage.init(options.namespace)
     .then(availableStorage => {
 
       if (availableStorage.type === STORAGE_TYPES.NO_STORAGE) {

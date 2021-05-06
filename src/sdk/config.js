@@ -65,7 +65,8 @@ const _allowedParams: BaseParamsListT = [
  */
 const _allowedConfig: CustomConfigListT = [
   'customUrl',
-  'eventDeduplicationListLimit'
+  'eventDeduplicationListLimit',
+  'namespace'
 ]
 
 /**

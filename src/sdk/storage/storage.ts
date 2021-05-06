@@ -1,5 +1,7 @@
+import { IStorage } from './types'
 import { IndexedDB } from './indexeddb'
 import { LocalStorage } from './localstorage'
+import QuickStorage from './quick-storage'
 import Logger from '../logger'
 import { reducer, entries } from '../utilities'
 import {
@@ -12,7 +14,6 @@ import {
   decodeErrorMessage
 } from './converter'
 import { STORAGE_TYPES } from '../constants'
-import { IStorage } from './types'
 
 enum StorageType {
   noStorage = STORAGE_TYPES.NO_STORAGE,
@@ -279,7 +280,7 @@ let _initializationPromise: Nullable<Promise<Storage>> = null
  * Check which storage is available and pick it up
  * Prefer indexedDB over localStorage
  */
-function init(): Promise<Storage> {
+function init(dbName?: string): Promise<Storage> {
   let storage: Nullable<IStorage> = null
 
   if (_initializationPromise !== null) {
@@ -287,19 +288,24 @@ function init(): Promise<Storage> {
   } else {
     _initializationPromise = Promise.all([IndexedDB.isSupported(), LocalStorage.isSupported()])
       .then(([idbSupported, lsSupported]) => {
+        QuickStorage.setCustomName(dbName)
+
         if (idbSupported) {
-          storage = new IndexedDB()
           type = StorageType.indexedDB
+          const idb = new IndexedDB()
+          return idb.setCustomName(dbName).then(() => storage = idb)
         } else if (lsSupported) {
-          storage = new LocalStorage()
           type = StorageType.localStorage
-        }
-
-        if (!type) {
-          type = StorageType.noStorage
+          storage = new LocalStorage()
+          return Promise.resolve(storage)
+        } else {
           Logger.error('There is no storage available, app will run with minimum set of features')
+          type = StorageType.noStorage
+          storage = null
+          return Promise.resolve(storage)
         }
-
+      })
+      .then(() => {
         return {
           type,
           storage
