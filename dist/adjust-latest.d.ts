@@ -94,6 +94,17 @@ interface InitOptions {
   /** Optional. */
   urlStrategy?: 'india' | 'china';
 
+  /**
+   * Optional. A custom namespace for SDK data storage. If not set then default one is used.
+   * It's useful when there are multiple applications on the same domain to allow SDK distinguish storages and don't
+   * mix the data up.
+   *
+   * Please note it's possible to set custom namespace for existing default-named storage, all data will be preserved
+   * and moved to the custom namespace. Once custom namespace is set it's not possible to rename it or undo without
+   * data loss.
+   */
+  namespace?: string;
+
   /** Optional. This is a callback function for the attribution change. Two arguments are provided to the callback,
    * first one is an internal event name (can be ignored), and the other one is the Object which holds information
    * about the changed attribution.
