@@ -160,6 +160,7 @@ export type BaseParamsT = $ReadOnly<$Shape<{
 }>>
 
 export type CustomConfigT = $ReadOnly<$Shape<{
+  urlStrategy: 'india' | 'china',
   customUrl: string,
   eventDeduplicationListLimit: number,
   namespace: string
@@ -175,6 +176,7 @@ export type InitOptionsT = $ReadOnly<$Shape<{|
   environment: $PropertyType<BaseParamsT, 'environment'>,
   defaultTracker: $PropertyType<BaseParamsT, 'defaultTracker'>,
   externalDeviceId: $PropertyType<BaseParamsT, 'externalDeviceId'>,
+  urlStrategy: $PropertyType<CustomConfigT, 'urlStrategy'>,
   customUrl: $PropertyType<CustomConfigT, 'customUrl'>,
   eventDeduplicationListLimit: $PropertyType<CustomConfigT, 'eventDeduplicationListLimit'>,
   namespace: $PropertyType<CustomConfigT, 'namespace'>,

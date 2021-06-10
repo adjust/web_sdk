@@ -91,6 +91,9 @@ interface InitOptions {
    * to deduplicate events with repeating ids. */
   eventDeduplicationListLimit?: number;
 
+  /** Optional. */
+  urlStrategy?: 'india' | 'china';
+
   /** Optional. This is a callback function for the attribution change. Two arguments are provided to the callback,
    * first one is an internal event name (can be ignored), and the other one is the Object which holds information
    * about the changed attribution.

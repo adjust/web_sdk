@@ -90,15 +90,15 @@ describe('Custom namespace functionality', () => {
     return nextTick()
       .then(() => {
         if (expectExists) {
-          expect(upgradeneededMock).not.toBeCalled()
+          expect(upgradeneededMock).not.toHaveBeenCalled()
         } else {
-          expect(upgradeneededMock).toBeCalled()
+          expect(upgradeneededMock).toHaveBeenCalled()
         }
 
         jest.runOnlyPendingTimers()
 
-        expect(successMock).toBeCalled()
-        expect(errorMock).not.toBeCalled()
+        expect(successMock).toHaveBeenCalled()
+        expect(errorMock).not.toHaveBeenCalled()
       })
   }
 
@@ -231,7 +231,7 @@ describe('Custom namespace functionality', () => {
         expect.assertions(9)
 
         return Storage.init(namespace)
-          .then(() => expect(IndexedDB.prototype.setCustomName).toBeCalledWith(namespace))
+          .then(() => expect(IndexedDB.prototype.setCustomName).toHaveBeenCalledWith(namespace))
           .then(() => expect(Logger.default.info).toHaveBeenCalledWith('Database migration finished'))
           .then(() => expectDatabaseExists(defaultName, false)) // Check default-named database was removed
           .then(() => expectDatabaseExists(customName)) // And a custom-named one exists
@@ -269,7 +269,7 @@ describe('Custom namespace functionality', () => {
       it('Migrates data', () => {
 
         return Storage.init(namespace)
-          .then(() => expect(QuickStorage.setCustomName).toBeCalledWith(namespace))
+          .then(() => expect(QuickStorage.setCustomName).toHaveBeenCalledWith(namespace))
           .then(() => expectLocalStorageExists(defaultName, false)) // Check default-named database was removed
           .then(() => expectLocalStorageExists(customName)) // And a custom-named one exists
           .then(() => Storage.getAll('activityState')) // Check new database contains data that was put into old one
