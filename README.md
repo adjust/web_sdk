@@ -8,7 +8,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 * [Example apps](#example-app)
 * [Installation](#installation)
-* [Initialization](#initialization)   
+* [Initialization](#initialization)
 * [Event tracking](#event-tracking)
 * [Global callback parameters](#global-callback-parameters)
 * [Global partner parameters](#global-partner-parameters)
@@ -37,7 +37,7 @@ To lazy <a id="loading-snippet">load the Adjust Web SDK through CDN</a> paste th
 
 The Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
 
-When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.1.1.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.   
+When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.1.2.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.   
 
 It's also possible to install our sdk through NPM:
 
@@ -110,6 +110,12 @@ Here are more details about each log level:
 <a id="log-output">**logOutput**</a> `string`
 
 It's possible to define html container where you want to see your logs. This is useful when testing on mobile devices and when you want to see logs directly on the screen (recommended only for testing)
+
+<a id="namespace">**namespace**</a> `string`
+
+A custom namespace for SDK data storage. If there are multiple applications on the same domain to allow SDK distinguish storages and don't mix the data up each application should use it's own namespace.
+
+Please note it's possible to set custom namespace for existing storage with default name, all data will be preserved and moved to the custom namespace. Once custom namespace is set it's not possible to rename it without data loss.
 
 
 ## <a id="event-tracking">Event tracking</a>

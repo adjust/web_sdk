@@ -13,3 +13,9 @@ export const HTTP_ERRORS = {
   'SKIP': 'Skipping slower attempt',
   'MISSING_URL': 'Url is not provided'
 }
+
+export const STORAGE_TYPES = {
+  NO_STORAGE: 'noStorage',
+  INDEXED_DB: 'indexedDB',
+  LOCAL_STORAGE: 'localStorage'
+}

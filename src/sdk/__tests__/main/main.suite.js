@@ -115,13 +115,18 @@ function expectDelayedTrackEvent_Async () {
   return {assertions: 4, promise}
 }
 
-function expectRunningTrackEvent () {
+function expectRunningTrackEvent_Async () {
+  const promise = Utils.flushPromises()
+    .then(() => {
+      PubSub.publish('sdk:installed')
+      jest.runOnlyPendingTimers()
 
-  _instance.trackEvent({eventToken: 'blabla'})
+      _instance.trackEvent({eventToken: 'blabla'})
 
-  expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'}, undefined)
+      expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'}, undefined)
+    })
 
-  return {assertions: 1}
+  return {assertions: 1, promise}
 }
 
 function expectNotRunningTrackEvent () {
@@ -503,7 +508,7 @@ export default function Suite (instance) {
     expectPartialStartWithGdprRequest_Async,
     expectNotStart,
     expectDelayedTrackEvent_Async,
-    expectRunningTrackEvent,
+    expectRunningTrackEvent_Async,
     expectNotRunningTrackEvent,
     expectNotRunningTrackEventWhenNoInstance,
     expectNotRunningTrackEventWhenNoStorage,

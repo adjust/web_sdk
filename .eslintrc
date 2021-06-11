@@ -27,13 +27,40 @@
     "prefer-arrow-callback": "error",
     "prefer-object-spread": "error"
   },
-
-  "overrides": [{
-    "files": ["*.ts"],
-    "parser": "@typescript-eslint/parser",
-    "plugins": ["@typescript-eslint"],
-    "rules": {
-      "semi": ["error", "never"]
+  "overrides": [
+    {
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "files": ["./src/**/*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "plugins": ["@typescript-eslint"],
+      "rules": {
+        "semi": ["error", "never"],
+        "space-before-function-paren": ["error", "never"],
+        "eol-last": "error",
+        "@typescript-eslint/ban-types": "warn"
+      }
+    },
+    {
+      "extends": ["plugin:jest/style"],
+      "files": ["./src/**/*.spec.*"],
+      "env": {
+        "jest": true
+      },
+      "plugins": ["jest"],
+      "rules": {
+        "jest/prefer-to-have-length": "off",
+        "jest/no-disabled-tests": "error",
+        "jest/no-focused-tests": "error",
+        "jest/no-identical-title": "error",
+        "@typescript-eslint/no-var-requires": "off"
+      }
     }
-  }]
+  ]
 }

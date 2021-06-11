@@ -1,4 +1,4 @@
-import {reducer, entries} from '../utilities'
+import { reducer, entries } from '../utilities'
 import Scheme from './scheme'
 
 /**
@@ -8,7 +8,7 @@ import Scheme from './scheme'
  * @returns {*}
  * @private
  */
-function _parseValue (value) {
+function _parseValue(value) {
   try {
     return JSON.parse(value)
   } catch (e) {
@@ -23,7 +23,7 @@ function _parseValue (value) {
  * @returns {Object}
  * @private
  */
-function _flipObject (obj) {
+function _flipObject(obj) {
   return entries(obj)
     .map(([key, value]) => [value, _parseValue(key)])
     .reduce(reducer, {})
@@ -37,7 +37,7 @@ function _flipObject (obj) {
  * @returns {Object}
  * @private
  */
-function _flipStoreNames (obj) {
+function _flipStoreNames(obj) {
   return entries(obj)
     .map(([name, options]) => [options.name, {
       name,
@@ -55,12 +55,12 @@ function _flipStoreNames (obj) {
  * @returns {Object}
  * @private
  */
-function _flipStoreScheme (storeName, key, scheme) {
-  const values = scheme.values ? {values: _flipObject(scheme.values)} : {}
-  const keys = scheme.keys ? {keys: _flipScheme(storeName, scheme.keys)} : {}
-  const composite = scheme.composite ? {composite: scheme.composite.map(key => _getShortKey(storeName, key))} : {}
+function _flipStoreScheme(storeName, key, scheme) {
+  const values = scheme.values ? { values: _flipObject(scheme.values) } : {}
+  const keys = scheme.keys ? { keys: _flipScheme(storeName, scheme.keys) } : {}
+  const composite = scheme.composite ? { composite: scheme.composite.map(key => _getShortKey(storeName, key)) } : {}
 
-  return {key, ...values, ...keys, ...composite}
+  return { key, ...values, ...keys, ...composite }
 }
 
 /**
@@ -71,7 +71,7 @@ function _flipStoreScheme (storeName, key, scheme) {
  * @returns {Object}
  * @private
  */
-function _flipScheme (storeName, fieldsScheme) {
+function _flipScheme(storeName, fieldsScheme) {
   return entries(fieldsScheme)
     .map(([key, scheme]) => scheme.key
       ? [scheme.key, _flipStoreScheme(storeName, key, scheme)]
@@ -85,7 +85,7 @@ function _flipScheme (storeName, fieldsScheme) {
  * @returns {Object}
  * @private
  */
-function _prepareLeft () {
+function _prepareLeft() {
   return entries(Scheme)
     .map(([storeName, store]) => [
       storeName,
@@ -105,7 +105,7 @@ function _prepareLeft () {
  * @returns {Object}
  * @private
  */
-function _prepareRight () {
+function _prepareRight() {
   return entries(Left)
     .map(([storeName, storeScheme]) => [
       storeName,
@@ -125,7 +125,7 @@ function _prepareRight () {
  * @returns {Object}
  * @private
  */
-function _getValuesMap () {
+function _getValuesMap() {
   return entries(Scheme)
     .reduce((acc, [, store]) => acc.concat(store.scheme.fields), [])
     .map(scheme => entries(scheme)
@@ -144,7 +144,7 @@ function _getValuesMap () {
  * @returns {string}
  * @private
  */
-function _getShortKey (storeName, key) {
+function _getShortKey(storeName, key) {
   const map = Scheme[storeName].scheme.fields[key]
   return map ? (map.key || map) : key
 }
@@ -155,7 +155,7 @@ function _getShortKey (storeName, key) {
  * @returns {Object}
  * @private
  */
-function _getStoreNames () {
+function _getStoreNames(): {[shortName: string]: {name: string; permanent: boolean}} {
   return entries(Scheme)
     .map(([storeName, scheme]) => [storeName, {
       name: scheme.name,

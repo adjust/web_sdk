@@ -4,6 +4,7 @@ import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
 import * as Config from '../config'
+import * as UrlStrategy from '../url-strategy'
 
 jest.mock('../logger')
 jest.useFakeTimers()
@@ -12,11 +13,7 @@ describe('perform api requests', () => {
 
   const appParams = {
     appToken: '123abc',
-    environment: 'sandbox',
-    baseUrl: {
-      app: 'app-test',
-      gdpr: 'gdpr-test'
-    }
+    environment: 'sandbox'
   }
 
   const defaultParamsString = [
@@ -33,6 +30,9 @@ describe('perform api requests', () => {
     'queue_size=0'
   ].join('&')
 
+  const urlStrategyRetriesMock = sendRequestCb => sendRequestCb({ app: 'app', gdpr: 'gdpr' })
+  const urlStrategyRetriesActual = UrlStrategy.urlStrategyRetries
+
   const oldXMLHttpRequest = global.XMLHttpRequest
   const oldLocale = global.navigator.language
   const oldPlatform = global.navigator.platform
@@ -46,6 +46,9 @@ describe('perform api requests', () => {
     Utils.setGlobalProp(global.navigator, 'language')
     Utils.setGlobalProp(global.navigator, 'platform')
     Utils.setGlobalProp(global.navigator, 'doNotTrack')
+
+
+    jest.spyOn(UrlStrategy, 'urlStrategyRetries').mockImplementation(urlStrategyRetriesMock)
 
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     ActivityState.default.init({uuid: 'some-uuid'})
@@ -418,30 +421,39 @@ describe('perform api requests', () => {
         })
     })
 
-    it('overrides base and gdpr url with custom one', () => {
-
-      Config.default.set({customUrl: 'custom-base', ...appParams})
-
-      expect.assertions(4)
-
-      expect(http.default({
-        url: '/some-url'
-      })).resolves.toEqual({
-        status: 'success',
-        ...response
+    describe('custom url', () => {
+      beforeAll(() => {
+        jest.spyOn(UrlStrategy, 'urlStrategyRetries').mockImplementation(urlStrategyRetriesActual)
       })
 
-      return Utils.flushPromises()
-        .then(() => {
+      afterAll(() => {
+        jest.spyOn(UrlStrategy, 'urlStrategyRetries').mockImplementation(urlStrategyRetriesMock)
+      })
 
-          expect(mockXHR.open).toHaveBeenCalledWith('GET', `custom-base/some-url?${defaultParamsString}`, true)
-          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
-          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+      it('overrides base and gdpr url with custom one', () => {
+        Config.default.set({ customUrl: 'custom-base', ...appParams })
 
-          mockXHR.onreadystatechange()
+        expect.assertions(4)
 
-          Config.default.set(appParams)
+        expect(http.default({
+          url: '/some-url'
+        })).resolves.toEqual({
+          status: 'success',
+          ...response
         })
+
+        return Utils.flushPromises()
+          .then(() => {
+
+            expect(mockXHR.open).toHaveBeenCalledWith('GET', `custom-base/some-url?${defaultParamsString}`, true)
+            expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+            expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+            mockXHR.onreadystatechange()
+
+            Config.default.set(appParams)
+          })
+      })
     })
 
     it('excludes empty values from the request params', () => {

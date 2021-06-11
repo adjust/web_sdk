@@ -97,6 +97,11 @@ function _handleReset () {
 
   _setJson(appConfig)
   clear()
+  Adjust.__testonly__.clearDatabase()
+    .catch(error => {
+      write('There was an error while attempting to delete the storage, please refresh')
+      throw error
+    })
     .then(() => {
       setItem('appConfig', appConfig)
       write('The storage is deleted and the sdk is re-initiated')

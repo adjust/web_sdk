@@ -1,70 +1,117 @@
 import fakeIDB from 'fake-indexeddb'
 import * as IDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange'
-import * as IndexedDB from '../../storage/indexeddb'
-import * as ActivityState from '../../activity-state'
 import * as QuickStorage from '../../storage/quick-storage'
-import * as Logger from '../../logger'
 import * as SchemeMap from '../../storage/scheme-map'
 import Suite from './storage.suite'
+import { STORAGE_TYPES } from '../../constants'
 
 jest.mock('../../logger')
 
 describe('IndexedDB usage', () => {
 
-  const storeNames = SchemeMap.default.storeNames.left
-
   global.indexedDB = fakeIDB
   global.IDBKeyRange = IDBKeyRange
-
-  beforeAll(() => {
-    jest.spyOn(Logger.default, 'warn')
-  })
 
   afterAll(() => {
     jest.restoreAllMocks()
   })
 
-  it('checks if indexedDB is supported', () => {
+  describe('testing indexedDB support', () => {
+    let Logger
 
-    let supported = IndexedDB.isSupported()
+    jest.isolateModules(() => {
+      beforeEach(() => {
+        jest.resetModules()
 
-    expect(supported).toBeTruthy()
-    expect(Logger.default.warn).not.toHaveBeenCalled()
-
-    delete global.indexedDB
-
-    supported = IndexedDB.isSupported()
-
-    expect(supported).toBeFalsy()
-    expect(Logger.default.warn).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
-
-    global.indexedDB = fakeIDB
-
-  })
-
-  it('forces no-support of indexedDB on iOS devices', () => {
-
-    expect.assertions(4)
-
-    Utils.setGlobalProp(global.navigator, 'platform')
-    const platformSpy = jest.spyOn(global.navigator, 'platform', 'get')
-    platformSpy.mockReturnValue('iPhone')
-
-    expect(IndexedDB.isSupported()).toBeFalsy()
-    expect(Logger.default.warn).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
-
-    IndexedDB.getAll('activityState')
-      .catch(error => {
-        expect(error.name).toEqual('IDBNotSupported')
-        expect(error.message).toEqual('IndexedDB is not supported')
+        Logger = require('../../logger')
+        jest.spyOn(Logger.default, 'warn')
       })
 
-    platformSpy.mockRestore()
+      it('checks if indexedDB is supported', () => {
+        expect.assertions(2)
+
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
+
+        return IndexedDB.isSupported()
+          .then(supported => {
+
+            expect(supported).toBeTruthy()
+            expect(Logger.default.warn).not.toHaveBeenCalled()
+          })
+      })
+
+      it('caches result of indexedDB support', () => {
+        expect.assertions(4)
+
+        jest.spyOn(global.indexedDB, 'open')
+
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
+
+        return IndexedDB.isSupported()
+          .then(supported => {
+            expect(supported).toBeTruthy()
+            expect(global.indexedDB.open).toHaveBeenCalledTimes(1)
+            return IndexedDB.isSupported()
+          })
+          .then(supported => {
+            expect(supported).toBeTruthy()
+            expect(global.indexedDB.open).toHaveBeenCalledTimes(1)
+          })
+      })
+
+      it('throws error if indexedDB is not supported', () => {
+        expect.assertions(3)
+
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
+
+        delete global.indexedDB
+
+        return IndexedDB.isSupported()
+          .then(supported => {
+
+            expect(supported).toBeFalsy()
+            expect(Logger.default.warn).toHaveBeenCalledTimes(1)
+            expect(Logger.default.warn).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
+
+            global.indexedDB = fakeIDB
+          })
+      })
+
+      it('forces no-support of indexedDB on iOS devices', (done) => {
+        expect.assertions(2)
+
+        const IndexedDB = require('../../storage/indexeddb').IndexedDB
+
+        Utils.setGlobalProp(global.navigator, 'platform')
+        const platformSpy = jest.spyOn(global.navigator, 'platform', 'get')
+        platformSpy.mockReturnValue('iPhone')
+
+        return IndexedDB.isSupported()
+          .then(supported => {
+            expect(supported).toBeFalsy()
+            expect(Logger.default.warn).toHaveBeenCalledWith('IndexedDB is not supported in this browser')
+          })
+          .then(() => {
+            platformSpy.mockRestore()
+            done()
+          })
+      })
+    })
   })
 
   describe('run common tests for IndexedDB implementation', () => {
     jest.isolateModules(() => {
-      const Storage = require('../../storage/storage').default
+
+      let Storage = null
+
+      beforeAll(() => {
+        jest.resetModules()
+
+        require('../../storage/indexeddb')
+        Storage = require('../../storage/storage').default
+
+        return Storage.init()
+      })
 
       afterEach(() => {
         fakeIDB._databases.clear()
@@ -72,17 +119,31 @@ describe('IndexedDB usage', () => {
       })
 
       it('sets storage type to indexedDB', () => {
-        expect(Storage.type).toBe('indexedDB')
+        expect(Storage.getType()).toBe(STORAGE_TYPES.INDEXED_DB)
       })
 
-      Suite(Storage)()
+      Suite(() => Storage)()
     })
   })
 
   describe('integration with Identity and data restore', () => {
     jest.isolateModules(() => {
-      const Identity = require('../../identity')
-      const Storage = require('../../storage/storage').default
+      jest.useFakeTimers()
+
+      let Identity = null
+      let Storage = null
+
+      beforeAll(() => {
+        jest.resetModules()
+        require('../../storage/indexeddb')
+
+        Storage = require('../../storage/storage').default
+
+        jest.spyOn(Storage, 'addItem')
+
+        return Storage.init()
+          .then(() => Identity = require('../../identity'))
+      })
 
       it('restores activityState record from the running memory when db gets destroyed', () => {
 
@@ -90,19 +151,25 @@ describe('IndexedDB usage', () => {
 
         expect.assertions(4)
 
-        expect(Storage.type).toBe('indexedDB')
+        expect(Storage.getType()).toBe(STORAGE_TYPES.INDEXED_DB)
 
         return Identity.start()
-          .then(() => {
+          .then((createdActivityState) => {
+            activityState = createdActivityState
 
             Storage.destroy()
             fakeIDB._databases.clear()
 
-            activityState = ActivityState.default.current
-
             expect(activityState.uuid).toBeDefined()
 
-            return Storage.getFirst('activityState')
+            const promise = Storage.getFirst('activityState')
+
+            return Utils.flushPromises()
+              .then(() => {
+                jest.runOnlyPendingTimers()
+
+                return promise
+              })
           })
           .then(stored => {
 
@@ -110,22 +177,25 @@ describe('IndexedDB usage', () => {
             expect(stored.uuid).toBeDefined()
 
             Identity.destroy()
+
+            return Utils.flushPromises()
           })
       })
 
       describe('tests in case indexedDB got supported due to a browser upgrade', () => {
+        const storeNames = SchemeMap.default.storeNames.left
 
         const queueSet = [
-          {t: 1, u: '/url'},
-          {t: 2, u: 2}
+          { t: 1, u: '/url' },
+          { t: 2, u: 2 }
         ]
         const activityStateSet = [
-          {u: 1, la: 12345, at: {a: 'blabla', tt: '123abc', tn: 'tracker', nt: 'bla'}}
+          { u: 1, la: 12345, at: { a: 'blabla', tt: '123abc', tn: 'tracker', nt: 'bla' } }
         ]
         const globalParamsSet = [
-          {kt: 'key-11', k: 'key-1', v: 'value-1', t: 1},
-          {kt: 'key-21', k: 'key-2', v: 'value-2', t: 1},
-          {kt: 'key-32', k: 'key-3', v: 'value-3', t: 2}
+          { kt: 'key-11', k: 'key-1', v: 'value-1', t: 1 },
+          { kt: 'key-21', k: 'key-2', v: 'value-2', t: 1 },
+          { kt: 'key-32', k: 'key-3', v: 'value-3', t: 2 }
         ]
 
         beforeEach(() => {
@@ -177,8 +247,8 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {timestamp: 1, url: '/url'},
-                {timestamp: 2, url: '/event'}
+                { timestamp: 1, url: '/url' },
+                { timestamp: 2, url: '/event' }
               ])
               expect(QuickStorage.default.stores[storeNames.queue.name]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
@@ -188,9 +258,9 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback'},
-                {keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback'},
-                {keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner'}
+                { keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback' },
+                { keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback' },
+                { keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner' }
               ])
             })
         })
@@ -202,9 +272,9 @@ describe('IndexedDB usage', () => {
           let inMemoryActivityState = null
 
           return Identity.start()
-            .then(() => {
+            .then((activityState) => {
 
-              inMemoryActivityState = ActivityState.default.current
+              inMemoryActivityState = activityState
 
               expect(inMemoryActivityState.uuid).toBeDefined()
 
@@ -227,8 +297,8 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {timestamp: 1, url: '/url'},
-                {timestamp: 2, url: '/event'}
+                { timestamp: 1, url: '/url' },
+                { timestamp: 2, url: '/event' }
               ])
               expect(QuickStorage.default.stores[storeNames.queue.name]).toBeNull()
               expect(QuickStorage.default.stores[storeNames.activityState.name]).toBeNull()
@@ -238,9 +308,9 @@ describe('IndexedDB usage', () => {
             })
             .then(result => {
               expect(result).toEqual([
-                {keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback'},
-                {keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback'},
-                {keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner'}
+                { keyType: 'key-11', key: 'key-1', value: 'value-1', type: 'callback' },
+                { keyType: 'key-21', key: 'key-2', value: 'value-2', type: 'callback' },
+                { keyType: 'key-32', key: 'key-3', value: 'value-3', type: 'partner' }
               ])
             })
         })

@@ -138,7 +138,7 @@ function sync (): Promise<ActivityStateMapT> {
       const lastActive = current.lastActive || 0
 
       if (_isLive() && lastActive < activityState.lastActive) {
-        
+
         // Checking if another SDK instance was installed while this one was in backgound
         const installedUpdated = !current.installed && activityState.installed
         const sessionCountUpdated = (current.sessionCount || 0) < (activityState.sessionCount || 0)

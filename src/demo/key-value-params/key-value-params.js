@@ -14,7 +14,8 @@ function _createNode (name, classes = [], content, attrs = {}) {
     element.appendChild(document.createTextNode(content))
   }
 
-  Object.entries(attrs)
+  Object.keys(attrs)
+    .map(key => [key, attrs[key]])
     .map(([key, value]) => element[key] = value)
 
   return element

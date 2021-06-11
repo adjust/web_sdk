@@ -146,19 +146,4 @@ describe('test global config', () => {
       })
     })
   })
-
-  describe('development environment', () => {
-    jest.isolateModules(() => {
-      global.process.env.NODE_ENV = 'development'
-      const Config = require('../config')
-
-      it('sets base urls for env other then test', () => {
-        expect(Config.default.baseUrl).toEqual({
-          app: 'https://app.adjust.com',
-          gdpr: 'https://gdpr.adjust.com'
-        })
-      })
-    })
-  })
-
 })

@@ -10,6 +10,7 @@ import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
 import Suite from './main.suite'
+import { STORAGE_TYPES } from '../../constants'
 
 jest.mock('../../logger')
 
@@ -43,7 +44,12 @@ describe('main entry point - test instance initiation when storage is not availa
   })
 
   it('prevents initiation if storage is not available', () => {
-    jest.doMock('../../storage/storage', () => { return null })
+    jest.doMock('../../storage/storage', () => {
+      return {
+        init: () => Promise.resolve({ storage: null, type: STORAGE_TYPES.NO_STORAGE }),
+        getType: () => STORAGE_TYPES.NO_STORAGE
+      }
+    })
 
     const AdjustInstance = require('../../main').default
 
@@ -51,10 +57,15 @@ describe('main entry point - test instance initiation when storage is not availa
 
     AdjustInstance.initSdk(suite.config)
 
-    expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK can not start, there is no storage available')
-    suite.expectNotStart()
-    suite.expectNotRunningStaticWhenNoStorage()
-    suite.expectNotRunningTrackEventWhenNoStorage()
+    expect.assertions(27)
+
+    return Utils.flushPromises()
+      .then(() => {
+        expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK can not start, there is no storage available')
+        suite.expectNotStart()
+        suite.expectNotRunningStaticWhenNoStorage()
+        suite.expectNotRunningTrackEventWhenNoStorage()
+      })
 
   })
 
