@@ -22,7 +22,7 @@ type Request = {
   action: Action;
   target?: any;
   mode?: IDBTransactionMode;
-  range?: IDBKeyRange;
+  range?: Nullable<IDBKeyRange>;
   firstOnly?: boolean;
 }
 
@@ -457,7 +457,7 @@ class IndexedDBWrapper implements IStorage {
   /**
    * Open cursor for bulk operations or listing
    */
-  private openCursor({ storeName, action, range, firstOnly = false, mode = 'readonly' }: Request): Promise<any | Array<any>> {
+  private openCursor({ storeName, action, range = null, firstOnly = false, mode = 'readonly' }: Request): Promise<any | Array<any>> {
     return this.open()
       .then(() => {
         return new Promise((resolve, reject) => {

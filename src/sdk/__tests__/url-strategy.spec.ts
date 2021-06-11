@@ -110,11 +110,4 @@ describe('test url strategy', () => {
         .catch(() => expect(sendRequestMock).toHaveBeenCalledTimes(1))
     })
   })
-
-  it('uses testing urls in test environment', () => {
-    const sendRequestMock = jest.fn(() => Promise.resolve())
-
-    urlStrategyRetries(sendRequestMock)
-      .then(() => expect(sendRequestMock).toHaveBeenCalledWith({ app: 'app', gdpr: 'gdpr' }))
-  })
 })
