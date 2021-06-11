@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const webpack = require('webpack')
 const packageJson = require('./package.json')
 const namespace = 'adjust-sdk'
@@ -36,7 +37,8 @@ module.exports = () => ({
       __ADJUST__NAMESPACE: JSON.stringify(namespace),
       __ADJUST__SDK_VERSION: JSON.stringify(version)
     }),
-    new FlowWebpackPlugin()
+    new FlowWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin()
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json']

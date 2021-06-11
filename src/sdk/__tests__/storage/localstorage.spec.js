@@ -1,60 +1,63 @@
-import * as LocalStorage from '../../storage/localstorage'
-import * as Storage from '../../storage/storage'
+import Storage from '../../storage/storage'
 import * as Identity from '../../identity'
 import * as ActivityState from '../../activity-state'
-import * as Logger from '../../logger'
 import Suite from './storage.suite'
+import { STORAGE_TYPES } from '../../constants'
 
 jest.mock('../../logger')
 
 describe('LocalStorage usage', () => {
 
-  beforeAll(() => {
-    jest.spyOn(Logger.default, 'warn')
-  })
-
   afterAll(() => {
     jest.restoreAllMocks()
   })
 
-  it('checks if localStorage is supported', () => {
+  describe('testing localStorage support', () => {
+    let Logger
 
-    expect.assertions(10)
+    jest.isolateModules(() => {
 
-    const original = global.localStorage
-    let supported = LocalStorage.isSupported()
+      beforeEach(() => {
+        jest.resetModules()
 
-    expect(supported).toBeTruthy()
-    expect(Logger.default.warn).not.toHaveBeenCalled()
+        require('../../preferences')
 
-    delete global.localStorage
+        Logger = require('../../logger')
+        jest.spyOn(Logger.default, 'warn')
 
-    supported = LocalStorage.isSupported()
-
-    expect(supported).toBeFalsy()
-    expect(Logger.default.warn).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
-
-    return Storage.default.getItem('activityState')
-      .catch(error => {
-        expect(error.name).toEqual('LSNotSupported')
-        expect(error.message).toEqual('LocalStorage is not supported')
-
-        return Storage.default.getAll('activityState')
+        return Storage.init().then(() => Logger.default.warn.mockClear())
       })
-      .catch(error => {
-        expect(error.name).toEqual('LSNotSupported')
-        expect(error.message).toEqual('LocalStorage is not supported')
 
-        return Storage.default.clear('activityState')
-      })
-      .catch(error => {
-        expect(error.name).toEqual('LSNotSupported')
-        expect(error.message).toEqual('LocalStorage is not supported')
+      it('checks if localStorage is supported', () => {
+        expect.assertions(2)
 
-        global.localStorage = original
+        const LocalStorage = require('../../storage/localstorage').LocalStorage
+
+        return LocalStorage.isSupported()
+          .then(supported => {
+            expect(supported).toBeTruthy()
+            expect(Logger.default.warn).not.toHaveBeenCalled()
+          })
       })
+
+      it('throws error if localStorage is not supported', () => {
+        expect.assertions(2)
+
+        const original = global.localStorage
+        delete global.localStorage
+
+        const LocalStorage = require('../../storage/localstorage').LocalStorage
+
+        return LocalStorage.isSupported()
+          .then(supported => {
+            expect(supported).toBeFalsy()
+            expect(Logger.default.warn).toHaveBeenCalledWith('LocalStorage is not supported in this browser')
+
+            global.localStorage = original
+          })
+      })
+    })
   })
-
 
   it('restores activityState record from the running memory when db gets destroyed', () => {
 
@@ -62,19 +65,19 @@ describe('LocalStorage usage', () => {
 
     expect.assertions(4)
 
-    expect(Storage.default.type).toBe('localStorage')
+    expect(Storage.getType()).toBe(STORAGE_TYPES.LOCAL_STORAGE)
 
     return Identity.start()
       .then(() => {
 
-        Storage.default.destroy()
+        Storage.destroy()
         localStorage.clear()
 
         activityState = ActivityState.default.current
 
         expect(activityState.uuid).toBeDefined()
 
-        return Storage.default.getFirst('activityState')
+        return Storage.getFirst('activityState')
       })
       .then(stored => {
 
@@ -87,16 +90,30 @@ describe('LocalStorage usage', () => {
   })
 
   describe('run common tests for LocalStorage implementation', () => {
-    afterEach(() => {
-      localStorage.clear()
-      Storage.default.destroy()
-    })
+    jest.isolateModules(() => {
 
-    it('sets storage type to localStorage', () => {
-      expect(Storage.default.type).toBe('localStorage')
-    })
+      let Storage = null
 
-    Suite(Storage.default)()
+      beforeAll(() => {
+        jest.resetModules()
+
+        require('../../storage/localstorage')
+        Storage = require('../../storage/storage').default
+
+        return Storage.init()
+      })
+
+      afterEach(() => {
+        localStorage.clear()
+        Storage.destroy()
+      })
+
+      it('sets storage type to localStorage', () => {
+        expect(Storage.getType()).toBe(STORAGE_TYPES.LOCAL_STORAGE)
+      })
+
+      Suite(() => Storage)()
+    })
   })
 
 })

@@ -82,13 +82,17 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      const a1 = suite.expectRunningStatic()
-      const a2 = suite.expectDelayedTrackEvent_Async()
-      const a3 = suite.expectStart_Async()
+      return Utils.flushPromises()
+        .then(() => {
 
-      return Promise.all([a2.promise, a3.promise]).then(()=>{
-        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-      })
+          const a1 = suite.expectRunningStatic()
+          const a2 = suite.expectDelayedTrackEvent_Async()
+          const a3 = suite.expectStart_Async()
+
+          expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+
+          return Promise.all([a2.promise, a3.promise])
+        })
     })
 
     it('runs forget-me request and flush', () => {
@@ -136,6 +140,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
     beforeAll(() => {
       AdjustInstance.initSdk(suite.config)
+      return Utils.flushPromises()
     })
 
     it('flush forget-me event but ignores it', () => {
@@ -186,13 +191,17 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      const a1 = suite.expectPartialStartWithGdprRequest_Async()
-      const a2 = suite.expectNotRunningStatic()
-      const a3 = suite.expectNotRunningTrackEvent()
+      return Utils.flushPromises()
+        .then(() => {
 
-      return a1.promise.then(() => {
-        expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-      })
+          const a1 = suite.expectPartialStartWithGdprRequest_Async()
+          const a2 = suite.expectNotRunningStatic()
+          const a3 = suite.expectNotRunningTrackEvent()
+
+          return a1.promise.then(() => {
+            expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+          })
+        })
     })
 
     it('flush forget-me event does clear and instance destroy', () => {
@@ -229,13 +238,17 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      const a1 = suite.expectPartialStartWithGdprRequest_Async()
-      const a2 = suite.expectNotRunningStatic()
-      const a3 = suite.expectNotRunningTrackEvent()
+      return Utils.flushPromises()
+        .then(() => {
 
-      expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+          const a1 = suite.expectPartialStartWithGdprRequest_Async()
+          const a2 = suite.expectNotRunningStatic()
+          const a3 = suite.expectNotRunningTrackEvent()
 
-      return a1.promise
+          expect.assertions(a1.assertions + a2.assertions + a3.assertions)
+
+          return a1.promise
+        })
     })
   })
 

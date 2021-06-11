@@ -1,16 +1,20 @@
 import * as Logger from '../../logger'
+import { STORAGE_TYPES } from '../../constants'
+import * as IndexedDB from '../../storage/indexeddb'
+import * as LocalStorage from '../../storage/localstorage'
 
 jest.mock('../../logger')
+
+jest.mock('../../storage/indexeddb')
+jest.mock('../../storage/localstorage')
 
 describe('test storage availability', () => {
 
   function mockAvailability (idbSupport, lsSupport) {
-    jest.doMock('../../storage/indexeddb', () => ({
-      isSupported () { return idbSupport }
-    }))
-    jest.doMock('../../storage/localstorage', () => ({
-      isSupported () { return lsSupport }
-    }))
+    jest.spyOn(IndexedDB.IndexedDB, 'isSupported').mockImplementation(() => Promise.resolve(idbSupport))
+    jest.spyOn(IndexedDB.IndexedDB.prototype, 'setCustomName').mockImplementation(() => Promise.resolve())
+
+    jest.spyOn(LocalStorage.LocalStorage, 'isSupported').mockImplementation(() => Promise.resolve(lsSupport))
   }
 
   beforeAll(() => {
@@ -25,7 +29,7 @@ describe('test storage availability', () => {
     jest.restoreAllMocks()
   })
 
-  it('reports that there is no storage available', () => {
+  it('reports that there is no storage available', (done) => {
 
     expect.assertions(2)
 
@@ -34,8 +38,14 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).toBeNull()
-      expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
+      return Storage.init()
+        .then(storage => {
+          expect(storage.type).toBe(STORAGE_TYPES.NO_STORAGE)
+
+          expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
+
+          done()
+        })
     })
   })
 
@@ -48,8 +58,11 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).not.toBeNull()
-      expect(Storage.type).toBe('indexedDB')
+      return Storage.init()
+        .then(storage => {
+          expect(storage).not.toBeNull()
+          expect(Storage.getType()).toBe(STORAGE_TYPES.INDEXED_DB)
+        })
     })
   })
 
@@ -62,8 +75,11 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).not.toBeNull()
-      expect(Storage.type).toBe('localStorage')
+      return Storage.init()
+        .then(storage => {
+          expect(storage).not.toBeNull()
+          expect(Storage.getType()).toBe(STORAGE_TYPES.LOCAL_STORAGE)
+        })
     })
   })
 
@@ -76,8 +92,11 @@ describe('test storage availability', () => {
 
       const Storage = require('../../storage/storage').default
 
-      expect(Storage).not.toBeNull()
-      expect(Storage.type).toBe('indexedDB')
+      return Storage.init()
+        .then(storage => {
+          expect(storage).not.toBeNull()
+          expect(Storage.getType()).toBe(STORAGE_TYPES.INDEXED_DB)
+        })
     })
   })
 

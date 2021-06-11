@@ -11,5 +11,6 @@
 [lints]
 
 [options]
+module.file_ext=.ts
 
 [strict]

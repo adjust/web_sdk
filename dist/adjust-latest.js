@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 20);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -140,13 +140,13 @@ module.exports = _objectSpread2;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayWithHoles = __webpack_require__(12);
+var arrayWithHoles = __webpack_require__(14);
 
-var iterableToArrayLimit = __webpack_require__(13);
+var iterableToArrayLimit = __webpack_require__(15);
 
-var unsupportedIterableToArray = __webpack_require__(5);
+var unsupportedIterableToArray = __webpack_require__(7);
 
-var nonIterableRest = __webpack_require__(14);
+var nonIterableRest = __webpack_require__(16);
 
 function _slicedToArray(arr, i) {
   return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
@@ -1353,19 +1353,41 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(10), __webpack_require__(11)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(12), __webpack_require__(13)))
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+module.exports = _createClass;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayWithoutHoles = __webpack_require__(15);
+var arrayWithoutHoles = __webpack_require__(17);
 
-var iterableToArray = __webpack_require__(16);
+var iterableToArray = __webpack_require__(18);
 
-var unsupportedIterableToArray = __webpack_require__(5);
+var unsupportedIterableToArray = __webpack_require__(7);
 
-var nonIterableSpread = __webpack_require__(17);
+var nonIterableSpread = __webpack_require__(19);
 
 function _toConsumableArray(arr) {
   return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
@@ -1374,10 +1396,22 @@ function _toConsumableArray(arr) {
 module.exports = _toConsumableArray;
 
 /***/ }),
-/* 5 */
+/* 6 */
+/***/ (function(module, exports) {
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+module.exports = _classCallCheck;
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayLikeToArray = __webpack_require__(6);
+var arrayLikeToArray = __webpack_require__(8);
 
 function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
@@ -1391,7 +1425,7 @@ function _unsupportedIterableToArray(o, minLen) {
 module.exports = _unsupportedIterableToArray;
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 function _arrayLikeToArray(arr, len) {
@@ -1407,10 +1441,10 @@ function _arrayLikeToArray(arr, len) {
 module.exports = _arrayLikeToArray;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var objectWithoutPropertiesLoose = __webpack_require__(9);
+var objectWithoutPropertiesLoose = __webpack_require__(11);
 
 function _objectWithoutProperties(source, excluded) {
   if (source == null) return {};
@@ -1434,7 +1468,7 @@ function _objectWithoutProperties(source, excluded) {
 module.exports = _objectWithoutProperties;
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 function _typeof(obj) {
@@ -1456,7 +1490,7 @@ function _typeof(obj) {
 module.exports = _typeof;
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 function _objectWithoutPropertiesLoose(source, excluded) {
@@ -1477,7 +1511,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 module.exports = _objectWithoutPropertiesLoose;
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -1667,7 +1701,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports) {
 
 var g;
@@ -1693,7 +1727,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports) {
 
 function _arrayWithHoles(arr) {
@@ -1703,7 +1737,7 @@ function _arrayWithHoles(arr) {
 module.exports = _arrayWithHoles;
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports) {
 
 function _iterableToArrayLimit(arr, i) {
@@ -1736,7 +1770,7 @@ function _iterableToArrayLimit(arr, i) {
 module.exports = _iterableToArrayLimit;
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports) {
 
 function _nonIterableRest() {
@@ -1746,10 +1780,10 @@ function _nonIterableRest() {
 module.exports = _nonIterableRest;
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayLikeToArray = __webpack_require__(6);
+var arrayLikeToArray = __webpack_require__(8);
 
 function _arrayWithoutHoles(arr) {
   if (Array.isArray(arr)) return arrayLikeToArray(arr);
@@ -1758,7 +1792,7 @@ function _arrayWithoutHoles(arr) {
 module.exports = _arrayWithoutHoles;
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports) {
 
 function _iterableToArray(iter) {
@@ -1768,7 +1802,7 @@ function _iterableToArray(iter) {
 module.exports = _iterableToArray;
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports) {
 
 function _nonIterableSpread() {
@@ -1778,56 +1812,19 @@ function _nonIterableSpread() {
 module.exports = _nonIterableSpread;
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
-// NAMESPACE OBJECT: ./src/sdk/storage/indexeddb.ts
-var indexeddb_namespaceObject = {};
-__webpack_require__.r(indexeddb_namespaceObject);
-__webpack_require__.d(indexeddb_namespaceObject, "isSupported", function() { return isSupported; });
-__webpack_require__.d(indexeddb_namespaceObject, "getAll", function() { return getAll; });
-__webpack_require__.d(indexeddb_namespaceObject, "getFirst", function() { return getFirst; });
-__webpack_require__.d(indexeddb_namespaceObject, "getItem", function() { return getItem; });
-__webpack_require__.d(indexeddb_namespaceObject, "filterBy", function() { return filterBy; });
-__webpack_require__.d(indexeddb_namespaceObject, "addItem", function() { return addItem; });
-__webpack_require__.d(indexeddb_namespaceObject, "addBulk", function() { return addBulk; });
-__webpack_require__.d(indexeddb_namespaceObject, "updateItem", function() { return updateItem; });
-__webpack_require__.d(indexeddb_namespaceObject, "deleteItem", function() { return deleteItem; });
-__webpack_require__.d(indexeddb_namespaceObject, "deleteBulk", function() { return deleteBulk; });
-__webpack_require__.d(indexeddb_namespaceObject, "trimItems", function() { return trimItems; });
-__webpack_require__.d(indexeddb_namespaceObject, "count", function() { return indexeddb_count; });
-__webpack_require__.d(indexeddb_namespaceObject, "clear", function() { return indexeddb_clear; });
-__webpack_require__.d(indexeddb_namespaceObject, "destroy", function() { return indexeddb_destroy; });
-__webpack_require__.d(indexeddb_namespaceObject, "__delete", function() { return __delete; });
-
-// NAMESPACE OBJECT: ./src/sdk/storage/localstorage.js
-var localstorage_namespaceObject = {};
-__webpack_require__.r(localstorage_namespaceObject);
-__webpack_require__.d(localstorage_namespaceObject, "isSupported", function() { return localstorage_isSupported; });
-__webpack_require__.d(localstorage_namespaceObject, "getAll", function() { return localstorage_getAll; });
-__webpack_require__.d(localstorage_namespaceObject, "getFirst", function() { return localstorage_getFirst; });
-__webpack_require__.d(localstorage_namespaceObject, "getItem", function() { return localstorage_getItem; });
-__webpack_require__.d(localstorage_namespaceObject, "filterBy", function() { return localstorage_filterBy; });
-__webpack_require__.d(localstorage_namespaceObject, "addItem", function() { return localstorage_addItem; });
-__webpack_require__.d(localstorage_namespaceObject, "addBulk", function() { return localstorage_addBulk; });
-__webpack_require__.d(localstorage_namespaceObject, "updateItem", function() { return localstorage_updateItem; });
-__webpack_require__.d(localstorage_namespaceObject, "deleteItem", function() { return localstorage_deleteItem; });
-__webpack_require__.d(localstorage_namespaceObject, "deleteBulk", function() { return localstorage_deleteBulk; });
-__webpack_require__.d(localstorage_namespaceObject, "trimItems", function() { return localstorage_trimItems; });
-__webpack_require__.d(localstorage_namespaceObject, "count", function() { return localstorage_count; });
-__webpack_require__.d(localstorage_namespaceObject, "clear", function() { return localstorage_clear; });
-__webpack_require__.d(localstorage_namespaceObject, "destroy", function() { return localstorage_destroy; });
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/objectSpread2.js
 var objectSpread2 = __webpack_require__(0);
 var objectSpread2_default = /*#__PURE__*/__webpack_require__.n(objectSpread2);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/objectWithoutProperties.js
-var objectWithoutProperties = __webpack_require__(7);
+var objectWithoutProperties = __webpack_require__(9);
 var objectWithoutProperties_default = /*#__PURE__*/__webpack_require__.n(objectWithoutProperties);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
@@ -1835,25 +1832,9 @@ var slicedToArray = __webpack_require__(1);
 var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/toConsumableArray.js
-var toConsumableArray = __webpack_require__(4);
+var toConsumableArray = __webpack_require__(5);
 var toConsumableArray_default = /*#__PURE__*/__webpack_require__.n(toConsumableArray);
 
-// CONCATENATED MODULE: ./src/sdk/globals.js
-/*:: declare var __ADJUST__NAMESPACE: string*/
-
-/*:: declare var __ADJUST__SDK_VERSION: string*/
-
-/*:: declare var process: {|
-  env: {|
-    NODE_ENV: 'development' | 'production' | 'test'
-  |}
-|}*/
-var Globals = {
-  namespace: "adjust-sdk" || false,
-  version: "5.1.1" || false,
-  env: "production"
-};
-/* harmony default export */ var globals = (Globals);
 // CONCATENATED MODULE: ./src/sdk/constants.js
 var SECOND = 1000;
 var MINUTE = SECOND * 60;
@@ -1870,12 +1851,17 @@ var HTTP_ERRORS = {
   'SKIP': 'Skipping slower attempt',
   'MISSING_URL': 'Url is not provided'
 };
+var STORAGE_TYPES = {
+  NO_STORAGE: 'noStorage',
+  INDEXED_DB: 'indexedDB',
+  LOCAL_STORAGE: 'localStorage'
+};
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
 var defineProperty = __webpack_require__(2);
 var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
-var helpers_typeof = __webpack_require__(8);
+var helpers_typeof = __webpack_require__(10);
 var typeof_default = /*#__PURE__*/__webpack_require__.n(helpers_typeof);
 
 // CONCATENATED MODULE: ./src/sdk/utilities.js
@@ -2102,6 +2088,22 @@ function isEmptyEntry(value) {
 }
 
 
+// CONCATENATED MODULE: ./src/sdk/globals.js
+/*:: declare var __ADJUST__NAMESPACE: string*/
+
+/*:: declare var __ADJUST__SDK_VERSION: string*/
+
+/*:: declare var process: {|
+  env: {|
+    NODE_ENV: 'development' | 'production' | 'test'
+  |}
+|}*/
+var Globals = {
+  namespace: "adjust-sdk" || false,
+  version: "5.1.2" || false,
+  env: "production"
+};
+/* harmony default export */ var globals = (Globals);
 // CONCATENATED MODULE: ./src/sdk/logger.js
 
 
@@ -2222,9 +2224,7 @@ function setLogLevel(logLevel
  */
 
 
-function _log
-/*:: <T>*/
-(methodName
+function _log(methodName
 /*: MethodNameT*/
 , logLevel
 /*: LogLevelT*/
@@ -2261,7 +2261,7 @@ function _log
  *
  * @param {string} name
  * @param {string} logLevel
- * @returns {Array} args
+ * @returns {Function: (Array) => void}
  * @private
  */
 
@@ -2294,7 +2294,6 @@ var Logger = {
 
 
 /*:: import { type BaseParamsT, type CustomConfigT, type InitOptionsT, type BaseParamsListT, type BaseParamsMandatoryListT, type CustomConfigListT } from './types';*/
-
 
 
 
@@ -2354,7 +2353,7 @@ var _allowedParams
 
 var _allowedConfig
 /*: CustomConfigListT*/
-= ['customUrl', 'eventDeduplicationListLimit'];
+= ['urlStrategy', 'customUrl', 'eventDeduplicationListLimit', 'namespace'];
 /**
  * Global configuration object used across the sdk
  *
@@ -2363,22 +2362,14 @@ var _allowedConfig
  * version: string,
  * sessionWindow: number,
  * sessionTimerWindow: number,
- * requestValidityWindow: number,
- * baseUrl: {app: string, gdpr: string}
+ * requestValidityWindow: number
  * }}
  */
 
 var _baseConfig = {
   sessionWindow: 30 * MINUTE,
   sessionTimerWindow: 60 * SECOND,
-  requestValidityWindow: 28 * DAY,
-  baseUrl: globals.env === 'test' ? {
-    app: 'app',
-    gdpr: 'gdpr'
-  } : {
-    app: 'https://app.adjust.com',
-    gdpr: 'https://gdpr.adjust.com'
-  }
+  requestValidityWindow: 28 * DAY
 };
 /**
  * Check of configuration has been initialized
@@ -2498,14 +2489,24 @@ var Config = objectSpread2_default()(objectSpread2_default()({}, _baseConfig), {
 });
 
 /* harmony default export */ var config = (Config);
-// CONCATENATED MODULE: ./src/sdk/storage/scheme.js
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/classCallCheck.js
+var classCallCheck = __webpack_require__(6);
+var classCallCheck_default = /*#__PURE__*/__webpack_require__.n(classCallCheck);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/createClass.js
+var createClass = __webpack_require__(4);
+var createClass_default = /*#__PURE__*/__webpack_require__.n(createClass);
+
+// CONCATENATED MODULE: ./src/sdk/storage/scheme.ts
 
 
 var _values2;
 
 
 var _queueName = 'q';
-var _queueScheme = {
+var _queueScheme
+/*: StoreScheme*/
+= {
   keyPath: 'timestamp',
   autoIncrement: false,
   fields: {
@@ -2548,7 +2549,9 @@ var _queueScheme = {
   }
 };
 var _activityStateName = 'as';
-var _activityStateScheme = {
+var _activityStateScheme
+/*: StoreScheme*/
+= {
   keyPath: 'uuid',
   autoIncrement: false,
   fields: {
@@ -2594,7 +2597,9 @@ var _activityStateScheme = {
   }
 };
 var _globalParamsName = 'gp';
-var _globalParamsScheme = {
+var _globalParamsScheme
+/*: StoreScheme*/
+= {
   keyPath: 'keyType',
   autoIncrement: false,
   index: 'type',
@@ -2615,7 +2620,9 @@ var _globalParamsScheme = {
   }
 };
 var _eventDeduplicationName = 'ed';
-var _eventDeduplicationScheme = {
+var _eventDeduplicationScheme
+/*: StoreScheme*/
+= {
   keyPath: 'internalId',
   autoIncrement: true,
   fields: {
@@ -2624,7 +2631,9 @@ var _eventDeduplicationScheme = {
   }
 };
 var _preferencesName = 'p';
-var _preferencesScheme = {
+var _preferencesScheme
+/*: StoreScheme*/
+= {
   fields: {
     thirdPartySharingDisabled: {
       key: 'td',
@@ -2660,7 +2669,9 @@ var _preferencesScheme = {
     }
   }
 };
-/* harmony default export */ var storage_scheme = ({
+var scheme_scheme
+/*: Scheme*/
+= {
   queue: {
     name: _queueName,
     scheme: _queueScheme
@@ -2682,8 +2693,9 @@ var _preferencesScheme = {
     scheme: _preferencesScheme,
     permanent: true
   }
-});
-// CONCATENATED MODULE: ./src/sdk/storage/scheme-map.js
+};
+/* harmony default export */ var storage_scheme = (scheme_scheme);
+// CONCATENATED MODULE: ./src/sdk/storage/scheme-map.ts
 
 
 
@@ -2887,7 +2899,9 @@ function _getShortKey(storeName, key) {
  */
 
 
-function _getStoreNames() {
+function _getStoreNames()
+/*: {[shortName: string]: {name: string; permanent: boolean}}*/
+{
   return entries(storage_scheme).map(function (_ref17) {
     var _ref18 = slicedToArray_default()(_ref17, 2),
         storeName = _ref18[0],
@@ -3481,38 +3495,37 @@ var ActivityState = {
   destroy: activity_state_destroy
 };
 /* harmony default export */ var activity_state = (ActivityState);
-// CONCATENATED MODULE: ./src/sdk/storage/converter.js
+// CONCATENATED MODULE: ./src/sdk/storage/converter.ts
 
 
 
 
+
+var Direction;
+
+(function (Direction) {
+  Direction["right"] = "right";
+  Direction["left"] = "left";
+})(Direction || (Direction = {}));
 
 /**
  * Get value from the map if available
  *
- * @param {Object} map
- * @param {*} value
- * @returns {*}
  * @private
  */
-
 function _getValue(map, value) {
   return map ? map[value] !== undefined ? map[value] : value : value;
 }
 /**
  * Convert key and value by defined scheme
  *
- * @param {string} storeName
- * @param {Object} scheme
- * @param {string} dir
- * @param {string} key
- * @param {*} value
- * @returns {[string, *]}
  * @private
  */
 
 
-function _convert(_ref) {
+function _convert(_ref)
+/*: [string, any]*/
+{
   var storeName = _ref.storeName,
       scheme = _ref.scheme,
       dir = _ref.dir,
@@ -3538,12 +3551,6 @@ function _convert(_ref) {
 }
 /**
  * Convert record by defined direction and scheme
- *
- * @param {string} storeName
- * @param {string} dir
- * @param {Object} record
- * @param {Object=} scheme
- * @returns {Object|undefined}
  */
 
 
@@ -3559,7 +3566,7 @@ function convertRecord(_ref2) {
 
   scheme = scheme || scheme_map[dir][convertStoreName({
     storeName: storeName,
-    dir: 'right'
+    dir: Direction.right
   })].fields;
   return entries(record).map(function (_ref3) {
     var _ref4 = slicedToArray_default()(_ref3, 2),
@@ -3583,15 +3590,12 @@ function convertRecord(_ref2) {
 }
 /**
  * Convert records by defined direction
- *
- * @param {string} storeName
- * @param {string} dir
- * @param {Array} records
- * @returns {Object[]}
  */
 
 
-function convertRecords(_ref7) {
+function convertRecords(_ref7)
+/*: Array<{ [key: string]: any }>*/
+{
   var storeName = _ref7.storeName,
       dir = _ref7.dir,
       _ref7$records = _ref7.records,
@@ -3606,11 +3610,6 @@ function convertRecords(_ref7) {
 }
 /**
  * Convert values by defined direction
- *
- * @param {string} storeName
- * @param {string} dir
- * @param {*|*[]} target
- * @returns {*|*[]}
  */
 
 
@@ -3620,7 +3619,7 @@ function convertValues(_ref8) {
       target = _ref8.target;
   var scheme = scheme_map[dir][convertStoreName({
     storeName: storeName,
-    dir: 'right'
+    dir: Direction.right
   })];
   var keyPathScheme = scheme.fields[scheme.keyPath];
   var values = target instanceof Array ? target.slice() : [target];
@@ -3632,131 +3631,191 @@ function convertValues(_ref8) {
 }
 /**
  * Encode value by defined scheme
- *
- * @param {*} target
- * @returns {*}
  */
 
 
-function encodeValue(target) {
+function encodeValue(target
+/*: any*/
+) {
   return scheme_map.values[target] || target;
 }
 /**
  * Convert store name by defined direction
- *
- * @param {string} storeName
- * @param {string} dir
- * @returns {string}
  */
 
 
-function convertStoreName(_ref9) {
+function convertStoreName(_ref9)
+/*: string*/
+{
   var storeName = _ref9.storeName,
       dir = _ref9.dir;
   return (scheme_map.storeNames[dir][storeName] || {}).name || storeName;
 }
 /**
  * Decode error message by replacing short store name with long readable one
- *
- * @param {string} storeName
- * @param {Object} error
- * @returns {{name: string, message: string}}
  */
 
 
-function decodeErrorMessage(_ref10) {
+function decodeErrorMessage(_ref10)
+/*: Error*/
+{
   var storeName = _ref10.storeName,
       error = _ref10.error;
   return {
     name: error.name,
     message: error.message.replace("\"".concat(storeName, "\""), convertStoreName({
       storeName: storeName,
-      dir: 'right'
+      dir: Direction.right
     }))
   };
 }
 
 
-// CONCATENATED MODULE: ./src/sdk/storage/quick-storage.js
+// CONCATENATED MODULE: ./src/sdk/storage/quick-storage.ts
 
 
 
 
 
-var _storageName = globals.namespace;
-var _storeNames = scheme_map.storeNames.left;
-/**
- * Get the value for specified key
- *
- * @param {string} key
- * @returns {*}
- * @private
- */
-
-function _get(key) {
-  var value = JSON.parse(localStorage.getItem("".concat(_storageName, ".").concat(key)));
-  return (value instanceof Array ? value : convertRecord({
-    storeName: _storeNames.preferences.name,
-    dir: 'right',
-    record: value
-  })) || null;
-}
-/**
- * Set the value for specified key
- *
- * @param {string} key
- * @param {*} value
- * @private
- */
 
 
-function _set(key, value) {
-  if (!value) {
-    localStorage.removeItem("".concat(_storageName, ".").concat(key));
-  } else {
-    localStorage.setItem("".concat(_storageName, ".").concat(key), JSON.stringify(value instanceof Array ? value : convertRecord({
-      storeName: _storeNames.preferences.name,
-      dir: 'left',
-      record: value
-    })));
+
+var quick_storage_QuickStorage = /*#__PURE__*/function () {
+  createClass_default()(QuickStorage, [{
+    key: "read",
+
+    /**
+    * Get the value for specified key
+    */
+    value: function read(key
+    /*: string*/
+    ) {
+      var raw = localStorage.getItem("".concat(this.storageName, ".").concat(key));
+      var value = JSON.parse(raw || 'null');
+      return (value instanceof Array ? value : convertRecord({
+        storeName: this.storeNames.preferences.name,
+        dir: Direction.right,
+        record: value
+      })) || null;
+    }
+    /**
+     * Set the value for specified key
+     */
+
+  }, {
+    key: "write",
+    value: function write(key
+    /*: string*/
+    , value
+    /*: any*/
+    ) {
+      if (!value) {
+        localStorage.removeItem("".concat(this.storageName, ".").concat(key));
+      } else {
+        localStorage.setItem("".concat(this.storageName, ".").concat(key), JSON.stringify(value instanceof Array ? value : convertRecord({
+          storeName: this.storeNames.preferences.name,
+          dir: Direction.left,
+          record: value
+        })));
+      }
+    }
+    /**
+     * Clear all data related to the sdk
+     */
+
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.deleteData();
+    }
+    /**
+     * Clear all data related to the sdk
+     *
+     * @param wipe if true then also remove permanent data such as user's preferences
+     */
+
+  }, {
+    key: "deleteData",
+    value: function deleteData() {
+      var _this = this;
+
+      var wipe = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      utilities_values(this.storeNames).forEach(function (store) {
+        if (wipe || !store.permanent) {
+          localStorage.removeItem("".concat(_this.storageName, ".").concat(store.name));
+        }
+      });
+    }
+  }]);
+
+  function QuickStorage() {
+    var _this2 = this;
+
+    classCallCheck_default()(this, QuickStorage);
+
+    defineProperty_default()(this, "defaultName", globals.namespace);
+
+    defineProperty_default()(this, "storageName", this.defaultName);
+
+    defineProperty_default()(this, "storeNames", scheme_map.storeNames.left);
+
+    defineProperty_default()(this, "storesMap", void 0);
+
+    this.storesMap = {};
+    var read = this.read.bind(this);
+    var write = this.write.bind(this);
+    utilities_values(this.storeNames).forEach(function (store) {
+      Object.defineProperty(_this2.storesMap, store.name, {
+        get: function get() {
+          return read(store.name);
+        },
+        set: function set(value) {
+          write(store.name, value);
+        }
+      });
+    });
+    Object.freeze(this.storesMap);
   }
-}
-/**
- * Clear all data related to the sdk
- */
+  /**
+   * Sets custom name to use in data keys and updates existing keys in localStorage
+   */
 
 
-function quick_storage_clear() {
-  entries(_storeNames).forEach(function (_ref) {
-    var _ref2 = slicedToArray_default()(_ref, 2),
-        store = _ref2[1];
+  createClass_default()(QuickStorage, [{
+    key: "setCustomName",
+    value: function setCustomName(customName
+    /*: string*/
+    ) {
+      var _this3 = this;
 
-    if (!store.permanent) {
-      localStorage.removeItem("".concat(_storageName, ".").concat(store.name));
+      if (!customName || !customName.length) {
+        return;
+      }
+
+      var newName = "".concat(globals.namespace, "-").concat(customName); // Clone data
+
+      utilities_values(this.storeNames).forEach(function (store) {
+        var key = store.name;
+        var rawData = localStorage.getItem("".concat(_this3.storageName, ".").concat(key)); // Get data from the store, no need to encode it
+
+        if (rawData) {
+          localStorage.setItem("".concat(newName, ".").concat(key), rawData); // Put data into a new store
+        }
+      });
+      this.deleteData(true);
+      this.storageName = newName;
     }
-  });
-}
-
-var QuickStorage = {
-  storeNames: _storeNames,
-  stores: {},
-  clear: quick_storage_clear
-};
-entries(_storeNames).forEach(function (_ref3) {
-  var _ref4 = slicedToArray_default()(_ref3, 2),
-      store = _ref4[1];
-
-  Object.defineProperty(QuickStorage.stores, store.name, {
+  }, {
+    key: "stores",
     get: function get() {
-      return _get(store.name);
-    },
-    set: function set(value) {
-      _set(store.name, value);
+      return this.storesMap;
     }
-  });
-});
-Object.freeze(QuickStorage.stores);
-/* harmony default export */ var quick_storage = (QuickStorage);
+  }]);
+
+  return QuickStorage;
+}();
+
+/* harmony default export */ var quick_storage = (new quick_storage_QuickStorage());
 // CONCATENATED MODULE: ./src/sdk/pub-sub.js
 
 
@@ -3911,6 +3970,7 @@ function pub_sub_destroy()
 
 
 
+
 /*:: type SdkDisabledT = {|
   reason: REASON_GENERAL | REASON_GDPR,
   pending: boolean
@@ -3934,7 +3994,7 @@ function pub_sub_destroy()
  */
 var _storeName
 /*: string*/
-= quick_storage.storeNames.preferences.name;
+= storage_scheme.preferences.name;
 /**
  * Local reference to be used for recovering preserved state
  *
@@ -4086,6 +4146,8 @@ function recover()
 
 
 
+
+
 var _Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
 
 
@@ -4096,698 +4158,1001 @@ var _Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise :
 
 
 
-var _dbName = globals.namespace;
-var _dbVersion = 1;
+var Action;
 
-var _db
-/*: IDBDatabase | null*/
-;
-/**
- * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
- *
- * @returns {boolean}
- */
+(function (Action) {
+  Action["add"] = "add";
+  Action["put"] = "put";
+  Action["get"] = "get";
+  Action["list"] = "list";
+  Action["clear"] = "clear";
+  Action["delete"] = "delete";
+})(Action || (Action = {}));
 
+var indexeddb_IndexedDBWrapper = /*#__PURE__*/function () {
+  createClass_default()(IndexedDBWrapper, null, [{
+    key: "tryOpen",
 
-function isSupported()
-/*: boolean*/
-{
-  var indexedDB = _getIDB();
+    /**
+     * Cached promise of IndexedDB validation
+     */
 
-  var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-  var supported = !!indexedDB && !iOS;
+    /**
+     * Tries to open a temporary database
+     */
+    value: function tryOpen(db
+    /*: IDBFactory*/
+    )
+    /*: Promise<boolean>*/
+    {
+      return new _Promise(function (resolve) {
+        try {
+          var request = db.open(IndexedDBWrapper.dbValidationName);
 
-  if (!supported) {
-    logger.warn('IndexedDB is not supported in this browser');
-  }
+          request.onsuccess = function () {
+            request.result.close();
+            db.deleteDatabase(IndexedDBWrapper.dbValidationName);
+            resolve(true);
+          };
 
-  return supported;
-}
-/**
- * Get indexedDB instance
- *
- * @returns {IDBFactory}
- * @private
- */
-
-
-function _getIDB()
-/*: IDBFactory*/
-{
-  return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-}
-/**
- * Handle database upgrade/initialization
- * - store activity state from memory if database unexpectedly got lost in the middle of the window session
- * - migrate data from localStorage if available on browser upgrade
- *
- * @param {Object} e
- * @param {Function} reject
- * @private
- */
-
-
-function _handleUpgradeNeeded(e
-/*: IDBVersionChangeEvent*/
-, reject
-/*: Function*/
-) {
-  var db = e.target.result;
-  e.target.transaction.onerror = reject;
-  e.target.transaction.onabort = reject;
-  var storeNames = scheme_map.storeNames.left;
-  var activityState = activity_state.current || {};
-  var inMemoryAvailable = activityState && !isEmpty(activityState);
-  entries(storeNames).filter(function (_ref) {
-    var _ref2 = slicedToArray_default()(_ref, 2),
-        store = _ref2[1];
-
-    return !store.permanent;
-  }).forEach(function (_ref3) {
-    var _ref4 = slicedToArray_default()(_ref3, 2),
-        longStoreName = _ref4[0],
-        store = _ref4[1];
-
-    var options = scheme_map.right[longStoreName];
-    var objectStore = db.createObjectStore(store.name, {
-      keyPath: options.keyPath,
-      autoIncrement: options.autoIncrement || false
-    });
-
-    if (options.index) {
-      objectStore.createIndex("".concat(options.index, "Index"), options.index);
-    }
-
-    if (store.name === storeNames.activityState.name && inMemoryAvailable) {
-      objectStore.add(convertRecord({
-        storeName: longStoreName,
-        record: activityState,
-        dir: 'left'
-      }));
-      logger.info('Activity state has been recovered');
-    } else if (quick_storage.stores[store.name]) {
-      quick_storage.stores[store.name].forEach(function (record) {
-        return objectStore.add(record);
+          request.onerror = function () {
+            return resolve(false);
+          };
+        } catch (error) {
+          resolve(false);
+        }
       });
-      logger.info("Migration from localStorage done for ".concat(longStoreName, " store"));
     }
-  });
-  recover();
-  quick_storage.clear();
-}
-/**
- * Handle successful database opening
- *
- * @param {Object} e
- * @param {Function} resolve
- * @private
- */
+    /**
+     * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
+     */
 
+  }, {
+    key: "isSupported",
+    value: function isSupported()
+    /*: Promise<boolean>*/
+    {
+      if (IndexedDBWrapper.isSupportedPromise) {
+        return IndexedDBWrapper.isSupportedPromise;
+      } else {
+        IndexedDBWrapper.isSupportedPromise = new _Promise(function (resolve) {
+          var indexedDB = IndexedDBWrapper.getIndexedDB();
+          var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 
-function _handleOpenSuccess(e, resolve) {
-  _db = e.target.result;
-  resolve({
-    success: true
-  });
-  _db.onclose = indexeddb_destroy;
-}
-/**
- * Open the database connection and create store if not existent
- *
- * @returns {Promise}
- * @private
- */
+          if (!indexedDB || iOS) {
+            logger.warn('IndexedDB is not supported in this browser');
+            resolve(false);
+          } else {
+            var dbOpenablePromise = IndexedDBWrapper.tryOpen(indexedDB).then(function (dbOpenable) {
+              if (!dbOpenable) {
+                logger.warn('IndexedDB is not supported in this browser');
+              }
 
+              return dbOpenable;
+            });
+            resolve(dbOpenablePromise);
+          }
+        });
+      }
 
-function _open() {
-  var indexedDB = _getIDB();
+      return IndexedDBWrapper.isSupportedPromise;
+    }
+    /**
+     * Get indexedDB instance
+     */
 
-  if (!isSupported()) {
-    return _Promise.reject({
+  }, {
+    key: "getIndexedDB",
+    value: function getIndexedDB()
+    /*: Maybe<IDBFactory>*/
+    {
+      return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+    }
+  }]);
+
+  function IndexedDBWrapper() {
+    classCallCheck_default()(this, IndexedDBWrapper);
+
+    defineProperty_default()(this, "dbDefaultName", globals.namespace);
+
+    defineProperty_default()(this, "dbName", this.dbDefaultName);
+
+    defineProperty_default()(this, "dbVersion", 1);
+
+    defineProperty_default()(this, "idbFactory", void 0);
+
+    defineProperty_default()(this, "indexedDbConnection", null);
+
+    defineProperty_default()(this, "notSupportedError", {
       name: 'IDBNotSupported',
       message: 'IndexedDB is not supported'
     });
-  }
 
-  return new _Promise(function (resolve, reject) {
-    if (_db) {
-      resolve({
-        success: true
-      });
-      return;
+    defineProperty_default()(this, "databaseOpenError", {
+      name: 'CannotOpenDatabaseError',
+      message: 'Cannot open a database'
+    });
+
+    defineProperty_default()(this, "noConnectionError", {
+      name: 'NoDatabaseConnection',
+      message: 'Cannot open a transaction'
+    });
+
+    var idb = IndexedDBWrapper.getIndexedDB();
+
+    if (!idb) {
+      throw this.notSupportedError;
     }
 
-    var request = indexedDB.open(_dbName, _dbVersion);
-
-    request.onupgradeneeded = function (e) {
-      return _handleUpgradeNeeded(e, reject);
-    };
-
-    request.onsuccess = function (e) {
-      return _handleOpenSuccess(e, resolve);
-    };
-
-    request.onerror = reject;
-  });
-}
-/**
- * Get transaction and the store
- *
- * @param {string} storeName
- * @param {string} mode
- * @param {Function} reject
- * @returns {{transaction, store: IDBObjectStore, index: IDBIndex}}
- * @private
- */
-
-
-function _getTranStore(_ref5, reject
-/*: Function*/
-)
-/*: {transaction: IDBTransaction, store: IDBObjectStore, index: IDBIndex, options: any}*/
-{
-  var storeName = _ref5.storeName,
-      mode = _ref5.mode;
-
-  var transaction = _db.transaction([storeName], mode);
-
-  var store = transaction.objectStore(storeName);
-  var options = scheme_map.right[convertStoreName({
-    storeName: storeName,
-    dir: 'right'
-  })];
-  var index;
-
-  if (options.index) {
-    index = store.index("".concat(options.index, "Index"));
+    this.idbFactory = idb;
   }
-
-  transaction.onerror = reject;
-  transaction.onabort = reject;
-  return {
-    transaction: transaction,
-    store: store,
-    index: index,
-    options: options
-  };
-}
-/**
- * Override the error by extracting only name and message of the error
- *
- * @param {Function} reject
- * @param {Object} error
- * @returns {Object}
- * @private
- */
+  /**
+   * Sets custom name if provided and migrates database
+   */
 
 
-function _overrideError(reject, error) {
-  var _error$target$error = error.target.error,
-      name = _error$target$error.name,
-      message = _error$target$error.message;
-  return reject({
-    name: name,
-    message: message
-  });
-}
-/**
- * Get list of composite keys if available
- * @param options
- * @returns {Array|null}
- * @private
- */
+  createClass_default()(IndexedDBWrapper, [{
+    key: "setCustomName",
+    value: function setCustomName(customName
+    /*: string*/
+    )
+    /*: Promise<void>*/
+    {
+      if (customName && customName.length > 0) {
+        this.dbName = "".concat(globals.namespace, "-").concat(customName);
+        return this.migrateDb(this.dbDefaultName, this.dbName);
+      }
+
+      return _Promise.resolve();
+    }
+    /**
+     * Opens database with defined name and resolves with database connection if successed
+     * @param name name of database to open
+     * @param version optional version of database schema
+     * @param upgradeCallback optional `IDBOpenRequest.onupgradeneeded` event handler
+     */
+
+  }, {
+    key: "openDatabase",
+    value: function openDatabase(name
+    /*: string*/
+    , version
+    /*: number*/
+    , upgradeCallback
+    /*: (event: IDBVersionChangeEvent, reject: () => void) => void*/
+    )
+    /*: Promise<IDBDatabase>*/
+    {
+      var _this = this;
+
+      return IndexedDBWrapper.isSupported().then(function (supported) {
+        if (!supported) {
+          return _Promise.reject(_this.notSupportedError);
+        } else {
+          return new _Promise(function (resolve, reject) {
+            var request = _this.idbFactory.open(name, version);
+
+            if (upgradeCallback) {
+              request.onupgradeneeded = function (event) {
+                return upgradeCallback(event, reject);
+              };
+            }
+
+            request.onsuccess = function (event
+            /*: IDBOpenDBEvent*/
+            ) {
+              var connection = event.target.result;
+
+              if (connection) {
+                resolve(connection);
+              } else {
+                reject(_this.databaseOpenError);
+              }
+            };
+
+            request.onerror = reject;
+          });
+        }
+      });
+    }
+    /**
+     * Checks if database with passed name exists
+     */
+
+  }, {
+    key: "databaseExists",
+    value: function databaseExists(name
+    /*: string*/
+    )
+    /*: Promise<boolean>*/
+    {
+      var _this2 = this;
+
+      return new _Promise(function (resolve
+      /*: (result: boolean) => void*/
+      ) {
+        var existed = true;
+
+        _this2.openDatabase(name, undefined, function () {
+          existed = false;
+        }).then(function (connection) {
+          connection.close();
+
+          if (existed) {
+            return;
+          } // We didn't have this database before the check, so remove it
 
 
-function _getCompositeKeys(options) {
-  return options.fields[options.keyPath].composite || null;
-}
-/**
- * Prepare the target to be queried depending on the composite key if defined
- *
- * @param {Object} options
- * @param {*} target
- * @param {string} action
- * @returns {*}
- * @private
- */
+          return _this2.deleteDatabaseByName(name);
+        }).then(function () {
+          return resolve(existed);
+        });
+      });
+    }
+  }, {
+    key: "cloneData",
+    value: function cloneData(defaultDbConnection
+    /*: IDBDatabase*/
+    , customDbConnection
+    /*: IDBDatabase*/
+    )
+    /*: Promise<void>*/
+    {
+      var _this3 = this;
+
+      // Function to clone a single store
+      var cloneStore = function cloneStore(storeName
+      /*: string*/
+      ) {
+        var connection = _this3.indexedDbConnection;
+        _this3.indexedDbConnection = defaultDbConnection;
+        return _this3.getAll(storeName) // Get all records from default-named database
+        .then(function (records
+        /*: Array<any>*/
+        ) {
+          _this3.indexedDbConnection = customDbConnection;
+
+          if (records.length < 1) {
+            // There is no records in the store
+            return;
+          }
+
+          return _this3.addBulk(storeName, records, true); // Put all records into custom-named database
+        }).then(function () {
+          _this3.indexedDbConnection = connection; // Restore initial state
+        });
+      }; // Get names of stores
 
 
-function _prepareTarget(options, target, action) {
-  var addOrPut = ['add', 'put'].indexOf(action) !== -1;
+      var storeNames
+      /*: string[]*/
+      = utilities_values(scheme_map.storeNames.left).filter(function (store) {
+        return !store.permanent;
+      }).map(function (store) {
+        return store.name;
+      });
+      var cloneStorePromises = storeNames.map(function (name) {
+        return function () {
+          return cloneStore(name);
+        };
+      }); // Run clone operations one by one
 
-  var composite = _getCompositeKeys(options);
+      return cloneStorePromises.reduce(function (previousTask, currentTask) {
+        return previousTask.then(currentTask);
+      }, _Promise.resolve());
+    }
+    /**
+     * Migrates created database with default name to custom
+     * The IndexedDb API doesn't provide method to rename existing database so we have to create a new database, clone
+     * data and remove the old one.
+     */
 
-  return composite ? addOrPut ? objectSpread2_default()(defineProperty_default()({}, options.keyPath, composite.map(function (key) {
-    return target[key];
-  }).join('')), target) : target ? target.join('') : null : target;
-}
-/**
- * Prepare the result to be return depending on the composite key definition
- *
- * @param {Object} options
- * @param {Object} target
- * @returns {Array|null}
- * @private
- */
+  }, {
+    key: "migrateDb",
+    value: function migrateDb(defaultName
+    /*: string*/
+    , customName
+    /*: string*/
+    )
+    /*: Promise<void>*/
+    {
+      var _this4 = this;
 
+      return this.databaseExists(defaultName).then(function (defaultExists) {
+        if (defaultExists) {
+          // Migration hadn't finished yet
+          return _Promise.all([_this4.openDatabase(defaultName, _this4.dbVersion, _this4.handleUpgradeNeeded), // Open the default database, migrate version if needed
+          _this4.openDatabase(customName, _this4.dbVersion, _this4.handleUpgradeNeeded) // Open or create a new database, migrate version if needed
+          ]).then(function (_ref) {
+            var _ref2 = slicedToArray_default()(_ref, 2),
+                defaultDbConnection = _ref2[0],
+                customDbConnection = _ref2[1];
 
-function _prepareResult(options, target) {
-  var composite = _getCompositeKeys(options);
-
-  return composite && isObject(target) ? composite.map(function (key) {
-    return target[key];
-  }) : null;
-}
-/**
- * Initiate the database request
- *
- * @param {string} storeName
- * @param {*=} target
- * @param {string} action
- * @param {string} [mode=readonly]
- * @returns {Promise}
- * @private
- */
-
-
-function _initRequest(_ref6) {
-  var storeName = _ref6.storeName,
-      _ref6$target = _ref6.target,
-      target = _ref6$target === void 0 ? null : _ref6$target,
-      action = _ref6.action,
-      _ref6$mode = _ref6.mode,
-      mode = _ref6$mode === void 0 ? 'readonly' : _ref6$mode;
-  return _open().then(function () {
-    return new _Promise(function (resolve, reject) {
-      var _getTranStore2 = _getTranStore({
-        storeName: storeName,
-        mode: mode
-      }, reject),
-          store = _getTranStore2.store,
-          options = _getTranStore2.options;
-
-      var request = store[action](_prepareTarget(options, target, action));
-
-      var result = _prepareResult(options, target);
-
-      request.onsuccess = function () {
-        if (action === 'get' && !request.result) {
-          reject({
-            name: 'NotRecordFoundError',
-            message: "Requested record not found in \"".concat(storeName, "\" store")
+            return _this4.cloneData(defaultDbConnection, customDbConnection).then(function () {
+              _this4.indexedDbConnection = customDbConnection;
+              defaultDbConnection.close();
+              return _this4.deleteDatabaseByName(defaultName);
+            });
+          }).then(function () {
+            return logger.info('Database migration finished');
           });
         } else {
-          resolve(result || request.result || target);
+          // There is no default-named database, let's just create or open a custom-named one
+          return _this4.openDatabase(customName, _this4.dbVersion, _this4.handleUpgradeNeeded).then(function (customDbConnection) {
+            _this4.indexedDbConnection = customDbConnection;
+          });
         }
+      });
+    }
+    /**
+     * Handle database upgrade/initialization
+     * - store activity state from memory if database unexpectedly got lost in the middle of the window session
+     * - migrate data from localStorage if available on browser upgrade
+     */
+
+  }, {
+    key: "handleUpgradeNeeded",
+    value: function handleUpgradeNeeded(e
+    /*: IDBVersionChangeEvent*/
+    , reject
+    /*: (reason: any) => void*/
+    ) {
+      var db = e.target.result;
+      e.target.transaction.onerror = reject;
+      e.target.transaction.onabort = reject;
+      var storeNames = scheme_map.storeNames.left;
+      var activityState = activity_state.current || {};
+      var inMemoryAvailable = activityState && !isEmpty(activityState);
+      entries(storeNames).filter(function (_ref3) {
+        var _ref4 = slicedToArray_default()(_ref3, 2),
+            store = _ref4[1];
+
+        return !store.permanent;
+      }).forEach(function (_ref5) {
+        var _ref6 = slicedToArray_default()(_ref5, 2),
+            longStoreName = _ref6[0],
+            store = _ref6[1];
+
+        var options = scheme_map.right[longStoreName];
+        var objectStore = db.createObjectStore(store.name, {
+          keyPath: options.keyPath,
+          autoIncrement: options.autoIncrement || false
+        });
+
+        if (options.index) {
+          objectStore.createIndex("".concat(options.index, "Index"), options.index);
+        }
+
+        if (store.name === storeNames.activityState.name && inMemoryAvailable) {
+          objectStore.add(convertRecord({
+            storeName: longStoreName,
+            record: activityState,
+            dir: Direction.left
+          }));
+          logger.info('Activity state has been recovered');
+        } else if (quick_storage.stores[store.name]) {
+          quick_storage.stores[store.name].forEach(function (record) {
+            return objectStore.add(record);
+          });
+          logger.info("Migration from localStorage done for ".concat(longStoreName, " store"));
+        }
+      });
+      recover();
+      quick_storage.clear();
+    }
+    /**
+     * Open the database connection and create store if not existent
+     */
+
+  }, {
+    key: "open",
+    value: function open()
+    /*: Promise<{ success: boolean }>*/
+    {
+      var _this5 = this;
+
+      if (this.indexedDbConnection) {
+        return _Promise.resolve({
+          success: true
+        });
+      }
+
+      return this.openDatabase(this.dbName, this.dbVersion, this.handleUpgradeNeeded).then(function (connection) {
+        _this5.indexedDbConnection = connection;
+
+        _this5.indexedDbConnection.onclose = function () {
+          return _this5.destroy;
+        };
+
+        return {
+          success: true
+        };
+      });
+    }
+    /**
+     * Get transaction and the store
+     */
+
+  }, {
+    key: "getTransactionStore",
+    value: function getTransactionStore(_ref7, reject
+    /*: (reason: any) => void*/
+    , db
+    /*: IDBDatabase*/
+    )
+    /*: Transaction*/
+    {
+      var storeName = _ref7.storeName,
+          mode = _ref7.mode;
+      var transaction
+      /*: IDBTransaction*/
+      = db.transaction([storeName], mode);
+      var store = transaction.objectStore(storeName);
+      var options = scheme_map.right[convertStoreName({
+        storeName: storeName,
+        dir: Direction.right
+      })];
+      var index;
+
+      if (options.index) {
+        index = store.index("".concat(options.index, "Index"));
+      }
+
+      transaction.onerror = reject;
+      transaction.onabort = reject;
+      return {
+        transaction: transaction,
+        store: store,
+        index: index,
+        options: options
       };
+    }
+    /**
+     * Override the error by extracting only name and message of the error
+     */
 
-      request.onerror = function (error) {
-        return _overrideError(reject, error);
-      };
-    });
-  });
-}
-/**
- * Initiate bulk database request by reusing the same transaction to perform the operation
- *
- * @param {string} storeName
- * @param {Array} target
- * @param {string} action
- * @param {string} mode
- * @returns {Promise}
- * @private
- */
+  }, {
+    key: "overrideError",
+    value: function overrideError(reject, error)
+    /*: Promise<never>*/
+    {
+      var _error$target$error = error.target.error,
+          name = _error$target$error.name,
+          message = _error$target$error.message;
+      return reject({
+        name: name,
+        message: message
+      });
+    }
+    /**
+     * Get list of composite keys if available
+     */
 
+  }, {
+    key: "getCompositeKeys",
+    value: function getCompositeKeys(options)
+    /*: Nullable<Array<string>>*/
+    {
+      return options.fields[options.keyPath].composite || null;
+    }
+    /**
+     * Prepare the target to be queried depending on the composite key if defined
+     */
 
-function _initBulkRequest(_ref7) {
-  var storeName = _ref7.storeName,
-      target = _ref7.target,
-      action = _ref7.action,
-      mode = _ref7.mode;
-  return _open().then(function () {
-    return new _Promise(function (resolve, reject) {
+  }, {
+    key: "prepareTarget",
+    value: function prepareTarget(options, target, action
+    /*: Action*/
+    ) {
+      var addOrPut = [Action.add, Action.put].indexOf(action) !== -1;
+      var composite = this.getCompositeKeys(options);
+      return composite ? addOrPut ? objectSpread2_default()(defineProperty_default()({}, options.keyPath, composite.map(function (key) {
+        return target[key];
+      }).join('')), target) : target ? target.join('') : null : target;
+    }
+    /**
+     * Prepare the result to be return depending on the composite key definition
+     */
+
+  }, {
+    key: "prepareResult",
+    value: function prepareResult(options, target) {
+      var composite = this.getCompositeKeys(options);
+      return composite && isObject(target) ? composite.map(function (key) {
+        return target[key];
+      }) : null;
+    }
+    /**
+     * Initiate the database request
+     */
+
+  }, {
+    key: "initRequest",
+    value: function initRequest(_ref8)
+    /*: Promise<any>*/
+    {
+      var _this6 = this;
+
+      var storeName = _ref8.storeName,
+          _ref8$target = _ref8.target,
+          target = _ref8$target === void 0 ? null : _ref8$target,
+          action = _ref8.action,
+          _ref8$mode = _ref8.mode,
+          mode = _ref8$mode === void 0 ? 'readonly' : _ref8$mode;
+      return this.open().then(function () {
+        return new _Promise(function (resolve, reject) {
+          if (!_this6.indexedDbConnection) {
+            reject(_this6.noConnectionError);
+          } else {
+            var _this6$getTransaction = _this6.getTransactionStore({
+              storeName: storeName,
+              mode: mode
+            }, reject, _this6.indexedDbConnection),
+                store = _this6$getTransaction.store,
+                options = _this6$getTransaction.options;
+
+            var request = store[action](_this6.prepareTarget(options, target, action));
+
+            var _result = _this6.prepareResult(options, target);
+
+            request.onsuccess = function () {
+              if (action === Action.get && !request.result) {
+                reject({
+                  name: 'NotRecordFoundError',
+                  message: "Requested record not found in \"".concat(storeName, "\" store")
+                });
+              } else {
+                resolve(_result || request.result || target);
+              }
+            };
+
+            request.onerror = function (error) {
+              return _this6.overrideError(reject, error);
+            };
+          }
+        });
+      });
+    }
+    /**
+     * Initiate bulk database request by reusing the same transaction to perform the operation
+     */
+
+  }, {
+    key: "initBulkRequest",
+    value: function initBulkRequest(_ref9)
+    /*: Promise<any>*/
+    {
+      var _this7 = this;
+
+      var storeName = _ref9.storeName,
+          target = _ref9.target,
+          action = _ref9.action,
+          _ref9$mode = _ref9.mode,
+          mode = _ref9$mode === void 0 ? 'readwrite' : _ref9$mode;
+
       if (!target || target && !target.length) {
-        return reject({
+        return _Promise.reject({
           name: 'NoTargetDefined',
           message: "No array provided to perform ".concat(action, " bulk operation into \"").concat(storeName, "\" store")
         });
       }
 
-      var _getTranStore3 = _getTranStore({
-        storeName: storeName,
-        mode: mode
-      }, reject),
-          transaction = _getTranStore3.transaction,
-          store = _getTranStore3.store,
-          options = _getTranStore3.options;
-
-      var result = [];
-      var current = target[0];
-
-      transaction.oncomplete = function () {
-        return resolve(result);
-      };
-
-      request(store[action](_prepareTarget(options, current, action)));
-
-      function request(req) {
-        req.onerror = function (error) {
-          return _overrideError(reject, error);
-        };
-
-        req.onsuccess = function () {
-          result.push(_prepareResult(options, current) || req.result);
-          current = target[result.length];
-
-          if (result.length < target.length) {
-            request(store[action](_prepareTarget(options, current, action)));
-          }
-        };
-      }
-    });
-  });
-}
-/**
- * Open cursor for bulk operations or listing
- *
- * @param {string} storeName
- * @param {string} action
- * @param {IDBKeyRange=} range
- * @param {boolean=} firstOnly
- * @param {string} [mode=readonly]
- * @returns {Promise}
- * @private
- */
-
-
-function _openCursor(_ref8) {
-  var storeName = _ref8.storeName,
-      _ref8$action = _ref8.action,
-      action = _ref8$action === void 0 ? 'list' : _ref8$action,
-      _ref8$range = _ref8.range,
-      range = _ref8$range === void 0 ? null : _ref8$range,
-      firstOnly = _ref8.firstOnly,
-      _ref8$mode = _ref8.mode,
-      mode = _ref8$mode === void 0 ? 'readonly' : _ref8$mode;
-  return _open().then(function () {
-    return new _Promise(function (resolve, reject) {
-      var _getTranStore4 = _getTranStore({
-        storeName: storeName,
-        mode: mode
-      }, reject),
-          transaction = _getTranStore4.transaction,
-          store = _getTranStore4.store,
-          index = _getTranStore4.index,
-          options = _getTranStore4.options;
-
-      var cursorRequest = (index || store).openCursor(range);
-      var items = [];
-
-      transaction.oncomplete = function () {
-        return resolve(firstOnly ? items[0] : items);
-      };
-
-      cursorRequest.onsuccess = function (e) {
-        var cursor = e.target.result;
-
-        if (cursor) {
-          if (action === 'delete') {
-            cursor.delete();
-            items.push(_prepareResult(options, cursor.value) || cursor.value[options.keyPath]);
+      return this.open().then(function () {
+        return new _Promise(function (resolve, reject) {
+          if (!_this7.indexedDbConnection) {
+            reject(_this7.noConnectionError);
           } else {
-            items.push(cursor.value);
+            var _this7$getTransaction = _this7.getTransactionStore({
+              storeName: storeName,
+              mode: mode
+            }, reject, _this7.indexedDbConnection),
+                transaction = _this7$getTransaction.transaction,
+                store = _this7$getTransaction.store,
+                options = _this7$getTransaction.options;
+
+            var _result2 = new Array();
+
+            var current = target[0];
+
+            transaction.oncomplete = function () {
+              return resolve(_result2);
+            };
+
+            var request = function request(req) {
+              req.onerror = function (error) {
+                return _this7.overrideError(reject, error);
+              };
+
+              req.onsuccess = function () {
+                _result2.push(_this7.prepareResult(options, current) || req.result);
+
+                current = target[_result2.length];
+
+                if (_result2.length < target.length) {
+                  request(store[action](_this7.prepareTarget(options, current, action)));
+                }
+              };
+            };
+
+            request(store[action](_this7.prepareTarget(options, current, action)));
           }
+        });
+      });
+    }
+    /**
+     * Open cursor for bulk operations or listing
+     */
 
-          if (!firstOnly) {
-            cursor.continue();
+  }, {
+    key: "openCursor",
+    value: function openCursor(_ref10)
+    /*: Promise<any | Array<any>>*/
+    {
+      var _this8 = this;
+
+      var storeName = _ref10.storeName,
+          action = _ref10.action,
+          _ref10$range = _ref10.range,
+          range = _ref10$range === void 0 ? null : _ref10$range,
+          _ref10$firstOnly = _ref10.firstOnly,
+          firstOnly = _ref10$firstOnly === void 0 ? false : _ref10$firstOnly,
+          _ref10$mode = _ref10.mode,
+          mode = _ref10$mode === void 0 ? 'readonly' : _ref10$mode;
+      return this.open().then(function () {
+        return new _Promise(function (resolve, reject) {
+          if (!_this8.indexedDbConnection) {
+            reject(_this8.noConnectionError);
+          } else {
+            var _this8$getTransaction = _this8.getTransactionStore({
+              storeName: storeName,
+              mode: mode
+            }, reject, _this8.indexedDbConnection),
+                transaction = _this8$getTransaction.transaction,
+                store = _this8$getTransaction.store,
+                index = _this8$getTransaction.index,
+                options = _this8$getTransaction.options;
+
+            var cursorRequest
+            /*: OpenIDBCursorRequest*/
+            = (index || store).openCursor(range);
+            var items = new Array();
+
+            transaction.oncomplete = function () {
+              return resolve(firstOnly ? items[0] : items);
+            };
+
+            cursorRequest.onsuccess = function (e) {
+              var cursor = e.target.result;
+
+              if (cursor) {
+                if (action === Action.delete) {
+                  cursor.delete();
+                  items.push(_this8.prepareResult(options, cursor.value) || cursor.value[options.keyPath]);
+                } else {
+                  items.push(cursor.value);
+                }
+
+                if (!firstOnly) {
+                  cursor.continue();
+                }
+              }
+            };
+
+            cursorRequest.onerror = function (error) {
+              return _this8.overrideError(reject, error);
+            };
           }
-        }
-      };
+        });
+      });
+    }
+  }, {
+    key: "deleteDatabaseByName",
+    value: function deleteDatabaseByName(dbName
+    /*: string*/
+    )
+    /*: Promise<any>*/
+    {
+      var _this9 = this;
 
-      cursorRequest.onerror = function (error) {
-        return _overrideError(reject, error);
-      };
-    });
-  });
-}
-/**
- * Get all records from particular store
- *
- * @param {string} storeName
- * @param {boolean=} firstOnly
- * @returns {Promise}
- */
+      return new _Promise(function (resolve, reject) {
+        var request = _this9.idbFactory.deleteDatabase(dbName);
 
+        request.onerror = function (error) {
+          return _this9.overrideError(reject, error);
+        };
 
-function getAll(storeName, firstOnly) {
-  return _openCursor({
-    storeName: storeName,
-    firstOnly: firstOnly
-  });
-}
-/**
- * Get the first row from the store
- *
- * @param {string} storeName
- * @returns {Promise}
- */
+        request.onsuccess = resolve;
 
+        request.onblocked = function (e) {
+          return reject(e.target);
+        };
+      });
+    }
+    /**
+     * Get all records from particular store
+     */
 
-function getFirst(storeName) {
-  return getAll(storeName, true);
-}
-/**
- * Get item from a particular store
- *
- * @param {string} storeName
- * @param {*} target
- * @returns {Promise}
- */
-
-
-function getItem(storeName, target) {
-  return _initRequest({
-    storeName: storeName,
-    target: target,
-    action: 'get'
-  });
-}
-/**
- * Return filtered result by value on available index
- *
- * @param {string} storeName
- * @param {string} by
- * @returns {Promise}
- */
-
-
-function filterBy(storeName, by) {
-  var range = IDBKeyRange.only(by);
-  return _openCursor({
-    storeName: storeName,
-    range: range
-  });
-}
-/**
- * Add item to a particular store
- *
- * @param {string} storeName
- * @param {Object} target
- * @returns {Promise}
- */
-
-
-function addItem(storeName, target) {
-  return _initRequest({
-    storeName: storeName,
-    target: target,
-    action: 'add',
-    mode: 'readwrite'
-  });
-}
-/**
- * Add multiple items into particular store
- *
- * @param {string} storeName
- * @param {Array} target
- * @param {boolean=} overwrite
- * @returns {Promise}
- */
-
-
-function addBulk(storeName, target, overwrite) {
-  return _initBulkRequest({
-    storeName: storeName,
-    target: target,
-    action: overwrite ? 'put' : 'add',
-    mode: 'readwrite'
-  });
-}
-/**
- * Update item in a particular store
- *
- * @param {string} storeName
- * @param {Object} target
- * @returns {Promise}
- */
-
-
-function updateItem(storeName, target) {
-  return _initRequest({
-    storeName: storeName,
-    target: target,
-    action: 'put',
-    mode: 'readwrite'
-  });
-}
-/**
- * Delete item from a particular store
- *
- * @param {string} storeName
- * @param {*} target
- * @returns {Promise}
- */
-
-
-function deleteItem(storeName, target) {
-  return _initRequest({
-    storeName: storeName,
-    target: target,
-    action: 'delete',
-    mode: 'readwrite'
-  });
-}
-/**
- * Delete items until certain bound (primary key as a bound scope)
- *
- * @param {string} storeName
- * @param {*} value
- * @param {string=} condition
- * @returns {Promise}
- */
-
-
-function deleteBulk(storeName, value, condition) {
-  var range = condition ? IDBKeyRange[condition](value) : IDBKeyRange.only(value);
-  return _openCursor({
-    storeName: storeName,
-    action: 'delete',
-    range: range,
-    mode: 'readwrite'
-  });
-}
-/**
- * Trim the store from the left by specified length
- *
- * @param {string} storeName
- * @param {number} length
- * @returns {Promise}
- */
-
-
-function trimItems(storeName, length) {
-  var options = scheme_map.right[convertStoreName({
-    storeName: storeName,
-    dir: 'right'
-  })];
-  return getAll(storeName).then(function (records) {
-    return records.length ? records[length - 1] : null;
-  }).then(function (record) {
-    return record ? deleteBulk(storeName, record[options.keyPath], 'upperBound') : [];
-  });
-}
-/**
- * Count the number of records in the store
- *
- * @param {string} storeName
- * @returns {Promise}
- */
-
-
-function indexeddb_count(storeName) {
-  return _open().then(function () {
-    return new _Promise(function (resolve, reject) {
-      var _getTranStore5 = _getTranStore({
+  }, {
+    key: "getAll",
+    value: function getAll(storeName
+    /*: string*/
+    )
+    /*: Promise<any | Array<any>>*/
+    {
+      var firstOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      return this.openCursor({
         storeName: storeName,
-        mode: 'readonly'
-      }, reject),
-          store = _getTranStore5.store;
+        action: Action.list,
+        firstOnly: firstOnly
+      });
+    }
+    /**
+     * Get the first row from the store
+     */
 
-      var request = store.count();
+  }, {
+    key: "getFirst",
+    value: function getFirst(storeName
+    /*: string*/
+    )
+    /*: Promise<any>*/
+    {
+      return this.getAll(storeName, true);
+    }
+    /**
+     * Get item from a particular store
+     */
 
-      request.onsuccess = function () {
-        return resolve(request.result);
-      };
+  }, {
+    key: "getItem",
+    value: function getItem(storeName
+    /*: string*/
+    , target
+    /*: any*/
+    )
+    /*: Promise<any>*/
+    {
+      return this.initRequest({
+        storeName: storeName,
+        target: target,
+        action: Action.get
+      });
+    }
+    /**
+     * Return filtered result by value on available index
+     */
 
-      request.onerror = function (error) {
-        return _overrideError(reject, error);
-      };
-    });
-  });
-}
-/**
- * Clear all records from a particular store
- *
- * @param {string} storeName
- * @returns {Promise}
- */
+  }, {
+    key: "filterBy",
+    value: function filterBy(storeName
+    /*: string*/
+    , by
+    /*: string*/
+    )
+    /*: Promise<any>*/
+    {
+      var range = IDBKeyRange.only(by);
+      return this.openCursor({
+        storeName: storeName,
+        action: Action.list,
+        range: range
+      });
+    }
+    /**
+     * Add item to a particular store
+     */
+
+  }, {
+    key: "addItem",
+    value: function addItem(storeName
+    /*: string*/
+    , target)
+    /*: Promise<any>*/
+    {
+      return this.initRequest({
+        storeName: storeName,
+        target: target,
+        action: Action.add,
+        mode: 'readwrite'
+      });
+    }
+    /**
+     * Add multiple items into particular store
+     */
+
+  }, {
+    key: "addBulk",
+    value: function addBulk(storeName
+    /*: string*/
+    , target, overwrite
+    /*: boolean*/
+    )
+    /*: Promise<any>*/
+    {
+      return this.initBulkRequest({
+        storeName: storeName,
+        target: target,
+        action: overwrite ? Action.put : Action.add,
+        mode: 'readwrite'
+      });
+    }
+    /**
+     * Update item in a particular store
+     */
+
+  }, {
+    key: "updateItem",
+    value: function updateItem(storeName
+    /*: string*/
+    , target)
+    /*: Promise<any>*/
+    {
+      return this.initRequest({
+        storeName: storeName,
+        target: target,
+        action: Action.put,
+        mode: 'readwrite'
+      });
+    }
+    /**
+     * Delete item from a particular store
+     */
+
+  }, {
+    key: "deleteItem",
+    value: function deleteItem(storeName
+    /*: string*/
+    , target)
+    /*: Promise<any>*/
+    {
+      return this.initRequest({
+        storeName: storeName,
+        target: target,
+        action: Action.delete,
+        mode: 'readwrite'
+      });
+    }
+    /**
+     * Delete items until certain bound (primary key as a bound scope)
+     */
+
+  }, {
+    key: "deleteBulk",
+    value: function deleteBulk(storeName
+    /*: string*/
+    , value
+    /*: any*/
+    , condition
+    /*: 'lowerBound' | 'upperBound'*/
+    )
+    /*: Promise<any>*/
+    {
+      var range = condition ? IDBKeyRange[condition](value) : IDBKeyRange.only(value);
+      return this.openCursor({
+        storeName: storeName,
+        action: Action.delete,
+        range: range,
+        mode: 'readwrite'
+      });
+    }
+    /**
+     * Trim the store from the left by specified length
+     */
+
+  }, {
+    key: "trimItems",
+    value: function trimItems(storeName
+    /*: string*/
+    , length
+    /*: number*/
+    )
+    /*: Promise<any>*/
+    {
+      var _this10 = this;
+
+      var options = scheme_map.right[convertStoreName({
+        storeName: storeName,
+        dir: Direction.right
+      })];
+      return this.getAll(storeName).then(function (records) {
+        return records.length ? records[length - 1] : null;
+      }).then(function (record) {
+        return record ? _this10.deleteBulk(storeName, record[options.keyPath], 'upperBound') : [];
+      });
+    }
+    /**
+     * Count the number of records in the store
+     */
+
+  }, {
+    key: "count",
+    value: function count(storeName
+    /*: string*/
+    )
+    /*: Promise<number>*/
+    {
+      var _this11 = this;
+
+      return this.open().then(function () {
+        return new _Promise(function (resolve, reject) {
+          if (!_this11.indexedDbConnection) {
+            reject(_this11.noConnectionError);
+          } else {
+            var _this11$getTransactio = _this11.getTransactionStore({
+              storeName: storeName,
+              mode: 'readonly'
+            }, reject, _this11.indexedDbConnection),
+                store = _this11$getTransactio.store;
+
+            var request = store.count();
+
+            request.onsuccess = function () {
+              return resolve(request.result);
+            };
+
+            request.onerror = function (error) {
+              return _this11.overrideError(reject, error);
+            };
+          }
+        });
+      });
+    }
+    /**
+     * Clear all records from a particular store
+     */
+
+  }, {
+    key: "clear",
+    value: function clear(storeName
+    /*: string*/
+    )
+    /*: Promise<any>*/
+    {
+      return this.initRequest({
+        storeName: storeName,
+        action: Action.clear,
+        mode: 'readwrite'
+      });
+    }
+    /**
+     * Close the database and destroy the reference to it
+     */
+
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.indexedDbConnection) {
+        this.indexedDbConnection.close();
+      }
+
+      this.indexedDbConnection = null;
+    }
+    /**
+     * Close db connection and delete the db
+     * WARNING: should be used only by adjust's demo app!
+     */
+
+  }, {
+    key: "deleteDatabase",
+    value: function deleteDatabase()
+    /*: Promise<any>*/
+    {
+      this.destroy();
+      return this.deleteDatabaseByName(this.dbName);
+    }
+  }]);
+
+  return IndexedDBWrapper;
+}();
+
+defineProperty_default()(indexeddb_IndexedDBWrapper, "dbValidationName", 'validate-db-openable');
+
+defineProperty_default()(indexeddb_IndexedDBWrapper, "isSupportedPromise", null);
 
 
-function indexeddb_clear(storeName) {
-  return _initRequest({
-    storeName: storeName,
-    action: 'clear',
-    mode: 'readwrite'
-  });
-}
-/**
- * Close db connection and delete the db
- * WARNING: should be used only by adjust's demo app!
- *
- * @returns {Promise}
- * @private
- */
+// CONCATENATED MODULE: ./src/sdk/storage/localstorage.ts
 
 
-function __delete() {
-  var indexedDB = _getIDB();
-
-  indexeddb_destroy();
-  return new _Promise(function (resolve, reject) {
-    var request = indexedDB.deleteDatabase(_dbName);
-
-    request.onerror = function (error) {
-      return _overrideError(reject, error);
-    };
-
-    request.onsuccess = function (e) {
-      resolve(e.result);
-    };
-
-    request.onerror = function (e) {
-      return reject(e.target);
-    };
-
-    request.onblocked = function (e) {
-      return reject(e.target);
-    };
-  });
-}
-/**
- * Close the database and destroy the reference to it
- */
-
-
-function indexeddb_destroy() {
-  if (_db) {
-    _db.close();
-  }
-
-  _db = null;
-}
-
-
-// CONCATENATED MODULE: ./src/sdk/storage/localstorage.js
 
 
 
@@ -4802,590 +5167,720 @@ var localstorage_Promise = typeof Promise === 'undefined' ? __webpack_require__(
 
 
 
-/**
- * Check if LocalStorage is supported in the current browser
- *
- * @returns {boolean}
- */
 
-function localstorage_isSupported() {
-  var uid = new Date().toString();
-  var storage;
-  var result;
-
-  try {
-    (storage = window.localStorage).setItem(uid, uid);
-    result = storage.getItem(uid) === uid;
-    storage.removeItem(uid);
-    return !!(result && storage);
-  } catch (exception) {
-    logger.warn('LocalStorage is not supported in this browser');
-    return false;
-  }
-}
-/**
- * Prepare schema details if not existent
- *
- * @private
- */
-
-
-function localstorage_open() {
-  if (!localstorage_isSupported()) {
-    return {
-      status: 'error',
-      error: {
-        name: 'LSNotSupported',
-        message: 'LocalStorage is not supported'
-      }
-    };
+var localstorage_LocalStorageWrapper = /*#__PURE__*/function () {
+  function LocalStorageWrapper() {
+    classCallCheck_default()(this, LocalStorageWrapper);
   }
 
-  var storeNames = scheme_map.storeNames.left;
-  var activityState = activity_state.current || {};
-  var inMemoryAvailable = activityState && !isEmpty(activityState);
-  entries(storeNames).filter(function (_ref) {
-    var _ref2 = slicedToArray_default()(_ref, 2),
-        store = _ref2[1];
+  createClass_default()(LocalStorageWrapper, [{
+    key: "open",
 
-    return !store.permanent;
-  }).forEach(function (_ref3) {
-    var _ref4 = slicedToArray_default()(_ref3, 2),
-        longStoreName = _ref4[0],
-        store = _ref4[1];
+    /**
+     * Prepare schema details if not existent
+     */
+    value: function open()
+    /*: Promise<StorageOpenStatus>*/
+    {
+      return LocalStorageWrapper.isSupported().then(function (supported) {
+        if (!supported) {
+          return {
+            status: 'error',
+            error: {
+              name: 'LSNotSupported',
+              message: 'LocalStorage is not supported'
+            }
+          };
+        }
 
-    var asStoreName = storeNames.activityState.name;
+        var storeNames = scheme_map.storeNames.left;
+        var activityState = activity_state.current || {};
+        var inMemoryAvailable = activityState && !isEmpty(activityState);
+        entries(storeNames).filter(function (_ref) {
+          var _ref2 = slicedToArray_default()(_ref, 2),
+              store = _ref2[1];
 
-    if (store.name === asStoreName && !quick_storage.stores[asStoreName]) {
-      quick_storage.stores[asStoreName] = inMemoryAvailable ? [convertRecord({
-        storeName: longStoreName,
-        record: activityState,
-        dir: 'left'
-      })] : [];
-    } else if (!quick_storage.stores[store.name]) {
-      quick_storage.stores[store.name] = [];
-    }
-  });
-  recover();
-  return {
-    status: 'success'
-  };
-}
-/**
- * Get list of composite keys if available
- * @param options
- * @returns {Array|null}
- * @private
- */
+          return !store.permanent;
+        }).forEach(function (_ref3) {
+          var _ref4 = slicedToArray_default()(_ref3, 2),
+              longStoreName = _ref4[0],
+              store = _ref4[1];
 
+          var asStoreName = storeNames.activityState.name;
 
-function localstorage_getCompositeKeys(options) {
-  return options.fields[options.keyPath].composite || null;
-}
-/**
- * Get composite keys when defined or fallback to primary key for particular store
- *
- * @param {string} storeName
- * @returns {Array}
- * @private
- */
-
-
-function _getKeys(storeName) {
-  var options = scheme_map.right[convertStoreName({
-    storeName: storeName,
-    dir: 'right'
-  })];
-  return localstorage_getCompositeKeys(options, true) || [options.keyPath];
-}
-/**
- * Initiate quasi-database request
- *
- * @param {string} storeName
- * @param {*=} id
- * @param {Object=} item
- * @param {Function} action
- * @returns {Promise}
- * @private
- */
-
-
-function localstorage_initRequest(_ref5, action) {
-  var storeName = _ref5.storeName,
-      id = _ref5.id,
-      item = _ref5.item;
-
-  var open = localstorage_open();
-
-  var options = scheme_map.right[convertStoreName({
-    storeName: storeName,
-    dir: 'right'
-  })];
-
-  if (open.status === 'error') {
-    return localstorage_Promise.reject(open.error);
-  }
-
-  return new localstorage_Promise(function (resolve, reject) {
-    var items = quick_storage.stores[storeName];
-
-    var keys = _getKeys(storeName);
-
-    var ids = id instanceof Array ? id.slice() : [id];
-    var lastId = (items[items.length - 1] || {})[options.keyPath] || 0;
-    var target = id ? keys.map(function (key, index) {
-      return [key, ids[index]];
-    }).reduce(reducer, {}) : objectSpread2_default()({}, item);
-    var index = target ? findIndex(items, keys, target) : null;
-    return action(resolve, reject, {
-      keys: keys,
-      items: items,
-      index: index,
-      options: options,
-      lastId: lastId
-    });
-  });
-}
-/**
- * Sort the array by provided key (key can be a composite one)
- * - by default sorts in ascending order by primary keys
- * - force order by provided value
- *
- * @param {Array} items
- * @param {Array} keys
- * @param {string=} exact
- * @returns {Array}
- * @private
- */
-
-
-function _sort(items, keys, exact) {
-  var clone = toConsumableArray_default()(items);
-
-  var reversed = keys.slice().reverse();
-
-  function compare(a, b, key) {
-    var expr1 = exact ? exact === a[key] : a[key] < b[key];
-    var expr2 = exact ? exact > a[key] : a[key] > b[key];
-    return expr1 ? -1 : expr2 ? 1 : 0;
-  }
-
-  return clone.sort(function (a, b) {
-    return reversed.reduce(function (acc, key) {
-      return acc || compare(a, b, key);
-    }, 0);
-  });
-}
-/**
- * Prepare the target to be queried depending on the composite key if defined
- *
- * @param {Object} options
- * @param {*} target
- * @param {number} next
- * @returns {*}
- * @private
- */
-
-
-function localstorage_prepareTarget(options, target, next) {
-  var composite = localstorage_getCompositeKeys(options);
-
-  return composite ? objectSpread2_default()(defineProperty_default()({}, options.keyPath, composite.map(function (key) {
-    return target[key];
-  }).join('')), target) : options.autoIncrement && next ? objectSpread2_default()(defineProperty_default()({}, options.keyPath, next), target) : objectSpread2_default()({}, target);
-}
-/**
- * Prepare the result to be return depending on the composite key definition
- *
- * @param {Object} options
- * @param {Object} target
- * @returns {*}
- * @private
- */
-
-
-function localstorage_prepareResult(options, target) {
-  var composite = localstorage_getCompositeKeys(options);
-
-  return composite && isObject(target) ? composite.map(function (key) {
-    return target[key];
-  }) : target[options.keyPath] || target;
-}
-/**
- * Get all records from particular store
- *
- * @param {string} storeName
- * @param {boolean=} firstOnly
- * @returns {Promise}
- */
-
-
-function localstorage_getAll(storeName, firstOnly) {
-  var open = localstorage_open();
-
-  if (open.status === 'error') {
-    return localstorage_Promise.reject(open.error);
-  }
-
-  return new localstorage_Promise(function (resolve, reject) {
-    var value = quick_storage.stores[storeName];
-
-    if (value instanceof Array) {
-      resolve(firstOnly ? value[0] : _sort(value, _getKeys(storeName)));
-    } else {
-      reject({
-        name: 'NotFoundError',
-        message: "No objectStore named ".concat(storeName, " in this database")
-      });
-    }
-  });
-}
-/**
- * Get the first row from the store
- *
- * @param {string} storeName
- * @returns {Promise}
- */
-
-
-function localstorage_getFirst(storeName) {
-  return localstorage_getAll(storeName, true);
-}
-/**
- * Get item from a particular store
- *
- * @param {string} storeName
- * @param {*} id
- * @returns {Promise}
- */
-
-
-function localstorage_getItem(storeName, id) {
-  return localstorage_initRequest({
-    storeName: storeName,
-    id: id
-  }, function (resolve, reject, _ref6) {
-    var items = _ref6.items,
-        index = _ref6.index,
-        options = _ref6.options;
-
-    if (index === -1) {
-      reject({
-        name: 'NotRecordFoundError',
-        message: "Requested record not found in \"".concat(storeName, "\" store")
-      });
-    } else {
-      resolve(localstorage_prepareTarget(options, items[index]));
-    }
-  });
-}
-/**
- * Return filtered result by value on available index
- *
- * @param {string} storeName
- * @param {string} by
- * @returns {Promise}
- */
-
-
-function localstorage_filterBy(storeName, by) {
-  return localstorage_getAll(storeName).then(function (result) {
-    return result.filter(function (item) {
-      return item[scheme_map.right[convertStoreName({
-        storeName: storeName,
-        dir: 'right'
-      })].index] === by;
-    });
-  });
-}
-/**
- * Add item to a particular store
- *
- * @param {string} storeName
- * @param {Object} item
- * @returns {Promise}
- */
-
-
-function localstorage_addItem(storeName, item) {
-  return localstorage_initRequest({
-    storeName: storeName,
-    item: item
-  }, function (resolve, reject, _ref7) {
-    var items = _ref7.items,
-        index = _ref7.index,
-        options = _ref7.options,
-        lastId = _ref7.lastId;
-
-    if (index !== -1) {
-      reject({
-        name: 'ConstraintError',
-        message: "Constraint was not satisfied, trying to add existing item into \"".concat(storeName, "\" store")
-      });
-    } else {
-      items.push(localstorage_prepareTarget(options, item, lastId + 1));
-      quick_storage.stores[storeName] = items;
-      resolve(localstorage_prepareResult(options, item));
-    }
-  });
-}
-/**
- * Add multiple items into particular store
- *
- * @param {string} storeName
- * @param {Object} target
- * @param {boolean=} overwrite
- * @returns {Promise}
- */
-
-
-function localstorage_addBulk(storeName, target, overwrite) {
-  return localstorage_initRequest({
-    storeName: storeName
-  }, function (resolve, reject, _ref8) {
-    var keys = _ref8.keys,
-        items = _ref8.items,
-        options = _ref8.options,
-        lastId = _ref8.lastId;
-
-    if (!target || target && !target.length) {
-      return reject({
-        name: 'NoTargetDefined',
-        message: "No array provided to perform add bulk operation into \"".concat(storeName, "\" store")
-      });
-    }
-
-    var id = lastId;
-    var newItems = target.map(function (item) {
-      return localstorage_prepareTarget(options, item, ++id);
-    });
-    var overlapping = newItems.filter(function (item) {
-      return findIndex(items, keys, item) !== -1;
-    }).map(function (item) {
-      return item[options.keyPath];
-    });
-    var currentItems = overwrite ? items.filter(function (item) {
-      return overlapping.indexOf(item[options.keyPath]) === -1;
-    }) : toConsumableArray_default()(items);
-
-    if (overlapping.length && !overwrite) {
-      reject({
-        name: 'ConstraintError',
-        message: "Constraint was not satisfied, trying to add existing items into \"".concat(storeName, "\" store")
-      });
-    } else {
-      quick_storage.stores[storeName] = _sort([].concat(toConsumableArray_default()(currentItems), toConsumableArray_default()(newItems)), keys);
-      resolve(target.map(function (item) {
-        return localstorage_prepareResult(options, item);
-      }));
-    }
-  });
-}
-/**
- * Update item in a particular store
- *
- * @param {string} storeName
- * @param {Object} item
- * @returns {Promise}
- */
-
-
-function localstorage_updateItem(storeName, item) {
-  return localstorage_initRequest({
-    storeName: storeName,
-    item: item
-  }, function (resolve, _, _ref9) {
-    var items = _ref9.items,
-        index = _ref9.index,
-        options = _ref9.options,
-        lastId = _ref9.lastId;
-    var nextId = index === -1 ? lastId + 1 : null;
-
-    var target = localstorage_prepareTarget(options, item, nextId);
-
-    if (index === -1) {
-      items.push(target);
-    } else {
-      items.splice(index, 1, target);
-    }
-
-    quick_storage.stores[storeName] = items;
-    resolve(localstorage_prepareResult(options, item));
-  });
-}
-/**
- * Delete item from a particular store
- *
- * @param {string} storeName
- * @param {*} id
- * @returns {Promise}
- */
-
-
-function localstorage_deleteItem(storeName, id) {
-  return localstorage_initRequest({
-    storeName: storeName,
-    id: id
-  }, function (resolve, _, _ref10) {
-    var items = _ref10.items,
-        index = _ref10.index;
-
-    if (index !== -1) {
-      items.splice(index, 1);
-      quick_storage.stores[storeName] = items;
-    }
-
-    resolve(id);
-  });
-}
-/**
- * Find index of the item with the closest value to the bound
- *
- * @param {Array} array
- * @param {string} key
- * @param {number|string} value
- * @returns {number}
- * @private
- */
-
-
-function _findMax(array, key, value) {
-  if (!array.length) {
-    return -1;
-  }
-
-  var max = {
-    index: -1,
-    value: isNaN(value) ? '' : 0
-  };
-
-  for (var i = 0; i < array.length; i += 1) {
-    if (array[i][key] <= value) {
-      if (array[i][key] >= max.value) {
-        max = {
-          value: array[i][key],
-          index: i
+          if (store.name === asStoreName && !quick_storage.stores[asStoreName]) {
+            quick_storage.stores[asStoreName] = inMemoryAvailable ? [convertRecord({
+              storeName: longStoreName,
+              record: activityState,
+              dir: Direction.left
+            })] : [];
+          } else if (!quick_storage.stores[store.name]) {
+            quick_storage.stores[store.name] = [];
+          }
+        });
+        recover();
+        return {
+          status: 'success'
         };
+      });
+    }
+    /**
+     * Get list of composite keys if available
+     * @param options
+     * @returns {Array|null}
+     * @private
+     */
+
+  }, {
+    key: "getCompositeKeys",
+    value: function getCompositeKeys(options) {
+      return options.fields[options.keyPath].composite || null;
+    }
+    /**
+     * Get composite keys when defined or fallback to primary key for particular store
+     *
+     * @param {string} storeName
+     * @returns {Array}
+     * @private
+     */
+
+  }, {
+    key: "getKeys",
+    value: function getKeys(storeName) {
+      var options = scheme_map.right[convertStoreName({
+        storeName: storeName,
+        dir: Direction.right
+      })];
+      return this.getCompositeKeys(options) || [options.keyPath];
+    }
+    /**
+     * Initiate quasi-database request
+     *
+     * @param {string} storeName
+     * @param {*=} id
+     * @param {Object=} item
+     * @param {Function} action
+     * @returns {Promise}
+     * @private
+     */
+
+  }, {
+    key: "initRequest",
+    value: function initRequest(_ref5, action
+    /*: Action*/
+    ) {
+      var _this = this;
+
+      var storeName = _ref5.storeName,
+          id = _ref5.id,
+          item = _ref5.item;
+      var options = scheme_map.right[convertStoreName({
+        storeName: storeName,
+        dir: Direction.right
+      })];
+      return this.open().then(function (open) {
+        if (open.status === 'error') {
+          return localstorage_Promise.reject(open.error);
+        }
+
+        return new localstorage_Promise(function (resolve, reject) {
+          var items = quick_storage.stores[storeName];
+
+          var keys = _this.getKeys(storeName);
+
+          var ids = id instanceof Array ? id.slice() : [id];
+          var lastId = (items[items.length - 1] || {})[options.keyPath] || 0;
+          var target = id ? keys.map(function (key, index) {
+            return [key, ids[index]];
+          }).reduce(reducer, {}) : objectSpread2_default()({}, item);
+          var index = target ? findIndex(items, keys, target) : null;
+          return action(resolve, reject, {
+            keys: keys,
+            items: items,
+            index: index,
+            options: options,
+            lastId: lastId
+          });
+        });
+      });
+    }
+    /**
+     * Sort the array by provided key (key can be a composite one)
+     * - by default sorts in ascending order by primary keys
+     * - force order by provided value
+     *
+     * @param {Array} items
+     * @param {Array} keys
+     * @param {string=} exact
+     * @returns {Array}
+     * @private
+     */
+
+  }, {
+    key: "sort",
+    value: function sort(items, keys, exact
+    /*: string*/
+    ) {
+      var clone = toConsumableArray_default()(items);
+
+      var reversed = keys.slice().reverse();
+
+      function compare(a, b, key) {
+        var expr1 = exact ? exact === a[key] : a[key] < b[key];
+        var expr2 = exact ? exact > a[key] : a[key] > b[key];
+        return expr1 ? -1 : expr2 ? 1 : 0;
       }
-    } else {
+
+      return clone.sort(function (a, b) {
+        return reversed.reduce(function (acc, key) {
+          return acc || compare(a, b, key);
+        }, 0);
+      });
+    }
+    /**
+     * Prepare the target to be queried depending on the composite key if defined
+     *
+     * @param {Object} options
+     * @param {*} target
+     * @param {number} next
+     * @returns {*}
+     * @private
+     */
+
+  }, {
+    key: "prepareTarget",
+    value: function prepareTarget(options, target
+    /*: any*/
+    , next
+    /*: number*/
+    ) {
+      var composite = this.getCompositeKeys(options);
+      return composite ? objectSpread2_default()(defineProperty_default()({}, options.keyPath, composite.map(function (key) {
+        return target[key];
+      }).join('')), target) : options.autoIncrement && next ? objectSpread2_default()(defineProperty_default()({}, options.keyPath, next), target) : objectSpread2_default()({}, target);
+    }
+    /**
+     * Prepare the result to be return depending on the composite key definition
+     *
+     * @param {Object} options
+     * @param {Object} target
+     * @returns {*}
+     * @private
+     */
+
+  }, {
+    key: "prepareResult",
+    value: function prepareResult(options, target) {
+      var composite = this.getCompositeKeys(options);
+      return composite && isObject(target) ? composite.map(function (key) {
+        return target[key];
+      }) : target[options.keyPath] || target;
+    }
+    /**
+     * Get all records from particular store
+     *
+     * @param {string} storeName
+     * @param {boolean=} firstOnly
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "getAll",
+    value: function getAll(storeName
+    /*: string*/
+    , firstOnly
+    /*: boolean*/
+    )
+    /*: Promise<any | Array<any>>*/
+    {
+      var _this2 = this;
+
+      return this.open().then(function (open) {
+        if (open.status === 'error') {
+          return localstorage_Promise.reject(open.error);
+        }
+
+        return new localstorage_Promise(function (resolve, reject) {
+          var value = quick_storage.stores[storeName];
+
+          if (value instanceof Array) {
+            resolve(firstOnly ? value[0] : _this2.sort(value, _this2.getKeys(storeName)));
+          } else {
+            reject({
+              name: 'NotFoundError',
+              message: "No objectStore named ".concat(storeName, " in this database")
+            });
+          }
+        });
+      });
+    }
+    /**
+     * Get the first row from the store
+     *
+     * @param {string} storeName
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "getFirst",
+    value: function getFirst(storeName
+    /*: string*/
+    )
+    /*: Promise<any>*/
+    {
+      return this.getAll(storeName, true);
+    }
+    /**
+     * Get item from a particular store
+     *
+     * @param {string} storeName
+     * @param {*} id
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "getItem",
+    value: function getItem(storeName
+    /*: string*/
+    , id)
+    /*: Promise<any>*/
+    {
+      var _this3 = this;
+
+      return this.initRequest({
+        storeName: storeName,
+        id: id
+      }, function (resolve, reject, _ref6) {
+        var items = _ref6.items,
+            index = _ref6.index,
+            options = _ref6.options;
+
+        if (index === -1) {
+          reject({
+            name: 'NotRecordFoundError',
+            message: "Requested record not found in \"".concat(storeName, "\" store")
+          });
+        } else {
+          resolve(_this3.prepareTarget(options, items[index]));
+        }
+      });
+    }
+    /**
+     * Return filtered result by value on available index
+     *
+     * @param {string} storeName
+     * @param {string} by
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "filterBy",
+    value: function filterBy(storeName
+    /*: string*/
+    , by
+    /*: string*/
+    )
+    /*: Promise<any>*/
+    {
+      return this.getAll(storeName).then(function (result) {
+        return result.filter(function (item) {
+          return item[scheme_map.right[convertStoreName({
+            storeName: storeName,
+            dir: Direction.right
+          })].index] === by;
+        });
+      });
+    }
+    /**
+     * Add item to a particular store
+     *
+     * @param {string} storeName
+     * @param {Object} item
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "addItem",
+    value: function addItem(storeName
+    /*: string*/
+    , item)
+    /*: Promise<any>*/
+    {
+      var _this4 = this;
+
+      return this.initRequest({
+        storeName: storeName,
+        item: item
+      }, function (resolve, reject, _ref7) {
+        var items = _ref7.items,
+            index = _ref7.index,
+            options = _ref7.options,
+            lastId = _ref7.lastId;
+
+        if (index !== -1) {
+          reject({
+            name: 'ConstraintError',
+            message: "Constraint was not satisfied, trying to add existing item into \"".concat(storeName, "\" store")
+          });
+        } else {
+          items.push(_this4.prepareTarget(options, item, lastId + 1));
+          quick_storage.stores[storeName] = items;
+          resolve(_this4.prepareResult(options, item));
+        }
+      });
+    }
+    /**
+     * Add multiple items into particular store
+     *
+     * @param {string} storeName
+     * @param {Object} target
+     * @param {boolean=} overwrite
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "addBulk",
+    value: function addBulk(storeName
+    /*: string*/
+    , target, overwrite
+    /*: boolean*/
+    )
+    /*: Promise<any>*/
+    {
+      var _this5 = this;
+
+      return this.initRequest({
+        storeName: storeName
+      }, function (resolve, reject, _ref8) {
+        var keys = _ref8.keys,
+            items = _ref8.items,
+            options = _ref8.options,
+            lastId = _ref8.lastId;
+
+        if (!target || target && !target.length) {
+          return reject({
+            name: 'NoTargetDefined',
+            message: "No array provided to perform add bulk operation into \"".concat(storeName, "\" store")
+          });
+        }
+
+        var id = lastId;
+        var newItems = target.map(function (item) {
+          return _this5.prepareTarget(options, item, ++id);
+        });
+        var overlapping = newItems.filter(function (item) {
+          return findIndex(items, keys, item) !== -1;
+        }).map(function (item) {
+          return item[options.keyPath];
+        });
+        var currentItems = overwrite ? items.filter(function (item) {
+          return overlapping.indexOf(item[options.keyPath]) === -1;
+        }) : toConsumableArray_default()(items);
+
+        if (overlapping.length && !overwrite) {
+          reject({
+            name: 'ConstraintError',
+            message: "Constraint was not satisfied, trying to add existing items into \"".concat(storeName, "\" store")
+          });
+        } else {
+          quick_storage.stores[storeName] = _this5.sort([].concat(toConsumableArray_default()(currentItems), toConsumableArray_default()(newItems)), keys);
+          resolve(target.map(function (item) {
+            return _this5.prepareResult(options, item);
+          }));
+        }
+      });
+    }
+    /**
+     * Update item in a particular store
+     *
+     * @param {string} storeName
+     * @param {Object} item
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "updateItem",
+    value: function updateItem(storeName
+    /*: string*/
+    , item)
+    /*: Promise<any>*/
+    {
+      var _this6 = this;
+
+      return this.initRequest({
+        storeName: storeName,
+        item: item
+      }, function (resolve, _, _ref9) {
+        var items = _ref9.items,
+            index = _ref9.index,
+            options = _ref9.options,
+            lastId = _ref9.lastId;
+        var nextId = index === -1 ? lastId + 1 : null;
+
+        var target = _this6.prepareTarget(options, item, nextId);
+
+        if (index === -1) {
+          items.push(target);
+        } else {
+          items.splice(index, 1, target);
+        }
+
+        quick_storage.stores[storeName] = items;
+        resolve(_this6.prepareResult(options, item));
+      });
+    }
+    /**
+     * Delete item from a particular store
+     *
+     * @param {string} storeName
+     * @param {*} id
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "deleteItem",
+    value: function deleteItem(storeName
+    /*: string*/
+    , id)
+    /*: Promise<any>*/
+    {
+      return this.initRequest({
+        storeName: storeName,
+        id: id
+      }, function (resolve, _, _ref10) {
+        var items = _ref10.items,
+            index = _ref10.index;
+
+        if (index !== -1) {
+          items.splice(index, 1);
+          quick_storage.stores[storeName] = items;
+        }
+
+        resolve(id);
+      });
+    }
+    /**
+     * Find index of the item with the closest value to the bound
+     *
+     * @param {Array} array
+     * @param {string} key
+     * @param {number|string} value
+     * @returns {number}
+     * @private
+     */
+
+  }, {
+    key: "findMax",
+    value: function findMax(array, key, value) {
+      if (!array.length) {
+        return -1;
+      }
+
+      var max = {
+        index: -1,
+        value: isNaN(value) ? '' : 0
+      };
+
+      for (var i = 0; i < array.length; i += 1) {
+        if (array[i][key] <= value) {
+          if (array[i][key] >= max.value) {
+            max = {
+              value: array[i][key],
+              index: i
+            };
+          }
+        } else {
+          return max.index;
+        }
+      }
+
       return max.index;
     }
-  }
+    /**
+     * Delete items until certain bound (primary key as a bound scope)
+     *
+     * @param {string} storeName
+     * @param {*} value
+     * @param {string=} condition
+     * @returns {Promise}
+     */
 
-  return max.index;
-}
-/**
- * Delete items until certain bound (primary key as a bound scope)
- *
- * @param {string} storeName
- * @param {*} value
- * @param {string=} condition
- * @returns {Promise}
- */
+  }, {
+    key: "deleteBulk",
+    value: function deleteBulk(storeName
+    /*: string*/
+    , value
+    /*: any*/
+    , condition
+    /*: 'lowerBound' | 'upperBound'*/
+    )
+    /*: Promise<any>*/
+    {
+      var _this7 = this;
 
+      return this.getAll(storeName).then(function (items) {
+        var keys = _this7.getKeys(storeName);
 
-function localstorage_deleteBulk(storeName, value, condition) {
-  return localstorage_getAll(storeName).then(function (items) {
-    var keys = _getKeys(storeName);
+        var key = scheme_map.right[convertStoreName({
+          storeName: storeName,
+          dir: Direction.right
+        })].index || keys[0];
+        var exact = condition ? null : value;
 
-    var key = scheme_map.right[convertStoreName({
-      storeName: storeName,
-      dir: 'right'
-    })].index || keys[0];
-    var exact = condition ? null : value;
+        var sorted = _this7.sort(items, keys, exact);
 
-    var sorted = _sort(items, keys, exact);
+        var index = _this7.findMax(sorted, key, value);
 
-    var index = _findMax(sorted, key, value);
+        if (index === -1) {
+          return [];
+        }
 
-    if (index === -1) {
-      return [];
-    }
-
-    var start = condition === 'lowerBound' ? index : 0;
-    var end = !condition || condition === 'upperBound' ? index + 1 : sorted.length;
-    var deleted = sorted.splice(start, end).map(function (item) {
-      return keys.length === 1 ? item[key] : keys.map(function (k) {
-        return item[k];
+        var start = condition === 'lowerBound' ? index : 0;
+        var end = !condition || condition === 'upperBound' ? index + 1 : sorted.length;
+        var deleted = sorted.splice(start, end).map(function (item) {
+          return keys.length === 1 ? item[key] : keys.map(function (k) {
+            return item[k];
+          });
+        });
+        quick_storage.stores[storeName] = sorted;
+        return deleted;
       });
-    });
-    quick_storage.stores[storeName] = sorted;
-    return deleted;
-  });
-}
-/**
- * Trim the store from the left by specified length
- *
- * @param {string} storeName
- * @param {number} length
- * @returns {Promise}
- */
+    }
+    /**
+     * Trim the store from the left by specified length
+     *
+     * @param {string} storeName
+     * @param {number} length
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "trimItems",
+    value: function trimItems(storeName
+    /*: string*/
+    , length
+    /*: number*/
+    )
+    /*: Promise<any>*/
+    {
+      var _this8 = this;
+
+      var options = scheme_map.right[convertStoreName({
+        storeName: storeName,
+        dir: Direction.right
+      })];
+      return this.getAll(storeName).then(function (records) {
+        return records.length ? records[length - 1] : null;
+      }).then(function (record) {
+        return record ? _this8.deleteBulk(storeName, record[options.keyPath], 'upperBound') : [];
+      });
+    }
+    /**
+     * Count the number of records in the store
+     *
+     * @param {string} storeName
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "count",
+    value: function count(storeName
+    /*: string*/
+    )
+    /*: Promise<number>*/
+    {
+      return this.open().then(function (open) {
+        if (open.status === 'error') {
+          return localstorage_Promise.reject(open.error);
+        }
+
+        return localstorage_Promise.resolve(quick_storage.stores[storeName].length);
+      });
+    }
+    /**
+     * Clear all records from a particular store
+     *
+     * @param {string} storeName
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "clear",
+    value: function clear(storeName
+    /*: string*/
+    )
+    /*: Promise<any>*/
+    {
+      return this.open().then(function (open) {
+        if (open.status === 'error') {
+          return localstorage_Promise.reject(open.error);
+        }
+
+        return new localstorage_Promise(function (resolve) {
+          quick_storage.stores[storeName] = [];
+          resolve({});
+        });
+      });
+    }
+    /**
+     * Does nothing, it simply matches the common storage interface
+     */
+
+  }, {
+    key: "destroy",
+    value: function destroy() {} // eslint-disable-line
+
+    /**
+     * Does nothing, it simply matches the common storage interface
+     */
+
+  }, {
+    key: "deleteDatabase",
+    value: function deleteDatabase() {} // eslint-disable-line
+
+  }], [{
+    key: "isSupported",
+
+    /**
+     * Cached promise of LocalStorage validation
+     */
+
+    /**
+     * Check if LocalStorage is supported in the current browser
+     */
+    value: function isSupported()
+    /*: Promise<boolean>*/
+    {
+      if (LocalStorageWrapper.isSupportedPromise) {
+        return LocalStorageWrapper.isSupportedPromise;
+      } else {
+        var uid = new Date().toString();
+        var storage = window.localStorage;
+        LocalStorageWrapper.isSupportedPromise = new localstorage_Promise(function (resolve
+        /*: (value: boolean) => void*/
+        ) {
+          storage.setItem(uid, uid);
+          var result = storage.getItem(uid) === uid;
+          storage.removeItem(uid);
+          var support = !!(result && storage);
+          resolve(support);
+        }).catch(function () {
+          logger.warn('LocalStorage is not supported in this browser');
+          return localstorage_Promise.resolve(false);
+        });
+      }
+
+      return LocalStorageWrapper.isSupportedPromise;
+    }
+  }]);
+
+  return LocalStorageWrapper;
+}();
+
+defineProperty_default()(localstorage_LocalStorageWrapper, "isSupportedPromise", null);
 
 
-function localstorage_trimItems(storeName, length) {
-  var open = localstorage_open();
-
-  var options = scheme_map.right[convertStoreName({
-    storeName: storeName,
-    dir: 'right'
-  })];
-
-  if (open.status === 'error') {
-    return localstorage_Promise.reject(open.error);
-  }
-
-  return localstorage_getAll(storeName).then(function (records) {
-    return records.length ? records[length - 1] : null;
-  }).then(function (record) {
-    return record ? localstorage_deleteBulk(storeName, record[options.keyPath], 'upperBound') : [];
-  });
-}
-/**
- * Count the number of records in the store
- *
- * @param {string} storeName
- * @returns {Promise}
- */
-
-
-function localstorage_count(storeName) {
-  var open = localstorage_open();
-
-  if (open.status === 'error') {
-    return localstorage_Promise.reject(open.error);
-  }
-
-  return localstorage_Promise.resolve(quick_storage.stores[storeName].length);
-}
-/**
- * Clear all records from a particular store
- *
- * @param {string} storeName
- * @returns {Promise}
- */
-
-
-function localstorage_clear(storeName) {
-  var open = localstorage_open();
-
-  if (open.status === 'error') {
-    return localstorage_Promise.reject(open.error);
-  }
-
-  return new localstorage_Promise(function (resolve) {
-    quick_storage.stores[storeName] = [];
-    resolve({});
-  });
-}
-/**
- * Does nothing, it simply matches the common storage interface
- */
-
-
-function localstorage_destroy() {}
-
-
-// CONCATENATED MODULE: ./src/sdk/storage/storage.js
+// CONCATENATED MODULE: ./src/sdk/storage/storage.ts
 
 
 
@@ -5396,13 +5891,22 @@ var storage_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Pr
 
 
 
+
+
+var storage_StorageType;
+
+(function (StorageType) {
+  StorageType[StorageType["noStorage"] = STORAGE_TYPES.NO_STORAGE] = "noStorage";
+  StorageType[StorageType["indexedDB"] = STORAGE_TYPES.INDEXED_DB] = "indexedDB";
+  StorageType[StorageType["localStorage"] = STORAGE_TYPES.LOCAL_STORAGE] = "localStorage";
+})(storage_StorageType || (storage_StorageType = {}));
+
 /**
  * Methods to extend
  *
  * @type {Object}
  * @private
  */
-
 var _methods = {
   getAll: _getAll,
   getFirst: _getFirst,
@@ -5415,7 +5919,9 @@ var _methods = {
   deleteBulk: _deleteBulk,
   trimItems: _trimItems,
   count: _count,
-  clear: _clear
+  clear: _clear,
+  destroy: _destroy,
+  deleteDatabase: _deleteDatabase
 };
 /**
  * Extends storage's getAll method by decoding returned records
@@ -5430,7 +5936,7 @@ function _getAll(storage, storeName) {
   return storage.getAll(storeName).then(function (records) {
     return convertRecords({
       storeName: storeName,
-      dir: 'right',
+      dir: Direction.right,
       records: records
     });
   });
@@ -5449,7 +5955,7 @@ function _getFirst(storage, storeName) {
   return storage.getFirst(storeName).then(function (record) {
     return convertRecord({
       storeName: storeName,
-      dir: 'right',
+      dir: Direction.right,
       record: record
     });
   });
@@ -5468,12 +5974,12 @@ function _getFirst(storage, storeName) {
 function _getItem(storage, storeName, target) {
   return storage.getItem(storeName, convertValues({
     storeName: storeName,
-    dir: 'left',
+    dir: Direction.left,
     target: target
   })).then(function (record) {
     return convertRecord({
       storeName: storeName,
-      dir: 'right',
+      dir: Direction.right,
       record: record
     });
   }).catch(function (error) {
@@ -5498,7 +6004,7 @@ function _filterBy(storage, storeName, target) {
   return storage.filterBy(storeName, encodeValue(target)).then(function (records) {
     return convertRecords({
       storeName: storeName,
-      dir: 'right',
+      dir: Direction.right,
       records: records
     });
   });
@@ -5517,12 +6023,12 @@ function _filterBy(storage, storeName, target) {
 function _addItem(storage, storeName, record) {
   return storage.addItem(storeName, convertRecord({
     storeName: storeName,
-    dir: 'left',
+    dir: Direction.left,
     record: record
   })).then(function (target) {
     return convertValues({
       storeName: storeName,
-      dir: 'right',
+      dir: Direction.right,
       target: target
     });
   }).catch(function (error) {
@@ -5547,13 +6053,13 @@ function _addItem(storage, storeName, record) {
 function _addBulk(storage, storeName, records, overwrite) {
   return storage.addBulk(storeName, convertRecords({
     storeName: storeName,
-    dir: 'left',
+    dir: Direction.left,
     records: records
   }), overwrite).then(function (values) {
     return values.map(function (target) {
       return convertValues({
         storeName: storeName,
-        dir: 'right',
+        dir: Direction.right,
         target: target
       });
     });
@@ -5578,12 +6084,12 @@ function _addBulk(storage, storeName, records, overwrite) {
 function _updateItem(storage, storeName, record) {
   return storage.updateItem(storeName, convertRecord({
     storeName: storeName,
-    dir: 'left',
+    dir: Direction.left,
     record: record
   })).then(function (target) {
     return convertValues({
       storeName: storeName,
-      dir: 'right',
+      dir: Direction.right,
       target: target
     });
   });
@@ -5602,12 +6108,12 @@ function _updateItem(storage, storeName, record) {
 function _deleteItem(storage, storeName, target) {
   return storage.deleteItem(storeName, convertValues({
     storeName: storeName,
-    dir: 'left',
+    dir: Direction.left,
     target: target
   })).then(function (target) {
     return convertValues({
       storeName: storeName,
-      dir: 'right',
+      dir: Direction.right,
       target: target
     });
   });
@@ -5629,7 +6135,7 @@ function _deleteBulk(storage, storeName, target, condition) {
     return records.map(function (record) {
       return convertValues({
         storeName: storeName,
-        dir: 'right',
+        dir: Direction.right,
         target: record
       });
     });
@@ -5676,6 +6182,28 @@ function _clear(storage, storeName) {
   return storage.clear(storeName);
 }
 /**
+ * Calls storage's destroy method
+ *
+ * @param {Object} storage
+ * @private
+ */
+
+
+function _destroy(storage) {
+  return storage.destroy();
+}
+/**
+ * Calls storage's deleteDatabase method
+ *
+ * @param {Object} storage
+ * @private
+ */
+
+
+function _deleteDatabase(storage) {
+  return storage.deleteDatabase();
+}
+/**
  * Augment whitelisted methods with encoding/decoding functionality
  *
  * @param {Object} storage
@@ -5684,7 +6212,7 @@ function _clear(storage, storeName) {
  */
 
 
-function _augment(storage) {
+function _augment() {
   return entries(_methods).map(function (_ref) {
     var _ref2 = slicedToArray_default()(_ref, 2),
         methodName = _ref2[0],
@@ -5695,61 +6223,100 @@ function _augment(storage) {
         args[_key - 1] = arguments[_key];
       }
 
-      return method.call.apply(method, [null, storage, convertStoreName({
-        storeName: storeName,
-        dir: 'left'
-      })].concat(args));
+      return storage_init().then(function (_ref3) {
+        var storage = _ref3.storage;
+
+        if (storage) {
+          return method.call.apply(method, [null, storage, convertStoreName({
+            storeName: storeName,
+            dir: Direction.left
+          })].concat(args));
+        }
+      });
     }];
   }).reduce(reducer, {});
 }
 /**
- * Check which storage is available and pick it up
- * Prefer indexedDB over localStorage
- *
- * @returns {{
- * isSupported,
- * getAll,
- * getFirst,
- * getItem,
- * filterBy,
- * addItem,
- * addBulk,
- * updateItem,
- * deleteItem,
- * deleteBulk,
- * trimItems,
- * count,
- * clear,
- * destroy
- * }|null}
+ * Type of available storage
  */
 
 
-function storage_init() {
-  var storage;
-  var type;
+var storage_type
+/*: StorageType*/
+;
+/**
+ * Returns type of used storage which is one of possible values INDEXED_DB, LOCAL_STORAGE or NO_STORAGE if there is no
+ * storage available
+ */
 
-  if (isSupported()) {
-    storage = indexeddb_namespaceObject;
-    type = 'indexedDB';
-  } else if (localstorage_isSupported()) {
-    storage = localstorage_namespaceObject;
-    type = 'localStorage';
+function getType()
+/*: StorageType*/
+{
+  return storage_type;
+}
+/**
+ * Cached promise of Storage initialization
+ */
+
+
+var _initializationPromise
+/*: Nullable<Promise<Storage>>*/
+= null;
+/**
+ * Check which storage is available and pick it up
+ * Prefer indexedDB over localStorage
+ */
+
+function storage_init(dbName
+/*: string*/
+)
+/*: Promise<Storage>*/
+{
+  var storage
+  /*: Nullable<IStorage>*/
+  = null;
+
+  if (_initializationPromise !== null) {
+    return _initializationPromise;
+  } else {
+    _initializationPromise = storage_Promise.all([indexeddb_IndexedDBWrapper.isSupported(), localstorage_LocalStorageWrapper.isSupported()]).then(function (_ref4) {
+      var _ref5 = slicedToArray_default()(_ref4, 2),
+          idbSupported = _ref5[0],
+          lsSupported = _ref5[1];
+
+      quick_storage.setCustomName(dbName);
+
+      if (idbSupported) {
+        storage_type = storage_StorageType.indexedDB;
+        var idb = new indexeddb_IndexedDBWrapper();
+        return idb.setCustomName(dbName).then(function () {
+          return storage = idb;
+        });
+      } else if (lsSupported) {
+        storage_type = storage_StorageType.localStorage;
+        storage = new localstorage_LocalStorageWrapper();
+        return storage_Promise.resolve(storage);
+      } else {
+        logger.error('There is no storage available, app will run with minimum set of features');
+        storage_type = storage_StorageType.noStorage;
+        storage = null;
+        return storage_Promise.resolve(storage);
+      }
+    }).then(function () {
+      return {
+        type: storage_type,
+        storage: storage
+      };
+    });
   }
 
-  if (type) {
-    return objectSpread2_default()({
-      type: type,
-      isSupported: storage.isSupported,
-      destroy: storage.destroy
-    }, _augment(storage));
-  }
-
-  logger.error('There is no storage available, app will run with minimum set of features');
-  return null;
+  return _initializationPromise;
 }
 
-/* harmony default export */ var storage_storage = (storage_init());
+/* harmony default export */ var storage_storage = (objectSpread2_default()({
+  init: storage_init,
+  getType: getType
+}, _augment()));
 // CONCATENATED MODULE: ./src/sdk/default-params.js
 
 
@@ -5919,12 +6486,120 @@ function default_params_defaultParams()
     return objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()(objectSpread2_default()({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
   });
 }
+// CONCATENATED MODULE: ./src/sdk/url-strategy.ts
+
+
+var _endpointMap, _endpointNiceNames;
+
+var url_strategy_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+
+
+
+var UrlStrategy;
+
+(function (UrlStrategy) {
+  UrlStrategy["Default"] = "default";
+  UrlStrategy["India"] = "india";
+  UrlStrategy["China"] = "china";
+})(UrlStrategy || (UrlStrategy = {}));
+
+/**
+ * Returns a map of base URLs or a list of endpoint names depending on SDK configuration
+ */
+function getEndpointPreference()
+/*: BaseUrlsMap | EndpointName[]*/
+{
+  var _Config$getCustomConf = config.getCustomConfig(),
+      customUrl = _Config$getCustomConf.customUrl,
+      urlStrategy = _Config$getCustomConf.urlStrategy;
+
+  if (customUrl) {
+    // If custom URL is set then send all requests there
+    return {
+      app: customUrl,
+      gdpr: customUrl
+    };
+  }
+
+  if (urlStrategy === UrlStrategy.India) {
+    return [UrlStrategy.India, UrlStrategy.Default];
+  }
+
+  if (urlStrategy === UrlStrategy.China) {
+    return [UrlStrategy.China, UrlStrategy.Default];
+  }
+
+  return [UrlStrategy.Default, UrlStrategy.India, UrlStrategy.China];
+}
+
+var endpointMap
+/*: Record<UrlStrategy, BaseUrlsMap>*/
+= (_endpointMap = {}, defineProperty_default()(_endpointMap, UrlStrategy.Default, {
+  app: 'https://app.adjust.com',
+  gdpr: 'https://gdpr.adjust.com'
+}), defineProperty_default()(_endpointMap, UrlStrategy.India, {
+  app: 'https://app.adjust.net.in',
+  gdpr: 'https://gdpr.adjust.net.in'
+}), defineProperty_default()(_endpointMap, UrlStrategy.China, {
+  app: 'https://app.adjust.world',
+  gdpr: 'https://gdpr.adjust.world'
+}), _endpointMap);
+var endpointNiceNames
+/*: Record<UrlStrategy, string>*/
+= (_endpointNiceNames = {}, defineProperty_default()(_endpointNiceNames, UrlStrategy.Default, 'default'), defineProperty_default()(_endpointNiceNames, UrlStrategy.India, 'Indian'), defineProperty_default()(_endpointNiceNames, UrlStrategy.China, 'Chinese'), _endpointNiceNames);
+/**
+ * Gets the list of preferred endpoints and wraps `sendRequest` function with iterative retries until available
+ * endpoint found or another error occurred.
+ */
+
+function urlStrategyRetries(sendRequest
+/*: (urls: BaseUrlsMap) => Promise<unknown>*/
+)
+/*: Promise<unknown>*/
+{
+  var endpoints
+  /*: Record<UrlStrategy, BaseUrlsMap>*/
+  = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : endpointMap;
+  var preferredUrls = getEndpointPreference();
+
+  if (!Array.isArray(preferredUrls)) {
+    // There is only one endpoint
+    return sendRequest(preferredUrls);
+  } else {
+    var attempt = 0;
+
+    var trySendRequest
+    /*: () => Promise<unknown>*/
+    = function trySendRequest() {
+      var endpointKey = preferredUrls[attempt++];
+      var urlsMap = endpoints[endpointKey];
+      return sendRequest(urlsMap).catch(function (reason) {
+        if (reason.code === 'NO_CONNECTION') {
+          logger.log("Failed to connect ".concat(endpointNiceNames[endpointKey], " endpoint"));
+
+          if (attempt < preferredUrls.length) {
+            logger.log("Trying ".concat(endpointNiceNames[preferredUrls[attempt]], " one"));
+            return trySendRequest(); // Trying next endpoint
+          }
+        } // Another error occurred or we ran out of attempts, re-throw
+
+
+        throw reason;
+      });
+    };
+
+    return trySendRequest();
+  }
+}
+
+
 // CONCATENATED MODULE: ./src/sdk/http.js
 
 
 
 var http_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
 /*:: import { type UrlT, type DefaultParamsT, type HttpSuccessResponseT, type HttpErrorResponseT, type HttpRequestParamsT, type ErrorCodeT } from './types';*/
+
 
 
 
@@ -6150,6 +6825,8 @@ function _handleReadyStateChange(reject, resolve, _ref11) {
 
 function _prepareUrlAndParams(_ref12, defaultParams
 /*: DefaultParamsT*/
+, baseUrlsMap
+/*: BaseUrlsMap*/
 )
 /*: {fullUrl: string, encodedParams: string}*/
 {
@@ -6160,8 +6837,7 @@ function _prepareUrlAndParams(_ref12, defaultParams
   var encodedParams = _encodeParams(params, defaultParams);
 
   var base = url === '/gdpr_forget_device' ? 'gdpr' : 'app';
-  var customConfig = config.getCustomConfig();
-  var baseUrl = customConfig.customUrl || config.baseUrl[base];
+  var baseUrl = baseUrlsMap[base];
   return {
     fullUrl: baseUrl + url + (method === 'GET' ? "?".concat(encodedParams) : ''),
     encodedParams: encodedParams
@@ -6208,6 +6884,8 @@ function _prepareHeaders(xhr
 
 function _buildXhr(_ref15, defaultParams
 /*: DefaultParamsT*/
+, baseUrlsMap
+/*: BaseUrlsMap*/
 )
 /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
 {
@@ -6221,7 +6899,7 @@ function _buildXhr(_ref15, defaultParams
     url: url,
     method: method,
     params: params
-  }, defaultParams),
+  }, defaultParams, baseUrlsMap),
       fullUrl = _prepareUrlAndParams2.fullUrl,
       encodedParams = _prepareUrlAndParams2.encodedParams;
 
@@ -6243,6 +6921,16 @@ function _buildXhr(_ref15, defaultParams
     };
 
     xhr.send(method === 'GET' ? undefined : encodedParams);
+  });
+}
+
+function _sendRequestWithUrlStrategyRetries(options
+/*: HttpRequestParamsT*/
+, defaultParams
+/*: DefaultParamsT*/
+) {
+  return urlStrategyRetries(function (baseUrlsMap) {
+    return _buildXhr(options, defaultParams, baseUrlsMap);
   });
 }
 /**
@@ -6329,7 +7017,7 @@ function http(options
 /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/
 {
   return default_params_defaultParams().then(function (defaultParams) {
-    return _buildXhr(options, defaultParams);
+    return _sendRequestWithUrlStrategyRetries(options, defaultParams);
   }).then(function (result) {
     return _interceptResponse(result, options.url);
   });
@@ -9233,6 +9921,7 @@ var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promi
 
 
 
+
 /*:: type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>*/
 
 /**
@@ -9244,6 +9933,16 @@ var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promi
 var main_options
 /*: ?InitOptionsT*/
 = null;
+/**
+ * Flag to mark id sdk is in starting process
+ *
+ * @type {boolean}
+ * @private
+ */
+
+var _isInitialising
+/*: boolean*/
+= false;
 /**
  * Flag to mark if sdk is started
  *
@@ -9282,14 +9981,7 @@ function initSdk()
 
   logger.setLogLevel(logLevel, logOutput);
 
-  if (!storage_storage) {
-    logger.error('Adjust SDK can not start, there is no storage available');
-    return;
-  }
-
-  logger.info("Available storage is ".concat(storage_storage.type));
-
-  if (config.isInitialised()) {
+  if (_isInitialised()) {
     logger.error('You already initiated your instance');
     return;
   }
@@ -9298,9 +9990,18 @@ function initSdk()
     return;
   }
 
-  main_options = objectSpread2_default()({}, options);
+  _isInitialising = true;
+  storage_storage.init(options.namespace).then(function (availableStorage) {
+    if (availableStorage.type === STORAGE_TYPES.NO_STORAGE) {
+      logger.error('Adjust SDK can not start, there is no storage available');
+      return;
+    }
 
-  _start(options);
+    logger.info("Available storage is ".concat(availableStorage.type));
+    main_options = objectSpread2_default()({}, options);
+
+    _start(options);
+  });
 }
 /**
  * Track event with already initiated instance
@@ -9528,7 +10229,19 @@ function _handleGdprForgetMe()
 
   gdpr_forget_device_finish();
 
-  main_Promise.all([identity_clear(), global_params_clear(), queue_clear()]).then(_destroy);
+  main_Promise.all([identity_clear(), global_params_clear(), queue_clear()]).then(main_destroy);
+}
+/**
+ * Check if sdk initialisation was started
+ *
+ * @private
+ */
+
+
+function _isInitialised()
+/*: boolean*/
+{
+  return _isInitialising || config.isInitialised();
 }
 /**
  * Pause sdk by canceling:
@@ -9543,6 +10256,7 @@ function _handleGdprForgetMe()
 function _pause()
 /*: void*/
 {
+  _isInitialising = false;
   _isStarted = false;
   scheduler_destroy();
   queue_destroy();
@@ -9577,9 +10291,11 @@ function _shutdown(async)
  */
 
 
-function _destroy()
+function main_destroy()
 /*: void*/
 {
+  _isInstalled = false;
+
   _shutdown();
 
   gdpr_forget_device_destroy();
@@ -9643,6 +10359,7 @@ function main_continue(activityState
     cleanUp: true
   });
   return watch().then(function () {
+    _isInitialising = false;
     _isStarted = true;
 
     if (isInstalled) {
@@ -9756,7 +10473,7 @@ function _preCheck(description
       schedule = _ref2.schedule,
       stopBeforeInit = _ref2.stopBeforeInit;
 
-  if (!storage_storage) {
+  if (storage_storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     logger.log("Adjust SDK can not ".concat(description, ", no storage available"));
     return;
   }
@@ -9766,19 +10483,23 @@ function _preCheck(description
     return;
   }
 
-  if (schedule && stopBeforeInit && !config.isInitialised()) {
+  if (schedule && stopBeforeInit && !_isInitialised()) {
     logger.error("Adjust SDK can not ".concat(description, ", sdk instance is not initialized"));
     return;
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || config.isInitialised())) {
+    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || _isInitialised())) {
       delay(callback, description);
       logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
     } else {
       callback();
     }
   }
+}
+
+function _clearDatabase() {
+  return storage_storage.deleteDatabase();
 }
 
 var Adjust = {
@@ -9797,7 +10518,8 @@ var Adjust = {
   gdprForgetMe: gdprForgetMe,
   disableThirdPartySharing: disableThirdPartySharing,
   __testonly__: {
-    destroy: _destroy
+    destroy: main_destroy,
+    clearDatabase: _clearDatabase
   }
 };
 /* harmony default export */ var main = __webpack_exports__["default"] = (Adjust);

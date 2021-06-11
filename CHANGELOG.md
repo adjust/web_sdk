@@ -1,3 +1,14 @@
+### Version 5.1.2 (11th June 2021)
+#### Added
+- Added Typescript support.
+- Added URL strategy with retries when request are being blocked by firewall.
+- Added custom storage namespace.
+
+#### Fixed
+- Fixed issue with using IndexedDb in cross-origin iframe in Safari.
+
+---
+
 ### Version 5.1.1 (14th December 2020)
 #### Added
 - Added `warning` log level to make non-critical issues look less frightening.

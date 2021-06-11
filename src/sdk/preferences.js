@@ -1,6 +1,7 @@
 // @flow
 import {publish} from './pub-sub'
 import QuickStorage from './storage/quick-storage'
+import Scheme from './storage/scheme'
 import {REASON_GDPR, REASON_GENERAL} from './constants'
 
 type SdkDisabledT = {|
@@ -24,7 +25,7 @@ type PreferencesT = {|
  * @type {string}
  * @private
  */
-let _storeName: string = QuickStorage.storeNames.preferences.name
+let _storeName: string = Scheme.preferences.name
 
 /**
  * Local reference to be used for recovering preserved state
