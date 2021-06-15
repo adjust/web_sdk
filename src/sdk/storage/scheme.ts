@@ -1,47 +1,87 @@
 import { REASON_GDPR, REASON_GENERAL } from '../constants'
+import { StoredValue } from './types'
 
-type StoreFieldScheme = string // Just a short name for the field
-  | { // Field with predefined values
-    key: string; // Short name of the field
-    values: { [key: string]: number | string }; // Map of possible values
-  }
-  | { // Field containing a nested one
-    key: string; // Short name of the field
-    keys: { [key: string]: StoreFieldScheme } // Field scheme
-  }
-  | { // Composite key, stored as a field because of IE doesn't support composite keys feature
-    key: string; // Short name of the composite key
-    composite: Array<string> // Names (not short) of fields used to generate a key
-  }
+/**
+ * Field with predefined values
+ */
+type StoreFieldPredefinedValues = {
+  key: string; // Short name of the field
+  values: Record<string, StoredValue>; // Map of possible values
+}
+
+/**
+ * Field containing a nested one
+ */
+type StoreFieldNestingFields = {
+  key: string; // Short name of the field
+  keys: Record<string, StoreFieldScheme>; // Field scheme
+}
+
+/**
+ * Composite key, stored as a field because of IE doesn't support composite keys feature
+ */
+type StoreFieldCompositeKey = {
+  key: string; // Short name of the composite key
+  composite: Array<string>; // Names (not short) of fields used to generate a key
+}
+
+type StoreFieldComplex = StoreFieldPredefinedValues | StoreFieldCompositeKey | StoreFieldNestingFields
+
+type StoreFieldScheme = string | StoreFieldComplex
 
 interface StoreKeyOptions {
   keyPath?: string;
   autoIncrement?: boolean;
 }
 
-interface StoreScheme extends StoreKeyOptions {
-  index?: string | Array<string>;
-  fields: { [key: string]: StoreFieldScheme };
+type StoreFields = Record<string, StoreFieldScheme>
+
+interface StoreOptionsOptionalKey extends StoreKeyOptions {
+  index?: string;
+  fields: StoreFields;
 }
 
+interface StoreOptions extends StoreKeyOptions {
+  keyPath: string; // override keyPath to be required
+  index?: string;
+  fields: StoreFields;
+}
+
+enum StoreName {
+  Queue = 'queue',
+  ActivityState = 'activityState',
+  GlobalParams = 'globalParams',
+  EventDeduplication = 'eventDeduplication'
+}
+
+enum PreferencesStoreName {
+  Preferences = 'preferences'
+}
+
+type StoreNames = StoreName | PreferencesStoreName
+
+enum ShortStoreName {
+  Queue = 'q',
+  ActivityState = 'as',
+  GlobalParams = 'gp',
+  EventDeduplication = 'ed'
+}
+
+enum ShortPreferencesStoreName {
+  Preferences = 'p'
+}
+
+type ShortStoreNames = ShortStoreName | ShortPreferencesStoreName
+
 interface Store {
-  name: string;
-  scheme: StoreScheme;
+  name: ShortStoreName | ShortPreferencesStoreName;
+  scheme: StoreOptions | StoreOptionsOptionalKey;
   permanent?: boolean;
 }
 
-interface Scheme {
-  queue: Store;
-  activityState: Store;
-  globalParams: Store;
-  eventDeduplication: Store;
-  preferences: Store;
-}
+type Scheme = Record<StoreNames, Store>
 
-type ShortStoreName = 'q' | 'as' | 'gp' | 'ed' | 'p'
-
-const _queueName = 'q'
-const _queueScheme: StoreScheme = {
+const _queueScheme: StoreOptions = {
   keyPath: 'timestamp',
   autoIncrement: false,
   fields: {
@@ -84,8 +124,7 @@ const _queueScheme: StoreScheme = {
   }
 }
 
-const _activityStateName = 'as'
-const _activityStateScheme: StoreScheme = {
+const _activityStateScheme: StoreOptions = {
   keyPath: 'uuid',
   autoIncrement: false,
   fields: {
@@ -131,8 +170,7 @@ const _activityStateScheme: StoreScheme = {
   }
 }
 
-const _globalParamsName = 'gp'
-const _globalParamsScheme: StoreScheme = {
+const _globalParamsScheme: StoreOptions = {
   keyPath: 'keyType',
   autoIncrement: false,
   index: 'type',
@@ -153,8 +191,7 @@ const _globalParamsScheme: StoreScheme = {
   }
 }
 
-const _eventDeduplicationName = 'ed'
-const _eventDeduplicationScheme: StoreScheme = {
+const _eventDeduplicationScheme: StoreOptions = {
   keyPath: 'internalId',
   autoIncrement: true,
   fields: {
@@ -163,8 +200,7 @@ const _eventDeduplicationScheme: StoreScheme = {
   }
 }
 
-const _preferencesName = 'p'
-const _preferencesScheme: StoreScheme = {
+const _preferencesScheme: StoreOptionsOptionalKey = {
   fields: {
     thirdPartySharingDisabled: {
       key: 'td',
@@ -208,28 +244,61 @@ const _preferencesScheme: StoreScheme = {
 
 const scheme: Scheme = {
   queue: {
-    name: _queueName,
+    name: ShortStoreName.Queue,
     scheme: _queueScheme
   },
   activityState: {
-    name: _activityStateName,
+    name: ShortStoreName.ActivityState,
     scheme: _activityStateScheme
   },
   globalParams: {
-    name: _globalParamsName,
+    name: ShortStoreName.GlobalParams,
     scheme: _globalParamsScheme
   },
   eventDeduplication: {
-    name: _eventDeduplicationName,
+    name: ShortStoreName.EventDeduplication,
     scheme: _eventDeduplicationScheme
   },
   preferences: {
-    name: _preferencesName,
+    name: ShortPreferencesStoreName.Preferences,
     scheme: _preferencesScheme,
     permanent: true
   }
 }
 
-export { ShortStoreName }
+function isPredefinedValuesField(field: Maybe<StoreFieldScheme>): field is StoreFieldPredefinedValues {
+  return !!field && Object.prototype.hasOwnProperty.call(field, 'values')
+}
+
+function isNestingStoreField(field: Maybe<StoreFieldScheme>): field is StoreFieldNestingFields {
+  return !!field && Object.prototype.hasOwnProperty.call(field, 'keys')
+}
+
+function isCompositeKeyStoreField(field: Maybe<StoreFieldScheme>): field is StoreFieldCompositeKey {
+  return !!field && Object.prototype.hasOwnProperty.call(field, 'composite')
+}
+
+function isComplexStoreField(field: Maybe<StoreFieldScheme>): field is StoreFieldComplex {
+  return !!field && typeof(field) !== 'string'
+}
+
+export {
+  StoreName,
+  ShortStoreName,
+  StoreNames,
+  ShortStoreNames,
+  PreferencesStoreName,
+  ShortPreferencesStoreName,
+  Store,
+  StoreOptions,
+  StoreOptionsOptionalKey,
+  StoreFieldScheme,
+  StoreFields,
+  StoreFieldPredefinedValues,
+  isPredefinedValuesField,
+  isNestingStoreField,
+  isCompositeKeyStoreField,
+  isComplexStoreField
+}
 
 export default scheme
