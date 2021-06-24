@@ -2,6 +2,8 @@ const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const packageJson = require('./package.json')
 const namespace = 'adjust-sdk'
 const version = packageJson.version
@@ -23,6 +25,9 @@ module.exports = () => ({
     minimize: true,
     minimizer: [new TerserPlugin({
       include: /\.min\.js$/
+    }),
+    new OptimizeCSSAssetsPlugin({
+      include: /\.min\.js$/
     })]
   },
   plugins: [
@@ -30,7 +35,8 @@ module.exports = () => ({
       __ADJUST__NAMESPACE: JSON.stringify(namespace),
       __ADJUST__SDK_VERSION: JSON.stringify(version)
     }),
-    new FlowWebpackPlugin()
+    new FlowWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin()
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json']
@@ -45,6 +51,18 @@ module.exports = () => ({
       use: 'babel-loader',
       test: /\.(js|ts)$/,
       exclude: /node_modules/
+    }, {
+      test: /(\.css|\.scss)$/,
+      use: [
+        { loader: 'css-loader' },
+        { loader: 'sass-loader' }
+      ]
+    }, {
+      test: /\.html$/,
+      loader: 'html-loader',
+      options: {
+        minimize: true,
+      }
     }]
   }
 })

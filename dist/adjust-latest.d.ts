@@ -290,6 +290,33 @@ function gdprForgetMe(): void
  */
 function disableThirdPartySharing(): void
 
+interface SmartBannerOptions {
+
+  /** Application Web token to initialise Smart Banner */
+  appWebToken: string
+}
+
+/**
+ * Initiate Smart Banner.
+ *
+ * This method gets Smart Banner data and creates Smart Banner UI.
+ *
+ * @param {string} appWebToken Options to initiate the SDK instance.
+ *
+ * @example
+ * Adjust.initSmartBanner({
+ *   appWebToken: 'YOUR_APP_WEB_TOKEN'
+ * });
+ */
+function initSmartBanner(options: SmartBannerOptions): void
+
+/**
+ * Shows Smart Banner
+ */
+function showSmartBanner(): void
+
+function hideSmartBanner(): void
+
 const Adjust = {
   initSdk,
   trackEvent,
@@ -304,7 +331,10 @@ const Adjust = {
   stop,
   restart,
   gdprForgetMe,
-  disableThirdPartySharing
+  disableThirdPartySharing,
+  initSmartBanner,
+  showSmartBanner,
+  hideSmartBanner,
 }
 
 export default Adjust
