@@ -301,7 +301,7 @@ interface SmartBannerOptions {
  *
  * This method gets Smart Banner data and creates Smart Banner UI.
  *
- * @param {string} appWebToken Options to initiate the SDK instance.
+ * @param {SmartBannerOptions} options Options to initiate Smart Banner.
  *
  * @example
  * Adjust.initSmartBanner({
@@ -310,11 +310,10 @@ interface SmartBannerOptions {
  */
 function initSmartBanner(options: SmartBannerOptions): void
 
-/**
- * Shows Smart Banner
- */
+/** Show already existing hidden Smart Banner */
 function showSmartBanner(): void
 
+/** Hide already existing Smart Banner */
 function hideSmartBanner(): void
 
 const Adjust = {
