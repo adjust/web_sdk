@@ -2,7 +2,6 @@ const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const packageJson = require('./package.json')
 const namespace = 'adjust-sdk'
@@ -24,9 +23,6 @@ module.exports = () => ({
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin({
-      include: /\.min\.js$/
-    }),
-    new OptimizeCSSAssetsPlugin({
       include: /\.min\.js$/
     })]
   },
