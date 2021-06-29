@@ -1,6 +1,6 @@
 import Log from './../logger'
-import template from './template.html'
-import './styles.scss'
+import template from './assets/template.html'
+import './assets/styles.scss'
 
 /**
  * Adjust Web SDK Smart Banner
