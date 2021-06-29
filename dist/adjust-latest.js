@@ -10207,11 +10207,11 @@ function sdkClick()
     });
   }
 }
-// EXTERNAL MODULE: ./src/sdk/smart-banner/template.html
+// EXTERNAL MODULE: ./src/sdk/smart-banner/assets/template.html
 var template = __webpack_require__(11);
 var template_default = /*#__PURE__*/__webpack_require__.n(template);
 
-// EXTERNAL MODULE: ./src/sdk/smart-banner/styles.scss
+// EXTERNAL MODULE: ./src/sdk/smart-banner/assets/styles.scss
 var styles = __webpack_require__(21);
 
 // CONCATENATED MODULE: ./src/sdk/smart-banner/smart-banner.ts
