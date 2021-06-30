@@ -50,15 +50,15 @@ module.exports = () => ({
     }, {
       test: /(\.css|\.scss)$/,
       use: [
-        { loader: 'css-loader' },
+        { loader: 'style-loader' },
+        {
+          loader: 'css-loader',
+          options: {
+            modules: true
+          },
+        },
         { loader: 'sass-loader' }
       ]
-    }, {
-      test: /\.html$/,
-      loader: 'html-loader',
-      options: {
-        minimize: true,
-      }
     }]
   }
 })

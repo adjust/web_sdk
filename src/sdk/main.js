@@ -5,7 +5,8 @@ import {
   type EventParamsT,
   type GlobalParamsT,
   type CustomErrorT,
-  type ActivityStateMapT
+  type ActivityStateMapT,
+  type SmartBannerOptionsT
 } from './types'
 import Config from './config'
 import Storage from './storage/storage'
@@ -223,16 +224,16 @@ function disableThirdPartySharing (): void {
   })
 }
 
-function initSmartBanner ({ appWebToken }: { appWebToken: string }): void {
+function initSmartBanner ({ appWebToken }: SmartBannerOptionsT): void {
   SmartBanner.init(appWebToken)
 }
 
 function showSmartBanner (): void {
-  SmartBanner.showBanner()
+  SmartBanner.show()
 }
 
 function hideSmartBanner (): void {
-  SmartBanner.hideBanner()
+  SmartBanner.hide()
 }
 
 /**

@@ -1,6 +1,6 @@
 import Log from './../logger'
-import template from './assets/template.html'
-import './assets/styles.scss'
+import render from './assets/template'
+import styles from './assets/styles.scss'
 
 /**
  * Adjust Web SDK Smart Banner
@@ -11,6 +11,8 @@ class SmartBanner {
 
   /**
    * Loads banners from backend if available
+   *
+   * TODO: implement this stub
    */
   private getBanners(appWebToken: string) {
     return {
@@ -22,20 +24,27 @@ class SmartBanner {
     }
   }
 
+  /**
+   * Initiate Smart Banner.
+   *
+   * TODO: implement getting Smart Banner data and creating Smart Banner UI properly.
+   *
+   * @param appWebToken
+   */
   init(appWebToken: string): void {
     Log.info('Initialise Smart Banner')
 
-    const banner = this.getBanners(appWebToken)
+    const bannerData = this.getBanners(appWebToken)
 
-    this.parent = banner.parentId && document.getElementById(banner.parentId) || document.body
+    this.parent = bannerData.parentId && document.getElementById(bannerData.parentId) || document.body
     this.banner = document.createElement('div')
-    this.banner.setAttribute('class', 'banner')
-    this.banner.innerHTML = template
+    this.banner.setAttribute('class', styles.banner)
+    this.banner.innerHTML = render(bannerData.header, bannerData.description, bannerData.buttonText)
 
     this.parent.appendChild(this.banner)
   }
 
-  showBanner(): void {
+  show(): void {
     if (this.banner) {
       this.banner.hidden = false
     } else {
@@ -43,7 +52,7 @@ class SmartBanner {
     }
   }
 
-  hideBanner(): void {
+  hide(): void {
     if (this.banner) {
       this.banner.hidden = true
     } else {
