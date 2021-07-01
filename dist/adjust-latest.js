@@ -1873,14 +1873,14 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "._2B_H10JaUsseaRYJpdVevS{width:100vw;position:fixed;left:0;bottom:0;background-color:white}._2B_H10JaUsseaRYJpdVevS ._2zUCl61n-bfB688MeKKyha{display:flex;flex-direction:row;box-direction:normal;box-orient:horizontal;align-items:center;margin:2px 8px}._2B_H10JaUsseaRYJpdVevS ._2zUCl61n-bfB688MeKKyha ._2JrIBTXictB5lqTjEZFNNz{flex:1 1 0%;min-height:0;min-width:0}._2B_H10JaUsseaRYJpdVevS ._2zUCl61n-bfB688MeKKyha ._3_No8Y1Gy_qOtsUkoxWVmv{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}._2B_H10JaUsseaRYJpdVevS ._2zUCl61n-bfB688MeKKyha h4{margin:0;font-size:1em}._2B_H10JaUsseaRYJpdVevS ._2zUCl61n-bfB688MeKKyha p{margin:0;font-size:.9em}._2B_H10JaUsseaRYJpdVevS ._2zUCl61n-bfB688MeKKyha button{background-color:#00bed5;color:white;border:none;border-radius:2px;padding:8px 10px;display:inline-block;vertical-align:middle;text-transform:uppercase;text-align:center;font-size:.9em;letter-spacing:.02em;cursor:pointer}\n", ""]);
+exports.push([module.i, ".adjust-smart-banner__2B_H10JaUsseaRYJpdVevS{width:100vw;position:fixed;left:0;bottom:0;background-color:white;font-family:BlinkMacSystemFont,-apple-system,\"Segoe UI\",Roboto,Arial,sans-serif}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha{display:flex;align-items:center;margin:2px 8px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz{flex:1 1 0%;min-height:0;min-width:0}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha h4{margin:0;font-size:12px;font-weight:bold;line-height:16px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha p{margin:0;font-size:9px;line-height:11px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha button{background-color:#00bed5;color:white;border:none;border-radius:2px;padding:8px 10px;display:inline-block;vertical-align:middle;text-transform:uppercase;text-align:center;font-size:12px;font-weight:500;line-height:16px}\n", ""]);
 
 // exports
 exports.locals = {
-	"banner": "_2B_H10JaUsseaRYJpdVevS",
-	"bannerBody": "_2zUCl61n-bfB688MeKKyha",
-	"textContainer": "_2JrIBTXictB5lqTjEZFNNz",
-	"bannerText": "_3_No8Y1Gy_qOtsUkoxWVmv"
+	"banner": "adjust-smart-banner__2B_H10JaUsseaRYJpdVevS",
+	"bannerBody": "adjust-smart-banner__2zUCl61n-bfB688MeKKyha",
+	"textContainer": "adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz",
+	"bannerText": "adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv"
 };
 
 /***/ }),
@@ -10735,6 +10735,7 @@ var styles = __webpack_require__(7);
 var styles_default = /*#__PURE__*/__webpack_require__.n(styles);
 
 // CONCATENATED MODULE: ./src/sdk/smart-banner/assets/template.ts
+ // TODO: replace .adjust-logo with a correct one to show client's image
 
 /* harmony default export */ var template = (function (header
 /*: string*/

@@ -48,13 +48,14 @@ module.exports = () => ({
       test: /\.(js|ts)$/,
       exclude: /node_modules/
     }, {
-      test: /(\.css|\.scss)$/,
+      test: /\.s?css$/,
       use: [
         { loader: 'style-loader' },
         {
           loader: 'css-loader',
           options: {
-            modules: true
+            modules: true,
+            localIdentName: 'adjust-smart-banner__[hash:base64]',
           },
         },
         { loader: 'sass-loader' }
