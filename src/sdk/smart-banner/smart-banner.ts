@@ -2,6 +2,19 @@ import Log from './../logger'
 import render from './assets/template'
 import styles from './assets/styles.scss'
 
+enum SmartBannerPosition {
+  Top = 'top',
+  Bottom = 'bottom'
+}
+
+interface SmartBannerData {
+  image: string;
+  header: string;
+  description: string;
+  buttonText: string;
+  position: SmartBannerPosition;
+}
+
 /**
  * Adjust Web SDK Smart Banner
  */
@@ -14,13 +27,13 @@ class SmartBanner {
    *
    * TODO: implement this stub
    */
-  private getBanners(appWebToken: string) {
+  private getSmartBannerData(appWebToken: string): SmartBannerData {
     return {
-      parentId: '',
       image: '',
       header: 'Adjust Smart Banners',
       description: 'Not so smart actually, but deep links do the magic anyway',
-      buttonText: 'Let\'s go!'
+      buttonText: 'Let\'s go!',
+      position: SmartBannerPosition.Top
     }
   }
 
@@ -34,14 +47,18 @@ class SmartBanner {
   init(appWebToken: string): void {
     Log.info('Initialise Smart Banner')
 
-    const bannerData = this.getBanners(appWebToken)
+    const bannerData = this.getSmartBannerData(appWebToken)
 
-    this.parent = bannerData.parentId && document.getElementById(bannerData.parentId) || document.body
+    this.parent = document.body
     this.banner = document.createElement('div')
-    this.banner.setAttribute('class', styles.banner)
+    this.banner.setAttribute('class', `${styles.banner} ${bannerData.position === SmartBannerPosition.Top ? styles.stickyToTop : styles.stickyToBottom}`)
     this.banner.innerHTML = render(bannerData.header, bannerData.description, bannerData.buttonText)
 
-    this.parent.appendChild(this.banner)
+    if (bannerData.position === SmartBannerPosition.Top) {
+      this.parent.insertBefore(this.banner, this.parent.firstChild)
+    } else {
+      this.parent.appendChild(this.banner)
+    }
   }
 
   show(): void {

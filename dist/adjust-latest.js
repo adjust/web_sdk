@@ -1364,61 +1364,6 @@ return Promise$1;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-module.exports = _classCallCheck;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-
-module.exports = _createClass;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayWithoutHoles = __webpack_require__(18);
-
-var iterableToArray = __webpack_require__(19);
-
-var unsupportedIterableToArray = __webpack_require__(8);
-
-var nonIterableSpread = __webpack_require__(20);
-
-function _toConsumableArray(arr) {
-  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
-}
-
-module.exports = _toConsumableArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -1441,6 +1386,61 @@ var update = __webpack_require__(23)(content, options);
 if(content.locals) module.exports = content.locals;
 
 if(false) {}
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+module.exports = _classCallCheck;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+module.exports = _createClass;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithoutHoles = __webpack_require__(18);
+
+var iterableToArray = __webpack_require__(19);
+
+var unsupportedIterableToArray = __webpack_require__(8);
+
+var nonIterableSpread = __webpack_require__(20);
+
+function _toConsumableArray(arr) {
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+}
+
+module.exports = _toConsumableArray;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
 /* 8 */
@@ -1873,11 +1873,13 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, ".adjust-smart-banner__2B_H10JaUsseaRYJpdVevS{width:100vw;position:fixed;left:0;bottom:0;background-color:white;font-family:BlinkMacSystemFont,-apple-system,\"Segoe UI\",Roboto,Arial,sans-serif}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha{display:flex;align-items:center;margin:2px 8px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz{flex:1 1 0%;min-height:0;min-width:0}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha h4{margin:0;font-size:12px;font-weight:bold;line-height:16px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha p{margin:0;font-size:9px;line-height:11px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS .adjust-smart-banner__2zUCl61n-bfB688MeKKyha button{background-color:#00bed5;color:white;border:none;border-radius:2px;padding:8px 10px;display:inline-block;vertical-align:middle;text-transform:uppercase;text-align:center;font-size:12px;font-weight:500;line-height:16px}\n", ""]);
+exports.push([module.i, ".adjust-smart-banner__2B_H10JaUsseaRYJpdVevS{width:100vw;left:0;background-color:white;font-family:BlinkMacSystemFont,-apple-system,\"Segoe UI\",Roboto,Arial,sans-serif}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc{position:fixed;top:0;position:-webkit-sticky;position:sticky}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF{position:fixed;bottom:0;position:-webkit-sticky;position:sticky}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha{display:flex;align-items:center;margin:2px 8px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz{flex:1 1 0%;min-height:0;min-width:0}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha h4,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha h4{margin:0;font-size:12px;font-weight:bold;line-height:16px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha p,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha p{margin:0;font-size:9px;line-height:11px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha button,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha button{background-color:#00bed5;color:white;border:none;border-radius:2px;padding:8px 10px;display:inline-block;vertical-align:middle;text-transform:uppercase;text-align:center;font-size:12px;font-weight:500;line-height:16px}\n", ""]);
 
 // exports
 exports.locals = {
 	"banner": "adjust-smart-banner__2B_H10JaUsseaRYJpdVevS",
+	"stickyToTop": "adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc",
+	"stickyToBottom": "adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF",
 	"bannerBody": "adjust-smart-banner__2zUCl61n-bfB688MeKKyha",
 	"textContainer": "adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz",
 	"bannerText": "adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv"
@@ -2485,7 +2487,7 @@ var slicedToArray = __webpack_require__(1);
 var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/toConsumableArray.js
-var toConsumableArray = __webpack_require__(6);
+var toConsumableArray = __webpack_require__(7);
 var toConsumableArray_default = /*#__PURE__*/__webpack_require__.n(toConsumableArray);
 
 // CONCATENATED MODULE: ./src/sdk/constants.js
@@ -3882,11 +3884,11 @@ function decodeErrorMessage(storeName
 
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/classCallCheck.js
-var classCallCheck = __webpack_require__(4);
+var classCallCheck = __webpack_require__(5);
 var classCallCheck_default = /*#__PURE__*/__webpack_require__.n(classCallCheck);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/createClass.js
-var createClass = __webpack_require__(5);
+var createClass = __webpack_require__(6);
 var createClass_default = /*#__PURE__*/__webpack_require__.n(createClass);
 
 // CONCATENATED MODULE: ./src/sdk/time.js
@@ -10731,7 +10733,7 @@ function sdkClick()
   }
 }
 // EXTERNAL MODULE: ./src/sdk/smart-banner/assets/styles.scss
-var styles = __webpack_require__(7);
+var styles = __webpack_require__(4);
 var styles_default = /*#__PURE__*/__webpack_require__.n(styles);
 
 // CONCATENATED MODULE: ./src/sdk/smart-banner/assets/template.ts
@@ -10753,10 +10755,16 @@ var styles_default = /*#__PURE__*/__webpack_require__.n(styles);
 
 
 
+var SmartBannerPosition;
+
+(function (SmartBannerPosition) {
+  SmartBannerPosition["Top"] = "top";
+  SmartBannerPosition["Bottom"] = "bottom";
+})(SmartBannerPosition || (SmartBannerPosition = {}));
+
 /**
  * Adjust Web SDK Smart Banner
  */
-
 var smart_banner_SmartBanner = /*#__PURE__*/function () {
   function SmartBanner() {
     classCallCheck_default()(this, SmartBanner);
@@ -10767,22 +10775,24 @@ var smart_banner_SmartBanner = /*#__PURE__*/function () {
   }
 
   createClass_default()(SmartBanner, [{
-    key: "getBanners",
+    key: "getSmartBannerData",
     value:
     /**
      * Loads banners from backend if available
      *
      * TODO: implement this stub
      */
-    function getBanners(appWebToken
+    function getSmartBannerData(appWebToken
     /*: string*/
-    ) {
+    )
+    /*: SmartBannerData*/
+    {
       return {
-        parentId: '',
         image: '',
         header: 'Adjust Smart Banners',
         description: 'Not so smart actually, but deep links do the magic anyway',
-        buttonText: 'Let\'s go!'
+        buttonText: 'Let\'s go!',
+        position: SmartBannerPosition.Top
       };
     }
     /**
@@ -10801,12 +10811,17 @@ var smart_banner_SmartBanner = /*#__PURE__*/function () {
     /*: void*/
     {
       logger.info('Initialise Smart Banner');
-      var bannerData = this.getBanners(appWebToken);
-      this.parent = bannerData.parentId && document.getElementById(bannerData.parentId) || document.body;
+      var bannerData = this.getSmartBannerData(appWebToken);
+      this.parent = document.body;
       this.banner = document.createElement('div');
-      this.banner.setAttribute('class', styles_default.a.banner);
+      this.banner.setAttribute('class', "".concat(styles_default.a.banner, " ").concat(bannerData.position === SmartBannerPosition.Top ? styles_default.a.stickyToTop : styles_default.a.stickyToBottom));
       this.banner.innerHTML = template(bannerData.header, bannerData.description, bannerData.buttonText);
-      this.parent.appendChild(this.banner);
+
+      if (bannerData.position === SmartBannerPosition.Top) {
+        this.parent.insertBefore(this.banner, this.parent.firstChild);
+      } else {
+        this.parent.appendChild(this.banner);
+      }
     }
   }, {
     key: "show",
