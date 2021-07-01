@@ -4,7 +4,6 @@ module.exports = {
   ],
   transform: {
     '^.+\\.(js|ts)$': 'babel-jest',
-    "^.+\\.html?$": "html-loader-jest",
   },
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
