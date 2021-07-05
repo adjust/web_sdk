@@ -1,15 +1,23 @@
 import ActivityState from '../activity-state'
-import QuickStorage from './quick-storage'
-import SchemeMap from './scheme-map'
 import Logger from '../logger'
 import { recover as recoverPreferences } from '../preferences'
-import { entries, findIndex, isEmpty, isObject, reducer } from '../utilities'
-import { Direction, convertRecord, convertStoreName } from './converter'
-import { IStorage, Error } from './types'
+import { entries, findIndex, isEmpty, reducer } from '../utilities'
+import { convertRecord, convertStoreName, Direction } from './converter'
+import QuickStorage from './quick-storage'
+import { isCompositeKeyStoreField, ShortStoreName, StoreOptions } from './scheme'
+import SchemeMap from './scheme-map'
+import { Error, IStorage, KeyRangeCondition, StoredRecord, StoredRecordId, StoredValue, valueIsRecord } from './types'
 
-type ActionParameters = { keys, items, index, options, lastId }
-type RequestParameters = { storeName: string; id?: any; item?: any }
-type Action = (resolve, reject, options: ActionParameters) => void
+type ActionParameters = { keys: Array<string>, items: Array<StoredRecord>, index: number, options: StoreOptions, lastId: Maybe<number> }
+
+type RequestParameters = { storeName: ShortStoreName; id?: StoredRecordId; item?: StoredRecord }
+
+type Action<T = StoredRecord | StoredRecordId | Array<StoredRecordId>> = (
+  resolve: (value: T) => void,
+  reject: (reason: Error) => void,
+  parameters: ActionParameters
+) => void
+
 type StorageOpenStatus = { status: string; error?: Error }
 
 class LocalStorageWrapper implements IStorage {
@@ -64,16 +72,13 @@ class LocalStorageWrapper implements IStorage {
         entries(storeNames)
           .filter(([, store]) => !store.permanent)
           .forEach(([longStoreName, store]) => {
-            const asStoreName = storeNames.activityState.name
-
-            if (store.name === asStoreName && !QuickStorage.stores[asStoreName]) {
-              QuickStorage.stores[asStoreName] = inMemoryAvailable ? [convertRecord({
-                storeName: longStoreName,
-                record: activityState,
-                dir: Direction.left
-              })] : []
-            } else if (!QuickStorage.stores[store.name]) {
-              QuickStorage.stores[store.name] = []
+            const shortStoreName = store.name
+            if (shortStoreName === ShortStoreName.ActivityState && !QuickStorage.stores[shortStoreName]) {
+              QuickStorage.stores[shortStoreName] = inMemoryAvailable
+                ? [convertRecord(longStoreName, Direction.left, activityState)]
+                : []
+            } else if (!QuickStorage.stores[shortStoreName]) {
+              QuickStorage.stores[shortStoreName] = []
             }
           })
 
@@ -85,40 +90,36 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Get list of composite keys if available
-   * @param options
-   * @returns {Array|null}
-   * @private
    */
-  private getCompositeKeys(options) {
-    return options.fields[options.keyPath].composite || null
+  private getCompositeKeys(options: StoreOptions): Nullable<Array<string>> {
+    const field = options.fields[options.keyPath]
+
+    return isCompositeKeyStoreField(field) ? field.composite : null
   }
 
   /**
    * Get composite keys when defined or fallback to primary key for particular store
-   *
-   * @param {string} storeName
-   * @returns {Array}
-   * @private
    */
-  private getKeys(storeName) {
-    const options = SchemeMap.right[convertStoreName({ storeName, dir: Direction.right })]
+  private getKeys(storeName: ShortStoreName): Array<string> {
+    const name = convertStoreName(storeName, Direction.right)
+    const options: StoreOptions = SchemeMap.right[name]
 
     return this.getCompositeKeys(options) || [options.keyPath]
   }
 
   /**
-   * Initiate quasi-database request
-   *
-   * @param {string} storeName
-   * @param {*=} id
-   * @param {Object=} item
-   * @param {Function} action
-   * @returns {Promise}
-   * @private
+   * Return next index using the current one and undefined if current is undefined
    */
-  private initRequest({ storeName, id, item }: RequestParameters, action: Action) {
+  private nextIndex(current: Maybe<number>): Maybe<number> {
+    return typeof current === 'number' ? current + 1 : undefined
+  }
 
-    const options = SchemeMap.right[convertStoreName({ storeName, dir: Direction.right })]
+  /**
+   * Initiate quasi-database request
+   */
+  private initRequest<T>({ storeName, id, item }: RequestParameters, action: Action<T>): Promise<T> {
+
+    const options = SchemeMap.right[convertStoreName(storeName, Direction.right)]
 
     return this.open()
       .then(open => {
@@ -126,19 +127,23 @@ class LocalStorageWrapper implements IStorage {
           return Promise.reject(open.error)
         }
 
-        return new Promise((resolve, reject) => {
-          const items = QuickStorage.stores[storeName]
+        return new Promise<T>((resolve, reject) => {
+          const items: Array<StoredRecord> = QuickStorage.stores[storeName]
           const keys = this.getKeys(storeName)
-          const ids = id instanceof Array ? id.slice() : [id]
-          const lastId = (items[items.length - 1] || {})[options.keyPath] || 0
-          const target = id
-            ? keys
+          const lastId = ((items[items.length - 1] || {})[options.keyPath] || 0) as number
+
+          let target: StoredRecord
+
+          if (!id) {
+            target = { ...item }
+          } else {
+            const ids = Array.isArray(id) ? id.slice() : [id]
+            target = keys
               .map((key, index) => [key, ids[index]])
               .reduce(reducer, {})
-            : { ...item }
+          }
 
-
-          const index = target ? findIndex(items, keys, target) : null
+          const index = target ? findIndex(items, keys, target) : 0
 
           return action(resolve, reject, { keys, items, index, options, lastId })
         })
@@ -149,18 +154,12 @@ class LocalStorageWrapper implements IStorage {
    * Sort the array by provided key (key can be a composite one)
    * - by default sorts in ascending order by primary keys
    * - force order by provided value
-   *
-   * @param {Array} items
-   * @param {Array} keys
-   * @param {string=} exact
-   * @returns {Array}
-   * @private
    */
-  private sort(items, keys, exact?: string) {
+  private sort<T>(items: Array<T>, keys: Array<string>, exact?: Nullable<StoredValue>): Array<T> {
     const clone = [...items]
     const reversed = keys.slice().reverse()
 
-    function compare(a, b, key) {
+    function compare(a: T, b: T, key: string) {
       const expr1 = exact ? exact === a[key] : a[key] < b[key]
       const expr2 = exact ? exact > a[key] : a[key] > b[key]
 
@@ -175,14 +174,8 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Prepare the target to be queried depending on the composite key if defined
-   *
-   * @param {Object} options
-   * @param {*} target
-   * @param {number} next
-   * @returns {*}
-   * @private
    */
-  private prepareTarget(options, target: any, next?: number) {
+  private prepareTarget(options: StoreOptions, target: StoredRecord, next?: number): StoredRecord {
     const composite = this.getCompositeKeys(options)
     return composite
       ? { [options.keyPath]: composite.map(key => target[key]).join(''), ...target }
@@ -193,27 +186,23 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Prepare the result to be return depending on the composite key definition
-   *
-   * @param {Object} options
-   * @param {Object} target
-   * @returns {*}
-   * @private
    */
-  private prepareResult(options, target) {
+  private prepareResult(options: StoreOptions, target: StoredRecord): StoredRecordId {
     const composite = this.getCompositeKeys(options)
-    return composite && isObject(target)
-      ? composite.map(key => target[key])
-      : (target[options.keyPath] || target)
+
+    if (composite) {
+      return composite
+        .map(key => target[key])
+        .filter((value): value is StoredValue => !valueIsRecord(value))
+    }
+
+    return target[options.keyPath] as StoredValue
   }
 
   /**
    * Get all records from particular store
-   *
-   * @param {string} storeName
-   * @param {boolean=} firstOnly
-   * @returns {Promise}
    */
-  getAll(storeName: string, firstOnly?: boolean): Promise<any | Array<any>> {
+  getAll(storeName: ShortStoreName, firstOnly = false): Promise<Array<StoredRecord>> {
     return this.open()
       .then(open => {
         if (open.status === 'error') {
@@ -224,7 +213,7 @@ class LocalStorageWrapper implements IStorage {
           const value = QuickStorage.stores[storeName]
 
           if (value instanceof Array) {
-            resolve(firstOnly ? value[0] : this.sort(value, this.getKeys(storeName)))
+            resolve(firstOnly ? [value[0]] : this.sort(value, this.getKeys(storeName)))
           } else {
             reject({ name: 'NotFoundError', message: `No objectStore named ${storeName} in this database` })
           }
@@ -234,59 +223,50 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Get the first row from the store
-   *
-   * @param {string} storeName
-   * @returns {Promise}
    */
-  getFirst(storeName: string): Promise<any> {
+  getFirst(storeName: ShortStoreName): Promise<Maybe<StoredRecord>> {
     return this.getAll(storeName, true)
+      .then(all => all.length ? all[0] : undefined)
   }
 
   /**
    * Get item from a particular store
-   *
-   * @param {string} storeName
-   * @param {*} id
-   * @returns {Promise}
    */
-  getItem(storeName: string, id): Promise<any> {
-    return this.initRequest({ storeName, id }, (resolve, reject, { items, index, options }) => {
+  getItem(storeName: ShortStoreName, id: StoredRecordId): Promise<StoredRecord> {
+    const action: Action<StoredRecord> = (resolve, reject, { items, index, options }) => {
       if (index === -1) {
         reject({ name: 'NotRecordFoundError', message: `Requested record not found in "${storeName}" store` })
       } else {
         resolve(this.prepareTarget(options, items[index]))
       }
-    })
+    }
+
+    return this.initRequest({ storeName, id }, action)
   }
 
   /**
    * Return filtered result by value on available index
-   *
-   * @param {string} storeName
-   * @param {string} by
-   * @returns {Promise}
    */
-  filterBy(storeName: string, by: string): Promise<any> {
+  filterBy(storeName: ShortStoreName, by: StoredValue): Promise<Array<StoredRecord>> {
     return this.getAll(storeName)
-      .then(result => result
-        .filter(item => {
-          return item[SchemeMap.right[convertStoreName({ storeName, dir: Direction.right })].index] === by
-        }))
+      .then((result: Array<StoredRecord>) => {
+        return result.filter(item => {
+          const store = SchemeMap.right[convertStoreName(storeName, Direction.right)]
+          const indexedValue = store.index && item[store.index]
+          return indexedValue === by
+        })
+      })
   }
 
   /**
    * Add item to a particular store
-   *
-   * @param {string} storeName
-   * @param {Object} item
-   * @returns {Promise}
    */
-  addItem(storeName: string, item): Promise<any> {
+  addItem(storeName: ShortStoreName, item: StoredRecord): Promise<StoredRecordId> {
     return this.initRequest({ storeName, item }, (resolve, reject, { items, index, options, lastId }) => {
       if (index !== -1) {
         reject({ name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing item into "${storeName}" store` })
       } else {
-        items.push(this.prepareTarget(options, item, (lastId + 1)))
+        items.push(this.prepareTarget(options, item, this.nextIndex(lastId)))
         QuickStorage.stores[storeName] = items
         resolve(this.prepareResult(options, item))
       }
@@ -295,21 +275,16 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Add multiple items into particular store
-   *
-   * @param {string} storeName
-   * @param {Object} target
-   * @param {boolean=} overwrite
-   * @returns {Promise}
    */
-  addBulk(storeName: string, target, overwrite: boolean): Promise<any> {
+  addBulk(storeName: ShortStoreName, target: Array<StoredRecord>, overwrite: boolean): Promise<Array<StoredRecordId>> {
     return this.initRequest({ storeName }, (resolve, reject, { keys, items, options, lastId }) => {
       if (!target || target && !target.length) {
-        return reject({ name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into "${storeName}" store` })
+        reject({ name: 'NoTargetDefined', message: `No array provided to perform add bulk operation into "${storeName}" store` })
+        return
       }
 
       let id = lastId
-      const newItems = target
-        .map(item => this.prepareTarget(options, item, ++id))
+      const newItems = target.map(item => this.prepareTarget(options, item, id = this.nextIndex(id)))
 
       const overlapping = newItems
         .filter(item => findIndex(items, keys, item) !== -1)
@@ -321,21 +296,18 @@ class LocalStorageWrapper implements IStorage {
         reject({ name: 'ConstraintError', message: `Constraint was not satisfied, trying to add existing items into "${storeName}" store` })
       } else {
         QuickStorage.stores[storeName] = this.sort([...currentItems, ...newItems], keys)
-        resolve(target.map(item => this.prepareResult(options, item)))
+        const result = target.map(item => this.prepareResult(options, item))
+        resolve(result)
       }
     })
   }
 
   /**
    * Update item in a particular store
-   *
-   * @param {string} storeName
-   * @param {Object} item
-   * @returns {Promise}
    */
-  updateItem(storeName: string, item): Promise<any> {
+  updateItem(storeName: ShortStoreName, item: StoredRecord): Promise<StoredRecordId> {
     return this.initRequest({ storeName, item }, (resolve, _, { items, index, options, lastId }) => {
-      const nextId = index === -1 ? (lastId + 1) : null
+      const nextId = index === -1 ? this.nextIndex(lastId) : undefined
       const target = this.prepareTarget(options, item, nextId)
 
       if (index === -1) {
@@ -351,12 +323,8 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Delete item from a particular store
-   *
-   * @param {string} storeName
-   * @param {*} id
-   * @returns {Promise}
    */
-  deleteItem(storeName: string, id): Promise<any> {
+  deleteItem(storeName: ShortStoreName, id: StoredRecordId): Promise<StoredRecordId> {
     return this.initRequest({ storeName, id }, (resolve, _, { items, index }) => {
       if (index !== -1) {
         items.splice(index, 1)
@@ -369,25 +337,19 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Find index of the item with the closest value to the bound
-   *
-   * @param {Array} array
-   * @param {string} key
-   * @param {number|string} value
-   * @returns {number}
-   * @private
    */
-  private findMax(array, key, value) {
+  private findMax(array: Array<StoredRecord>, key: string, value: StoredValue): number {
 
     if (!array.length) {
       return -1
     }
 
-    let max = { index: -1, value: (isNaN(value) ? '' : 0) }
+    let max = { index: -1, value: (typeof value === 'string' ? '' : 0) }
 
     for (let i = 0; i < array.length; i += 1) {
       if (array[i][key] <= value) {
         if (array[i][key] >= max.value) {
-          max = { value: array[i][key], index: i }
+          max = { value: array[i][key] as StoredValue, index: i }
         }
       } else {
         return max.index
@@ -399,33 +361,29 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Delete items until certain bound (primary key as a bound scope)
-   *
-   * @param {string} storeName
-   * @param {*} value
-   * @param {string=} condition
-   * @returns {Promise}
+   * Returns array of deleted elements
    */
-  deleteBulk(storeName: string, value: any, condition?: 'lowerBound' | 'upperBound'): Promise<any> {
+  deleteBulk(storeName: ShortStoreName, value: StoredValue, condition?: KeyRangeCondition): Promise<Array<StoredRecordId>> {
     return this.getAll(storeName)
-      .then(items => {
+      .then((items: Array<StoredRecord>) => {
 
         const keys = this.getKeys(storeName)
-        const key = SchemeMap.right[convertStoreName({ storeName, dir: Direction.right })].index || keys[0]
+        const key = SchemeMap.right[convertStoreName(storeName, Direction.right)].index || keys[0]
         const exact = condition ? null : value
-        const sorted = this.sort(items, keys, exact)
+        const sorted: Array<StoredRecord> = this.sort(items, keys, exact)
         const index = this.findMax(sorted, key, value)
 
         if (index === -1) {
           return []
         }
 
-        const start = condition === 'lowerBound' ? index : 0
-        const end = !condition || condition === 'upperBound' ? (index + 1) : sorted.length
-        const deleted = sorted
+        const start = condition === KeyRangeCondition.LowerBound ? index : 0
+        const end = !condition || condition === KeyRangeCondition.UpperBound ? (index + 1) : sorted.length
+        const deleted: Array<StoredRecordId> = sorted
           .splice(start, end)
           .map(item => keys.length === 1
             ? item[key]
-            : keys.map(k => item[k]))
+            : keys.map(k => item[k])) as Array<StoredRecordId>
 
         QuickStorage.stores[storeName] = sorted
 
@@ -435,43 +393,35 @@ class LocalStorageWrapper implements IStorage {
 
   /**
    * Trim the store from the left by specified length
-   *
-   * @param {string} storeName
-   * @param {number} length
-   * @returns {Promise}
    */
-  trimItems(storeName: string, length: number): Promise<any> {
-    const options = SchemeMap.right[convertStoreName({ storeName, dir: Direction.right })]
+  trimItems(storeName: ShortStoreName, length: number): Promise<Array<StoredRecordId>> {
+    const convertedName = convertStoreName(storeName, Direction.right)
+    const options: StoreOptions = SchemeMap.right[convertedName]
 
     return this.getAll(storeName)
-      .then(records => records.length ? records[length - 1] : null)
-      .then(record => record ? this.deleteBulk(storeName, record[options.keyPath], 'upperBound') : [])
+      .then((records: Array<Record<string, StoredValue>>) => records.length ? records[length - 1] : null)
+      .then(record => record ? this.deleteBulk(storeName, record[options.keyPath], KeyRangeCondition.UpperBound) : [])
   }
 
   /**
    * Count the number of records in the store
-   *
-   * @param {string} storeName
-   * @returns {Promise}
    */
-  count(storeName: string): Promise<number> {
+  count(storeName: ShortStoreName): Promise<number> {
     return this.open()
       .then(open => {
         if (open.status === 'error') {
           return Promise.reject(open.error)
         }
 
-        return Promise.resolve(QuickStorage.stores[storeName].length)
+        const records = QuickStorage.stores[storeName]
+        return Promise.resolve(records instanceof Array ? records.length : 1)
       })
   }
 
   /**
    * Clear all records from a particular store
-   *
-   * @param {string} storeName
-   * @returns {Promise}
    */
-  clear(storeName: string): Promise<any> {
+  clear(storeName: ShortStoreName): Promise<void> {
     return this.open()
       .then(open => {
         if (open.status === 'error') {
@@ -480,7 +430,7 @@ class LocalStorageWrapper implements IStorage {
 
         return new Promise(resolve => {
           QuickStorage.stores[storeName] = []
-          resolve({})
+          resolve()
         })
       })
   }

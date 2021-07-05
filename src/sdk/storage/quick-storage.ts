@@ -2,14 +2,12 @@ import { convertRecord, Direction } from './converter'
 import { values } from '../utilities'
 import Globals from '../globals'
 import SchemeMap from './scheme-map'
-import { ShortStoreName } from './scheme'
+import { ShortPreferencesStoreName, ShortStoreName } from './scheme'
+import { StoredRecord } from './types'
 
-interface Store<T = unknown> {
-  get: () => T | T[]
-  set: (value: T[]) => void
-}
+type StoreContent = Array<StoredRecord> | StoredRecord
 
-type StoresMap = { [key in ShortStoreName]: Store }
+type StoresMap = Record<ShortStoreName, Nullable<Array<StoredRecord>>> | Record<ShortPreferencesStoreName, StoredRecord>
 
 class QuickStorage {
   private defaultName = Globals.namespace
@@ -23,33 +21,28 @@ class QuickStorage {
   /**
  * Get the value for specified key
  */
-  private read(key: string) {
-    const raw = localStorage.getItem(`${this.storageName}.${key}`)
-    const value = JSON.parse(raw || 'null')
-    return (value instanceof Array
-      ? value
-      : convertRecord({
-        storeName: this.storeNames.preferences.name,
-        dir: Direction.right,
-        record: value
-      })) || null
+  private read(key: ShortStoreName | ShortPreferencesStoreName): Nullable<StoreContent> {
+    const valueToParse = localStorage.getItem(`${this.storageName}.${key}`)
+    const value = valueToParse ? JSON.parse(valueToParse) : null
+
+    if (key === ShortPreferencesStoreName.Preferences && value) {
+      return convertRecord(ShortPreferencesStoreName.Preferences, Direction.right, value)
+    }
+
+    return value
   }
 
   /**
    * Set the value for specified key
    */
-  private write(key: string, value: any) {
+  private write(key: ShortStoreName | ShortPreferencesStoreName, value: StoreContent) {
     if (!value) {
       localStorage.removeItem(`${this.storageName}.${key}`)
     } else {
       localStorage.setItem(`${this.storageName}.${key}`, JSON.stringify(
         value instanceof Array
           ? value
-          : convertRecord({
-            storeName: this.storeNames.preferences.name,
-            dir: Direction.left,
-            record: value
-          })
+          : convertRecord(ShortPreferencesStoreName.Preferences, Direction.left, value)
       ))
     }
   }
@@ -83,9 +76,10 @@ class QuickStorage {
 
     values(this.storeNames)
       .forEach((store) => {
-        Object.defineProperty(this.storesMap, store.name, {
-          get() { return read(store.name) },
-          set(value) { write(store.name, value) }
+        const shortStoreName = store.name
+        Object.defineProperty(this.storesMap, shortStoreName, {
+          get() { return read(shortStoreName) },
+          set(value) { write(shortStoreName, value) }
         })
       })
 
