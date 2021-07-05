@@ -20,24 +20,24 @@ describe('test Converter utility', () => {
 
       it('encodes and decodes primaries values', () => {
 
-        expect(Converter.convertValues({storeName: 'queue', dir: 'left', target: 123})).toEqual(123)
-        expect(Converter.convertValues({storeName: 'activityState', dir: 'left', target: 'abc123'})).toEqual('abc123')
-        expect(Converter.convertValues({storeName: 'globalParams', dir: 'left', target: [123, 'callback']})).toEqual([123, 1])
-        expect(Converter.convertValues({storeName: 'globalParams', dir: 'left', target: [123, 'partner']})).toEqual([123, 2])
+        expect(Converter.convertValues('queue', 'left', 123)).toEqual(123)
+        expect(Converter.convertValues('activityState', 'left', 'abc123')).toEqual('abc123')
+        expect(Converter.convertValues('globalParams', 'left', [123, 'callback'])).toEqual([123, 1])
+        expect(Converter.convertValues('globalParams', 'left', [123, 'partner'])).toEqual([123, 2])
 
-        expect(Converter.convertValues({storeName: 'queue', dir: 'right', target: 123})).toEqual(123)
-        expect(Converter.convertValues({storeName: 'activityState', dir: 'right', target: 'abc123'})).toEqual('abc123')
-        expect(Converter.convertValues({storeName: 'globalParams', dir: 'right', target: [123, 1]})).toEqual([123, 'callback'])
-        expect(Converter.convertValues({storeName: 'globalParams', dir: 'right', target: [123, 2]})).toEqual([123, 'partner'])
+        expect(Converter.convertValues('queue', 'right', 123)).toEqual(123)
+        expect(Converter.convertValues('activityState', 'right', 'abc123')).toEqual('abc123')
+        expect(Converter.convertValues('globalParams', 'right', [123, 1])).toEqual([123, 'callback'])
+        expect(Converter.convertValues('globalParams', 'right', [123, 2])).toEqual([123, 'partner'])
 
       })
 
       it('encodes and decodes queue record', () => {
 
-        expect(Converter.convertRecord({
-          storeName: 'queue',
-          dir: 'left',
-          record: {
+        expect(Converter.convertRecord(
+          'queue',
+          'left',
+          {
             url: '/session',
             timestamp: 123456,
             createdAt: 123456,
@@ -47,12 +47,12 @@ describe('test Converter utility', () => {
               sessionCount: 3,
               eventCount: 3,
               lastInterval: 10,
-              callbackParams: {key1: 'value1'},
-              partnerParams: {key2: 'value2', key3: 'value3'},
+              callbackParams: { key1: 'value1' },
+              partnerParams: { key2: 'value2', key3: 'value3' },
               somethingDynamic: 'bla'
             }
           }
-        })).toEqual({
+        )).toEqual({
           u: 1,
           t: 123456,
           ca: 123456,
@@ -62,16 +62,16 @@ describe('test Converter utility', () => {
             sc: 3,
             ec: 3,
             li: 10,
-            cp: {key1: 'value1'},
-            pp: {key2: 'value2', key3: 'value3'},
+            cp: { key1: 'value1' },
+            pp: { key2: 'value2', key3: 'value3' },
             somethingDynamic: 'bla'
           }
         })
 
-        expect(Converter.convertRecord({
-          storeName: 'queue',
-          dir: 'left',
-          record: {
+        expect(Converter.convertRecord(
+          'queue',
+          'left',
+          {
             url: '/session',
             timestamp: 123456,
             params: {
@@ -80,12 +80,12 @@ describe('test Converter utility', () => {
               sessionCount: 3,
               eventCount: 3,
               lastInterval: 10,
-              callbackParams: {key1: 'value1'},
-              partnerParams: {key2: 'value2', key3: 'value3'},
+              callbackParams: { key1: 'value1' },
+              partnerParams: { key2: 'value2', key3: 'value3' },
               somethingDynamic: 'bla'
             }
           }
-        })).toEqual({
+        )).toEqual({
           u: 1,
           t: 123456,
           p: {
@@ -94,16 +94,16 @@ describe('test Converter utility', () => {
             sc: 3,
             ec: 3,
             li: 10,
-            cp: {key1: 'value1'},
-            pp: {key2: 'value2', key3: 'value3'},
+            cp: { key1: 'value1' },
+            pp: { key2: 'value2', key3: 'value3' },
             somethingDynamic: 'bla'
           }
         })
 
-        expect(Converter.convertRecord({
-          storeName: 'queue',
-          dir: 'right',
-          record: {
+        expect(Converter.convertRecord(
+          'queue',
+          'right',
+          {
             u: 3,
             t: 6543321,
             m: 2,
@@ -114,10 +114,10 @@ describe('test Converter utility', () => {
               sc: 5,
               ec: 4,
               li: 34,
-              pp: {key: 'value'}
+              pp: { key: 'value' }
             }
           }
-        })).toEqual({
+        )).toEqual({
           url: '/gdpr_forget_device',
           timestamp: 6543321,
           method: 'POST',
@@ -128,17 +128,17 @@ describe('test Converter utility', () => {
             sessionCount: 5,
             eventCount: 4,
             lastInterval: 34,
-            partnerParams: {key: 'value'}
+            partnerParams: { key: 'value' }
           }
         })
 
       })
 
       it('encodes and decodes activityState record', () => {
-        expect(Converter.convertRecord({
-          storeName: 'activityState',
-          dir: 'left',
-          record: {
+        expect(Converter.convertRecord(
+          'activityState',
+          'left',
+          {
             uuid: '123abc',
             timeSpent: 10,
             sessionLength: 20,
@@ -158,7 +158,7 @@ describe('test Converter utility', () => {
               state: 'installed'
             }
           }
-        })).toEqual({
+        )).toEqual({
           u: '123abc',
           ts: 10,
           sl: 20,
@@ -179,10 +179,10 @@ describe('test Converter utility', () => {
           }
         })
 
-        expect(Converter.convertRecord({
-          storeName: 'activityState',
-          dir: 'right',
-          record: {
+        expect(Converter.convertRecord(
+          'activityState',
+          'right',
+          {
             u: '123abc',
             ts: 1,
             sl: 5,
@@ -198,7 +198,7 @@ describe('test Converter utility', () => {
               st: 2
             }
           }
-        })).toEqual({
+        )).toEqual({
           uuid: '123abc',
           timeSpent: 1,
           sessionLength: 5,
@@ -217,29 +217,25 @@ describe('test Converter utility', () => {
       })
 
       it('encodes and decodes globalParams record', () => {
-        expect(Converter.convertRecord({
-          storeName: 'globalParams',
-          dir: 'left',
-          record: {
-            key: 'key1',
-            value: 'value1',
-            type: 'callback'
-          }
+        expect(Converter.convertRecord('globalParams', 'left', {
+          key: 'key1',
+          value: 'value1',
+          type: 'callback'
         })).toEqual({
           k: 'key1',
           v: 'value1',
           t: 1
         })
 
-        expect(Converter.convertRecord({
-          storeName: 'globalParams',
-          dir: 'right',
-          record: {
+        expect(Converter.convertRecord(
+          'globalParams',
+          'right',
+          {
             k: 'key2',
             v: 'value2',
             t: 2
           }
-        })).toEqual({
+        )).toEqual({
           key: 'key2',
           value: 'value2',
           type: 'partner'
@@ -249,132 +245,132 @@ describe('test Converter utility', () => {
 
       it('encodes and decodes multiple records', () => {
 
-        expect(Converter.convertRecords({
-          storeName: 'globalParams',
-          dir: 'left',
-          records: [
-            {key: 'key1', value: 'value1', type: 'callback'},
-            {key: 'key2', value: 'value2', type: 'callback'},
-            {key: 'key3', value: 'value3', type: 'partner'}
+        expect(Converter.convertRecords(
+          'globalParams',
+          'left',
+          [
+            { key: 'key1', value: 'value1', type: 'callback' },
+            { key: 'key2', value: 'value2', type: 'callback' },
+            { key: 'key3', value: 'value3', type: 'partner' }
           ]
-        })).toEqual([
-          {k: 'key1', v: 'value1', t: 1},
-          {k: 'key2', v: 'value2', t: 1},
-          {k: 'key3', v: 'value3', t: 2}
+        )).toEqual([
+          { k: 'key1', v: 'value1', t: 1 },
+          { k: 'key2', v: 'value2', t: 1 },
+          { k: 'key3', v: 'value3', t: 2 }
         ])
 
-        expect(Converter.convertRecords({
-          storeName: 'globalParams',
-          dir: 'right',
-          records: [
-            {k: 'key1', v: 'value1', t: 2},
-            {k: 'key2', v: 'value2', t: 1},
-            {k: 'key3', v: 'value3', t: 2},
-            {k: 'key4', v: 'value4', t: 2}
+        expect(Converter.convertRecords(
+          'globalParams',
+          'right',
+          [
+            { k: 'key1', v: 'value1', t: 2 },
+            { k: 'key2', v: 'value2', t: 1 },
+            { k: 'key3', v: 'value3', t: 2 },
+            { k: 'key4', v: 'value4', t: 2 }
           ]
-        })).toEqual([
-          {key: 'key1', value: 'value1', type: 'partner'},
-          {key: 'key2', value: 'value2', type: 'callback'},
-          {key: 'key3', value: 'value3', type: 'partner'},
-          {key: 'key4', value: 'value4', type: 'partner'}
+        )).toEqual([
+          { key: 'key1', value: 'value1', type: 'partner' },
+          { key: 'key2', value: 'value2', type: 'callback' },
+          { key: 'key3', value: 'value3', type: 'partner' },
+          { key: 'key4', value: 'value4', type: 'partner' }
         ])
 
-        expect(Converter.convertRecords({
-          storeName: 'queue',
-          dir: 'left',
-          records: [
-            {url: '/session', method: 'POST', timestamp: 123456, createdAt: 123456, params: {timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10}},
-            {url: '/event', method: 'POST', timestamp: 28374628, params: {timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc'}},
-            {url: '/event', method: 'POST', timestamp: 28374628, params: {timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5, eventToken: 'abc123', revenue: 100}},
-            {url: '/url', method: 'DELETE', timestamp: 123746, params: {custom: 'param'}}
+        expect(Converter.convertRecords(
+          'queue',
+          'left',
+          [
+            { url: '/session', method: 'POST', timestamp: 123456, createdAt: 123456, params: { timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10 } },
+            { url: '/event', method: 'POST', timestamp: 28374628, params: { timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc' } },
+            { url: '/event', method: 'POST', timestamp: 28374628, params: { timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5, eventToken: 'abc123', revenue: 100 } },
+            { url: '/url', method: 'DELETE', timestamp: 123746, params: { custom: 'param' } }
           ]
-        })).toEqual([
-          {u: 1, m: 2, t: 123456, ca: 123456, p: {ts: 10, sl: 12, sc: 9, ec: 10, li: 10}},
-          {u: 2, m: 2, t: 28374628, p: {ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc'}},
-          {u: 2, m: 2, t: 28374628, p: {ts: 5, sl: 6, sc: 9, ec: 12, li: 5, et: 'abc123', re: 100}},
-          {u: '/url', m: 4, t: 123746, p: {custom: 'param'}}
+        )).toEqual([
+          { u: 1, m: 2, t: 123456, ca: 123456, p: { ts: 10, sl: 12, sc: 9, ec: 10, li: 10 } },
+          { u: 2, m: 2, t: 28374628, p: { ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc' } },
+          { u: 2, m: 2, t: 28374628, p: { ts: 5, sl: 6, sc: 9, ec: 12, li: 5, et: 'abc123', re: 100 } },
+          { u: '/url', m: 4, t: 123746, p: { custom: 'param' } }
         ])
 
-        expect(Converter.convertRecords({
-          storeName: 'queue',
-          dir: 'right',
-          records: [
-            {u: 1, t: 12412, p: {ts: 10, sl: 12, sc: 9, ec: 10, li: 10}},
-            {u: 2, m: 2, t: 12312, ca: 12312, p: {ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc'}},
-            {u: 3, m: 3, t: 3423452, ca: 3423452, p: {ts: 5, sl: 6, sc: 9, ec: 12, li: 5}},
-            {u: '/some-other-url', m: 1, t: 123746, p: {other: 'param'}}
+        expect(Converter.convertRecords(
+          'queue',
+          'right',
+          [
+            { u: 1, t: 12412, p: { ts: 10, sl: 12, sc: 9, ec: 10, li: 10 } },
+            { u: 2, m: 2, t: 12312, ca: 12312, p: { ts: 4, sl: 4, sc: 9, ec: 11, li: 4, et: '123abc' } },
+            { u: 3, m: 3, t: 3423452, ca: 3423452, p: { ts: 5, sl: 6, sc: 9, ec: 12, li: 5 } },
+            { u: '/some-other-url', m: 1, t: 123746, p: { other: 'param' } }
           ]
-        })).toEqual([
-          {url: '/session', timestamp: 12412, params: {timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10}},
-          {url: '/event', method: 'POST', timestamp: 12312, createdAt: 12312, params: {timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc'}},
-          {url: '/gdpr_forget_device', method: 'PUT', timestamp: 3423452, createdAt: 3423452, params: {timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5}},
-          {url: '/some-other-url', method: 'GET', timestamp: 123746, params: {other: 'param'}}
+        )).toEqual([
+          { url: '/session', timestamp: 12412, params: { timeSpent: 10, sessionLength: 12, sessionCount: 9, eventCount: 10, lastInterval: 10 } },
+          { url: '/event', method: 'POST', timestamp: 12312, createdAt: 12312, params: { timeSpent: 4, sessionLength: 4, sessionCount: 9, eventCount: 11, lastInterval: 4, eventToken: '123abc' } },
+          { url: '/gdpr_forget_device', method: 'PUT', timestamp: 3423452, createdAt: 3423452, params: { timeSpent: 5, sessionLength: 6, sessionCount: 9, eventCount: 12, lastInterval: 5 } },
+          { url: '/some-other-url', method: 'GET', timestamp: 123746, params: { other: 'param' } }
         ])
 
       })
 
       it('encodes and decodes eventDeduplication record', () => {
-        expect(Converter.convertRecord({
-          storeName: 'eventDeduplication',
-          dir: 'left',
-          record: {internalId: 1, id: 'id1'}
-        })).toEqual({ii: 1, i: 'id1'})
+        expect(Converter.convertRecord(
+          'eventDeduplication',
+          'left',
+          { internalId: 1, id: 'id1' }
+        )).toEqual({ ii: 1, i: 'id1' })
 
-        expect(Converter.convertRecord({
-          storeName: 'eventDeduplication',
-          dir: 'right',
-          record: {ii: 2, i: 'id2'}
-        })).toEqual({internalId: 2, id: 'id2'})
+        expect(Converter.convertRecord(
+          'eventDeduplication',
+          'right',
+          { ii: 2, i: 'id2' }
+        )).toEqual({ internalId: 2, id: 'id2' })
       })
 
       it('encodes and decodes preferences record', () => {
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'left',
-          record: {sdkDisabled: {reason: 'general', pending: false}}
-        })).toEqual({sd: {r: 1, p: 0}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'left',
+          { sdkDisabled: { reason: 'general', pending: false } }
+        )).toEqual({ sd: { r: 1, p: 0 } })
 
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'left',
-          record: {sdkDisabled: {reason: 'gdpr', pending: false}}
-        })).toEqual({sd: {r: 2, p: 0}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'left',
+          { sdkDisabled: { reason: 'gdpr', pending: false } }
+        )).toEqual({ sd: { r: 2, p: 0 } })
 
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'left',
-          record: {sdkDisabled: {reason: 'gdpr', pending: true}}
-        })).toEqual({sd: {r: 2, p: 1}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'left',
+          { sdkDisabled: { reason: 'gdpr', pending: true } }
+        )).toEqual({ sd: { r: 2, p: 1 } })
 
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'left',
-          record: {sdkDisabled: {reason: 'gdpr'}}
-        })).toEqual({sd: {r: 2}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'left',
+          { sdkDisabled: { reason: 'gdpr' } }
+        )).toEqual({ sd: { r: 2 } })
 
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'right',
-          record: {sd: {r: 1, p: 0}}
-        })).toEqual({sdkDisabled: {reason: 'general', pending: false}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'right',
+          { sd: { r: 1, p: 0 } }
+        )).toEqual({ sdkDisabled: { reason: 'general', pending: false } })
 
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'right',
-          record: {sd: {r: 2, p: 0}}
-        })).toEqual({sdkDisabled: {reason: 'gdpr', pending: false}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'right',
+          { sd: { r: 2, p: 0 } }
+        )).toEqual({ sdkDisabled: { reason: 'gdpr', pending: false } })
 
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'right',
-          record: {sd: {r: 2, p: 1}}
-        })).toEqual({sdkDisabled: {reason: 'gdpr', pending: true}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'right',
+          { sd: { r: 2, p: 1 } }
+        )).toEqual({ sdkDisabled: { reason: 'gdpr', pending: true } })
 
-        expect(Converter.convertRecord({
-          storeName: 'preferences',
-          dir: 'right',
-          record: {sd: {r: 2}}
-        })).toEqual({sdkDisabled: {reason: 'gdpr'}})
+        expect(Converter.convertRecord(
+          'preferences',
+          'right',
+          { sd: { r: 2 } }
+        )).toEqual({ sdkDisabled: { reason: 'gdpr' } })
 
       })
     })
@@ -403,36 +399,35 @@ describe('test Converter utility', () => {
         }
       }
 
-      jest.doMock('../../storage/scheme', () => ({
-        someStore: someStoreScheme
-      }))
+      const Scheme = require('../../storage/scheme')
+      Scheme.default = { someStore: someStoreScheme }
 
       const Converter = require('../../storage/converter')
 
       it('encodes and decodes someStore record', () => {
-        expect(Converter.convertRecord({
-          storeName: 'someStore',
-          dir: 'left',
-          record: {
+        expect(Converter.convertRecord(
+          'someStore',
+          'left',
+          {
             id: 123,
             name: 'pljas',
             surname: 'bla'
           }
-        })).toEqual({
+        )).toEqual({
           id: 123,
           n: 'pljas',
           s: 'b'
         })
 
-        expect(Converter.convertRecord({
-          storeName: 'someStore',
-          dir: 'right',
-          record: {
+        expect(Converter.convertRecord(
+          'someStore',
+          'right',
+          {
             id: 456,
             n: 'some-name',
             s: 'some-surname'
           }
-        })).toEqual({
+        )).toEqual({
           id: 456,
           name: 'some-name',
           surname: 'some-surname'

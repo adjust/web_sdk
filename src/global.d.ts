@@ -9,6 +9,14 @@ interface Window {
   msIndexedDB: Maybe<IDBFactory>
 }
 
+interface IDBError extends Event {
+  target: any
+}
+
+interface IDBRequest<T> {
+  onerror: ((this: IDBRequest<T>, ev: IDBError) => any) | null;
+}
+
 interface IDBVersionChangeEventTarget extends EventTarget {
   result: IDBDatabase
   transaction: IDBTransaction
@@ -26,7 +34,7 @@ interface IDBOpenDBEvent extends Event {
   target: IDBOpenDBEventTarget
 }
 
-interface IDBOpenDBRequest {
+interface IDBOpenDBRequest extends IDBRequest<IDBDatabase> {
   onsuccess: ((this: IDBOpenDBRequest, ev: IDBOpenDBEvent) => any) | null;
 }
 

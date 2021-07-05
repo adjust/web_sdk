@@ -117,6 +117,28 @@ A custom namespace for SDK data storage. If there are multiple applications on t
 
 Please note it's possible to set custom namespace for existing storage with default name, all data will be preserved and moved to the custom namespace. Once custom namespace is set it's not possible to rename it without data loss.
 
+<a id="set-external-device-id">**externalDeviceId**</a> `string`
+
+> **Note** If you want to use external device IDs, please contact your Adjust representative. They will talk you through the best approach for your use case.
+
+An external device identifier is a custom value that you can assign to a device or user. They can help you to recognize users across sessions and platforms. They can also help you to deduplicate installs by user so that a user isn't counted as multiple new installs.
+
+You can also use an external device ID as a custom identifier for a device. This can be useful if you use these identifiers elsewhere and want to keep continuity.
+
+Check out our [external device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) for more information.
+
+> **Note** This setting requires Adjust SDK v5.1.0 or later.
+
+```js
+Adjust.initSdk({
+  // other initialisation options go here
+  externalDeviceId: 'YOUR_EXTERNAL_DEVICE_ID', // optional
+});
+```
+
+> **Important**: You need to make sure this ID is **unique to the user or device** depending on your use-case. Using the same ID across different users or devices could lead to duplicated data. Talk to your Adjust representative for more information.
+
+If you want to use the external device ID in your business analytics, you can pass it as a callback parameter. See the section on [global callback parameters](#global-callback-parameters) for more information.
 
 ## <a id="event-tracking">Event tracking</a>
 

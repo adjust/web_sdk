@@ -44,7 +44,8 @@
         "semi": ["error", "never"],
         "space-before-function-paren": ["error", "never"],
         "eol-last": "error",
-        "@typescript-eslint/ban-types": "warn"
+        "@typescript-eslint/ban-types": "warn",
+        "@typescript-eslint/explicit-module-boundary-types": "off"
       }
     },
     {

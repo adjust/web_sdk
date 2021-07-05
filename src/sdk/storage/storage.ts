@@ -1,19 +1,32 @@
-import { IStorage } from './types'
-import { IndexedDB } from './indexeddb'
-import { LocalStorage } from './localstorage'
-import QuickStorage from './quick-storage'
+import { STORAGE_TYPES } from '../constants'
 import Logger from '../logger'
-import { reducer, entries } from '../utilities'
+import { entries, reducer } from '../utilities'
 import {
   Direction,
   convertRecord,
   convertRecords,
-  convertValues,
-  encodeValue,
   convertStoreName,
-  decodeErrorMessage
+  convertValues,
+  decodeErrorMessage,
+  encodeValue,
 } from './converter'
-import { STORAGE_TYPES } from '../constants'
+import { IndexedDB } from './indexeddb'
+import { LocalStorage } from './localstorage'
+import QuickStorage from './quick-storage'
+import { ShortStoreName, StoreName } from './scheme'
+import { IStorage, KeyRangeCondition, StoredRecord, StoredRecordId, StoredValue } from './types'
+
+type OtherArgs = any[]  // eslint-disable-line @typescript-eslint/no-explicit-any
+
+type CommonStorageMethod = (storage: IStorage, store: ShortStoreName, ...args: OtherArgs) => Promise<unknown> | void
+
+type CommonStorageMethods = Record<keyof IStorage, CommonStorageMethod> & { deleteDatabase: CommonStorageMethod }
+
+type StorageMethod = (store: StoreName, ...args: OtherArgs) => Promise<unknown>
+
+type MethodName = keyof CommonStorageMethods
+
+type StorageMethods = Record<MethodName, StorageMethod>
 
 enum StorageType {
   noStorage = STORAGE_TYPES.NO_STORAGE,
@@ -28,11 +41,8 @@ type Storage = {
 
 /**
  * Methods to extend
- *
- * @type {Object}
- * @private
  */
-const _methods = {
+const _methods: CommonStorageMethods = {
   getAll: _getAll,
   getFirst: _getFirst,
   getItem: _getItem,
@@ -51,211 +61,137 @@ const _methods = {
 
 /**
  * Extends storage's getAll method by decoding returned records
- *
- * @param {Object} storage
- * @param {string} storeName
- * @returns {Promise}
- * @private
  */
-function _getAll(storage, storeName) {
-  return storage.getAll(storeName)
-    .then(records => convertRecords({ storeName, dir: Direction.right, records }))
+function _getAll(storage: IStorage, storeName: ShortStoreName, firstOnly: boolean) {
+  return storage.getAll(storeName, firstOnly)
+    .then(records => convertRecords(storeName, Direction.right, records))
 }
 
 /**
  * Extends storage's getFirst method by decoding returned record
- *
- * @param {Object} storage
- * @param {string} storeName
- * @returns {Promise}
- * @private
  */
-function _getFirst(storage, storeName) {
+function _getFirst(storage: IStorage, storeName: ShortStoreName) {
   return storage.getFirst(storeName)
-    .then(record => convertRecord({ storeName, dir: Direction.right, record }))
+    .then(record => convertRecord(storeName, Direction.right, record))
 }
 
 /**
  * Extends storage's getItem method by encoding target value and then decoding returned record
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param {string|string[]} target
- * @returns {Promise}
- * @private
  */
-function _getItem(storage, storeName, target) {
-  return storage.getItem(storeName, convertValues({ storeName, dir: Direction.left, target }))
-    .then(record => convertRecord({ storeName, dir: Direction.right, record }))
-    .catch(error => Promise.reject(decodeErrorMessage({ storeName, error })))
+function _getItem(storage: IStorage, storeName: ShortStoreName, target: StoredRecordId) {
+  return storage.getItem(storeName, convertValues(storeName, Direction.left, target))
+    .then(record => convertRecord(storeName, Direction.right, record))
+    .catch(error => Promise.reject(decodeErrorMessage(storeName, error)))
 }
 
 /**
  * Extends storage's filterBy method by encoding target value and then decoding returned records
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param {string} target
- * @returns {Promise}
- * @private
  */
-function _filterBy(storage, storeName, target) {
+function _filterBy(storage: IStorage, storeName: ShortStoreName, target: string) {
   return storage.filterBy(storeName, encodeValue(target))
-    .then(records => convertRecords({ storeName, dir: Direction.right, records }))
+    .then(records => convertRecords(storeName, Direction.right, records))
 }
 
 /**
  * Extends storage's addItem method by encoding target record and then decoding returned keys
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param {Object} record
- * @returns {Promise}
- * @private
  */
-function _addItem(storage, storeName, record) {
-  return storage.addItem(storeName, convertRecord({ storeName, dir: Direction.left, record }))
-    .then(target => convertValues({ storeName, dir: Direction.right, target }))
-    .catch(error => Promise.reject(decodeErrorMessage({ storeName, error })))
+function _addItem(storage: IStorage, storeName: ShortStoreName, record: StoredRecord) {
+  const convertedRecord = convertRecord(storeName, Direction.left, record)
+  return storage.addItem(storeName, convertedRecord)
+    .then(target => convertValues(storeName, Direction.right, target))
+    .catch(error => Promise.reject(decodeErrorMessage(storeName, error)))
 }
 
 /**
  * Extends storage's addBulk method by encoding target records and then decoding returned keys
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param {Object[]} records
- * @param {boolean} overwrite
- * @returns {Promise}
- * @private
  */
-function _addBulk(storage, storeName, records, overwrite) {
-  return storage.addBulk(storeName, convertRecords({ storeName, dir: Direction.left, records }), overwrite)
-    .then(values => values.map(target => convertValues({ storeName, dir: Direction.right, target })))
-    .catch(error => Promise.reject(decodeErrorMessage({ storeName, error })))
+function _addBulk(storage: IStorage, storeName: ShortStoreName, records: Array<StoredRecord>, overwrite: boolean) {
+  const convertedRecords: Array<StoredRecord> = convertRecords(storeName, Direction.left, records)
+  return storage.addBulk(storeName, convertedRecords, overwrite)
+    .then(values => values.map(target => convertValues(storeName, Direction.right, target)))
+    .catch(error => Promise.reject(decodeErrorMessage(storeName, error)))
 }
 
 /**
  * Extends storage's updateItem method by encoding target record and then decoding returned keys
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param record
- * @returns {Promise}
- * @private
  */
-function _updateItem(storage, storeName, record) {
-  return storage.updateItem(storeName, convertRecord({ storeName, dir: Direction.left, record }))
-    .then(target => convertValues({ storeName, dir: Direction.right, target }))
+function _updateItem(storage: IStorage, storeName: ShortStoreName, record: StoredRecord) {
+  const convertedRecord = convertRecord(storeName, Direction.left, record)
+  return storage.updateItem(storeName, convertedRecord)
+    .then(target => convertValues(storeName, Direction.right, target))
 }
 
 /**
  * Extends storage's deleteItem method by encoding target value and then decoding returned keys
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param {string|string[]} target
- * @returns {Promise}
- * @private
  */
-function _deleteItem(storage, storeName, target) {
-  return storage.deleteItem(storeName, convertValues({ storeName, dir: Direction.left, target }))
-    .then(target => convertValues({ storeName, dir: Direction.right, target }))
+function _deleteItem(storage: IStorage, storeName: ShortStoreName, target: StoredRecordId) {
+  return storage.deleteItem(storeName, convertValues(storeName, Direction.left, target))
+    .then(target => convertValues(storeName, Direction.right, target))
 }
 
 /**
  * Extends storage's deleteBulk method by encoding target value and then decoding returned records that are deleted
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param {string} target
- * @param {string?} condition
- * @returns {Promise}
- * @private
  */
-function _deleteBulk(storage, storeName, target, condition) {
-  return storage.deleteBulk(storeName, encodeValue(target), condition)
-    .then(records => records.map(record => convertValues({ storeName, dir: Direction.right, target: record })))
+function _deleteBulk(storage: IStorage, storeName: ShortStoreName, value: StoredValue, condition?: KeyRangeCondition) {
+  return storage.deleteBulk(storeName, encodeValue(value), condition)
+    .then(records => records.map(record => convertValues(storeName, Direction.right, record)))
 }
 
 /**
  * Extends storage's trimItems method by passing encoded storage name
- *
- * @param {Object} storage
- * @param {string} storeName
- * @param {number} length
- * @returns {Promise}
- * @private
  */
-function _trimItems(storage, storeName, length) {
+function _trimItems(storage: IStorage, storeName: ShortStoreName, length: number) {
   return storage.trimItems(storeName, length)
 }
 
 /**
  * Extends storage's count method by passing encoded storage name
- *
- * @param {Object} storage
- * @param {string} storeName
- * @returns {Promise}
- * @private
  */
-function _count(storage, storeName) {
+function _count(storage: IStorage, storeName: ShortStoreName) {
   return storage.count(storeName)
 }
 
 /**
  * Extends storage's clear method by passing encoded storage name
- *
- * @param {Object} storage
- * @param {string} storeName
- * @returns {Promise}
- * @private
  */
-function _clear(storage, storeName) {
+function _clear(storage: IStorage, storeName: ShortStoreName) {
   return storage.clear(storeName)
 }
 
 /**
  * Calls storage's destroy method
- *
- * @param {Object} storage
- * @private
  */
-function _destroy(storage) {
+function _destroy(storage: IStorage) {
   return storage.destroy()
 }
 
 /**
  * Calls storage's deleteDatabase method
- *
- * @param {Object} storage
- * @private
  */
-function _deleteDatabase(storage) {
+function _deleteDatabase(storage: IndexedDB | LocalStorage) {
   return storage.deleteDatabase()
 }
 
 /**
  * Augment whitelisted methods with encoding/decoding functionality
- *
- * @param {Object} storage
- * @returns {Object}
- * @private
  */
-function _augment() {
+function _augment(): StorageMethods {
+  const methods: Array<[MethodName, StorageMethod]> = entries(_methods)
+    .map(([methodName, method]: [MethodName, CommonStorageMethod]) => {
 
-  return entries(_methods)
-    .map(([methodName, method]) => {
-      return [methodName, (storeName, ...args) => {
+      const augmentedMethod: StorageMethod = (storeName: StoreName, ...args) => {
         return init()
           .then(({ storage }) => {
             if (storage) {
-              return method.call(null, storage, convertStoreName({ storeName, dir: Direction.left }), ...args)
+              return method.call(null, storage, convertStoreName(storeName, Direction.left), ...args)
             }
           })
-      }]
+      }
+
+      return [methodName, augmentedMethod]
     })
-    .reduce(reducer, {})
+
+  return methods.reduce(reducer, {} as StorageMethods)
 }
 
 /**
