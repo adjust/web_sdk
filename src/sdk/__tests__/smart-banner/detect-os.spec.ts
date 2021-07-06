@@ -34,8 +34,8 @@ describe('Returns recognizable device OS', () => {
   ]
 
 
-  test.each(testSet)('getDeviceOS(%s) should be %s', (ua: string, expected: DeviceOS) => {
-    mockUserAgent(ua)
+  test.each(testSet)('getDeviceOS() for %s returns %s', (userAgent: string, expected: DeviceOS) => {
+    mockUserAgent(userAgent)
     expect(getDeviceOS()).toEqual(expected)
   })
 
