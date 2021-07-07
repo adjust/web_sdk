@@ -1,5 +1,9 @@
-$adjustBlue: #00bed5;
+$textColor: #6e7492;
 $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+@function encodeColor($colour) {
+  @return "%23" + str-slice("#{$colour}", 2, -1);
+}
 
 @mixin stickyVerticalPosition($value) {
   // fallback
@@ -26,6 +30,28 @@ $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans
 
   &.stickyToBottom {
     @include stickyVerticalPosition(bottom);
+  }
+
+  .dismiss {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 16 16'>\
+      <path d='M1 0 L0 1 L15 16 L16 15 L1 0' fill='#{encodeColor($textColor)}'/>\
+      <path d='M16 1 L16 1 L1 16 L0 15 L15 0' fill='#{encodeColor($textColor)}'/>\
+    </svg>");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 8px 8px, auto;
+  }
+
+  .appIcon {
+    width: 56px;
+    height: 56px;
+    margin-right: 16px;
+    background-color: $textColor;
+    border-radius: 8px;
   }
 
   .bannerBody {
@@ -58,8 +84,8 @@ $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans
       line-height: 11px;
     }
 
-    button {
-      background-color: $adjustBlue;
+    .action {
+      background-color: $textColor;
       color: white;
       border: none;
       border-radius: 2px;
