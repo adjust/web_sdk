@@ -5,7 +5,8 @@ import {
   type EventParamsT,
   type GlobalParamsT,
   type CustomErrorT,
-  type ActivityStateMapT
+  type ActivityStateMapT,
+  type SmartBannerOptionsT
 } from './types'
 import Config from './config'
 import Storage from './storage/storage'
@@ -25,6 +26,7 @@ import event from './event'
 import sdkClick from './sdk-click'
 import ActivityState from './activity-state'
 import { STORAGE_TYPES } from './constants'
+import { SmartBanner } from './smart-banner/smart-banner'
 
 type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
 
@@ -220,6 +222,18 @@ function disableThirdPartySharing (): void {
     schedule: true,
     stopBeforeInit: false
   })
+}
+
+function initSmartBanner ({ appWebToken }: SmartBannerOptionsT): void {
+  SmartBanner.init(appWebToken)
+}
+
+function showSmartBanner (): void {
+  SmartBanner.show()
+}
+
+function hideSmartBanner (): void {
+  SmartBanner.hide()
 }
 
 /**
@@ -498,6 +512,9 @@ const Adjust = {
   restart,
   gdprForgetMe,
   disableThirdPartySharing,
+  initSmartBanner,
+  showSmartBanner,
+  hideSmartBanner,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase

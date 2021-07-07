@@ -3,7 +3,7 @@ module.exports = {
     '<rootDir>/src/sdk/**/?(*.)(spec|test).{js,ts}'
   ],
   transform: {
-    '^.+\\.(js|ts)$': 'babel-jest'
+    '^.+\\.(js|ts)$': 'babel-jest',
   },
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
@@ -19,6 +19,9 @@ module.exports = {
   setupFilesAfterEnv: [
     '<rootDir>/src/sdk/__tests__/_matchers.js'
   ],
+  moduleNameMapper: {
+    "\.(css|scss)$": "<rootDir>/src/sdk/__mocks__/style.js"
+  },
   globals: {
     __ADJUST__NAMESPACE: 'adjust-sdk',
     __ADJUST__SDK_VERSION: 'TEST'

@@ -228,6 +228,10 @@ export type QueueSizeT = {|
   queueSize: number
 |}
 
+export type SmartBannerOptionsT = {|
+  appWebToken: string
+|}
+
 export type DefaultParamsT = {|
   ...CreatedAtT,
   ...SentAtT,

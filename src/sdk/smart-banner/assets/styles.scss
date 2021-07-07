@@ -1,0 +1,76 @@
+$adjustBlue: #00bed5;
+$systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+@mixin stickyVerticalPosition($value) {
+  // fallback
+  position: fixed;
+  @if $value == "top" {
+    top: 0;
+  } @else {
+    bottom: 0;
+  }
+
+  position: -webkit-sticky; // for iOS
+  position: sticky;
+}
+
+.banner {
+  width: 100vw;
+  left: 0;
+  background-color: white;
+  font-family: $systemFonts;
+
+  &.stickyToTop {
+    @include stickyVerticalPosition(top);
+  }
+
+  &.stickyToBottom {
+    @include stickyVerticalPosition(bottom);
+  }
+
+  .bannerBody {
+    display: flex;
+    align-items: center;
+    margin: 2px 8px;
+
+    .textContainer {
+      flex: 1 1 0%;
+      min-height: 0;
+      min-width: 0;
+    }
+
+    .bannerText {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    h4 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 16px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 9px;
+      line-height: 11px;
+    }
+
+    button {
+      background-color: $adjustBlue;
+      color: white;
+      border: none;
+      border-radius: 2px;
+      padding: 8px 10px;
+      display: inline-block;
+      vertical-align: middle;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+    }
+  }
+}

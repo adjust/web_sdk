@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const packageJson = require('./package.json')
 const namespace = 'adjust-sdk'
 const version = packageJson.version
@@ -30,7 +31,8 @@ module.exports = () => ({
       __ADJUST__NAMESPACE: JSON.stringify(namespace),
       __ADJUST__SDK_VERSION: JSON.stringify(version)
     }),
-    new FlowWebpackPlugin()
+    new FlowWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin()
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json']
@@ -45,6 +47,19 @@ module.exports = () => ({
       use: 'babel-loader',
       test: /\.(js|ts)$/,
       exclude: /node_modules/
+    }, {
+      test: /\.s?css$/,
+      use: [
+        { loader: 'style-loader' },
+        {
+          loader: 'css-loader',
+          options: {
+            modules: true,
+            localIdentName: 'adjust-smart-banner__[hash:base64]',
+          },
+        },
+        { loader: 'sass-loader' }
+      ]
     }]
   }
 })
