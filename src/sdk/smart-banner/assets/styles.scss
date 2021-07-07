@@ -4,7 +4,7 @@ $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans
 @mixin stickyVerticalPosition($value) {
   // fallback
   position: fixed;
-  @if $value == 'top' {
+  @if $value == "top" {
     top: 0;
   } @else {
     bottom: 0;
@@ -21,59 +21,56 @@ $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans
   font-family: $systemFonts;
 
   &.stickyToTop {
-    @include stickyVerticalPosition(top)
+    @include stickyVerticalPosition(top);
   }
 
   &.stickyToBottom {
-    @include stickyVerticalPosition(bottom)
+    @include stickyVerticalPosition(bottom);
   }
 
-  &.stickyToTop, &.stickyToBottom {
+  .bannerBody {
+    display: flex;
+    align-items: center;
+    margin: 2px 8px;
 
-    .bannerBody {
-      display: flex;
-      align-items: center;
-      margin: 2px 8px;
+    .textContainer {
+      flex: 1 1 0%;
+      min-height: 0;
+      min-width: 0;
+    }
 
-      .textContainer {
-        flex: 1 1 0%;
-        min-height: 0;
-        min-width: 0;
-      }
+    .bannerText {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
-      .bannerText {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
+    h4 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 16px;
+    }
 
-      h4 {
-        margin: 0;
-        font-size: 12px;
-        font-weight: bold;
-        line-height: 16px;
-      }
+    p {
+      margin: 0;
+      font-size: 9px;
+      line-height: 11px;
+    }
 
-      p {
-        margin: 0;
-        font-size: 9px;
-        line-height: 11px;
-      }
-
-      button {
-        background-color: $adjustBlue;
-        color: white;
-        border: none;
-        border-radius: 2px;
-        padding: 8px 10px;
-        display: inline-block;
-        vertical-align: middle;
-        text-transform: uppercase;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 16px;
-      }
+    button {
+      background-color: $adjustBlue;
+      color: white;
+      border: none;
+      border-radius: 2px;
+      padding: 8px 10px;
+      display: inline-block;
+      vertical-align: middle;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
     }
   }
 }
