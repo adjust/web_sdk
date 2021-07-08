@@ -1,5 +1,5 @@
 import Log from './../logger'
-import render from './assets/template'
+import render, { dismissButtonId } from './assets/template'
 import styles from './assets/styles.scss'
 
 enum SmartBannerPosition {
@@ -20,7 +20,7 @@ interface SmartBannerData {
  */
 class SmartBanner {
   private parent: HTMLElement;
-  private banner: HTMLElement;
+  private banner: HTMLElement | null = null;
 
   /**
    * Loads banners from backend if available
@@ -59,6 +59,26 @@ class SmartBanner {
     } else {
       this.parent.appendChild(this.banner)
     }
+
+    const dismissButton = document.getElementById(dismissButtonId)
+    if (dismissButton) {
+      dismissButton.addEventListener('click', this.onDismiss, false)
+    }
+  }
+
+  private destroy() {
+    if (this.banner) {
+      this.banner.remove()
+      this.banner = null
+      Log.info('Smart Banner removed')
+    } else {
+      Log.error('There is no Smart Banner to remove')
+    }
+  }
+
+  private onDismiss = () => {
+    // save dismiss timestamp
+    this.destroy()
   }
 
   show(): void {
