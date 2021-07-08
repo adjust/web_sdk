@@ -1,4 +1,6 @@
 import Log from './../logger'
+import { storage } from './localStorage'
+import { subscribe, unsubscribe } from './../pub-sub'
 import render, { dismissButtonId } from './assets/template'
 import styles from './assets/styles.scss'
 
@@ -19,6 +21,8 @@ interface SmartBannerData {
  * Adjust Web SDK Smart Banner
  */
 class SmartBanner {
+  private dismissedStorageKey = 'closed'
+
   private parent: HTMLElement;
   private banner: HTMLElement | null = null;
 
@@ -45,7 +49,28 @@ class SmartBanner {
    * @param appWebToken
    */
   init(appWebToken: string): void {
-    Log.info('Initialise Smart Banner')
+    Log.info('Smart Banner initialisation called')
+
+    if (this.isDismissed()) {
+      Log.info('Smart Banner was dismissed, it will be shown on next session')
+
+      subscribe('session:start', () => {
+        unsubscribe('session:start')
+        storage.setItem(this.dismissedStorageKey, null) // remove record about banner dismiss
+        this.create(appWebToken)
+      })
+    } else {
+      this.create(appWebToken)
+    }
+  }
+
+  private create(appWebToken: string) {
+    if (this.banner) {
+      Log.error('Smart Banner created already')
+      return
+    }
+
+    Log.info('Creating Smart Banner')
 
     const bannerData = this.getSmartBannerData(appWebToken)
 
@@ -77,8 +102,15 @@ class SmartBanner {
   }
 
   private onDismiss = () => {
-    // save dismiss timestamp
+    Log.info('Smart Banner dismissed')
+
+    storage.setItem(this.dismissedStorageKey, Date.now())
+
     this.destroy()
+  }
+
+  private isDismissed() {
+    return !!storage.getItem(this.dismissedStorageKey)
   }
 
   show(): void {
