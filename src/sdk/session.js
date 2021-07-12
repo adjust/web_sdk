@@ -229,8 +229,6 @@ function _prepareParams ({callbackParams, partnerParams}: $ReadOnly<GlobalParams
  * @private
  */
 function _trackSession (): Promise<mixed> {
-  publish('session:start')
-
   return getGlobalParams()
     .then((globalParams) => {
       push({

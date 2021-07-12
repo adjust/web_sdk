@@ -1,8 +1,8 @@
 import Log from './../logger'
-import { storage } from './localStorage'
-import { subscribe, unsubscribe } from './../pub-sub'
+import { getDeviceOS, DeviceOS } from './detect-os'
+import { storage } from './local-storage'
 import render, { dismissButtonId } from './assets/template'
-import styles from './assets/styles.scss'
+import styles from './assets/styles.module.scss'
 
 enum SmartBannerPosition {
   Top = 'top',
@@ -14,6 +14,7 @@ interface SmartBannerData {
   header: string;
   description: string;
   buttonText: string;
+  dismissInterval: number;
   position: SmartBannerPosition;
 }
 
@@ -23,20 +24,25 @@ interface SmartBannerData {
 class SmartBanner {
   private dismissedStorageKey = 'closed'
 
-  private parent: HTMLElement;
-  private banner: HTMLElement | null = null;
+  private parent: HTMLElement = document.body
+  private banner: HTMLElement | null = null
+  private dismissButton: Element | null = null
+
+  private onDismiss: (() => void) | null
+  private timer: NodeJS.Timeout | null = null
 
   /**
    * Loads banners from backend if available
    *
    * TODO: implement this stub
    */
-  private getSmartBannerData(appWebToken: string): SmartBannerData {
+  private getSmartBannerData(appWebToken: string, deviceOs: DeviceOS): SmartBannerData | null {
     return {
       image: '',
       header: 'Adjust Smart Banners',
       description: 'Not so smart actually, but deep links do the magic anyway',
       buttonText: 'Let\'s go!',
+      dismissInterval: 24 * 60 * 60 * 1000, // 1 day in millis before show banner next time
       position: SmartBannerPosition.Top
     }
   }
@@ -44,37 +50,37 @@ class SmartBanner {
   /**
    * Initiate Smart Banner.
    *
-   * TODO: implement getting Smart Banner data and creating Smart Banner UI properly.
-   *
-   * @param appWebToken
+   * @param appWebToken token used to get data from backend
    */
   init(appWebToken: string): void {
     Log.info('Smart Banner initialisation called')
 
-    if (this.isDismissed()) {
-      Log.info('Smart Banner was dismissed, it will be shown on next session')
-
-      subscribe('session:start', () => {
-        unsubscribe('session:start')
-        storage.setItem(this.dismissedStorageKey, null) // remove record about banner dismiss
-        this.create(appWebToken)
-      })
-    } else {
-      this.create(appWebToken)
-    }
-  }
-
-  private create(appWebToken: string) {
     if (this.banner) {
-      Log.error('Smart Banner created already')
+      Log.error('Smart Banner already exists')
+      return
+    }
+
+    const deviceOs = getDeviceOS()
+    if (!deviceOs) {
+      Log.info('This platform is not one of the targeting ones, Smart Banner will not be shown')
+      return
+    }
+
+    const bannerData = this.getSmartBannerData(appWebToken, deviceOs)
+    if (!bannerData) {
+      Log.info(`There is no Smart Banners created for [${deviceOs}] platform`)
+      return
+    }
+
+    if (this.isDismissed(bannerData.dismissInterval)) {
+      const whenToShow = this.getDateToShowAgain(bannerData.dismissInterval)
+      Log.info('Smart Banner was dismissed')
+      this.scheduleCreation(appWebToken, whenToShow)
       return
     }
 
     Log.info('Creating Smart Banner')
 
-    const bannerData = this.getSmartBannerData(appWebToken)
-
-    this.parent = document.body
     this.banner = document.createElement('div')
     this.banner.setAttribute('class', `${styles.banner} ${bannerData.position === SmartBannerPosition.Top ? styles.stickyToTop : styles.stickyToBottom}`)
     this.banner.innerHTML = render(bannerData.header, bannerData.description, bannerData.buttonText)
@@ -85,32 +91,67 @@ class SmartBanner {
       this.parent.appendChild(this.banner)
     }
 
-    const dismissButton = document.getElementById(dismissButtonId)
-    if (dismissButton) {
-      dismissButton.addEventListener('click', this.onDismiss, false)
+    this.dismissButton = this.banner.getElementsByClassName(styles.dismiss).namedItem(dismissButtonId)
+    if (this.dismissButton) {
+      this.onDismiss = () => this.dismissButtonHandler(appWebToken, bannerData.dismissInterval)
+      this.dismissButton.addEventListener('click', this.onDismiss)
     }
+
+    Log.info('Smart Banner created')
   }
 
   private destroy() {
     if (this.banner) {
       this.banner.remove()
       this.banner = null
+      this.dismissButton = null
       Log.info('Smart Banner removed')
     } else {
       Log.error('There is no Smart Banner to remove')
     }
   }
 
-  private onDismiss = () => {
+  private dismissButtonHandler(appWebToken: string, dismissInterval: number) {
     Log.info('Smart Banner dismissed')
 
+    if (this.dismissButton && this.onDismiss) {
+      this.dismissButton.removeEventListener('click', this.onDismiss)
+    }
+
     storage.setItem(this.dismissedStorageKey, Date.now())
+    const whenToShow = this.getDateToShowAgain(dismissInterval)
+    this.scheduleCreation(appWebToken, whenToShow)
 
     this.destroy()
   }
 
-  private isDismissed() {
-    return !!storage.getItem(this.dismissedStorageKey)
+  private scheduleCreation(appWebToken: string, when: number) {
+    if (this.timer) {
+      Log.info('Clearing previously scheduled creation of Smart Banner')
+      clearTimeout(this.timer)
+    }
+
+    const delay = when - Date.now()
+    Log.info('Smart Banner creation scheduled on ' + new Date(when))
+    this.timer = setTimeout(() => {
+      this.timer = null
+      this.init(appWebToken)
+    }, delay)
+  }
+
+  private getDateToShowAgain(dismissInterval: number): number {
+    const dismissedDate = storage.getItem(this.dismissedStorageKey)
+    if (!dismissedDate) {
+      return Date.now()
+    }
+
+    return dismissedDate + dismissInterval
+  }
+
+  private isDismissed(dismissInterval: number): boolean {
+    const timeToShow = this.getDateToShowAgain(dismissInterval)
+    const now = Date.now()
+    return now < timeToShow
   }
 
   show(): void {

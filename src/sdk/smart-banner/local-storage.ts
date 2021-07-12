@@ -1,8 +1,19 @@
 const _storageName = 'adjust-smart-banner'
 
-function getItem(key: string) {
-  const value = localStorage.getItem(`${_storageName}.${key}`)
-  return value ? JSON.parse(value) : null
+function getItem(key: string): any | null {
+  let value = localStorage.getItem(`${_storageName}.${key}`)
+
+  if (!value) {
+    return null
+  }
+
+  try {
+    value = JSON.parse(value)
+  } catch (error) {
+    value = null
+  }
+
+  return value
 }
 
 function setItem(key: string, value: any) {

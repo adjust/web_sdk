@@ -1,4 +1,8 @@
 @import "variables";
+@import "loader";
+@import "flex-grid";
+@import "../../demo/tabs/tabs";
+@import "../../demo/key-value-params/key-value-params";
 
 html, body {
   margin: 0;
@@ -14,222 +18,218 @@ body {
   font-size: 14px;
 }
 
-.adjust-demo-app {
+ul {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
 
-@import "loader";
-@import "flex-grid";
-@import "../../demo/tabs/tabs";
-@import "../../demo/key-value-params/key-value-params";
+  li {
+    display: inline-block;
 
-  ul {
-    list-style: none;
-    padding: 20px;
-    margin: 0;
-
-    li {
-      display: inline-block;
-
-      a {
-        display: block;
-      }
-    }
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    margin: 0;
-  }
-
-  .container {
-    margin: 20px;
-  }
-
-  h1 {
-    text-align: center;
-    color: $logFontColor;
-    font-size: 18px;
-    padding: 0;
-    margin: 0;
-    background-color: $headerBgColor;
-
-    span {
-      display: block;
-      padding: 12px 0 12px $logoSize;
-      text-indent: -$logoSize;
-    }
-  }
-
-  .adjust-logo {
-    $logoImgSize: $logoSize - 12px;
-    display: block;
-    float: left;
-    width: $logoSize;
-    height: $logoSize;
-    margin-right: 5px;
-    background-image: url("../images/adjust-logo.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: $logoImgSize $logoImgSize;
-  }
-
-  button {
-    display: block;
-    font-size: 15px;
-    padding:  10px;
-    border: 1px solid $borderColor;
-    background: $buttonBgColor;
-    box-shadow: none;
-    outline: none;
-    cursor: pointer;
-    color: $fontColor;
-
-    &.active,
-    &:hover {
-      background: $buttonHoverBgColor;
-    }
-
-    &.active {
-      background: $buttonActiveBgColor;
-    }
-
-    &.remove {
-      border-color: #bb622c;
-      background-color: #ff812e;
-      color: #fff;
-
-      &:hover {
-        background-color: #f37d2e;
-      }
-    }
-  }
-
-  pre {
-    border: 1px solid $borderColor;
-    background-color: #fefefe;
-    padding: 10px;
-    overflow: auto;
-    line-height: 20px;
-    color: #bbb;
-    margin: 0;
-  }
-
-  .actions {
-    overflow: auto;
-    padding: 20px;
-  }
-
-  .action-block {
-    position: relative;
-    margin: 0 auto 10px;
-    text-align: center;
-
-    button {
-      display: inline-block;
-    }
-  }
-
-  .action {
-    width: $actionWidth;
-
-    &.with-dots {
-      span {
-        float: right;
-      }
-    }
-
-    .action-wrap & {
-      width: auto;
-      margin-right: 0;
-    }
-  }
-
-  .action-wrap {
-    width: $actionWidth;
-    margin: 0 auto;
-  }
-
-  .side-form {
-    width: 100%;
-    background-color: $bgColorLight;
-    border: 1px solid $borderColor;
-    display: none;
-    text-align: left;
-    margin: 0 auto;
-
-    &.show {
+    a {
       display: block;
     }
-
-    &.narrow {
-      width: 700px;
-      height: 125px;
-      overflow: auto;
-    }
-
-    &.simple {
-      width: 398px;
-      padding: 0;
-    }
-
-    &.fixed {
-      height: 310px;
-    }
-
-    form {
-      padding: 10px;
-      overflow: auto;
-    }
-
-    button[type=submit] {
-      float: right;
-      width: 130px;
-    }
-
-    & > .flex-box-row {
-      height: 100%;
-    }
-  }
-
-  .form-row {
-    margin-bottom: 10px;
-
-    label {
-      display: block;
-      color: $fontColor;
-      font-size: 14px;
-    }
-
-    input,
-    select {
-      border: 1px solid $borderColor;
-      width: 100%;
-      height: 30px;
-      box-sizing: border-box;
-      font-size: 1em;
-
-      &:active,
-      &:focus {
-        border-color: $borderColorActive;
-        outline: none;
-      }
-
-      &:disabled,
-      &::-webkit-input-placeholder {
-        color: #ccc;
-      }
-    }
-
-    input {
-      padding: 0 5px;
-    }
-  }
-
-  .flex-box-row {
-    & > .flex-one:not(:last-child):not(.action) {
-      margin-right: 10px;
-    }
-  }
-
-  .code {
-    font-family: monospace;
   }
 }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+.container {
+  margin: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: $logFontColor;
+  font-size: 18px;
+  padding: 0;
+  margin: 0;
+  background-color: $headerBgColor;
+
+  span {
+    display: block;
+    padding: 12px 0 12px $logoSize;
+    text-indent: -$logoSize;
+  }
+}
+
+.adjust-logo {
+  $logoImgSize: $logoSize - 12px;
+  display: block;
+  float: left;
+  width: $logoSize;
+  height: $logoSize;
+  margin-right: 5px;
+  background-image: url("../images/adjust-logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: $logoImgSize $logoImgSize;
+}
+
+button {
+  display: block;
+  font-size: 15px;
+  padding:  10px;
+  border: 1px solid $borderColor;
+  background: $buttonBgColor;
+  box-shadow: none;
+  outline: none;
+  cursor: pointer;
+  color: $fontColor;
+
+  &.active,
+  &:hover {
+    background: $buttonHoverBgColor;
+  }
+
+  &.active {
+    background: $buttonActiveBgColor;
+  }
+
+  &.remove {
+    border-color: #bb622c;
+    background-color: #ff812e;
+    color: #fff;
+
+    &:hover {
+      background-color: #f37d2e;
+    }
+  }
+}
+
+pre {
+  border: 1px solid $borderColor;
+  background-color: #fefefe;
+  padding: 10px;
+  overflow: auto;
+  line-height: 20px;
+  color: #bbb;
+  margin: 0;
+}
+
+.actions {
+  overflow: auto;
+  padding: 20px;
+}
+
+.action-block {
+  position: relative;
+  margin: 0 auto 10px;
+  text-align: center;
+
+  button {
+    display: inline-block;
+  }
+}
+
+.action {
+  width: $actionWidth;
+
+  &.with-dots {
+    span {
+      float: right;
+    }
+  }
+
+  .action-wrap & {
+    width: auto;
+    margin-right: 0;
+  }
+}
+
+.action-wrap {
+  width: $actionWidth;
+  margin: 0 auto;
+}
+
+.side-form {
+  width: 100%;
+  background-color: $bgColorLight;
+  border: 1px solid $borderColor;
+  display: none;
+  text-align: left;
+  margin: 0 auto;
+
+  &.show {
+    display: block;
+  }
+
+  &.narrow {
+    width: 700px;
+    height: 125px;
+    overflow: auto;
+  }
+
+  &.simple {
+    width: 398px;
+    padding: 0;
+  }
+
+  &.fixed {
+    height: 310px;
+  }
+
+  form {
+    padding: 10px;
+    overflow: auto;
+  }
+
+  button[type=submit] {
+    float: right;
+    width: 130px;
+  }
+
+  & > .flex-box-row {
+    height: 100%;
+  }
+}
+
+.form-row {
+  margin-bottom: 10px;
+
+  label {
+    display: block;
+    color: $fontColor;
+    font-size: 14px;
+  }
+
+  input,
+  select {
+    border: 1px solid $borderColor;
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    font-size: 1em;
+
+    &:active,
+    &:focus {
+      border-color: $borderColorActive;
+      outline: none;
+    }
+
+    &:disabled,
+    &::-webkit-input-placeholder {
+      color: #ccc;
+    }
+  }
+
+  input {
+    padding: 0 5px;
+  }
+}
+
+.flex-box-row {
+  & > .flex-one:not(:last-child):not(.action) {
+    margin-right: 10px;
+  }
+}
+
+.code {
+  font-family: monospace;
+}
+
+
+
+

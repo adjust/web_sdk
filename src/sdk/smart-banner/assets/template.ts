@@ -1,4 +1,4 @@
-import styles from './styles.scss'
+import styles from './styles.module.scss'
 
 export const dismissButtonId = 'dismiss-button'
 

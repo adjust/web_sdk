@@ -565,7 +565,7 @@ describe('test session functionality', () => {
 
       activityState = ActivityState.default.current
 
-      expect.assertions(77)
+      expect.assertions(76)
       expect(setInterval).toHaveBeenCalledTimes(1) // from initial _checkSession call
       expect(clearInterval).toHaveBeenCalledTimes(1)
       expect(activityState.timeSpent).toEqual(0)
@@ -771,8 +771,7 @@ describe('test session functionality', () => {
               partnerParams: null
             }
           }, {auto: true})
-          expect(PubSub.publish).toHaveBeenCalledWith('session:start')
-          expect(PubSub.publish).toHaveBeenCalledTimes(1) // nothing other than 'session:start' was published
+          expect(PubSub.publish).not.toHaveBeenCalled()
 
           jest.runOnlyPendingTimers()
 
