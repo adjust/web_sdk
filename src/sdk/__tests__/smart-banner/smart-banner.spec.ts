@@ -139,7 +139,7 @@ describe('Smart banner tests', () => {
     })
   })
 
-  xdescribe(('no banner for platform'), () => {
+  /*describe(('no banner for platform'), () => {
     beforeAll(() => {
       Logger = require('../../logger').default
       jest.spyOn(Logger, 'log')
@@ -154,7 +154,7 @@ describe('Smart banner tests', () => {
 
       expect(Logger.log).toHaveBeenCalledWith(`There is no Smart Banners created for ${platform} platform`)
     })
-  })
+  })*/
 
   describe(('not one of target platforms'), () => {
     beforeAll(() => {

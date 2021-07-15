@@ -15,7 +15,7 @@ describe('Local storage', () => {
   const value = { data: 'test-data' }
   const lsKey = (key: string) => `adjust-smart-banner.${key}`
 
-  it("writes record", () => {
+  it('writes record', () => {
     storage.setItem(key, value)
 
     const expected = JSON.stringify(value)
@@ -24,24 +24,24 @@ describe('Local storage', () => {
     expect(localStorage.getItem(lsKey(key))).toEqual(expected)
   })
 
-  it("reads record", () => {
+  it('reads record', () => {
     expect(storage.getItem(key)).toEqual(value)
     expect(localStorage.getItem).toHaveBeenCalled()
   })
 
-  it("removes record", () => {
+  it('removes record', () => {
     storage.setItem(key, null)
 
     expect(localStorage.setItem).toHaveBeenCalled()
     expect(localStorage.getItem(lsKey(key))).toBeNull()
   })
 
-  it("returns null when no such record", () => {
+  it('returns null when no such record', () => {
     expect(storage.getItem('not-exist')).toBeNull()
     expect(localStorage.getItem).toHaveBeenCalled()
   })
 
-  it("does not throw on invalid JSON", () => {
+  it('does not throw on invalid JSON', () => {
     const key = 'invalid-record'
     localStorage.setItem(lsKey(key), '{hello":"world"}')
 
