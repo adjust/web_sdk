@@ -1,4 +1,4 @@
-import Log from './../logger'
+import Logger from './../logger'
 import { getDeviceOS, DeviceOS } from './detect-os'
 import { storage } from './local-storage'
 import render, { dismissButtonId } from './assets/template'
@@ -53,33 +53,31 @@ class SmartBanner {
    * @param appWebToken token used to get data from backend
    */
   init(appWebToken: string): void {
-    Log.info('Smart Banner initialisation called')
-
     if (this.banner) {
-      Log.error('Smart Banner already exists')
+      Logger.error('Smart Banner already exists')
       return
     }
 
     const deviceOs = getDeviceOS()
     if (!deviceOs) {
-      Log.info('This platform is not one of the targeting ones, Smart Banner will not be shown')
+      Logger.log('This platform is not one of the targeting ones, Smart Banner will not be shown')
       return
     }
 
     const bannerData = this.getSmartBannerData(appWebToken, deviceOs)
     if (!bannerData) {
-      Log.info(`There is no Smart Banners created for [${deviceOs}] platform`)
+      Logger.log(`There is no Smart Banners created for ${deviceOs} platform`)
       return
     }
 
-    if (this.isDismissed(bannerData.dismissInterval)) {
-      const whenToShow = this.getDateToShowAgain(bannerData.dismissInterval)
-      Log.info('Smart Banner was dismissed')
+    const whenToShow = this.getDateToShowAgain(bannerData.dismissInterval)
+    if (Date.now() < whenToShow) {
+      Logger.log('Smart Banner was dismissed')
       this.scheduleCreation(appWebToken, whenToShow)
       return
     }
 
-    Log.info('Creating Smart Banner')
+    Logger.log('Creating Smart Banner')
 
     this.banner = document.createElement('div')
     this.banner.setAttribute('class', `${styles.banner} ${bannerData.position === SmartBannerPosition.Top ? styles.stickyToTop : styles.stickyToBottom}`)
@@ -97,7 +95,7 @@ class SmartBanner {
       this.dismissButton.addEventListener('click', this.onDismiss)
     }
 
-    Log.info('Smart Banner created')
+    Logger.log('Smart Banner created')
   }
 
   private destroy() {
@@ -105,17 +103,18 @@ class SmartBanner {
       this.banner.remove()
       this.banner = null
       this.dismissButton = null
-      Log.info('Smart Banner removed')
+      Logger.log('Smart Banner removed')
     } else {
-      Log.error('There is no Smart Banner to remove')
+      Logger.error('There is no Smart Banner to remove')
     }
   }
 
   private dismissButtonHandler(appWebToken: string, dismissInterval: number) {
-    Log.info('Smart Banner dismissed')
+    Logger.log('Smart Banner dismissed')
 
     if (this.dismissButton && this.onDismiss) {
       this.dismissButton.removeEventListener('click', this.onDismiss)
+      this.onDismiss = null
     }
 
     storage.setItem(this.dismissedStorageKey, Date.now())
@@ -127,16 +126,20 @@ class SmartBanner {
 
   private scheduleCreation(appWebToken: string, when: number) {
     if (this.timer) {
-      Log.info('Clearing previously scheduled creation of Smart Banner')
+      Logger.log('Clearing previously scheduled creation of Smart Banner')
       clearTimeout(this.timer)
+      this.timer = null
     }
 
     const delay = when - Date.now()
-    Log.info('Smart Banner creation scheduled on ' + new Date(when))
-    this.timer = setTimeout(() => {
-      this.timer = null
-      this.init(appWebToken)
-    }, delay)
+    this.timer = setTimeout(
+      () => {
+        this.timer = null
+        this.init(appWebToken)
+      },
+      delay)
+
+    Logger.log('Smart Banner creation scheduled on ' + new Date(when))
   }
 
   private getDateToShowAgain(dismissInterval: number): number {
@@ -148,17 +151,11 @@ class SmartBanner {
     return dismissedDate + dismissInterval
   }
 
-  private isDismissed(dismissInterval: number): boolean {
-    const timeToShow = this.getDateToShowAgain(dismissInterval)
-    const now = Date.now()
-    return now < timeToShow
-  }
-
   show(): void {
     if (this.banner) {
       this.banner.hidden = false
     } else {
-      Log.error('There is no Smart Banner to show, have you called initialisation?')
+      Logger.error('There is no Smart Banner to show, have you called initialisation?')
     }
   }
 
@@ -166,7 +163,7 @@ class SmartBanner {
     if (this.banner) {
       this.banner.hidden = true
     } else {
-      Log.error('There is no Smart Banner to hide, have you called initialisation?')
+      Logger.error('There is no Smart Banner to hide, have you called initialisation?')
     }
   }
 }
