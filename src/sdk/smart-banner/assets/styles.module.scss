@@ -1,5 +1,6 @@
 $textColor: #6e7492;
 $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+$bannerMaxWidth: 428px;
 
 @function encodeColor($colour) {
   @return "%23" + str-slice("#{$colour}", 2, -1);
@@ -19,17 +20,34 @@ $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans
 }
 
 .banner {
+  position: fixed;
+  max-width: $bannerMaxWidth;
   width: 100vw;
-  left: 0;
+  min-width: 320px;
+  left: calc((100vw - #{$bannerMaxWidth}) / 2);
   background-color: white;
   font-family: $systemFonts;
 
   &.stickyToTop {
-    @include stickyVerticalPosition(top);
+    top: 0;
   }
 
   &.stickyToBottom {
-    @include stickyVerticalPosition(bottom);
+    bottom: 0;
+  }
+
+  @media (max-width: $bannerMaxWidth) {
+    & {
+      left: 0;
+
+      &.stickyToTop {
+        @include stickyVerticalPosition(top);
+      }
+
+      &.stickyToBottom {
+        @include stickyVerticalPosition(bottom);
+      }
+    }
   }
 
   .dismiss {
@@ -49,7 +67,6 @@ $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans
   .appIcon {
     width: 56px;
     height: 56px;
-    margin-right: 16px;
     background-color: $textColor;
     border-radius: 8px;
   }
@@ -57,39 +74,46 @@ $systemFonts: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Arial, sans
   .bannerBody {
     display: flex;
     align-items: center;
-    margin: 2px 8px;
+    margin: 10px 8px 10px 4px;
 
     .textContainer {
       flex: 1 1 0%;
       min-height: 0;
       min-width: 0;
+      margin: 0 12px;
     }
 
     .bannerText {
       overflow: hidden;
-      white-space: nowrap;
       text-overflow: ellipsis;
     }
 
     h4 {
-      margin: 0;
+      margin: 5px 0 8px;
       font-size: 12px;
       font-weight: bold;
       line-height: 16px;
+      white-space: nowrap;
     }
 
     p {
-      margin: 0;
+      margin: 8px 0 7px;
       font-size: 9px;
       line-height: 11px;
+      max-height: 22px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
 
     .action {
-      background-color: $textColor;
-      color: white;
-      border: none;
-      border-radius: 2px;
-      padding: 8px 10px;
+      color: $textColor;
+      background: rgb(249, 250, 252);
+      border: 1px solid rgb(205, 208, 224);
+      border-radius: 4px;
+      border-color: $textColor;
+      box-shadow: inset 0px -1px 0px 0px rgb(224, 226, 236);
+      padding: 4px 6.5px;
       display: inline-block;
       vertical-align: middle;
       text-transform: uppercase;
