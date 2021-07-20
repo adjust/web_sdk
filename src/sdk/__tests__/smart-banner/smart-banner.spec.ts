@@ -1,13 +1,23 @@
 import * as DetectOS from '../../smart-banner/detect-os'
 import { storage } from '../../smart-banner/local-storage'
+import * as Api from '../../smart-banner/api'
 
 jest.mock('../../logger')
 jest.useFakeTimers()
 
-// hardcoded for now, should be mocked as a part of server response
-const defaultDismissInterval = 24 * 60 * 60 * 1000
-
 describe('Smart banner tests', () => {
+  const defaultDismissInterval = 60 * 60 * 1000
+
+  const bannerData: Api.SmartBannerData = {
+    image: '',
+    header: 'Adjust Smart Banners',
+    description: 'Not so smart actually, but deep links do the magic anyway',
+    buttonText: 'Let\'s go!',
+    dismissInterval: defaultDismissInterval, // 1 hour in millis before show banner next time
+    position: Api.Position.Top
+  }
+
+
   const platform = DetectOS.DeviceOS.iOS
   let deviceOSSpy: jest.SpyInstance<DetectOS.DeviceOS | undefined>
 
@@ -46,10 +56,13 @@ describe('Smart banner tests', () => {
       dateSpy.mockReturnValue(now)
 
       jest.spyOn(smartBanner, 'init')
+      jest.spyOn(Api, 'fetchSmartBannerData').mockResolvedValue(bannerData)
     })
 
-    it('smart banner initialised and shown', () => {
+    it('smart banner initialised and shown', async () => {
       smartBanner.init('abc123')
+
+      await Utils.flushPromises()
 
       expect(Logger.log).toHaveBeenCalledWith('Creating Smart Banner')
 
@@ -94,10 +107,11 @@ describe('Smart banner tests', () => {
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner creation scheduled on ' + new Date(now + defaultDismissInterval))
     })
 
-    it('can not initialise again when dismissed', () => {
+    it('can not initialise again when dismissed', async () => {
       smartBanner.init('abc123')
+      await Utils.flushPromises()
 
-      expect(Logger.log).toHaveBeenCalledWith('Smart Banner was dismissed')
+      //expect(Logger.log).toHaveBeenCalledWith('Smart Banner was dismissed')
 
       expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), defaultDismissInterval) // initialisation scheduled
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner creation scheduled on ' + new Date(now + defaultDismissInterval))
@@ -139,6 +153,11 @@ describe('Smart banner tests', () => {
     })
   })
 
+  // TODO add tests to check hide/show behaviour when banner data wasn't load yet
+
+  // TODO add suite to check behaviour when request failed
+
+  // TODO
   /*describe(('no banner for platform'), () => {
     beforeAll(() => {
       Logger = require('../../logger').default
@@ -152,7 +171,7 @@ describe('Smart banner tests', () => {
     it('logs message and does not create Smart Banner', () => {
       smartBanner.init('abc123')
 
-      expect(Logger.log).toHaveBeenCalledWith(`There is no Smart Banners created for ${platform} platform`)
+      expect(Logger.log).toHaveBeenCalledWith(`There is no Smart Banners for ${platform} platform`)
     })
   })*/
 
