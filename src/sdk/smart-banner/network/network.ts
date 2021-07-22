@@ -1,11 +1,13 @@
+import { parseJson } from '../utilities'
 import Globals from '../../globals'
 import { urlStrategyRetries } from '../../url-strategy'
+import { NetworkError, NoConnectionError } from './errors'
 
 /**
  * Creates an XMLHttpRequest object and sends a GET request with provided encoded URL
  */
 function xhr<T>(url: string): Promise<T> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject: (err: NetworkError) => void) => {
     const xhr = new XMLHttpRequest()
     xhr.open('GET', url)
 
@@ -14,20 +16,30 @@ function xhr<T>(url: string): Promise<T> {
       ['Content-Type', 'application/json']
     ]
 
-    headers
-      .forEach(([key, value]) => {
-        xhr.setRequestHeader(key, value)
-      })
+    headers.forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value)
+    })
 
-    xhr.onload = () => {
-      if (xhr.status != 200) {
-        reject(`status: ${xhr.status}, message: ${xhr.statusText}`)
+    xhr.onerror = () => reject({ status: 0, message: '' })
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== 4) {
+        return
+      }
+
+      const okStatus = xhr.status >= 200 && xhr.status < 300
+      const json = parseJson(xhr.responseText)
+
+      if (xhr.status === 0) {
+        reject(NoConnectionError)
       } else {
-        resolve(JSON.parse(xhr.responseText))
+        if (okStatus) {
+          resolve(json)
+        } else {
+          reject({ status: xhr.status, message: json || xhr.responseText || 'Invalid server response' })
+        }
       }
     }
-
-    xhr.onerror = () => reject('unknown')
 
     xhr.send()
   })
