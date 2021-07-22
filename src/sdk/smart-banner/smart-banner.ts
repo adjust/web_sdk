@@ -1,5 +1,5 @@
 import Logger from './../logger'
-import { fetchSmartBannerData, SmartBannerData, Position } from './api'
+import { fetchSmartBannerData, SmartBannerData, Position } from './network/api'
 import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
 import render, { dismissButtonId } from './assets/template'
@@ -22,7 +22,7 @@ class SmartBanner {
   private dataFetchPromise: Promise<SmartBannerData | null> | null
 
   /**
-   * Initiate Smart Banner.
+   * Initiate Smart Banner
    *
    * @param appWebToken token used to get data from backend
    */
