@@ -5,48 +5,56 @@ describe('Local storage', () => {
   beforeAll(() => {
     jest.spyOn(localStorage, 'getItem')
     jest.spyOn(localStorage, 'setItem')
+    jest.spyOn(localStorage, 'removeItem')
   })
 
-  afterAll(() => {
+  afterEach(() => {
     localStorage.clear()
+    jest.clearAllMocks()
   })
 
   const key = 'test'
   const value = { data: 'test-data' }
-  const lsKey = (key: string) => `adjust-smart-banner.${key}`
+
+  const lsKey = `adjust-smart-banner.${key}`
+  const lsValue = JSON.stringify(value)
 
   it('writes record', () => {
     storage.setItem(key, value)
 
-    const expected = JSON.stringify(value)
-
-    expect(localStorage.setItem).toHaveBeenCalled()
-    expect(localStorage.getItem(lsKey(key))).toEqual(expected)
+    expect(localStorage.getItem(lsKey)).toEqual(lsValue)
   })
 
-  it('reads record', () => {
-    expect(storage.getItem(key)).toEqual(value)
+  it('reads stored record', () => {
+    localStorage.setItem(lsKey, lsValue)
+
+    const actual = storage.getItem(key)
+
+    expect(actual).toEqual(value)
     expect(localStorage.getItem).toHaveBeenCalled()
   })
 
   it('removes record', () => {
+    localStorage.setItem(lsKey, lsValue)
+
     storage.setItem(key, null)
 
-    expect(localStorage.setItem).toHaveBeenCalled()
-    expect(localStorage.getItem(lsKey(key))).toBeNull()
+    expect(localStorage.getItem(lsKey)).toBeNull()
+    expect(localStorage.removeItem).toHaveBeenCalled()
   })
 
   it('returns null when no such record', () => {
-    expect(storage.getItem('not-exist')).toBeNull()
+    const noExistentValue = storage.getItem(key)
+
+    expect(noExistentValue).toBeNull()
     expect(localStorage.getItem).toHaveBeenCalled()
   })
 
   it('does not throw on invalid JSON', () => {
-    const key = 'invalid-record'
-    localStorage.setItem(lsKey(key), '{hello":"world"}')
+    localStorage.setItem(lsKey, '{hello":"world"}')
 
-    let value
-    expect(() => { value = storage.getItem(key) }).not.toThrow()
-    expect(value).toBeNull()
+    let invalidValue
+    expect(() => { invalidValue = storage.getItem(key) }).not.toThrow()
+    expect(invalidValue).toBeNull()
   })
 })
