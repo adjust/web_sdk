@@ -90,11 +90,19 @@ class SmartBanner {
     Logger.log('Smart Banner created')
   }
 
+  private removeDismissButtonHandler() {
+    if (this.dismissButton && this.onDismiss) {
+      this.dismissButton.removeEventListener('click', this.onDismiss)
+      this.onDismiss = null
+    }
+  }
+
   /**
    * Removes Smart Banner from DOM
    */
   private destroy() {
     if (this.banner) {
+      this.removeDismissButtonHandler()
       this.banner.remove()
       this.banner = null
       this.dismissButton = null
@@ -110,10 +118,7 @@ class SmartBanner {
   private dismiss(appWebToken: string, dismissInterval: number) {
     Logger.log('Smart Banner dismissed')
 
-    if (this.dismissButton && this.onDismiss) {
-      this.dismissButton.removeEventListener('click', this.onDismiss)
-      this.onDismiss = null
-    }
+
 
     storage.setItem(this.dismissedStorageKey, Date.now())
     const whenToShow = this.getDateToShowAgain(dismissInterval)
