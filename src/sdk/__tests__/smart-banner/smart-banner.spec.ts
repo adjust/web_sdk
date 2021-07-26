@@ -10,12 +10,14 @@ describe('Smart Banner tests', () => {
   const defaultDismissInterval = 60 * 60 * 1000 // 1 hour in millis
   const platform = DetectOS.DeviceOS.iOS
   const bannerData: Api.SmartBannerData = {
+    appId: 'none',
+    appName: 'Adjust Web SDK',
     header: 'Adjust Smart Banners',
-    description: 'Not so smart actually, but deep links do the magic anyway',
+    description: 'Not so smart actually, but deeplinks do the magic anyway',
     buttonText: 'Let\'s go!',
     dismissInterval: defaultDismissInterval,
     position: Api.Position.Top,
-    tracker: ''
+    trackerToken: 'abcd'
   }
 
   let smartBanner

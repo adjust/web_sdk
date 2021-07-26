@@ -2,7 +2,8 @@ import Logger from './../logger'
 import { fetchSmartBannerData, SmartBannerData, Position } from './network/api'
 import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
-import render, { dismissButtonId } from './assets/template'
+import render, { appIconPlaceholderId, appIconImageId, dismissButtonId } from './assets/template'
+import { AppIcon } from './app-icon'
 import styles from './assets/styles.module.scss'
 
 /**
@@ -14,6 +15,7 @@ class SmartBanner {
   private parent: HTMLElement = document.body
   private banner: HTMLElement | null = null
   private dismissButton: Element | null = null
+  private icon: AppIcon | null = null
 
   private onDismiss: (() => void) | null
 
@@ -64,6 +66,13 @@ class SmartBanner {
     })
   }
 
+  private getElemByClassAndId<T extends Element>(classNames: string, id: string): T | null {
+    if (this.banner) {
+      return this.banner.getElementsByClassName(classNames).namedItem(id) as T
+    }
+    return null
+  }
+
   /**
    * Creates Smart Banner and inserts it to DOM
    */
@@ -87,6 +96,13 @@ class SmartBanner {
       this.dismissButton.addEventListener('click', this.onDismiss)
     }
 
+    const appIconPlaceholder = this.getElemByClassAndId<HTMLElement>(styles.placeholder, appIconPlaceholderId)
+    const appIconImage = this.getElemByClassAndId<HTMLImageElement>(styles.image, appIconImageId)
+
+    if (appIconImage && appIconPlaceholder) {
+      this.icon = new AppIcon(bannerData, appIconImage, appIconPlaceholder)
+    }
+
     Logger.log('Smart Banner created')
   }
 
@@ -106,6 +122,7 @@ class SmartBanner {
       this.banner.remove()
       this.banner = null
       this.dismissButton = null
+      this.icon = null
       Logger.log('Smart Banner removed')
     } else {
       Logger.error('There is no Smart Banner to remove')
