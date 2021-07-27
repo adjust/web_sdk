@@ -55,13 +55,21 @@ module.exports = () => ({
       use: 'babel-loader'
     }, {
       test: /\.s?css$/,
+      exclude: /\.module\.s?css$/,
+      use: [
+        MiniCssExtractPlugin.loader,
+        { loader: 'css-loader', },
+        { loader: 'sass-loader' }
+      ]
+    }, {
+      test: /\.module\.s?css$/,
       use: [
         MiniCssExtractPlugin.loader,
         {
           loader: 'css-loader',
           options: {
             modules: true,
-            localIdentName: '[local]',
+            localIdentName: 'adjust-smart-banner-[local]__[hash:base64:5]',
           }
         },
         { loader: 'sass-loader' }

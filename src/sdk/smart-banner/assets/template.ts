@@ -1,12 +1,14 @@
-import styles from './styles.scss'
+import styles from './styles.module.scss'
 
-// TODO: replace .adjust-logo with a correct one to show client's image
+export const dismissButtonId = 'dismiss-button'
+
 export default (header: string, description: string, buttonText: string) => `
   <div class=${styles.bannerBody}>
-    <i class="adjust-logo"></i>
+    <button id="${dismissButtonId}" class="${styles.dismiss}"></button>
+    <div class="${styles.appIcon}"></div>
     <div class="${styles.textContainer}">
       <h4 class="${styles.bannerText}">${header}</h4>
       <p class="${styles.bannerText}">${description}</p>
     </div>
-    <button>${buttonText}</button>
+    <button class="${styles.action}">${buttonText}</button>
   </div>`
