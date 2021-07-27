@@ -1,4 +1,4 @@
-import { SmartBannerData } from './network/api'
+import { SmartBannerData } from '../network/api'
 
 type AppIconData = Pick<SmartBannerData, 'appId' | 'appName' | 'imageUrl'>
 
@@ -32,7 +32,6 @@ export class AppIcon {
 
   private showImage(sources: string[]): Promise<void> {
     const imageLoadingPromise = sources.reduce((acc, url) => {
-      console.log(`show image with url: ${url}`)
       return acc.catch(() => this.loadImage(url, this.image))
     }, Promise.reject())
 
@@ -48,8 +47,8 @@ export class AppIcon {
 
   private loadImage(url: string, image: HTMLImageElement) {
     return new Promise((resolve, reject) => {
-      image.onload = () => { console.log(`${url} loaded`); resolve(image) }
-      image.onerror = () => { console.log(`${url} failed to load`); reject() }
+      image.onload = resolve
+      image.onerror = reject
       image.src = url
     })
   }

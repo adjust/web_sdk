@@ -36,7 +36,7 @@ function xhr<T>(url: string): Promise<T> {
         if (okStatus) {
           resolve(json)
         } else {
-          reject({ status: xhr.status, message: json || xhr.responseText || 'Invalid server response' })
+          reject({ status: xhr.status, message: json || xhr.responseText || '' })
         }
       }
     }

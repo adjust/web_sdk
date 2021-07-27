@@ -1,27 +1,19 @@
 import Logger from './../logger'
-import { fetchSmartBannerData, SmartBannerData, Position } from './network/api'
 import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
-import render, { appIconPlaceholderId, appIconImageId, dismissButtonId } from './assets/template'
-import { AppIcon } from './app-icon'
-import styles from './assets/styles.module.scss'
+import { fetchSmartBannerData, SmartBannerData } from './network/api'
+import { SmartBannerView } from './view/smart-banner-view'
 
 /**
  * Adjust Web SDK Smart Banner
  */
 class SmartBanner {
   private dismissedStorageKey = 'closed'
-
-  private parent: HTMLElement = document.body
-  private banner: HTMLElement | null = null
-  private dismissButton: Element | null = null
-  private icon: AppIcon | null = null
-
-  private onDismiss: (() => void) | null
-
   private timer: NodeJS.Timeout | null = null
 
   private dataFetchPromise: Promise<SmartBannerData | null> | null
+
+  private banner: SmartBannerView | null
 
   /**
    * Initiate Smart Banner
@@ -62,54 +54,49 @@ class SmartBanner {
         return
       }
 
-      this.renderBanner(appWebToken, bannerData)
+      Logger.log('Creating Smart Banner')
+
+      this.banner = new SmartBannerView(bannerData, () => this.dismiss(appWebToken, bannerData.dismissInterval))
+
+      Logger.log('Smart Banner created')
     })
   }
 
-  private getElemByClassAndId<T extends Element>(classNames: string, id: string): T | null {
+  /**
+   * Show Smart Banner
+   */
+  show(): void {
     if (this.banner) {
-      return this.banner.getElementsByClassName(classNames).namedItem(id) as T
+      this.banner.show()
+    } else if (this.dataFetchPromise) {
+      Logger.log('Smart Banner will be shown after initialisation finished')
+
+      this.dataFetchPromise
+        .then(() => {
+          Logger.log('Initialisation finished, showing Smart Banner')
+          this.show()
+        })
+    } else {
+      Logger.error('There is no Smart Banner to show, have you called initialisation?')
     }
-    return null
   }
 
   /**
-   * Creates Smart Banner and inserts it to DOM
+   * Hide Smart Banner
    */
-  private renderBanner(appWebToken: string, bannerData: SmartBannerData) {
-    Logger.log('Creating Smart Banner')
+  hide(): void {
+    if (this.banner) {
+      this.banner.hide()
+    } else if (this.dataFetchPromise) {
+      Logger.log('Smart Banner will be hidden after initialisation finished')
 
-    this.banner = document.createElement('div')
-    const positionStyle = bannerData.position === Position.Top ? styles.stickyToTop : styles.stickyToBottom
-    this.banner.setAttribute('class', `${styles.banner} ${positionStyle}`)
-    this.banner.innerHTML = render(bannerData.header, bannerData.description, bannerData.buttonText)
-
-    if (bannerData.position === Position.Top) {
-      this.parent.insertBefore(this.banner, this.parent.firstChild)
+      this.dataFetchPromise
+        .then(() => {
+          Logger.log('Initialisation finished, hiding Smart Banner')
+          this.hide()
+        })
     } else {
-      this.parent.appendChild(this.banner)
-    }
-
-    this.dismissButton = this.banner.getElementsByClassName(styles.dismiss).namedItem(dismissButtonId)
-    if (this.dismissButton) {
-      this.onDismiss = () => this.dismiss(appWebToken, bannerData.dismissInterval)
-      this.dismissButton.addEventListener('click', this.onDismiss)
-    }
-
-    const appIconPlaceholder = this.getElemByClassAndId<HTMLElement>(styles.placeholder, appIconPlaceholderId)
-    const appIconImage = this.getElemByClassAndId<HTMLImageElement>(styles.image, appIconImageId)
-
-    if (appIconImage && appIconPlaceholder) {
-      this.icon = new AppIcon(bannerData, appIconImage, appIconPlaceholder)
-    }
-
-    Logger.log('Smart Banner created')
-  }
-
-  private removeDismissButtonHandler() {
-    if (this.dismissButton && this.onDismiss) {
-      this.dismissButton.removeEventListener('click', this.onDismiss)
-      this.onDismiss = null
+      Logger.error('There is no Smart Banner to hide, have you called initialisation?')
     }
   }
 
@@ -118,11 +105,8 @@ class SmartBanner {
    */
   private destroy() {
     if (this.banner) {
-      this.removeDismissButtonHandler()
-      this.banner.remove()
+      this.banner.destroy()
       this.banner = null
-      this.dismissButton = null
-      this.icon = null
       Logger.log('Smart Banner removed')
     } else {
       Logger.error('There is no Smart Banner to remove')
@@ -134,8 +118,6 @@ class SmartBanner {
    */
   private dismiss(appWebToken: string, dismissInterval: number) {
     Logger.log('Smart Banner dismissed')
-
-
 
     storage.setItem(this.dismissedStorageKey, Date.now())
     const whenToShow = this.getDateToShowAgain(dismissInterval)
@@ -175,44 +157,6 @@ class SmartBanner {
     }
 
     return dismissedDate + dismissInterval
-  }
-
-  /**
-   * Show Smart Banner
-   */
-  show(): void {
-    if (this.banner) {
-      this.banner.hidden = false
-    } else if (this.dataFetchPromise) {
-      Logger.log('Smart Banner will be shown after initialisation finished')
-
-      this.dataFetchPromise
-        .then(() => {
-          Logger.log('Initialisation finished, showing Smart Banner')
-          this.show()
-        })
-    } else {
-      Logger.error('There is no Smart Banner to show, have you called initialisation?')
-    }
-  }
-
-  /**
-   * Hide Smart Banner
-   */
-  hide(): void {
-    if (this.banner) {
-      this.banner.hidden = true
-    } else if (this.dataFetchPromise) {
-      Logger.log('Smart Banner will be hidden after initialisation finished')
-
-      this.dataFetchPromise
-        .then(() => {
-          Logger.log('Initialisation finished, hiding Smart Banner')
-          this.hide()
-        })
-    } else {
-      Logger.error('There is no Smart Banner to hide, have you called initialisation?')
-    }
   }
 }
 

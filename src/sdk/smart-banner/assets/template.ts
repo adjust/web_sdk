@@ -3,6 +3,7 @@ import styles from './styles.module.scss'
 export const dismissButtonId = 'dismiss-button'
 export const appIconImageId = 'app-icon-image'
 export const appIconPlaceholderId = 'app-icon-placeholder'
+export const actionButtonId = 'action-button'
 
 export default (header: string, description: string, buttonText: string) => `
   <div class=${styles.bannerBody}>
@@ -15,5 +16,5 @@ export default (header: string, description: string, buttonText: string) => `
       <h4 class="${styles.bannerText}">${header}</h4>
       <p class="${styles.bannerText}">${description}</p>
     </div>
-    <button class="${styles.action}">${buttonText}</button>
+    <a class="${styles.action}" id="${actionButtonId}">${buttonText}</a>
   </div>`

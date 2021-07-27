@@ -62,7 +62,6 @@ export function fetchSmartBannerData(appWebToken: string, deviceOs: DeviceOS): P
       return data
     })
     .catch(error => {
-      console.log(error)
       Logger.error('Network error occurred during loading Smart Banner: ' + JSON.stringify(error))
       return null
     })
