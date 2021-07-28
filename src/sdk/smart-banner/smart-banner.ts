@@ -5,23 +5,27 @@ import { fetchSmartBannerData, SmartBannerData } from './network/api'
 import { SmartBannerView } from './view/smart-banner-view'
 import { getEndpoint } from './network/network'
 
+type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
+
 /**
  * Adjust Web SDK Smart Banner
  */
 class SmartBanner {
   private dismissedStorageKey = 'closed'
   private timer: NodeJS.Timeout | null = null
-
   private dataFetchPromise: Promise<SmartBannerData | null> | null
-
   private banner: SmartBannerView | null
+  private logLevel: LogLevel
 
   /**
    * Initiate Smart Banner
    *
    * @param appWebToken token used to get data from backend
    */
-  init(appWebToken: string) {
+  init(appWebToken: string, logLevel: LogLevel = 'error') {
+    this.logLevel = logLevel
+    Logger.setLogLevel(logLevel)
+
     if (this.banner) {
       Logger.error('Smart Banner already exists')
       return
@@ -145,7 +149,7 @@ class SmartBanner {
     this.timer = setTimeout(
       () => {
         this.timer = null
-        this.init(appWebToken)
+        this.init(appWebToken, this.logLevel)
       },
       delay)
 
