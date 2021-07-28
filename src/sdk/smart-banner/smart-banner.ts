@@ -3,6 +3,7 @@ import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
 import { fetchSmartBannerData, SmartBannerData } from './network/api'
 import { SmartBannerView } from './view/smart-banner-view'
+import { getEndpoint } from './network/network'
 
 /**
  * Adjust Web SDK Smart Banner
@@ -56,7 +57,11 @@ class SmartBanner {
 
       Logger.log('Creating Smart Banner')
 
-      this.banner = new SmartBannerView(bannerData, () => this.dismiss(appWebToken, bannerData.dismissInterval))
+      this.banner = new SmartBannerView(
+        bannerData,
+        () => this.dismiss(appWebToken, bannerData.dismissInterval),
+        getEndpoint()
+      )
 
       Logger.log('Smart Banner created')
     })

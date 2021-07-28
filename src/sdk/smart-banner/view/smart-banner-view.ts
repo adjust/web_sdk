@@ -10,13 +10,13 @@ export class SmartBannerView {
 
   private onDismiss: (() => void)
 
-  constructor(data: SmartBannerData, onDismiss: () => void) {
+  constructor(data: SmartBannerData, onDismiss: () => void, endpoint: string) {
     this.onDismiss = onDismiss
 
-    this.render(data)
+    this.render(data, endpoint)
   }
 
-  private render(bannerData: SmartBannerData) {
+  private render(bannerData: SmartBannerData, endpoint: string) {
     this.banner = document.createElement('div')
     const positionStyle = bannerData.position === Position.Top ? styles.stickyToTop : styles.stickyToBottom
     this.banner.setAttribute('class', `${styles.banner} ${positionStyle}`)
@@ -42,9 +42,8 @@ export class SmartBannerView {
 
     const actionButton = this.getElemByClassAndId<HTMLLinkElement>(styles.action, actionButtonId)
     if (actionButton) {
-      const domain = 'https://app.adjust.com/'
       const query = bannerData.deeplinkPath ? `?deeplink=${encodeURIComponent(bannerData.deeplinkPath)}` : ''
-      actionButton.href = `${domain}${bannerData.trackerToken}${query}`
+      actionButton.href = `${endpoint}/${bannerData.trackerToken}${query}`
     }
   }
 

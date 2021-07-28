@@ -53,11 +53,30 @@ function encodeParams(params: Record<string, Primitive>): string {
     .join('&')
 }
 
+const defaultEndpoint = 'https://app.adjust.com'
+
+let lastSuccessfulEndpoint: string | undefined
+
+/**
+ * Returns last succesfull endpoint or default (`https://app.adjust.com`) one
+ */
+export function getEndpoint(): string {
+  return lastSuccessfulEndpoint || defaultEndpoint
+}
+
 export function request<T>(path: string, params: Record<string, Primitive> | undefined): Promise<T> {
   return urlStrategyRetries(baseUrlsMap => {
     const origin = baseUrlsMap.app
     const encodedParams = params ? `?${encodeParams(params)}` : ''
 
     return xhr<T>(`${origin}${path}${encodedParams}`)
+      .then((result: T) => {
+        lastSuccessfulEndpoint = baseUrlsMap.app
+        return result
+      })
+      .catch((err: NetworkError) => {
+        lastSuccessfulEndpoint = undefined
+        throw err
+      })
   })
 }
