@@ -1,4 +1,4 @@
-import Logger from './../logger'
+import Logger from '../logger'
 import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
 import { fetchSmartBannerData, SmartBannerData } from './network/api'
