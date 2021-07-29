@@ -224,8 +224,8 @@ function disableThirdPartySharing (): void {
   })
 }
 
-function initSmartBanner ({ appWebToken, logLevel }: SmartBannerOptionsT): void {
-  SmartBanner.init(appWebToken, logLevel)
+function initSmartBanner ({ webToken, logLevel }: SmartBannerOptionsT): void {
+  SmartBanner.init(webToken, logLevel)
 }
 
 /**

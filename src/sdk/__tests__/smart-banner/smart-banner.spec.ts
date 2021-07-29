@@ -7,7 +7,7 @@ jest.mock('../../logger')
 jest.useFakeTimers()
 
 describe('Smart Banner tests', () => {
-  const appWebToken = 'abc123'
+  const webToken = 'abc123'
   const defaultDismissInterval = 60 * 60 * 1000 // 1 hour in millis
   const platform = DetectOS.DeviceOS.iOS
   const bannerData: Api.SmartBannerData = {
@@ -49,7 +49,7 @@ describe('Smart Banner tests', () => {
     it(('initialises and renders banner'), async () => {
       expect.assertions(5)
 
-      smartBanner.init(appWebToken)
+      smartBanner.init(webToken)
       await Utils.flushPromises() // resolves data fetch promise that allows initialisation to finish
 
       expect(Logger.log).toHaveBeenCalledWith('Creating Smart Banner')
@@ -63,9 +63,9 @@ describe('Smart Banner tests', () => {
       it('initialisation in progress', async () => {
         expect.assertions(1)
 
-        smartBanner.init(appWebToken) // setup
+        smartBanner.init(webToken) // setup
 
-        smartBanner.init(appWebToken)
+        smartBanner.init(webToken)
 
         expect(Logger.error).toHaveBeenCalledWith('Smart Banner is initialising already')
 
@@ -75,10 +75,10 @@ describe('Smart Banner tests', () => {
       it('initialisation finished', async () => {
         expect.assertions(1)
 
-        smartBanner.init(appWebToken) // setup
+        smartBanner.init(webToken) // setup
         await Utils.flushPromises() // allow initialisation to finish
 
-        smartBanner.init(appWebToken)
+        smartBanner.init(webToken)
 
         expect(Logger.error).toHaveBeenCalledWith('Smart Banner already exists')
       })
@@ -89,7 +89,7 @@ describe('Smart Banner tests', () => {
 
       expect.assertions(1)
 
-      smartBanner.init(appWebToken)
+      smartBanner.init(webToken)
       await Utils.flushPromises()
 
       expect(Logger.log).toHaveBeenCalledWith(`No Smart Banners for ${platform} platform found`)
@@ -98,7 +98,7 @@ describe('Smart Banner tests', () => {
     it('logs message when no target platform', () => {
       jest.spyOn(DetectOS, 'getDeviceOS').mockReturnValueOnce(undefined)
 
-      smartBanner.init(appWebToken)
+      smartBanner.init(webToken)
 
       expect(Logger.log).toHaveBeenCalledWith('This platform is not one of the targeting ones, Smart Banner will not be shown')
     })
@@ -112,7 +112,7 @@ describe('Smart Banner tests', () => {
 
     describe('Smart Banner initialised', () => {
       beforeEach(() => {
-        smartBanner.init(appWebToken)
+        smartBanner.init(webToken)
         return Utils.flushPromises() // resolves data fetch promise that allows initialisation to finish
           .then(() => {
             jest.spyOn(smartBanner.banner, 'hide')
@@ -203,7 +203,7 @@ describe('Smart Banner tests', () => {
         .then(() => {
           jest.clearAllMocks()
 
-          smartBanner.dismiss(appWebToken, defaultDismissInterval)
+          smartBanner.dismiss(webToken, defaultDismissInterval)
         })
     })
 
@@ -229,7 +229,7 @@ describe('Smart Banner tests', () => {
     it('intialisation reschedules banner display when dismiss interval has not over', async () => {
       expect.assertions(4)
 
-      smartBanner.init(appWebToken)
+      smartBanner.init(webToken)
       await Utils.flushPromises()
 
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner was dismissed')

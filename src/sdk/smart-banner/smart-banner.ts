@@ -20,9 +20,9 @@ class SmartBanner {
   /**
    * Initiate Smart Banner
    *
-   * @param appWebToken token used to get data from backend
+   * @param webToken token used to get data from backend
    */
-  init(appWebToken: string, logLevel: LogLevel = 'error') {
+  init(webToken: string, logLevel: LogLevel = 'error') {
     this.logLevel = logLevel
     Logger.setLogLevel(logLevel)
 
@@ -42,7 +42,7 @@ class SmartBanner {
       return
     }
 
-    this.dataFetchPromise = fetchSmartBannerData(appWebToken, deviceOs)
+    this.dataFetchPromise = fetchSmartBannerData(webToken, deviceOs)
 
     this.dataFetchPromise.then(bannerData => {
       this.dataFetchPromise = null
@@ -55,7 +55,7 @@ class SmartBanner {
       const whenToShow = this.getDateToShowAgain(bannerData.dismissInterval)
       if (Date.now() < whenToShow) {
         Logger.log('Smart Banner was dismissed')
-        this.scheduleCreation(appWebToken, whenToShow)
+        this.scheduleCreation(webToken, whenToShow)
         return
       }
 
@@ -63,7 +63,7 @@ class SmartBanner {
 
       this.banner = new SmartBannerView(
         bannerData,
-        () => this.dismiss(appWebToken, bannerData.dismissInterval),
+        () => this.dismiss(webToken, bannerData.dismissInterval),
         Network.getEndpoint()
       )
 
@@ -125,12 +125,12 @@ class SmartBanner {
   /**
    * Schedules next Smart Banner show and removes banner from DOM
    */
-  private dismiss(appWebToken: string, dismissInterval: number) {
+  private dismiss(webToken: string, dismissInterval: number) {
     Logger.log('Smart Banner dismissed')
 
     storage.setItem(this.dismissedStorageKey, Date.now())
     const whenToShow = this.getDateToShowAgain(dismissInterval)
-    this.scheduleCreation(appWebToken, whenToShow)
+    this.scheduleCreation(webToken, whenToShow)
 
     this.destroy()
   }
@@ -138,7 +138,7 @@ class SmartBanner {
   /**
    * Sets a timeout to schedule next Smart Banner show
    */
-  private scheduleCreation(appWebToken: string, when: number) {
+  private scheduleCreation(webToken: string, when: number) {
     if (this.timer) {
       Logger.log('Clearing previously scheduled creation of Smart Banner')
       clearTimeout(this.timer)
@@ -149,7 +149,7 @@ class SmartBanner {
     this.timer = setTimeout(
       () => {
         this.timer = null
-        this.init(appWebToken, this.logLevel)
+        this.init(webToken, this.logLevel)
       },
       delay)
 

@@ -60,10 +60,10 @@ function validate(response: Partial<SmartBannerResponse>): SmartBannerData | nul
   return null
 }
 
-export function fetchSmartBannerData(appWebToken: string, deviceOs: DeviceOS): Promise<SmartBannerData | null> {
+export function fetchSmartBannerData(webToken: string, deviceOs: DeviceOS): Promise<SmartBannerData | null> {
   const path = '/smart_banner'
 
-  return Network.request<Partial<SmartBannerResponse>[]>(path, { 'app_web_token': appWebToken })
+  return Network.request<Partial<SmartBannerResponse>[]>(path, { 'app_web_token': webToken })
     .then(banners => {
       const banner = banners.find(item => item.platform === deviceOs)
 

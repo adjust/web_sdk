@@ -318,7 +318,7 @@ interface SmartBannerOptions {
  *
  * @example
  * Adjust.initSmartBanner({
- *   appWebToken: 'YOUR_APP_WEB_TOKEN',
+ *   webToken: 'YOUR_WEB_TOKEN',
  *   logLevel: 'verbose'
  * });
  */
