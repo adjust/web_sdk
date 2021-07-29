@@ -20,7 +20,7 @@ export interface SmartBannerData {
   deeplinkPath?: string;
 }
 
-interface SmartBannerResponce {
+interface SmartBannerResponse {
   app: {
     name: string;
     default_store_app_id: string;
@@ -35,10 +35,35 @@ interface SmartBannerResponce {
   image_url?: string;
 }
 
+/**
+ * Ensures response contains general info: title, description, button_label and tracker_token and converts response
+ * to SmartBannerData
+ */
+function validate(response: Partial<SmartBannerResponse>): SmartBannerData | null {
+  const { title, description, button_label, tracker_token } = response
+
+  if (title && description && button_label && tracker_token) {
+    return {
+      appId: response.app?.default_store_app_id || '',
+      appName: response.app?.name || '',
+      position: response.position || Position.Bottom,
+      imageUrl: response.image_url,
+      header: title,
+      description: description,
+      buttonText: button_label,
+      trackerToken: tracker_token,
+      deeplinkPath: response.deeplink_path,
+      dismissInterval: 24 * 60 * 60 * 1000, // 1 day in millis before show banner next time
+    }
+  }
+
+  return null
+}
+
 export function fetchSmartBannerData(appWebToken: string, deviceOs: DeviceOS): Promise<SmartBannerData | null> {
   const path = '/smart_banner'
 
-  return request<SmartBannerResponce[]>(path, { 'app_web_token': appWebToken })
+  return request<Partial<SmartBannerResponse>[]>(path, { 'app_web_token': appWebToken })
     .then(banners => {
       const banner = banners.find(item => item.platform === deviceOs)
 
@@ -46,20 +71,7 @@ export function fetchSmartBannerData(appWebToken: string, deviceOs: DeviceOS): P
         return null
       }
 
-      const data: SmartBannerData = {
-        appId: banner.app?.default_store_app_id || 'com.adjust.insights', // TODO: for tests only, remove this
-        appName: banner.app?.name || '',
-        position: banner.position,
-        imageUrl: banner.image_url,
-        header: banner.title,
-        description: banner.description,
-        buttonText: banner.button_label,
-        dismissInterval: 24 * 60 * 60 * 1000, // 1 day in millis before show banner next time
-        trackerToken: banner.tracker_token,
-        deeplinkPath: banner.deeplink_path,
-      }
-
-      return data
+      return validate(banner)
     })
     .catch(error => {
       Logger.error('Network error occurred during loading Smart Banner: ' + JSON.stringify(error))
