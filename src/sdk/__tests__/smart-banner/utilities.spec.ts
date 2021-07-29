@@ -4,7 +4,7 @@ describe('Utilities tests', () => {
   describe('parseJson', () => {
 
     it('returns parsed object for valid JSON string', () => {
-      const expectedObj = {key: "value"}
+      const expectedObj = {key: 'value'}
       const stringToParse = '{"key": "value"}'
 
       expect(parseJson(stringToParse)).toEqual(expectedObj)
