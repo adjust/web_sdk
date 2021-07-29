@@ -28,7 +28,7 @@ export class Network {
         xhr.setRequestHeader(key, value)
       })
 
-      xhr.onerror = () => reject({ status: 0, message: '' })
+      xhr.onerror = () => reject(NoConnectionError)
 
       xhr.onreadystatechange = () => {
         if (xhr.readyState !== 4) {
@@ -66,6 +66,11 @@ export class Network {
     return Network.lastSuccessfulEndpoint || Network.defaultEndpoint
   }
 
+  /**
+   * Sends a request to provided path choosing origin with `urlStrategyRetries`
+   * @param path
+   * @param params non-encoded parameters of the request
+   */
   public static request<T>(path: string, params?: Record<string, Primitive>): Promise<T> {
     return urlStrategyRetries(baseUrlsMap => {
       const origin = baseUrlsMap.app
