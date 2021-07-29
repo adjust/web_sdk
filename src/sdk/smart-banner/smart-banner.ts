@@ -3,7 +3,7 @@ import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
 import { fetchSmartBannerData, SmartBannerData } from './network/api'
 import { SmartBannerView } from './view/smart-banner-view'
-import { getEndpoint } from './network/network'
+import { Network } from './network/network'
 
 type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
 
@@ -64,7 +64,7 @@ class SmartBanner {
       this.banner = new SmartBannerView(
         bannerData,
         () => this.dismiss(appWebToken, bannerData.dismissInterval),
-        getEndpoint()
+        Network.getEndpoint()
       )
 
       Logger.log('Smart Banner created')
