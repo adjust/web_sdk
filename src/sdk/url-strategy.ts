@@ -72,7 +72,7 @@ function urlStrategyRetries<T>(
   } else {
     let attempt = 0
 
-    const trySendRequest: () => Promise<T> = () => {
+    const trySendRequest = (): Promise<T> => {
       const endpointKey = preferredUrls[attempt++]
       const urlsMap = endpoints[endpointKey]
 

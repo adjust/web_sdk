@@ -77,7 +77,10 @@ class SmartBanner {
   show(): void {
     if (this.banner) {
       this.banner.show()
-    } else if (this.dataFetchPromise) {
+      return
+    }
+
+    if (this.dataFetchPromise) {
       Logger.log('Smart Banner will be shown after initialisation finished')
 
       this.dataFetchPromise
@@ -85,9 +88,11 @@ class SmartBanner {
           Logger.log('Initialisation finished, showing Smart Banner')
           this.show()
         })
-    } else {
-      Logger.error('There is no Smart Banner to show, have you called initialisation?')
+
+      return
     }
+
+    Logger.error('There is no Smart Banner to show, have you called initialisation?')
   }
 
   /**
@@ -96,7 +101,10 @@ class SmartBanner {
   hide(): void {
     if (this.banner) {
       this.banner.hide()
-    } else if (this.dataFetchPromise) {
+      return
+    }
+
+    if (this.dataFetchPromise) {
       Logger.log('Smart Banner will be hidden after initialisation finished')
 
       this.dataFetchPromise
@@ -104,9 +112,11 @@ class SmartBanner {
           Logger.log('Initialisation finished, hiding Smart Banner')
           this.hide()
         })
-    } else {
-      Logger.error('There is no Smart Banner to hide, have you called initialisation?')
+
+      return
     }
+
+    Logger.error('There is no Smart Banner to hide, have you called initialisation?')
   }
 
   /**

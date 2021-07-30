@@ -1,5 +1,5 @@
 import styles from '../assets/styles.module.scss'
-import render, { actionButtonId, appIconImageId, appIconPlaceholderId, dismissButtonId } from '../assets/template'
+import render from '../assets/template'
 import { Position, SmartBannerData } from '../network/api'
 import { AppIcon } from './app-icon'
 
@@ -28,19 +28,19 @@ export class SmartBannerView {
       this.parent.appendChild(this.banner)
     }
 
-    this.dismissButton = this.getElemByClassAndId(styles.dismiss, dismissButtonId)
+    this.dismissButton = this.getElemByClass(styles.dismiss)
     if (this.dismissButton) {
       this.dismissButton.addEventListener('click', this.onDismiss)
     }
 
-    const appIconPlaceholder = this.getElemByClassAndId<HTMLElement>(styles.placeholder, appIconPlaceholderId)
-    const appIconImage = this.getElemByClassAndId<HTMLImageElement>(styles.image, appIconImageId)
+    const appIconPlaceholder = this.getElemByClass<HTMLElement>(styles.placeholder)
+    const appIconImage = this.getElemByClass<HTMLImageElement>(styles.image)
 
     if (appIconImage && appIconPlaceholder) {
       new AppIcon(bannerData, appIconImage, appIconPlaceholder)
     }
 
-    const actionButton = this.getElemByClassAndId<HTMLLinkElement>(styles.action, actionButtonId)
+    const actionButton = this.getElemByClass<HTMLLinkElement>(styles.action)
     if (actionButton) {
       const query = bannerData.deeplinkPath ? `?deeplink=${encodeURIComponent(bannerData.deeplinkPath)}` : ''
       actionButton.href = `${endpoint}/${bannerData.trackerToken}${query}`
@@ -67,9 +67,10 @@ export class SmartBannerView {
     }
   }
 
-  private getElemByClassAndId<T extends Element>(classNames: string, id: string): T | null {
+  private getElemByClass<T extends Element>(classNames: string): T | null {
     if (this.banner) {
-      return this.banner.getElementsByClassName(classNames).namedItem(id) as T
+      const elements = this.banner.getElementsByClassName(classNames)
+      return elements.length > 0 ? elements[0] as T : null
     }
 
     return null

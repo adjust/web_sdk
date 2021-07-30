@@ -1,7 +1,7 @@
 import { parseJson } from './utilities'
 const _storageName = 'adjust-smart-banner'
 
-function getItem(key: string): any | null {
+function getItem(key: string): any {
   const value = localStorage.getItem(`${_storageName}.${key}`)
   return parseJson(value)
 }
