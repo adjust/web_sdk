@@ -20,7 +20,9 @@ export class SmartBannerView {
     this.banner = document.createElement('div')
     const positionStyle = bannerData.position === Position.Top ? styles.stickyToTop : styles.stickyToBottom
     this.banner.setAttribute('class', `${styles.banner} ${positionStyle}`)
-    this.banner.innerHTML = render(bannerData.header, bannerData.description, bannerData.buttonText)
+    const query = bannerData.deeplinkPath ? `?deeplink=${encodeURIComponent(bannerData.deeplinkPath)}` : ''
+    const href = `${endpoint}/${bannerData.trackerToken}${query}`
+    this.banner.innerHTML = render(bannerData.header, bannerData.description, bannerData.buttonText, href)
 
     if (bannerData.position === Position.Top) {
       this.parent.insertBefore(this.banner, this.parent.firstChild)
@@ -38,12 +40,6 @@ export class SmartBannerView {
 
     if (appIconImage && appIconPlaceholder) {
       new AppIcon(bannerData, appIconImage, appIconPlaceholder)
-    }
-
-    const actionButton = this.getElemByClass<HTMLLinkElement>(styles.action)
-    if (actionButton) {
-      const query = bannerData.deeplinkPath ? `?deeplink=${encodeURIComponent(bannerData.deeplinkPath)}` : ''
-      actionButton.href = `${endpoint}/${bannerData.trackerToken}${query}`
     }
   }
 
