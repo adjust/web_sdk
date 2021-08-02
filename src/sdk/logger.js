@@ -93,7 +93,7 @@ function setLogLevel (logLevel: LogLevelT, logOutput: string): void {
   }
 
   _level = logLevel || _getDefaultLogLevel()
-  _output = logOutput
+  _output = logOutput || _output
 
   _log('info', logLevel, `Log level set to ${_level}`)
 }

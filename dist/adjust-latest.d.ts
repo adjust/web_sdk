@@ -65,6 +65,8 @@ interface EventParams {
   partnerParams?: Array<GlobalParams>;
 }
 
+type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
+
 interface InitOptions {
 
   /** Required to initialise SDK instance, please make sure to provide valid app token. */
@@ -128,7 +130,7 @@ interface InitOptions {
    * - `error` - will print only error message
    * - `none` - won't print anything
    */
-  logLevel?: 'none' | 'error' | 'warning' | 'info' | 'verbose';
+  logLevel?: LogLevel;
 
   /**
    * Optional. Query selector to define html container if you want to see your logs directly on the screen. This could
@@ -290,6 +292,38 @@ function gdprForgetMe(): void
  */
 function disableThirdPartySharing(): void
 
+interface SmartBannerOptions {
+
+  /** Web token to initialise Smart Banner */
+  webToken: string;
+
+  /** Optional. Logging level used by SDK instance. By default this param is set to `error`. We highly recommend that
+   * you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
+   * Here are more details about each log level:
+   * - `verbose` - will print detailed messages in case of certain actions
+   * - `info` - will print only basic info messages, warnings and errors
+   * - `warning` - will print only warning and error messages
+   * - `error` - will print only error message
+   * - `none` - won't print anything
+   */
+  logLevel?: LogLevel;
+}
+
+/**
+ * Initiate Smart Banner.
+ *
+ * This method gets Smart Banner data and creates Smart Banner UI.
+ *
+ * @param {SmartBannerOptions} options Options to initiate Smart Banner.
+ *
+ * @example
+ * Adjust.initSmartBanner({
+ *   webToken: 'YOUR_WEB_TOKEN',
+ *   logLevel: 'verbose'
+ * });
+ */
+function initSmartBanner(options: SmartBannerOptions): void
+
 const Adjust = {
   initSdk,
   trackEvent,
@@ -304,7 +338,8 @@ const Adjust = {
   stop,
   restart,
   gdprForgetMe,
-  disableThirdPartySharing
+  disableThirdPartySharing,
+  initSmartBanner,
 }
 
 export default Adjust

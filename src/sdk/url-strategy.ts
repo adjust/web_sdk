@@ -60,10 +60,10 @@ const endpointNiceNames: Record<UrlStrategy, string> = {
  * Gets the list of preferred endpoints and wraps `sendRequest` function with iterative retries until available
  * endpoint found or another error occurred.
  */
-function urlStrategyRetries(
-  sendRequest: (urls: BaseUrlsMap) => Promise<unknown>,
+function urlStrategyRetries<T>(
+  sendRequest: (urls: BaseUrlsMap) => Promise<T>,
   endpoints: Record<UrlStrategy, BaseUrlsMap> = endpointMap
-): Promise<unknown> {
+): Promise<T> {
   const preferredUrls = getEndpointPreference()
 
   if (!Array.isArray(preferredUrls)) {
@@ -72,7 +72,7 @@ function urlStrategyRetries(
   } else {
     let attempt = 0
 
-    const trySendRequest: () => Promise<unknown> = () => {
+    const trySendRequest = (): Promise<T> => {
       const endpointKey = preferredUrls[attempt++]
       const urlsMap = endpoints[endpointKey]
 
