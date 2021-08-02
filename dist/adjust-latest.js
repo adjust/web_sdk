@@ -98,7 +98,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var defineProperty = __webpack_require__(2);
+var defineProperty = __webpack_require__(1);
 
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -143,25 +143,6 @@ module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayWithHoles = __webpack_require__(15);
-
-var iterableToArrayLimit = __webpack_require__(16);
-
-var unsupportedIterableToArray = __webpack_require__(8);
-
-var nonIterableRest = __webpack_require__(17);
-
-function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
-}
-
-module.exports = _slicedToArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports) {
 
 function _defineProperty(obj, key, value) {
@@ -180,6 +161,25 @@ function _defineProperty(obj, key, value) {
 }
 
 module.exports = _defineProperty;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithHoles = __webpack_require__(15);
+
+var iterableToArrayLimit = __webpack_require__(16);
+
+var unsupportedIterableToArray = __webpack_require__(8);
+
+var nonIterableRest = __webpack_require__(17);
+
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+
+module.exports = _slicedToArray;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
@@ -1873,16 +1873,21 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, ".adjust-smart-banner__2B_H10JaUsseaRYJpdVevS{width:100vw;left:0;background-color:white;font-family:BlinkMacSystemFont,-apple-system,\"Segoe UI\",Roboto,Arial,sans-serif}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc{position:fixed;top:0;position:-webkit-sticky;position:sticky}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF{position:fixed;bottom:0;position:-webkit-sticky;position:sticky}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha{display:flex;align-items:center;margin:2px 8px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz{flex:1 1 0%;min-height:0;min-width:0}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha .adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha h4,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha h4{margin:0;font-size:12px;font-weight:bold;line-height:16px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha p,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha p{margin:0;font-size:9px;line-height:11px}.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc .adjust-smart-banner__2zUCl61n-bfB688MeKKyha button,.adjust-smart-banner__2B_H10JaUsseaRYJpdVevS.adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF .adjust-smart-banner__2zUCl61n-bfB688MeKKyha button{background-color:#00bed5;color:white;border:none;border-radius:2px;padding:8px 10px;display:inline-block;vertical-align:middle;text-transform:uppercase;text-align:center;font-size:12px;font-weight:500;line-height:16px}\n", ""]);
+exports.push([module.i, ".adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH{position:fixed;max-width:428px;width:100vw;left:50%;transform:translate(-50%);background-color:white}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH.adjust-smart-banner__1gDv13AgIJ63OmoMUWN6vd{top:0}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH.adjust-smart-banner__2Xpm01sHnZNYOOkNk05cAc{bottom:0}@media (max-width: 428px){.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH{position:-webkit-sticky;position:sticky}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH.adjust-smart-banner__1gDv13AgIJ63OmoMUWN6vd{top:0}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH.adjust-smart-banner__2Xpm01sHnZNYOOkNk05cAc{bottom:0}}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__3PQ7z78EskytjOkrU199hE{width:32px;height:32px;border:none;background:url(\"data:image/svg+xml;utf8,    <svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 16 16'>      <path d='M1 0 L0 1 L15 16 L16 15 L1 0' fill='%236e7492'/>      <path d='M16 1 L16 1 L1 16 L0 15 L15 0' fill='%236e7492'/>    </svg>\");background-repeat:no-repeat;background-position:center center;background-size:8px 8px, auto;cursor:pointer}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__L_BSzs7rJajVPX4zdt2R6{width:56px;height:56px;overflow:hidden;background-color:#6e7492;border-radius:8px}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__L_BSzs7rJajVPX4zdt2R6 .adjust-smart-banner__3Yj45mdOZKIOH2d6Z2UXXa{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#353a52;font-weight:bold;font-size:23px;font-family:ArialMt,Arial,sans-serif;line-height:32px;background-color:#e0e2ec}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__L_BSzs7rJajVPX4zdt2R6 .adjust-smart-banner__4hg0kzTWzWiGjzCDqbktp{width:100%}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__YV2trFakzl9_mm1H-9Ht5{display:flex;align-items:center;margin:10px 8px 10px 4px}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__YV2trFakzl9_mm1H-9Ht5 .adjust-smart-banner__3mbKdOA0SmqrfOLvHomXyc{flex:1 1 0%;min-height:0;min-width:0;margin:0 12px}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__YV2trFakzl9_mm1H-9Ht5 .adjust-smart-banner__3DSKm9idx4dze89DWsCMXr{overflow:hidden;text-overflow:ellipsis}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__YV2trFakzl9_mm1H-9Ht5 h4{margin:5px 0 8px;color:#353a52;font-family:Arial-BoldMT,ArialMt,Arial,sans-serif;font-size:12px;font-weight:bold;line-height:16px;white-space:nowrap}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__YV2trFakzl9_mm1H-9Ht5 p{margin:8px 0 7px;color:#353a52;font-family:ArialMt,Arial,sans-serif;font-size:9px;line-height:11px;max-height:22px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH .adjust-smart-banner__YV2trFakzl9_mm1H-9Ht5 .adjust-smart-banner__3_w6WNex3gOuKV8gztVNoI{color:#6e7492;background:#f9fafc;border:1px solid #cdd0e0;border-radius:4px;border-color:#6e7492;box-shadow:inset 0px -1px 0px 0px #e0e2ec;padding:4px 6.5px;display:inline-block;vertical-align:middle;text-align:center;font-family:ArialMt,Arial,sans-serif;font-size:12px;font-weight:500;line-height:16px;cursor:pointer;text-decoration:none}\n", ""]);
 
 // exports
 exports.locals = {
-	"banner": "adjust-smart-banner__2B_H10JaUsseaRYJpdVevS",
-	"stickyToTop": "adjust-smart-banner__1u912Y72Y5z3ZeH_KISIIc",
-	"stickyToBottom": "adjust-smart-banner__DXFyAJ3AhlzhPEp8UZ4FF",
-	"bannerBody": "adjust-smart-banner__2zUCl61n-bfB688MeKKyha",
-	"textContainer": "adjust-smart-banner__2JrIBTXictB5lqTjEZFNNz",
-	"bannerText": "adjust-smart-banner__3_No8Y1Gy_qOtsUkoxWVmv"
+	"banner": "adjust-smart-banner__Dw5N6VeDUP14gIEdMH7SH",
+	"stickyToTop": "adjust-smart-banner__1gDv13AgIJ63OmoMUWN6vd",
+	"stickyToBottom": "adjust-smart-banner__2Xpm01sHnZNYOOkNk05cAc",
+	"dismiss": "adjust-smart-banner__3PQ7z78EskytjOkrU199hE",
+	"appIcon": "adjust-smart-banner__L_BSzs7rJajVPX4zdt2R6",
+	"placeholder": "adjust-smart-banner__3Yj45mdOZKIOH2d6Z2UXXa",
+	"image": "adjust-smart-banner__4hg0kzTWzWiGjzCDqbktp",
+	"bannerBody": "adjust-smart-banner__YV2trFakzl9_mm1H-9Ht5",
+	"textContainer": "adjust-smart-banner__3mbKdOA0SmqrfOLvHomXyc",
+	"bannerText": "adjust-smart-banner__3DSKm9idx4dze89DWsCMXr",
+	"action": "adjust-smart-banner__3_w6WNex3gOuKV8gztVNoI"
 };
 
 /***/ }),
@@ -2483,7 +2488,7 @@ var objectWithoutProperties = __webpack_require__(10);
 var objectWithoutProperties_default = /*#__PURE__*/__webpack_require__.n(objectWithoutProperties);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
-var slicedToArray = __webpack_require__(1);
+var slicedToArray = __webpack_require__(2);
 var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/toConsumableArray.js
@@ -2512,7 +2517,7 @@ var STORAGE_TYPES = {
   LOCAL_STORAGE: 'localStorage'
 };
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
-var defineProperty = __webpack_require__(2);
+var defineProperty = __webpack_require__(1);
 var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
@@ -2877,7 +2882,7 @@ function setLogLevel(logLevel
   }
 
   _level = logLevel || _getDefaultLogLevel();
-  _output = logOutput;
+  _output = logOutput || _output;
 
   _log('info', logLevel, "Log level set to ".concat(_level));
 }
@@ -3140,7 +3145,7 @@ function hasMissing(params
  */
 
 
-function destroy()
+function config_destroy()
 /*: void*/
 {
   _baseParams = {};
@@ -3153,7 +3158,7 @@ var Config = objectSpread2_default()(objectSpread2_default()({}, _baseConfig), {
   getCustomConfig: getCustomConfig,
   isInitialised: isInitialised,
   hasMissing: hasMissing,
-  destroy: destroy
+  destroy: config_destroy
 });
 
 /* harmony default export */ var sdk_config = (Config);
@@ -7375,10 +7380,12 @@ var endpointNiceNames
  * endpoint found or another error occurred.
  */
 
-function urlStrategyRetries(sendRequest
-/*: (urls: BaseUrlsMap) => Promise<unknown>*/
+function urlStrategyRetries
+/*:: <T>*/
+(sendRequest
+/*: (urls: BaseUrlsMap) => Promise<T>*/
 )
-/*: Promise<unknown>*/
+/*: Promise<T>*/
 {
   var endpoints
   /*: Record<UrlStrategy, BaseUrlsMap>*/
@@ -7391,11 +7398,9 @@ function urlStrategyRetries(sendRequest
   } else {
     var attempt = 0;
 
-    var trySendRequest
-    /*: () => Promise<unknown>*/
-    = function trySendRequest
-    /*: () => Promise<unknown>*/
-    () {
+    var trySendRequest = function trySendRequest()
+    /*: Promise<T>*/
+    {
       var endpointKey = preferredUrls[attempt++];
       var urlsMap = endpoints[endpointKey];
       return sendRequest(urlsMap).catch(function (reason) {
@@ -8659,7 +8664,7 @@ var request_Request = function Request() {
   };
 };
 
-/* harmony default export */ var request = (request_Request);
+/* harmony default export */ var sdk_request = (request_Request);
 // CONCATENATED MODULE: ./src/sdk/disable.js
 
 
@@ -9087,7 +9092,7 @@ import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT,
  * @type {Object}
  * @private
  */
-var queue_request = request({
+var queue_request = sdk_request({
   strategy: 'long',
   continueCb: queue_continue
 });
@@ -9958,7 +9963,7 @@ import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT,
  * @private
  */
 
-var attribution_request = request({
+var attribution_request = sdk_request({
   url: '/attribution',
   strategy: 'short',
   continueCb: attribution_continue
@@ -10147,7 +10152,7 @@ function attribution_destroy()
  * @private
  */
 
-var gdpr_forget_device_request = request({
+var gdpr_forget_device_request = sdk_request({
   url: '/gdpr_forget_device',
   method: 'POST',
   strategy: 'short'
@@ -10413,7 +10418,7 @@ var _tasks
  * @param {string} description
  */
 
-function delay(method
+function scheduler_delay(method
 /*: $PropertyType<TaskT, 'method'>*/
 , description
 /*: $PropertyType<TaskT, 'description'>*/
@@ -10732,12 +10737,343 @@ function sdkClick()
     });
   }
 }
-// EXTERNAL MODULE: ./src/sdk/smart-banner/assets/styles.scss
-var styles = __webpack_require__(4);
-var styles_default = /*#__PURE__*/__webpack_require__.n(styles);
+// CONCATENATED MODULE: ./src/sdk/smart-banner/detect-os.ts
+/**
+ * Operation systems
+ */
+var DeviceOS;
+/**
+ * Returns one of android, ios, windows, windows-phone or undefined for another OS.
+ */
+
+(function (DeviceOS) {
+  DeviceOS["Android"] = "android";
+  DeviceOS["iOS"] = "ios";
+  DeviceOS["WindowsPC"] = "windows";
+  DeviceOS["WindowsPhone"] = "windows-phone";
+})(DeviceOS || (DeviceOS = {}));
+
+function getDeviceOS()
+/*: Maybe<DeviceOS>*/
+{
+  var _navigator, _navigator$userAgent;
+
+  var userAgent = (_navigator = navigator) === null || _navigator === void 0 ? void 0 : (_navigator$userAgent = _navigator.userAgent) === null || _navigator$userAgent === void 0 ? void 0 : _navigator$userAgent.toLowerCase();
+
+  if (!userAgent || userAgent.length < 1) {
+    return undefined;
+  }
+
+  if (/ipad|iphone|ipod/.test(userAgent)) {
+    return DeviceOS.iOS;
+  } // Checking Windows first because Lumia devices could have for example
+  // "Mozilla/5.0 (Windows Mobile 10; Android 8.0.0; Microsoft; Lumia 950XL) ..." user agent
+
+
+  if (userAgent.includes('windows')) {
+    if (/phone|mobile/.test(userAgent)) {
+      return DeviceOS.WindowsPhone;
+    }
+
+    return DeviceOS.WindowsPC;
+  }
+
+  if (userAgent.includes('android')) {
+    return DeviceOS.Android;
+  }
+
+  return undefined;
+}
+// CONCATENATED MODULE: ./src/sdk/smart-banner/utilities.ts
+/**
+ * Wraps JSON.parse() with try-catch.
+ * Returns parsed object if successfully parsed and null otherwise.
+ */
+function parseJson(str
+/*: string | null*/
+)
+/*: any*/
+{
+  if (!str) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(str);
+  } catch (error) {
+    return null;
+  }
+}
+// CONCATENATED MODULE: ./src/sdk/smart-banner/local-storage.ts
+
+var _storageName = 'adjust-smart-banner';
+
+function getItem(key
+/*: string*/
+)
+/*: any*/
+{
+  var value = localStorage.getItem("".concat(_storageName, ".").concat(key));
+  return parseJson(value);
+}
+
+function setItem(key
+/*: string*/
+, value
+/*: any*/
+) {
+  if (!value) {
+    localStorage.removeItem("".concat(_storageName, ".").concat(key));
+  } else {
+    localStorage.setItem("".concat(_storageName, ".").concat(key), JSON.stringify(value));
+  }
+}
+
+var local_storage_storage = {
+  getItem: getItem,
+  setItem: setItem
+};
+// CONCATENATED MODULE: ./src/sdk/smart-banner/network/errors.ts
+/*:: export interface NetworkError {
+  status: number;
+  code?: string;
+  message: string;
+}*/
+var NoConnectionError
+/*: NetworkError*/
+= {
+  status: 0,
+  code: 'NO_CONNECTION',
+  // for compatibility with UrlStrategy
+  message: 'No internet connectivity'
+};
+// CONCATENATED MODULE: ./src/sdk/smart-banner/network/network.ts
+
+
+
+
+
+var network_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+
+
+
+
+
+var network_Network = /*#__PURE__*/function () {
+  function Network() {
+    classCallCheck_default()(this, Network);
+  }
+
+  createClass_default()(Network, null, [{
+    key: "xhr",
+    value:
+    /**
+     * Creates an XMLHttpRequest object and sends a GET request with provided encoded URL
+     * @param url encoded URL
+     */
+    function xhr
+    /*:: <T>*/
+    (url
+    /*: string*/
+    )
+    /*: Promise<T>*/
+    {
+      return new network_Promise(function (resolve, reject
+      /*: (err: NetworkError) => void*/
+      ) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        var headers = [['Client-SDK', "js".concat(globals.version)], ['Content-Type', 'application/json']];
+        headers.forEach(function (_ref) {
+          var _ref2 = slicedToArray_default()(_ref, 2),
+              key = _ref2[0],
+              value = _ref2[1];
+
+          xhr.setRequestHeader(key, value);
+        });
+
+        xhr.onerror = function () {
+          return reject(NoConnectionError);
+        };
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState !== 4) {
+            return;
+          }
+
+          var okStatus = xhr.status >= 200 && xhr.status < 300;
+          var json = parseJson(xhr.responseText);
+
+          if (xhr.status === 0) {
+            reject(NoConnectionError);
+          } else {
+            if (okStatus) {
+              resolve(json);
+            } else {
+              reject({
+                status: xhr.status,
+                message: json || xhr.responseText || ''
+              });
+            }
+          }
+        };
+
+        xhr.send();
+      });
+    }
+  }, {
+    key: "encodeParams",
+    value: function encodeParams(params
+    /*: Record<string, Primitive>*/
+    )
+    /*: string*/
+    {
+      return Object.keys(params).map(function (key) {
+        return [encodeURIComponent(key), encodeURIComponent(params[key])].join('=');
+      }).join('&');
+    }
+    /**
+     * Returns last succesfull endpoint or default (`https://app.adjust.com`) one
+     */
+
+  }, {
+    key: "getEndpoint",
+    value: function getEndpoint()
+    /*: string*/
+    {
+      return Network.lastSuccessfulEndpoint || Network.defaultEndpoint;
+    }
+    /**
+     * Sends a request to provided path choosing origin with `urlStrategyRetries`
+     * @param path
+     * @param params non-encoded parameters of the request
+     */
+
+  }, {
+    key: "request",
+    value: function request
+    /*:: <T>*/
+    (path
+    /*: string*/
+    , params
+    /*: Record<string, Primitive>*/
+    )
+    /*: Promise<T>*/
+    {
+      return urlStrategyRetries(function (baseUrlsMap) {
+        var origin = baseUrlsMap.app;
+        var encodedParams = params ? "?".concat(Network.encodeParams(params)) : '';
+        return Network.xhr("".concat(origin).concat(path).concat(encodedParams)).then(function (result
+        /*: T*/
+        ) {
+          Network.lastSuccessfulEndpoint = baseUrlsMap.app;
+          return result;
+        }).catch(function (err
+        /*: NetworkError*/
+        ) {
+          Network.lastSuccessfulEndpoint = undefined;
+          throw err;
+        });
+      });
+    }
+  }]);
+
+  return Network;
+}();
+
+defineProperty_default()(network_Network, "defaultEndpoint", 'https://app.adjust.com');
+
+defineProperty_default()(network_Network, "lastSuccessfulEndpoint", void 0);
+// CONCATENATED MODULE: ./src/sdk/smart-banner/network/api.ts
+var api_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+
+
+
+var Position;
+
+(function (Position) {
+  Position["Top"] = "top";
+  Position["Bottom"] = "bottom";
+})(Position || (Position = {}));
+/*:: export interface SmartBannerData {
+  appId: string;
+  appName: string;
+  position: Position;
+  imageUrl?: string;
+  header: string;
+  description: string;
+  buttonText: string;
+  dismissInterval: number;
+  trackerToken: string;
+  deeplinkPath?: string;
+}*/
+
+
+/**
+ * Ensures response contains general info: title, description, button_label and tracker_token and converts response
+ * to SmartBannerData
+ */
+function validate(response
+/*: Partial<SmartBannerResponse>*/
+)
+/*: SmartBannerData | null*/
+{
+  var title = response.title,
+      description = response.description,
+      button_label = response.button_label,
+      tracker_token = response.tracker_token;
+
+  if (title && description && button_label && tracker_token) {
+    var _response$app, _response$app2;
+
+    return {
+      appId: ((_response$app = response.app) === null || _response$app === void 0 ? void 0 : _response$app.default_store_app_id) || '',
+      appName: ((_response$app2 = response.app) === null || _response$app2 === void 0 ? void 0 : _response$app2.name) || '',
+      position: response.position || Position.Bottom,
+      imageUrl: response.image_url,
+      header: title,
+      description: description,
+      buttonText: button_label,
+      trackerToken: tracker_token,
+      deeplinkPath: response.deeplink_path,
+      dismissInterval: 24 * 60 * 60 * 1000 // 1 day in millis before show banner next time
+
+    };
+  }
+
+  return null;
+}
+
+function fetchSmartBannerData(webToken
+/*: string*/
+, deviceOs
+/*: DeviceOS*/
+)
+/*: Promise<SmartBannerData | null>*/
+{
+  var path = '/smart_banner';
+  return network_Network.request(path, {
+    'app_web_token': webToken
+  }).then(function (banners) {
+    var banner = banners.find(function (item) {
+      return item.platform === deviceOs;
+    });
+
+    if (!banner) {
+      return null;
+    }
+
+    return validate(banner);
+  }).catch(function (error) {
+    logger.error('Network error occurred during loading Smart Banner: ' + JSON.stringify(error));
+    return null;
+  });
+}
+// EXTERNAL MODULE: ./src/sdk/smart-banner/assets/styles.module.scss
+var styles_module = __webpack_require__(4);
+var styles_module_default = /*#__PURE__*/__webpack_require__.n(styles_module);
 
 // CONCATENATED MODULE: ./src/sdk/smart-banner/assets/template.ts
- // TODO: replace .adjust-logo with a correct one to show client's image
 
 /* harmony default export */ var template = (function (header
 /*: string*/
@@ -10745,22 +11081,224 @@ var styles_default = /*#__PURE__*/__webpack_require__.n(styles);
 /*: string*/
 , buttonText
 /*: string*/
+, href
+/*: string*/
 ) {
-  return "\n  <div class=".concat(styles_default.a.bannerBody, ">\n    <i class=\"adjust-logo\"></i>\n    <div class=\"").concat(styles_default.a.textContainer, "\">\n      <h4 class=\"").concat(styles_default.a.bannerText, "\">").concat(header, "</h4>\n      <p class=\"").concat(styles_default.a.bannerText, "\">").concat(description, "</p>\n    </div>\n    <button>").concat(buttonText, "</button>\n  </div>");
+  return "\n  <div class=".concat(styles_module_default.a.bannerBody, ">\n    <button class=\"").concat(styles_module_default.a.dismiss, "\"></button>\n    <div class=\"").concat(styles_module_default.a.appIcon, "\">\n      <div class=\"").concat(styles_module_default.a.placeholder, "\"></div>\n      <img class=\"").concat(styles_module_default.a.image, "\" alt=\"").concat(header, "\">\n    </div>\n    <div class=\"").concat(styles_module_default.a.textContainer, "\">\n      <h4 class=\"").concat(styles_module_default.a.bannerText, "\">").concat(header, "</h4>\n      <p class=\"").concat(styles_module_default.a.bannerText, "\">").concat(description, "</p>\n    </div>\n    <a class=\"").concat(styles_module_default.a.action, "\" href=").concat(href, ">").concat(buttonText, "</a>\n  </div>");
 });
+// CONCATENATED MODULE: ./src/sdk/smart-banner/view/app-icon.ts
+
+
+
+
+var app_icon_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
+
+var app_icon_AppIcon = /*#__PURE__*/function () {
+  function AppIcon(bannerData
+  /*: AppIconData*/
+  , image
+  /*: HTMLImageElement*/
+  , placeholder
+  /*: HTMLElement*/
+  ) {
+    classCallCheck_default()(this, AppIcon);
+
+    defineProperty_default()(this, "appTraceUrl", function (appId
+    /*: string*/
+    ) {
+      return "https://www.apptrace.com/api/app/".concat(appId, "/artwork_url_small");
+    });
+
+    defineProperty_default()(this, "appName", void 0);
+
+    defineProperty_default()(this, "image", void 0);
+
+    defineProperty_default()(this, "placeholder", void 0);
+
+    this.image = image;
+    this.placeholder = placeholder;
+    this.appName = bannerData.appName;
+    var sources = this.getSources(bannerData);
+    this.showImage(sources);
+  }
+
+  createClass_default()(AppIcon, [{
+    key: "getSources",
+    value: function getSources(bannerData
+    /*: AppIconData*/
+    )
+    /*: string[]*/
+    {
+      var sourcesArray
+      /*: string[]*/
+      = [];
+
+      if (bannerData.imageUrl) {
+        sourcesArray.push(bannerData.imageUrl);
+      }
+
+      sourcesArray.push(this.appTraceUrl(bannerData.appId));
+      return sourcesArray;
+    }
+  }, {
+    key: "showImage",
+    value: function showImage(sources
+    /*: string[]*/
+    )
+    /*: Promise<void>*/
+    {
+      var _this = this;
+
+      var imageLoadingPromise = sources.reduce(function (acc, url) {
+        return acc.catch(function () {
+          return _this.loadImage(url, _this.image);
+        });
+      }, app_icon_Promise.reject());
+      return imageLoadingPromise.then(function () {
+        _this.placeholder.remove();
+      }).catch(function () {
+        _this.image.remove();
+
+        _this.placeholder.innerText = _this.appName.length ? _this.appName[0].toUpperCase() : '';
+      });
+    }
+  }, {
+    key: "loadImage",
+    value: function loadImage(url
+    /*: string*/
+    , image
+    /*: HTMLImageElement*/
+    ) {
+      return new app_icon_Promise(function (resolve, reject) {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = url;
+      });
+    }
+  }]);
+
+  return AppIcon;
+}();
+// CONCATENATED MODULE: ./src/sdk/smart-banner/view/smart-banner-view.ts
+
+
+
+
+
+
+
+var smart_banner_view_SmartBannerView = /*#__PURE__*/function () {
+  function SmartBannerView(data
+  /*: SmartBannerData*/
+  , onDismiss
+  /*: () => void*/
+  , endpoint
+  /*: string*/
+  ) {
+    classCallCheck_default()(this, SmartBannerView);
+
+    defineProperty_default()(this, "parent", document.body);
+
+    defineProperty_default()(this, "banner", void 0);
+
+    defineProperty_default()(this, "dismissButton", null);
+
+    defineProperty_default()(this, "onDismiss", void 0);
+
+    this.onDismiss = onDismiss;
+    this.render(data, endpoint);
+  }
+
+  createClass_default()(SmartBannerView, [{
+    key: "render",
+    value: function render(bannerData
+    /*: SmartBannerData*/
+    , endpoint
+    /*: string*/
+    ) {
+      this.banner = document.createElement('div');
+      var positionStyle = bannerData.position === Position.Top ? styles_module_default.a.stickyToTop : styles_module_default.a.stickyToBottom;
+      this.banner.setAttribute('class', "".concat(styles_module_default.a.banner, " ").concat(positionStyle));
+      var query = bannerData.deeplinkPath ? "?deeplink=".concat(encodeURIComponent(bannerData.deeplinkPath)) : '';
+      var href = "".concat(endpoint, "/").concat(bannerData.trackerToken).concat(query);
+      this.banner.innerHTML = template(bannerData.header, bannerData.description, bannerData.buttonText, href);
+
+      if (bannerData.position === Position.Top) {
+        this.parent.insertBefore(this.banner, this.parent.firstChild);
+      } else {
+        this.parent.appendChild(this.banner);
+      }
+
+      this.dismissButton = this.getElemByClass(styles_module_default.a.dismiss);
+
+      if (this.dismissButton) {
+        this.dismissButton.addEventListener('click', this.onDismiss);
+      }
+
+      var appIconPlaceholder = this.getElemByClass(styles_module_default.a.placeholder);
+      var appIconImage = this.getElemByClass(styles_module_default.a.image);
+
+      if (appIconImage && appIconPlaceholder) {
+        new app_icon_AppIcon(bannerData, appIconImage, appIconPlaceholder);
+      }
+    }
+  }, {
+    key: "show",
+    value: function show() {
+      this.banner.hidden = false;
+    }
+  }, {
+    key: "hide",
+    value: function hide() {
+      this.banner.hidden = true;
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.removeDismissButtonHandler();
+      this.banner.remove();
+    }
+  }, {
+    key: "removeDismissButtonHandler",
+    value: function removeDismissButtonHandler() {
+      if (this.dismissButton && this.onDismiss) {
+        this.dismissButton.removeEventListener('click', this.onDismiss);
+        this.dismissButton = null;
+      }
+    }
+  }, {
+    key: "getElemByClass",
+    value: function getElemByClass
+    /*:: <T extends Element>*/
+    (classNames
+    /*: string*/
+    )
+    /*: T | null*/
+    {
+      if (this.banner) {
+        var elements = this.banner.getElementsByClassName(classNames);
+        return elements.length > 0 ? elements[0] : null;
+      }
+
+      return null;
+    }
+  }]);
+
+  return SmartBannerView;
+}();
 // CONCATENATED MODULE: ./src/sdk/smart-banner/smart-banner.ts
 
 
 
 
+var smart_banner_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
 
 
-var SmartBannerPosition;
 
-(function (SmartBannerPosition) {
-  SmartBannerPosition["Top"] = "top";
-  SmartBannerPosition["Bottom"] = "bottom";
-})(SmartBannerPosition || (SmartBannerPosition = {}));
+
+
+
+
 
 /**
  * Adjust Web SDK Smart Banner
@@ -10769,81 +11307,212 @@ var smart_banner_SmartBanner = /*#__PURE__*/function () {
   function SmartBanner() {
     classCallCheck_default()(this, SmartBanner);
 
-    defineProperty_default()(this, "parent", void 0);
+    defineProperty_default()(this, "dismissedStorageKey", 'closed');
+
+    defineProperty_default()(this, "timer", null);
+
+    defineProperty_default()(this, "dataFetchPromise", void 0);
 
     defineProperty_default()(this, "banner", void 0);
+
+    defineProperty_default()(this, "logLevel", void 0);
   }
 
   createClass_default()(SmartBanner, [{
-    key: "getSmartBannerData",
+    key: "init",
     value:
     /**
-     * Loads banners from backend if available
+     * Initiate Smart Banner
      *
-     * TODO: implement this stub
+     * @param webToken token used to get data from backend
      */
-    function getSmartBannerData(appWebToken
+    function init(webToken
     /*: string*/
-    )
-    /*: SmartBannerData*/
-    {
-      return {
-        image: '',
-        header: 'Adjust Smart Banners',
-        description: 'Not so smart actually, but deep links do the magic anyway',
-        buttonText: 'Let\'s go!',
-        position: SmartBannerPosition.Top
-      };
+    ) {
+      var _this = this;
+
+      var logLevel
+      /*: LogLevel*/
+      = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'error';
+      this.logLevel = logLevel;
+      logger.setLogLevel(logLevel);
+
+      if (this.banner) {
+        logger.error('Smart Banner already exists');
+        return;
+      }
+
+      if (this.dataFetchPromise) {
+        logger.error('Smart Banner is initialising already');
+        return;
+      }
+
+      var deviceOs = getDeviceOS();
+
+      if (!deviceOs) {
+        logger.log('This platform is not one of the targeting ones, Smart Banner will not be shown');
+        return;
+      }
+
+      this.dataFetchPromise = fetchSmartBannerData(webToken, deviceOs);
+      this.dataFetchPromise.then(function (bannerData) {
+        _this.dataFetchPromise = null;
+
+        if (!bannerData) {
+          logger.log("No Smart Banners for ".concat(deviceOs, " platform found"));
+          return;
+        }
+
+        var whenToShow = _this.getDateToShowAgain(bannerData.dismissInterval);
+
+        if (Date.now() < whenToShow) {
+          logger.log('Smart Banner was dismissed');
+
+          _this.scheduleCreation(webToken, whenToShow);
+
+          return;
+        }
+
+        logger.log('Creating Smart Banner');
+        _this.banner = new smart_banner_view_SmartBannerView(bannerData, function () {
+          return _this.dismiss(webToken, bannerData.dismissInterval);
+        }, network_Network.getEndpoint());
+        logger.log('Smart Banner created');
+      });
     }
     /**
-     * Initiate Smart Banner.
-     *
-     * TODO: implement getting Smart Banner data and creating Smart Banner UI properly.
-     *
-     * @param appWebToken
+     * Show Smart Banner
      */
 
-  }, {
-    key: "init",
-    value: function init(appWebToken
-    /*: string*/
-    )
-    /*: void*/
-    {
-      logger.info('Initialise Smart Banner');
-      var bannerData = this.getSmartBannerData(appWebToken);
-      this.parent = document.body;
-      this.banner = document.createElement('div');
-      this.banner.setAttribute('class', "".concat(styles_default.a.banner, " ").concat(bannerData.position === SmartBannerPosition.Top ? styles_default.a.stickyToTop : styles_default.a.stickyToBottom));
-      this.banner.innerHTML = template(bannerData.header, bannerData.description, bannerData.buttonText);
-
-      if (bannerData.position === SmartBannerPosition.Top) {
-        this.parent.insertBefore(this.banner, this.parent.firstChild);
-      } else {
-        this.parent.appendChild(this.banner);
-      }
-    }
   }, {
     key: "show",
     value: function show()
     /*: void*/
     {
+      var _this2 = this;
+
       if (this.banner) {
-        this.banner.hidden = false;
-      } else {
-        logger.error('There is no Smart Banner to show, have you called initialisation?');
+        this.banner.show();
+        return;
       }
+
+      if (this.dataFetchPromise) {
+        logger.log('Smart Banner will be shown after initialisation finished');
+        this.dataFetchPromise.then(function () {
+          logger.log('Initialisation finished, showing Smart Banner');
+
+          _this2.show();
+        });
+        return;
+      }
+
+      logger.error('There is no Smart Banner to show, have you called initialisation?');
     }
+    /**
+     * Hide Smart Banner
+     */
+
   }, {
     key: "hide",
     value: function hide()
     /*: void*/
     {
+      var _this3 = this;
+
       if (this.banner) {
-        this.banner.hidden = true;
-      } else {
-        logger.error('There is no Smart Banner to hide, have you called initialisation?');
+        this.banner.hide();
+        return;
       }
+
+      if (this.dataFetchPromise) {
+        logger.log('Smart Banner will be hidden after initialisation finished');
+        this.dataFetchPromise.then(function () {
+          logger.log('Initialisation finished, hiding Smart Banner');
+
+          _this3.hide();
+        });
+        return;
+      }
+
+      logger.error('There is no Smart Banner to hide, have you called initialisation?');
+    }
+    /**
+     * Removes Smart Banner from DOM
+     */
+
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.banner) {
+        this.banner.destroy();
+        this.banner = null;
+        logger.log('Smart Banner removed');
+      } else {
+        logger.error('There is no Smart Banner to remove');
+      }
+    }
+    /**
+     * Schedules next Smart Banner show and removes banner from DOM
+     */
+
+  }, {
+    key: "dismiss",
+    value: function dismiss(webToken
+    /*: string*/
+    , dismissInterval
+    /*: number*/
+    ) {
+      logger.log('Smart Banner dismissed');
+      local_storage_storage.setItem(this.dismissedStorageKey, Date.now());
+      var whenToShow = this.getDateToShowAgain(dismissInterval);
+      this.scheduleCreation(webToken, whenToShow);
+      this.destroy();
+    }
+    /**
+     * Sets a timeout to schedule next Smart Banner show
+     */
+
+  }, {
+    key: "scheduleCreation",
+    value: function scheduleCreation(webToken
+    /*: string*/
+    , when
+    /*: number*/
+    ) {
+      var _this4 = this;
+
+      if (this.timer) {
+        logger.log('Clearing previously scheduled creation of Smart Banner');
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+
+      var delay = when - Date.now();
+      this.timer = setTimeout(function () {
+        _this4.timer = null;
+
+        _this4.init(webToken, _this4.logLevel);
+      }, delay);
+      logger.log('Smart Banner creation scheduled on ' + new Date(when));
+    }
+    /**
+     * Returns date when Smart Banner should be shown again
+     */
+
+  }, {
+    key: "getDateToShowAgain",
+    value: function getDateToShowAgain(dismissInterval
+    /*: number*/
+    )
+    /*: number*/
+    {
+      var dismissedDate = local_storage_storage.getItem(this.dismissedStorageKey);
+
+      if (!dismissedDate) {
+        return Date.now();
+      }
+
+      return dismissedDate + dismissInterval;
     }
   }]);
 
@@ -11158,20 +11827,9 @@ function disableThirdPartySharing()
 function initSmartBanner(_ref2)
 /*: void*/
 {
-  var appWebToken = _ref2.appWebToken;
-  smartBanner.init(appWebToken);
-}
-
-function showSmartBanner()
-/*: void*/
-{
-  smartBanner.show();
-}
-
-function hideSmartBanner()
-/*: void*/
-{
-  smartBanner.hide();
+  var webToken = _ref2.webToken,
+      logLevel = _ref2.logLevel;
+  smartBanner.init(webToken, logLevel);
 }
 /**
  * Handle third party sharing disable
@@ -11468,7 +12126,7 @@ function _preCheck(description
 
   if (typeof callback === 'function') {
     if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || _isInitialised())) {
-      delay(callback, description);
+      scheduler_delay(callback, description);
       logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
     } else {
       callback();
@@ -11496,8 +12154,6 @@ var Adjust = {
   gdprForgetMe: gdprForgetMe,
   disableThirdPartySharing: disableThirdPartySharing,
   initSmartBanner: initSmartBanner,
-  showSmartBanner: showSmartBanner,
-  hideSmartBanner: hideSmartBanner,
   __testonly__: {
     destroy: main_destroy,
     clearDatabase: _clearDatabase
