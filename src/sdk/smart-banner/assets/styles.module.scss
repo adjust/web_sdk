@@ -12,8 +12,7 @@ $bannerMaxWidth: 428px;
   position: fixed;
   max-width: $bannerMaxWidth;
   width: 100vw;
-  left: 50%;
-  transform: translate(-50%);
+  left: calc((100vw - #{$bannerMaxWidth}) / 2);
   background-color: white;
 
   &.stickyToTop {
@@ -26,16 +25,9 @@ $bannerMaxWidth: 428px;
 
   @media (max-width: $bannerMaxWidth) {
     & {
+      left: 0;
       position: -webkit-sticky; // for iOS
       position: sticky;
-
-      &.stickyToTop {
-        top: 0;
-      }
-
-      &.stickyToBottom {
-        bottom: 0;
-      }
     }
   }
 
