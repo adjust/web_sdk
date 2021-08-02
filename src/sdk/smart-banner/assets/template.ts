@@ -1,8 +1,5 @@
 import styles from './styles.module.scss'
 
-export const a = ''
-export const ololo = ''
-
 export default (header: string, description: string, buttonText: string, href: string) => `
   <div class=${styles.bannerBody}>
     <button class="${styles.dismiss}"></button>
