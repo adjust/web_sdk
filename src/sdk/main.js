@@ -224,16 +224,8 @@ function disableThirdPartySharing (): void {
   })
 }
 
-function initSmartBanner ({ appWebToken }: SmartBannerOptionsT): void {
-  SmartBanner.init(appWebToken)
-}
-
-function showSmartBanner (): void {
-  SmartBanner.show()
-}
-
-function hideSmartBanner (): void {
-  SmartBanner.hide()
+function initSmartBanner ({ webToken, logLevel }: SmartBannerOptionsT): void {
+  SmartBanner.init(webToken, logLevel)
 }
 
 /**
@@ -513,8 +505,6 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   initSmartBanner,
-  showSmartBanner,
-  hideSmartBanner,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase

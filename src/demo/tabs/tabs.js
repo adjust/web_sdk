@@ -124,7 +124,8 @@ function _prepareForm () {
     attributionCallback: _handleAttributionChange
   })
   Adjust.initSmartBanner({
-    appWebToken: '123abc'
+    webToken: '77170eewyww0',
+    logLevel: 'verbose'
   })
 
   _form.appToken = _ui.appConfigForm.querySelector('#app-token')

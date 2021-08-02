@@ -65,6 +65,8 @@ interface EventParams {
   partnerParams?: Array<GlobalParams>;
 }
 
+type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
+
 interface InitOptions {
 
   /** Required to initialise SDK instance, please make sure to provide valid app token. */
@@ -128,7 +130,7 @@ interface InitOptions {
    * - `error` - will print only error message
    * - `none` - won't print anything
    */
-  logLevel?: 'none' | 'error' | 'warning' | 'info' | 'verbose';
+  logLevel?: LogLevel;
 
   /**
    * Optional. Query selector to define html container if you want to see your logs directly on the screen. This could
@@ -292,8 +294,19 @@ function disableThirdPartySharing(): void
 
 interface SmartBannerOptions {
 
-  /** Application Web token to initialise Smart Banner */
-  appWebToken: string
+  /** Web token to initialise Smart Banner */
+  webToken: string;
+
+  /** Optional. Logging level used by SDK instance. By default this param is set to `error`. We highly recommend that
+   * you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
+   * Here are more details about each log level:
+   * - `verbose` - will print detailed messages in case of certain actions
+   * - `info` - will print only basic info messages, warnings and errors
+   * - `warning` - will print only warning and error messages
+   * - `error` - will print only error message
+   * - `none` - won't print anything
+   */
+  logLevel?: LogLevel;
 }
 
 /**
@@ -305,16 +318,11 @@ interface SmartBannerOptions {
  *
  * @example
  * Adjust.initSmartBanner({
- *   appWebToken: 'YOUR_APP_WEB_TOKEN'
+ *   webToken: 'YOUR_WEB_TOKEN',
+ *   logLevel: 'verbose'
  * });
  */
 function initSmartBanner(options: SmartBannerOptions): void
-
-/** Show already existing hidden Smart Banner */
-function showSmartBanner(): void
-
-/** Hide already existing Smart Banner */
-function hideSmartBanner(): void
 
 const Adjust = {
   initSdk,
@@ -332,8 +340,6 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   initSmartBanner,
-  showSmartBanner,
-  hideSmartBanner,
 }
 
 export default Adjust
