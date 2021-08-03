@@ -1,4 +1,4 @@
-### Version 5.1.3 (3rd August 2021)
+### Version 5.2.0 (3rd August 2021)
 #### Added
 - [beta] Smart banners.
 
