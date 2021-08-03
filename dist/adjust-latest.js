@@ -2774,7 +2774,7 @@ function isEmptyEntry(value
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || false,
-  version: "5.1.2" || false,
+  version: "5.1.3" || false,
   env: "production"
 };
 /* harmony default export */ var globals = (Globals);
