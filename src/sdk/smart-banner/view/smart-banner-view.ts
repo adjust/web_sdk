@@ -18,11 +18,12 @@ export class SmartBannerView {
 
   private render(bannerData: SmartBannerData, endpoint: string) {
     this.banner = document.createElement('div')
+    this.banner.setAttribute('class', styles.bannerContainer)
+
     const positionStyle = bannerData.position === Position.Top ? styles.stickyToTop : styles.stickyToBottom
-    this.banner.setAttribute('class', `${styles.banner} ${positionStyle}`)
     const query = bannerData.deeplinkPath ? `?deeplink=${encodeURIComponent(bannerData.deeplinkPath)}` : ''
     const href = `${endpoint}/${bannerData.trackerToken}${query}`
-    this.banner.innerHTML = render(bannerData.header, bannerData.description, bannerData.buttonText, href)
+    this.banner.innerHTML = render(positionStyle, bannerData.header, bannerData.description, bannerData.buttonText, href)
 
     if (bannerData.position === Position.Top) {
       this.parent.insertBefore(this.banner, this.parent.firstChild)
