@@ -1,3 +1,9 @@
+### Version 5.2.0 (3rd August 2021)
+#### Added
+- [beta] Smart banners.
+
+---
+
 ### Version 5.1.2 (11th June 2021)
 #### Added
 - Added Typescript support.

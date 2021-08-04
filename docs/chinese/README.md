@@ -32,13 +32,13 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ```html
 <script type="application/javascript">
-!function(t,a,e,r,s,l,d,n,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)d(t.Adjust,t.Adjust_q,l[c]);n=a.createElement("script"),o=a.getElementsByTagName("script")[0],n.async=!0,n.src="https://cdn.adjust.com/adjust-latest.min.js",n.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},o.parentNode.insertBefore(n,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing"],function(t,a,e){t[e]=function(){a.push([e,arguments])}});
+!function(t,a,e,r,s,n,l,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<n.length;c++)l(t.Adjust,t.Adjust_q,n[c]);d=a.createElement("script"),o=a.getElementsByTagName("script")[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest.min.js",d.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,0,0,0,["initSdk","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner"],function(t,a,e){t[e]=function(){a.push([e,arguments])}});
 </script>
 ```
 
 Adjust Web SDK 在每个页面应当仅加载一次，每次页面加载应当初始化一次。
 
-在通过 CDN 加载 SDK 时，我们建议您使用精简版本。您可以定向特定版本，如 `https://cdn.adjust.com/adjust-5.1.2.min.js`；如果您需要自动更新，不想变更目标文件，也可以定向最新版本：`https://cdn.adjust.com/adjust-latest.min.js` 。SDK 文件均有缓存，因此能以最快速度获取，缓存每半小时刷新一次。如果您想立即获得更新，请务必定向特定版本。
+在通过 CDN 加载 SDK 时，我们建议您使用精简版本。您可以定向特定版本，如 `https://cdn.adjust.com/adjust-5.2.0.min.js`；如果您需要自动更新，不想变更目标文件，也可以定向最新版本：`https://cdn.adjust.com/adjust-latest.min.js` 。SDK 文件均有缓存，因此能以最快速度获取，缓存每半小时刷新一次。如果您想立即获得更新，请务必定向特定版本。
 
 您也可以通过 NPM 安装我们的 SDK：
 
