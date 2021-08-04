@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const FlowWebpackPlugin = require('flow-webpack-plugin')
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const webpack = require('webpack')
 const packageJson = require('./package.json')
 const namespace = 'adjust-sdk'
@@ -54,11 +54,25 @@ module.exports = () => ({
       exclude: /node_modules/,
       use: 'babel-loader'
     }, {
-      test: /(\.css|\.scss)$/,
+      test: /\.s?css$/,
+      exclude: /\.module\.s?css$/,
       use: [
         MiniCssExtractPlugin.loader,
-        {loader: 'css-loader'},
-        {loader: 'sass-loader'}
+        { loader: 'css-loader', },
+        { loader: 'sass-loader' }
+      ]
+    }, {
+      test: /\.module\.s?css$/,
+      use: [
+        MiniCssExtractPlugin.loader,
+        {
+          loader: 'css-loader',
+          options: {
+            modules: true,
+            localIdentName: 'adjust-smart-banner-[local]__[hash:base64:5]',
+          }
+        },
+        { loader: 'sass-loader' }
       ]
     }, {
       test: /\.html$/,
@@ -73,14 +87,12 @@ module.exports = () => ({
       ]
     }, {
       test: /\.(png|jpg|gif|svg)$/,
-      use: [
-        {
-          loader: 'file-loader',
-          options: {
-            name: 'assets/images/[hash].[ext]'
-          }
+      use: {
+        loader: 'file-loader',
+        options: {
+          name: 'assets/images/[hash].[ext]'
         }
-      ]
+      }
     }]
   }
 })

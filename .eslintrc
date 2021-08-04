@@ -25,7 +25,8 @@
     "space-before-function-paren": ["error", "always"],
     "quotes": ["error", "single"],
     "prefer-arrow-callback": "error",
-    "prefer-object-spread": "error"
+    "prefer-object-spread": "error",
+    "flowtype/no-types-missing-file-annotation": "off"
   },
   "overrides": [
     {
@@ -42,7 +43,12 @@
       "plugins": ["@typescript-eslint"],
       "rules": {
         "semi": ["error", "never"],
-        "space-before-function-paren": ["error", "never"],
+        "space-before-function-paren": ["error", {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+          }
+        ],
         "eol-last": "error",
         "@typescript-eslint/ban-types": "warn",
         "@typescript-eslint/explicit-module-boundary-types": "off"
