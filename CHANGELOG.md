@@ -1,3 +1,9 @@
+### Version 5.2.1 (16th September 2021)
+#### Fixed
+- Fixed top-level Typescript declarations.
+
+---
+
 ### Version 5.2.0 (3rd August 2021)
 #### Added
 - [beta] Smart banners.
