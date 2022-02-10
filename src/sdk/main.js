@@ -228,6 +228,14 @@ function initSmartBanner ({ webToken, logLevel }: SmartBannerOptionsT): void {
   SmartBanner.init(webToken, logLevel)
 }
 
+function getAttribution (): ?AttributionMapT {
+  return _preCheck('get attribution', () => ActivityState.getAttribution())
+}
+
+function getWebUUID (): ?string {
+  return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
+}
+
 /**
  * Handle third party sharing disable
  *
@@ -459,7 +467,7 @@ function _start (options: InitOptionsT): void {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}) {
+function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}): mixed {
   if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -480,7 +488,7 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
-      callback()
+      return callback()
     }
   }
 }
@@ -505,6 +513,8 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   initSmartBanner,
+  getAttribution,
+  getWebUUID,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase
