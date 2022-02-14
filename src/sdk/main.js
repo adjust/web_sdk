@@ -6,7 +6,8 @@ import {
   type GlobalParamsT,
   type CustomErrorT,
   type ActivityStateMapT,
-  type SmartBannerOptionsT
+  type SmartBannerOptionsT,
+  type AttributionMapT
 } from './types'
 import Config from './config'
 import Storage from './storage/storage'
@@ -97,6 +98,24 @@ function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
 
       _start(options)
     })
+}
+
+/**
+ * Get user's current attribution information
+ *
+ * @returns {AttributionMapT|undefined} current attribution information if available or `undefined` otherwise
+ */
+function getAttribution (): ?AttributionMapT {
+  return _preCheck('get attribution', () => ActivityState.getAttribution())
+}
+
+/**
+ * Get `web_uuid` - a unique ID of user generated per subdomain and per browser
+ *
+ * @returns {string|undefined} `web_uuid` if available or `undefined` otherwise
+ */
+function getWebUUID (): ?string {
+  return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
 }
 
 /**
@@ -226,14 +245,6 @@ function disableThirdPartySharing (): void {
 
 function initSmartBanner ({ webToken, logLevel }: SmartBannerOptionsT): void {
   SmartBanner.init(webToken, logLevel)
-}
-
-function getAttribution (): ?AttributionMapT {
-  return _preCheck('get attribution', () => ActivityState.getAttribution())
-}
-
-function getWebUUID (): ?string {
-  return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
 }
 
 /**
@@ -499,6 +510,8 @@ function _clearDatabase () {
 
 const Adjust = {
   initSdk,
+  getAttribution,
+  getWebUUID,
   trackEvent,
   addGlobalCallbackParameters,
   addGlobalPartnerParameters,
@@ -513,8 +526,6 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   initSmartBanner,
-  getAttribution,
-  getWebUUID,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase

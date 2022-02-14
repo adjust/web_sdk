@@ -69,6 +69,36 @@ declare namespace Adjust {
 
   type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
 
+  interface Attribution {
+
+    /** Adjust device identifier */
+    adid: string,
+
+    /** Tracker token */
+    tracker_token: string,
+
+    /** Tracker name */
+    tracker_name: string,
+
+    /** Network grouping level */
+    network?: string,
+
+    /** Campaign grouping level */
+    campaign?: string,
+
+    /** Ad group grouping level */
+    adgroup?: string,
+
+    /** Creative grouping level */
+    creative?: string,
+
+    /** Click label */
+    click_label?: string,
+
+    /** Attribution state, for example 'installed' or 'reattributed' */
+    state: string
+  }
+
   interface InitOptions {
 
     /** Required to initialise SDK instance, please make sure to provide valid app token. */
@@ -121,7 +151,7 @@ declare namespace Adjust {
      *     // attribution: details about the changed attribution
      *   }
      * }); */
-    attributionCallback?: (e: string, attribution: Object) => any;
+    attributionCallback?: (e: string, attribution: Attribution) => any;
 
     /** Optional. Logging level used by SDK instance. By default this param is set to `error`. We highly recommend that
      * you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
@@ -159,6 +189,30 @@ declare namespace Adjust {
    * });
    */
   function initSdk({ logLevel, logOutput, ...options }: InitOptions): void
+
+  /**
+   * Get user's current attribution information
+   *
+   * Current attribution information is only available after our backend tracks the app install and triggers the
+   * attribution callback. It is not possible to access a user's attribution value before the SDK has been initialized
+   * and the attribution callback has been triggered.
+   *
+   * @returns current attribution information if available or `undefined` otherwise
+   *
+   * @example
+   * const attribution = Adjust.getAttribution();
+   */
+  function getAttribution (): Attribution | undefined
+
+  /**
+   * Get web_uuid - a unique ID of user generated per subdomain and per browser
+   *
+   * @returns `web_uuid` if available or `undefined` otherwise
+   *
+   * @example
+   * const webUuid = Adjust.getWebUUID();
+   */
+  function getWebUUID (): string | undefined
 
   /**
    * Track event with already initiated Adjust SDK instance
