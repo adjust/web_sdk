@@ -13,6 +13,7 @@ import * as Preferences from '../../preferences'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
+import * as ActivityState from '../../activity-state'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
@@ -54,6 +55,8 @@ describe('main entry point - test disable/enable when in initially disabled stat
     jest.spyOn(Listeners, 'destroy')
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
+    jest.spyOn(ActivityState.default, 'getWebUUID')
+    jest.spyOn(ActivityState.default, 'getAttribution')
 
     Preferences.setDisabled({ reason: 'general' })
   })
