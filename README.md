@@ -385,6 +385,36 @@ Example:
 Adjust.disableThirdPartySharing();
 ```
 
+## <a id="getters-web-uuid">Get `web-uuid`</a>
+
+To identify unique web users in Adjust, Web SDK generates an ID known as `web_uuid` whenever it tracks a session. The ID is created per subdomain and per browser.
+The identifier follows the Universally Unique Identifier (UUID) format.
+
+To get `web_uuid` use the following method: 
+
+<a id="get-web-uuid">**getWebUUID**</a>
+
+Example:
+
+```js
+const webUUID = Adjust.getWebUUID();
+```
+
+## <a id="getters-attribution">User attribution</a>
+
+You can access your user's current attribution information using the following method:
+
+<a id="get-attribution">**getAttribution**</a>
+
+Example:
+
+```js
+const attribution = Adjust.getAttribution();
+```
+
+> **Note** Current attribution information is only available after our backend tracks the app install and triggers the attribution callback.
+It is not possible to access a user's attribution value before the SDK has been initialized and the attribution callback has been triggered.
+
 ## <a id="license">License</a>
 
 The Adjust SDK is licensed under the MIT License.
