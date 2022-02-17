@@ -1,3 +1,9 @@
+### Version 5.3.0 (18th February 2021)
+#### Added
+- Added `getWebUUID` method to access SDK generated ID `web_uuid`.
+- Added `getAttribution` method to access user's current attribution information.
+
+---
 ### Version 5.2.1 (16th September 2021)
 #### Fixed
 - Fixed top-level Typescript declarations.
