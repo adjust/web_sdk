@@ -1,6 +1,8 @@
 import * as ActivityState from '../activity-state'
 import {MINUTE, SECOND} from '../constants'
 
+jest.mock('../logger')
+
 describe('activity state functionality', () => {
 
   const now = Date.now()
@@ -313,6 +315,41 @@ describe('activity state functionality', () => {
     expect(ActivityState.default.getParams()).toBeNull()
     expect(ActivityState.default.current).toEqual({})
 
+  })
+
+  describe('getting web-uuid', () => {
+
+    it('returns actual uuid', () => {
+      expect(ActivityState.default.getWebUUID()).toEqual('some-uuid')
+    })
+
+    it('returns null when ActivityState is not initialised', () => {
+      ActivityState.default.destroy()
+      localStorage.clear()
+
+      expect(ActivityState.default.getWebUUID()).toBeNull()
+    })
+
+  })
+
+  describe('getting attribution', () => {
+
+    it('returns null when ActivityState is not initialised', () => {
+      ActivityState.default.destroy()
+      localStorage.clear()
+
+      expect(ActivityState.default.getAttribution()).toBeNull()
+    })
+
+    it('returns null when not attributed', () => {
+      expect(ActivityState.default.getAttribution()).toBeNull()
+    })
+
+    it('returns actual attribution', () => {
+      ActivityState.default.current = { ...ActivityState.default.current, attribution: { adid: 'dummy-adid' } }
+
+      expect(ActivityState.default.getAttribution()).toEqual({ adid: 'dummy-adid' })
+    })
   })
 
 })

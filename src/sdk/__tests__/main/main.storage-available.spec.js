@@ -12,6 +12,7 @@ import * as Attribution from '../../attribution'
 import * as Storage from '../../storage/storage'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
+import * as ActivityState from '../../activity-state'
 import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
 import Suite from './main.suite'
@@ -49,6 +50,8 @@ describe('main entry point - test instance initiation when storage is available'
     jest.spyOn(Listeners, 'register')
     jest.spyOn(Listeners, 'destroy')
     jest.spyOn(Scheduler, 'flush')
+    jest.spyOn(ActivityState.default, 'getWebUUID')
+    jest.spyOn(ActivityState.default, 'getAttribution')
 
     sessionWatchSpy = jest.spyOn(Session, 'watch')
   })
