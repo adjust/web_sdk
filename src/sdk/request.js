@@ -17,7 +17,7 @@ import Logger from './logger'
 import backOff from './backoff'
 import {isConnected} from './listeners'
 import {SECOND, HTTP_ERRORS} from './constants'
-import {getUrlStrategyBaseUrls, UrlStrategyBaseUrlsIterator} from './url-strategy'
+import {getBaseUrlsIterator, BaseUrlsIterator, BaseUrlsMap} from './url-strategy'
 
 type RequestConfigT = {|
   url?: UrlT,
@@ -95,7 +95,21 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   /**
    * Url Startegy iterator to go throught endpoints to retry to send request
    */
-  let _urlStrategyBaseUrlsIterator: UrlStrategyBaseUrlsIterator = getUrlStrategyBaseUrls()
+  const _baseUrlsIterator: BaseUrlsIterator = getBaseUrlsIterator()
+
+  /**
+   * Current base urls map to send request
+   */
+  let _baseUrlsIteratorCurrent: { value: BaseUrlsMap, done: boolean } = _baseUrlsIterator.next()
+
+
+  /**
+   * Reset iterator state and get the first endpoint to use it in the next try
+   */
+  const _resetBaseUrlsIterator = () => {
+    _baseUrlsIterator.reset()
+    _baseUrlsIteratorCurrent = _baseUrlsIterator.next()
+  }
 
   /**
    * Returns base url depending on request path
@@ -250,7 +264,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
     _startAt = Date.now()
 
     return _preRequest({
-      endpoint: _getBaseUrl(_urlStrategyBaseUrlsIterator.next().value, _url),
+      endpoint: _getBaseUrl(_baseUrlsIteratorCurrent.value, _url),
       url: _url,
       method: _method,
       params: {
@@ -381,7 +395,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       return
     }
 
-    _urlStrategyBaseUrlsIterator.reset()
+    _resetBaseUrlsIterator()
 
     if (typeof _continueCb === 'function') {
       _continueCb(result, _finish, _retry)
@@ -403,16 +417,19 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   function _error (result: HttpErrorResponseT, resolve, reject): void {
     if (result && result.action === 'RETRY') {
 
-      if (result.code !== 'NO_CONNECTION') {
-        resolve(_retry())
-      } else {
-        const wait = _urlStrategyBaseUrlsIterator.isDone() ? NO_CONNECTION_WAIT : DEFAULT_WAIT
+      if (result.code === 'NO_CONNECTION') {
 
-        if (_urlStrategyBaseUrlsIterator.isDone()) {
-          _urlStrategyBaseUrlsIterator.reset()
+        const nextEndpoint = _baseUrlsIterator.next() // get next endpoint
+
+        if (!nextEndpoint.done) { // next endpoint exists
+          _baseUrlsIteratorCurrent = nextEndpoint // use the endpoint in the next try
+          resolve(_retry(DEFAULT_WAIT))
+        } else { // no more endpoints, seems there is no connection at all
+          _resetBaseUrlsIterator()
+          resolve(_retry(NO_CONNECTION_WAIT))
         }
-
-        resolve(_retry(wait))
+      } else {
+        resolve(_retry())
       }
       return
     }

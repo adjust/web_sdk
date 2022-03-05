@@ -97,29 +97,35 @@ function urlStrategyRetries<T>(
   }
 }
 
-interface UrlStrategyBaseUrlsIterator extends Iterator<BaseUrlsMap> {
-  isDone: () => boolean;
+interface BaseUrlsIterator extends Iterator<BaseUrlsMap> {
   reset: () => void;
 }
 
-function getUrlStrategyBaseUrls(endpoints: Record<UrlStrategy, BaseUrlsMap> = endpointMap): UrlStrategyBaseUrlsIterator {
-
+function getPreferredUrls(): BaseUrlsMap[] {
   const preferredUrls = getEndpointPreference()
-  let _urls: BaseUrlsMap[]
 
   if (!Array.isArray(preferredUrls)) {
-    _urls = [preferredUrls]
+    return [preferredUrls]
   } else {
-    _urls = preferredUrls.map(strategy => endpoints[strategy])
-  }
-
-  let _counter = 0
-
-  return {
-    next: () => { return { value: _urls[_counter++], done: _counter >= _urls.length}},
-    isDone: () => _counter >= _urls.length,
-    reset: () => _counter = 0
+    return preferredUrls.map(strategy => endpointMap[strategy])
   }
 }
 
-export { urlStrategyRetries, getUrlStrategyBaseUrls, UrlStrategyBaseUrlsIterator, UrlStrategy, BaseUrlsMap }
+function getBaseUrlsIterator(urls: BaseUrlsMap[] = getPreferredUrls()): BaseUrlsIterator {
+  let _counter = 0
+
+  return {
+    next: () => {
+      if (_counter < urls.length) {
+        return { value: urls[_counter++], done: false }
+      } else {
+        return { value: undefined, done: true }
+      }
+    },
+    reset: () => {
+      _counter = 0
+    }
+  }
+}
+
+export { urlStrategyRetries, getBaseUrlsIterator, BaseUrlsIterator, UrlStrategy, BaseUrlsMap }
