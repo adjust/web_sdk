@@ -10,6 +10,7 @@ import * as Storage from '../storage/storage'
 
 jest.mock('../http')
 jest.mock('../logger')
+jest.mock('../url-strategy')
 jest.useFakeTimers()
 
 const appOptions = {
@@ -17,9 +18,10 @@ const appOptions = {
   environment: 'sandbox'
 }
 
-function expectRequest (requestConfig, timestamp) {
+function expectRequest(requestConfig, timestamp) {
 
   const fullConfig = {
+    endpoint: 'app',
     ...requestConfig,
     params: {
       attempts: 1,
@@ -35,7 +37,7 @@ function expectRequest (requestConfig, timestamp) {
 
   return Utils.flushPromises()
     .then(() => {
-      expect(Queue.push).toHaveBeenCalledWith(requestConfig, {timestamp})
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig, { timestamp })
 
       jest.runOnlyPendingTimers()
 
@@ -57,11 +59,11 @@ describe('event tracking functionality', () => {
     jest.spyOn(Storage.default, 'addItem')
     jest.spyOn(Storage.default, 'trimItems')
 
-    ActivityState.default.init({uuid: 'some-uuid'})
+    ActivityState.default.init({ uuid: 'some-uuid' })
   })
 
   afterEach(() => {
-    ActivityState.default.current = {...ActivityState.default.current, eventCount: 0}
+    ActivityState.default.current = { ...ActivityState.default.current, eventCount: 0 }
     localStorage.clear()
     jest.clearAllMocks()
   })
@@ -93,7 +95,7 @@ describe('event tracking functionality', () => {
 
       event.default({
         eventToken: '123abc',
-        callbackParams: [{key: 'some-key', value: 'some-value'}],
+        callbackParams: [{ key: 'some-key', value: 'some-value' }],
         revenue: 0
       })
 
@@ -102,7 +104,7 @@ describe('event tracking functionality', () => {
         method: 'POST',
         params: {
           eventToken: '123abc',
-          callbackParams: {'some-key': 'some-value'}
+          callbackParams: { 'some-key': 'some-value' }
         }
       })
     })
@@ -115,7 +117,7 @@ describe('event tracking functionality', () => {
 
       event.default({
         eventToken: '123abc',
-        callbackParams: [{key: 'some-key', value: 'some-value'}],
+        callbackParams: [{ key: 'some-key', value: 'some-value' }],
         revenue: 0
       }, timestamp)
 
@@ -124,7 +126,7 @@ describe('event tracking functionality', () => {
         method: 'POST',
         params: {
           eventToken: '123abc',
-          callbackParams: {'some-key': 'some-value'}
+          callbackParams: { 'some-key': 'some-value' }
         }
       }, timestamp)
     })
@@ -172,11 +174,11 @@ describe('event tracking functionality', () => {
       event.default({
         eventToken: '123abc',
         callbackParams: [
-          {key: 'some-key', value: 'some-value'}
+          { key: 'some-key', value: 'some-value' }
         ],
         partnerParams: [
-          {key: 'key1', value: 'value1'},
-          {key: 'key2', value: 'value2'}
+          { key: 'key1', value: 'value1' },
+          { key: 'key2', value: 'value2' }
         ],
         revenue: 100,
         currency: 'EUR'
@@ -187,8 +189,8 @@ describe('event tracking functionality', () => {
         method: 'POST',
         params: {
           eventToken: '123abc',
-          callbackParams: {'some-key': 'some-value'},
-          partnerParams: {key1: 'value1', key2: 'value2'},
+          callbackParams: { 'some-key': 'some-value' },
+          partnerParams: { key1: 'value1', key2: 'value2' },
           revenue: '100.00000',
           currency: 'EUR'
         }
@@ -198,8 +200,8 @@ describe('event tracking functionality', () => {
     it('sets default callback parameters to be appended to each track event request', () => {
 
       const callbackParams = [
-        {key: 'key1', value: 'value1'},
-        {key: 'key2', value: 'value2'}
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' }
       ]
 
       expect.assertions(2)
@@ -217,7 +219,7 @@ describe('event tracking functionality', () => {
             method: 'POST',
             params: {
               eventToken: 'bla',
-              callbackParams: {key1: 'value1', key2: 'value2'},
+              callbackParams: { key1: 'value1', key2: 'value2' },
               revenue: '34.67000',
               currency: 'EUR'
             }
@@ -228,8 +230,8 @@ describe('event tracking functionality', () => {
     it('sets default partner parameters to be appended to each track event request', () => {
 
       const partnerParams = [
-        {key: 'key1', value: 'value1'},
-        {key: 'key2', value: 'value2'}
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' }
       ]
 
       expect.assertions(2)
@@ -245,7 +247,7 @@ describe('event tracking functionality', () => {
             method: 'POST',
             params: {
               eventToken: 'bla',
-              partnerParams: {key1: 'value1', key2: 'value2'}
+              partnerParams: { key1: 'value1', key2: 'value2' }
             }
           })
         })
@@ -254,8 +256,8 @@ describe('event tracking functionality', () => {
     it('overrides some default callback parameters with callback parameters passed directly', () => {
 
       const callbackParams = [
-        {key: 'key1', value: 'value1'},
-        {key: 'key2', value: 'value2'}
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' }
       ]
 
       expect.assertions(2)
@@ -265,8 +267,8 @@ describe('event tracking functionality', () => {
           event.default({
             eventToken: 'bla',
             callbackParams: [
-              {key: 'key1', value: 'new value1'},
-              {key: 'key3', value: 'value3'}
+              { key: 'key1', value: 'new value1' },
+              { key: 'key3', value: 'value3' }
             ]
           })
 
@@ -275,7 +277,7 @@ describe('event tracking functionality', () => {
             method: 'POST',
             params: {
               eventToken: 'bla',
-              callbackParams: {key1: 'new value1', key2: 'value2', key3: 'value3'}
+              callbackParams: { key1: 'new value1', key2: 'value2', key3: 'value3' }
             }
           })
         })
@@ -284,14 +286,14 @@ describe('event tracking functionality', () => {
     it('sets default callback and partner parameters and override both with some parameters passed directly', () => {
 
       const callbackParams = [
-        {key: 'key1', value: 'value1'},
-        {key: 'key2', value: 'value2'},
-        {key: 'key1', value: 'last value1'}
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' },
+        { key: 'key1', value: 'last value1' }
       ]
       const partnerParams = [
-        {key: 'some', value: 'thing'},
-        {key: 'very', value: 'nice'},
-        {key: 'bla', value: 'truc'}
+        { key: 'some', value: 'thing' },
+        { key: 'very', value: 'nice' },
+        { key: 'bla', value: 'truc' }
       ]
       expect.assertions(2)
 
@@ -303,11 +305,11 @@ describe('event tracking functionality', () => {
           event.default({
             eventToken: 'bla',
             callbackParams: [
-              {key: 'key2', value: 'new value2'}
+              { key: 'key2', value: 'new value2' }
             ],
             partnerParams: [
-              {key: 'very', value: 'bad'},
-              {key: 'trt', value: 'prc'}
+              { key: 'very', value: 'bad' },
+              { key: 'trt', value: 'prc' }
             ]
           })
 
@@ -316,8 +318,8 @@ describe('event tracking functionality', () => {
             method: 'POST',
             params: {
               eventToken: 'bla',
-              callbackParams: {key1: 'last value1', key2: 'new value2'},
-              partnerParams: {some: 'thing', very: 'bad', bla: 'truc', trt: 'prc'}
+              callbackParams: { key1: 'last value1', key2: 'new value2' },
+              partnerParams: { some: 'thing', very: 'bad', bla: 'truc', trt: 'prc' }
             }
           })
         })
@@ -360,7 +362,7 @@ describe('event tracking functionality', () => {
         return Utils.flushPromises()
           .then(() => {
             expect(Storage.default.trimItems).not.toHaveBeenCalled()
-            expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: '123-abc-456'})
+            expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: '123-abc-456' })
             expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: 123-abc-456')
 
             return expectRequest({
@@ -376,9 +378,9 @@ describe('event tracking functionality', () => {
       it('rejects event tracking when already existing deduplication id provided', () => {
 
         const list = [
-          {id: 'dedup-1234-abc'},
-          {id: 'dedup-1235-abc'},
-          {id: 'dedup-1236-abc'}
+          { id: 'dedup-1234-abc' },
+          { id: 'dedup-1235-abc' },
+          { id: 'dedup-1236-abc' }
         ]
 
         expect.assertions(5)
@@ -406,16 +408,16 @@ describe('event tracking functionality', () => {
       describe('trim deduplication list', () => {
         it('trims list by one when default limit is set', () => {
           const list = [
-            {id: 'dedup-1230-abc'},
-            {id: 'dedup-1231-abc'},
-            {id: 'dedup-1232-abc'},
-            {id: 'dedup-1233-abc'},
-            {id: 'dedup-1234-abc'},
-            {id: 'dedup-1235-abc'},
-            {id: 'dedup-1236-abc'},
-            {id: 'dedup-1237-abc'},
-            {id: 'dedup-1238-abc'},
-            {id: 'dedup-1239-abc'}
+            { id: 'dedup-1230-abc' },
+            { id: 'dedup-1231-abc' },
+            { id: 'dedup-1232-abc' },
+            { id: 'dedup-1233-abc' },
+            { id: 'dedup-1234-abc' },
+            { id: 'dedup-1235-abc' },
+            { id: 'dedup-1236-abc' },
+            { id: 'dedup-1237-abc' },
+            { id: 'dedup-1238-abc' },
+            { id: 'dedup-1239-abc' }
           ]
 
           expect.assertions(12)
@@ -432,7 +434,7 @@ describe('event tracking functionality', () => {
             .then(() => {
               expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 1)
               expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (1 of them)')
-              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: 'dedup-1240-abc'})
+              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
               expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
 
               return expectRequest({
@@ -484,17 +486,17 @@ describe('event tracking functionality', () => {
         it('trims the list by difference when custom limit is set and is lower than previous one', () => {
 
           Config.default.destroy()
-          Config.default.set({...appOptions, eventDeduplicationListLimit: 4})
+          Config.default.set({ ...appOptions, eventDeduplicationListLimit: 4 })
 
           const list = [
-            {id: 'dedup-1232-abc'},
-            {id: 'dedup-1233-abc'},
-            {id: 'dedup-1234-abc'},
-            {id: 'dedup-1235-abc'},
-            {id: 'dedup-1236-abc'},
-            {id: 'dedup-1237-abc'},
-            {id: 'dedup-1238-abc'},
-            {id: 'dedup-1239-abc'}
+            { id: 'dedup-1232-abc' },
+            { id: 'dedup-1233-abc' },
+            { id: 'dedup-1234-abc' },
+            { id: 'dedup-1235-abc' },
+            { id: 'dedup-1236-abc' },
+            { id: 'dedup-1237-abc' },
+            { id: 'dedup-1238-abc' },
+            { id: 'dedup-1239-abc' }
           ]
 
           expect.assertions(7)
@@ -511,7 +513,7 @@ describe('event tracking functionality', () => {
             .then(() => {
               expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 5)
               expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (5 of them)')
-              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: 'dedup-1240-abc'})
+              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
               expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
 
               return expectRequest({
@@ -536,19 +538,19 @@ describe('event tracking functionality', () => {
         it('skips trim when custom limit is set and is greater than the previous one', () => {
 
           Config.default.destroy()
-          Config.default.set({...appOptions, eventDeduplicationListLimit: 16})
+          Config.default.set({ ...appOptions, eventDeduplicationListLimit: 16 })
 
           const list = [
-            {id: 'dedup-1230-abc'},
-            {id: 'dedup-1231-abc'},
-            {id: 'dedup-1232-abc'},
-            {id: 'dedup-1233-abc'},
-            {id: 'dedup-1234-abc'},
-            {id: 'dedup-1235-abc'},
-            {id: 'dedup-1236-abc'},
-            {id: 'dedup-1237-abc'},
-            {id: 'dedup-1238-abc'},
-            {id: 'dedup-1239-abc'}
+            { id: 'dedup-1230-abc' },
+            { id: 'dedup-1231-abc' },
+            { id: 'dedup-1232-abc' },
+            { id: 'dedup-1233-abc' },
+            { id: 'dedup-1234-abc' },
+            { id: 'dedup-1235-abc' },
+            { id: 'dedup-1236-abc' },
+            { id: 'dedup-1237-abc' },
+            { id: 'dedup-1238-abc' },
+            { id: 'dedup-1239-abc' }
           ]
 
           expect.assertions(6)
@@ -564,7 +566,7 @@ describe('event tracking functionality', () => {
             })
             .then(() => {
               expect(Storage.default.trimItems).not.toHaveBeenCalled()
-              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', {id: 'dedup-1240-abc'})
+              expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
               expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
 
               return expectRequest({
