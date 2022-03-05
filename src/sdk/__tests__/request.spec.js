@@ -3,10 +3,10 @@ import * as http from '../http'
 import * as Time from '../time'
 import * as Logger from '../logger'
 import * as Listeners from '../listeners'
-import * as UrlStrategy from '../url-strategy'
 
 jest.mock('../http')
 jest.mock('../logger')
+jest.mock('../url-strategy')
 jest.useFakeTimers()
 
 describe('test request functionality', () => {
@@ -21,28 +21,21 @@ describe('test request functionality', () => {
       createdAt: now
     }
   })
-  let someRequest
-
-  const actualImplementation = UrlStrategy.getBaseUrlsIterator
+  const someRequest = Request.default({
+    url: '/global-request',
+    params: {
+      some: 'param'
+    }
+  })
 
   beforeAll(() => {
     jest.spyOn(http, 'default')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'error')
 
-    jest.spyOn(UrlStrategy, 'getBaseUrlsIterator')
-      .mockImplementation(() => actualImplementation([{ app: 'app', gdpr: 'gdpr' }]))
-
     dateNowSpy = jest.spyOn(Date, 'now')
     createdAtSpy = jest.spyOn(Time, 'getTimestamp')
     isConnectedSpy = jest.spyOn(Listeners, 'isConnected')
-
-    someRequest = Request.default({
-      url: '/global-request',
-      params: {
-        some: 'param'
-      }
-    })
   })
 
   afterEach(() => {
@@ -1208,12 +1201,8 @@ describe('test request functionality', () => {
 
     describe('uses default parameters', () => {
 
-      let req
-
-      beforeAll(() => {
-        req = Request.default({
-          url: '/another-global-request',
-        })
+      const req = Request.default({
+        url: '/another-global-request',
       })
 
       it('does a successful request with default params', () => {
@@ -1289,16 +1278,12 @@ describe('test request functionality', () => {
     describe('passes custom parameters', () => {
 
       const continueCb = jest.fn((_, finish) => finish())
-      let req
-
-      beforeAll(() => {
-        req = Request.default({
-          url: '/another-global-request',
-          params: {
-            some: 'param'
-          },
-          continueCb
-        })
+      const req = Request.default({
+        url: '/another-global-request',
+        params: {
+          some: 'param'
+        },
+        continueCb
       })
 
       it('does a successful request with params per instance', () => {
