@@ -3,6 +3,7 @@ import * as http from '../http'
 import * as Time from '../time'
 import * as Logger from '../logger'
 import * as Listeners from '../listeners'
+import * as UrlStrategy from '../url-strategy'
 
 jest.mock('../http')
 jest.mock('../logger')
@@ -20,21 +21,28 @@ describe('test request functionality', () => {
       createdAt: now
     }
   })
-  const someRequest = Request.default({
-    url: '/global-request',
-    params: {
-      some: 'param'
-    }
-  })
+  let someRequest
+
+  const actualImplementation = UrlStrategy.getBaseUrlsIterator
 
   beforeAll(() => {
     jest.spyOn(http, 'default')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'error')
 
+    jest.spyOn(UrlStrategy, 'getBaseUrlsIterator')
+      .mockImplementation(() => actualImplementation([{ app: 'app', gdpr: 'gdpr' }]))
+
     dateNowSpy = jest.spyOn(Date, 'now')
     createdAtSpy = jest.spyOn(Time, 'getTimestamp')
     isConnectedSpy = jest.spyOn(Listeners, 'isConnected')
+
+    someRequest = Request.default({
+      url: '/global-request',
+      params: {
+        some: 'param'
+      }
+    })
   })
 
   afterEach(() => {
@@ -61,6 +69,7 @@ describe('test request functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(http.default).toHaveBeenCalledWith({
+      endpoint: 'app',
       url: '/global-request',
       method: 'GET',
       params: {
@@ -98,6 +107,7 @@ describe('test request functionality', () => {
     jest.runOnlyPendingTimers()
 
     expect(http.default).toHaveBeenCalledWith({
+      endpoint: 'app',
       url: '/global-request',
       method: 'GET',
       params: {
@@ -218,6 +228,7 @@ describe('test request functionality', () => {
 
     expect(http.default).toHaveBeenCalledTimes(1)
     expect(http.default).toHaveBeenLastCalledWith({
+      endpoint: 'app',
       url: '/other-request',
       method: 'POST',
       params: {
@@ -238,6 +249,7 @@ describe('test request functionality', () => {
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1300)
         expect(http.default).toHaveBeenCalledTimes(2)
         expect(http.default).toHaveBeenLastCalledWith({
+          endpoint: 'app',
           url: '/other-request',
           method: 'POST',
           params: {
@@ -261,6 +273,7 @@ describe('test request functionality', () => {
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1300)
         expect(http.default).toHaveBeenCalledTimes(1)
         expect(http.default).toHaveBeenLastCalledWith({
+          endpoint: 'app',
           url: '/other-request',
           method: 'POST',
           params: {
@@ -292,6 +305,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/global-request',
           method: 'GET',
           params: {
@@ -336,6 +350,7 @@ describe('test request functionality', () => {
 
     expect(http.default).toHaveBeenCalledTimes(1)
     expect(http.default).toHaveBeenLastCalledWith({
+      endpoint: 'app',
       url: '/some-request',
       method: 'POST',
       params: {
@@ -357,6 +372,7 @@ describe('test request functionality', () => {
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 666)
         expect(http.default).toHaveBeenCalledTimes(2)
         expect(http.default).toHaveBeenLastCalledWith({
+          endpoint: 'app',
           url: '/some-request',
           method: 'POST',
           params: {
@@ -379,6 +395,7 @@ describe('test request functionality', () => {
         expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 777)
         expect(http.default).toHaveBeenCalledTimes(1)
         expect(http.default).toHaveBeenLastCalledWith({
+          endpoint: 'app',
           url: '/some-request',
           method: 'POST',
           params: {
@@ -407,6 +424,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/global-request',
           method: 'GET',
           params: {
@@ -580,7 +598,6 @@ describe('test request functionality', () => {
   })
 
   it('retires unsuccessful request because of no connection without back-off', () => {
-
     const newNow = Date.now()
     const matchLocalCreatedAt = (attempts) => ({
       params: {
@@ -855,6 +872,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/global-request',
           method: 'GET',
           params: {
@@ -1031,6 +1049,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/global-request',
           method: 'GET',
           params: {
@@ -1092,6 +1111,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/another-failed-request',
           method: 'GET',
           params: {
@@ -1188,8 +1208,12 @@ describe('test request functionality', () => {
 
     describe('uses default parameters', () => {
 
-      const req = Request.default({
-        url: '/another-global-request',
+      let req
+
+      beforeAll(() => {
+        req = Request.default({
+          url: '/another-global-request',
+        })
       })
 
       it('does a successful request with default params', () => {
@@ -1202,6 +1226,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/another-global-request',
           method: 'GET',
           params: {
@@ -1230,6 +1255,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/new-url',
           method: 'POST',
           params: {
@@ -1263,12 +1289,16 @@ describe('test request functionality', () => {
     describe('passes custom parameters', () => {
 
       const continueCb = jest.fn((_, finish) => finish())
-      const req = Request.default({
-        url: '/another-global-request',
-        params: {
-          some: 'param'
-        },
-        continueCb
+      let req
+
+      beforeAll(() => {
+        req = Request.default({
+          url: '/another-global-request',
+          params: {
+            some: 'param'
+          },
+          continueCb
+        })
       })
 
       it('does a successful request with params per instance', () => {
@@ -1283,6 +1313,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/another-global-request',
           method: 'GET',
           params: {
@@ -1318,6 +1349,7 @@ describe('test request functionality', () => {
         jest.runOnlyPendingTimers()
 
         expect(http.default).toHaveBeenCalledWith({
+          endpoint: 'app',
           url: '/another-global-request',
           method: 'GET',
           params: {
@@ -1342,6 +1374,7 @@ describe('test request functionality', () => {
             jest.runOnlyPendingTimers()
 
             expect(http.default).toHaveBeenCalledWith({
+              endpoint: 'app',
               url: '/another-global-request',
               method: 'GET',
               params: {
