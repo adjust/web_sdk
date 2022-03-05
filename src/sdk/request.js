@@ -17,6 +17,7 @@ import Logger from './logger'
 import backOff from './backoff'
 import {isConnected} from './listeners'
 import {SECOND, HTTP_ERRORS} from './constants'
+import {getUrlStrategyBaseUrls, UrlStrategyBaseUrlsIterator} from './url-strategy'
 
 type RequestConfigT = {|
   url?: UrlT,
@@ -90,6 +91,19 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   const _strategy: ?BackOffStrategyT = strategy
+
+  /**
+   * Url Startegy iterator to go throught endpoints to retry to send request
+   */
+  let _urlStrategyBaseUrlsIterator: UrlStrategyBaseUrlsIterator = getUrlStrategyBaseUrls()
+
+  /**
+   * Returns base url depending on request path
+   */
+  const _getBaseUrl = (urlsMap: BaseUrlsMap, url: UrlT): string => {
+    const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
+    return urlsMap[base]
+  }
 
   /**
    * Timeout id to be used for clearing
@@ -236,6 +250,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
     _startAt = Date.now()
 
     return _preRequest({
+      endpoint: _getBaseUrl(_urlStrategyBaseUrlsIterator.next().value, _url),
       url: _url,
       method: _method,
       params: {
@@ -287,6 +302,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
           .reduce(reducer, {})
 
         return http({
+          endpoint: options.endpoint,
           url: options.url,
           method: options.method,
           params: {
@@ -365,6 +381,8 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       return
     }
 
+    _urlStrategyBaseUrlsIterator.reset()
+
     if (typeof _continueCb === 'function') {
       _continueCb(result, _finish, _retry)
     } else {
@@ -384,7 +402,18 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    */
   function _error (result: HttpErrorResponseT, resolve, reject): void {
     if (result && result.action === 'RETRY') {
-      resolve(_retry(result.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined))
+
+      if (result.code !== 'NO_CONNECTION') {
+        resolve(_retry())
+      } else {
+        const wait = _urlStrategyBaseUrlsIterator.isDone() ? NO_CONNECTION_WAIT : DEFAULT_WAIT
+
+        if (_urlStrategyBaseUrlsIterator.isDone()) {
+          _urlStrategyBaseUrlsIterator.reset()
+        }
+
+        resolve(_retry(wait))
+      }
       return
     }
 

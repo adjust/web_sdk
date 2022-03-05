@@ -97,4 +97,29 @@ function urlStrategyRetries<T>(
   }
 }
 
-export { urlStrategyRetries, UrlStrategy, BaseUrlsMap }
+interface UrlStrategyBaseUrlsIterator extends Iterator<BaseUrlsMap> {
+  isDone: () => boolean;
+  reset: () => void;
+}
+
+function getUrlStrategyBaseUrls(endpoints: Record<UrlStrategy, BaseUrlsMap> = endpointMap): UrlStrategyBaseUrlsIterator {
+
+  const preferredUrls = getEndpointPreference()
+  let _urls: BaseUrlsMap[]
+
+  if (!Array.isArray(preferredUrls)) {
+    _urls = [preferredUrls]
+  } else {
+    _urls = preferredUrls.map(strategy => endpoints[strategy])
+  }
+
+  let _counter = 0
+
+  return {
+    next: () => { return { value: _urls[_counter++], done: _counter >= _urls.length}},
+    isDone: () => _counter >= _urls.length,
+    reset: () => _counter = 0
+  }
+}
+
+export { urlStrategyRetries, getUrlStrategyBaseUrls, UrlStrategyBaseUrlsIterator, UrlStrategy, BaseUrlsMap }
