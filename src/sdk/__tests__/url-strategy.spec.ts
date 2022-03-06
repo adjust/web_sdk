@@ -59,7 +59,7 @@ describe('test url strategy', () => {
         .then(() => expect(sendRequestMock).toHaveBeenCalledWith({ app: customUrl, gdpr: customUrl }))
     })
 
-    it('retries send requesrt to endpoints iteratively', () => {
+    it('retries send request to endpoints iteratively', () => {
       return urlStrategyRetries(sendRequestMock, testEndpoints)
         .catch(reason => expect(reason).toEqual({ code: 'NO_CONNECTION' }))
         .then(() => {
@@ -109,5 +109,10 @@ describe('test url strategy', () => {
       return urlStrategyRetries(sendRequestMock, testEndpoints)
         .catch(() => expect(sendRequestMock).toHaveBeenCalledTimes(1))
     })
+
+  })
+
+  describe('', () => {
+
   })
 })

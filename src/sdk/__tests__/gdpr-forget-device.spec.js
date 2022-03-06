@@ -9,6 +9,7 @@ import * as PubSub from '../pub-sub'
 
 jest.mock('../http')
 jest.mock('../logger')
+jest.mock('../url-strategy')
 jest.useFakeTimers()
 
 const appOptions = {
@@ -23,6 +24,7 @@ function expectRequest () {
   }
 
   const fullConfig = {
+    endpoint: 'gdpr',
     ...requestConfig,
     params: {
       attempts: 1,
