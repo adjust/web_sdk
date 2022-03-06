@@ -1,25 +1,17 @@
 import { NetworkError, NoConnectionError } from '../../../smart-banner/network/errors'
-import * as UrlStrategy from '../../../url-strategy'
 
 jest.mock('../../../logger')
+jest.mock('../../../url-strategy')
+
+const UrlStartegyMock = jest.requireMock('../../../url-strategy')
+const testEndpoints = UrlStartegyMock.mockUrls.endpoints
 
 describe('Network tests', () => {
   const defaultEndpoint = 'https://app.adjust.com'
   let Network
   let xhrMock: jest.SpyInstance
 
-  const testEndpoints = {
-    default: { app: 'app.default', gdpr: '' },
-    india: { app: 'app.india', gdpr: '' },
-    china: { app: 'app.china', gdpr: '' }
-  }
-  const urlStrategyRetriesActual = UrlStrategy.urlStrategyRetries
-  const urlStrategyRetriesMock = (sendRequestCb: (urls: UrlStrategy.BaseUrlsMap) => Promise<any>) => urlStrategyRetriesActual(sendRequestCb, testEndpoints)
-
   beforeEach(() => {
-    const UrlStrategyModule = require('../../../url-strategy')
-    jest.spyOn(UrlStrategyModule, 'urlStrategyRetries').mockImplementation(urlStrategyRetriesMock)
-
     Network = require('../../../smart-banner/network/network').Network
     xhrMock = jest.spyOn(Network, 'xhr')
   })

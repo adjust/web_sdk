@@ -1,15 +1,24 @@
-const baseUrls = { app: 'app', gdpr: 'gdpr' }
+import type { BaseUrlsMap, UrlStrategy } from '../url-strategy'
 
-function urlStrategyRetries(sendRequest) {
-  return sendRequest(baseUrls)
+const module = jest.requireActual('../url-strategy')
+
+const testEndpoints = {
+  default: { app: 'app.default', gdpr: '' },
+  india: { app: 'app.india', gdpr: '' },
+  china: { app: 'app.china', gdpr: '' }
 }
 
-function getBaseUrlsIterator() {
-  return jest.requireActual('../url-strategy')
-    .getBaseUrlsIterator([baseUrls])
+const testBaseUrls = { app: 'app', gdpr: 'gdpr' }
+
+export const mockUrls = {
+  endpoints: testEndpoints,
+  baseUrls: testBaseUrls
 }
 
-export {
-  urlStrategyRetries,
-  getBaseUrlsIterator
+export function urlStrategyRetries<T>(sendRequest: (urls: BaseUrlsMap) => Promise<T>, endpoints: Record<UrlStrategy, BaseUrlsMap> = mockUrls.endpoints) {
+  return module.urlStrategyRetries(sendRequest, endpoints)
+}
+
+export function getBaseUrlsIterator(urls: BaseUrlsMap[] = [mockUrls.baseUrls]) {
+  return module.getBaseUrlsIterator(urls)
 }
