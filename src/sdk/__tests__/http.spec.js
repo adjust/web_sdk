@@ -427,37 +427,6 @@ describe('perform api requests', () => {
         })
     })
 
-    describe('custom url', () => {
-
-      it('overrides base and gdpr url with custom one', () => {
-        fail('This test does not make sense anymore since http is not responsible for endpoint resolving')
-
-        Config.default.set({ customUrl: 'custom-base', ...appParams })
-
-        expect.assertions(4)
-
-        expect(http.default({
-          endpoint: 'app',
-          url: '/some-url'
-        })).resolves.toEqual({
-          status: 'success',
-          ...response
-        })
-
-        return Utils.flushPromises()
-          .then(() => {
-
-            expect(mockXHR.open).toHaveBeenCalledWith('GET', `custom-base/some-url?${defaultParamsString}`, true)
-            expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
-            expect(mockXHR.send).toHaveBeenCalledWith(undefined)
-
-            mockXHR.onreadystatechange()
-
-            Config.default.set(appParams)
-          })
-      })
-    })
-
     it('excludes empty values from the request params', () => {
 
       expect.assertions(4)
