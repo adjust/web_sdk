@@ -93,7 +93,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   const _strategy: ?BackOffStrategyT = strategy
 
   /**
-   * Url Startegy iterator to go throught endpoints to retry to send request
+   * Url Startegy iterator to go through endpoints to retry to send request
    */
   const _baseUrlsIterator: BaseUrlsIterator = getBaseUrlsIterator()
 
