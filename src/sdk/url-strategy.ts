@@ -101,23 +101,29 @@ interface BaseUrlsIterator extends Iterator<BaseUrlsMap> {
   reset: () => void;
 }
 
-function getPreferredUrls(): BaseUrlsMap[] {
+function getPreferredUrls(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>>): BaseUrlsMap[] {
   const preferredUrls = getEndpointPreference()
 
   if (!Array.isArray(preferredUrls)) {
     return [preferredUrls]
   } else {
-    return preferredUrls.map(strategy => endpointMap[strategy])
+    const res = preferredUrls
+      .map(strategy => endpoints[strategy] || null)
+      .filter((i): i is BaseUrlsMap => !!i)
+
+    return res
   }
 }
 
-function getBaseUrlsIterator(urls: BaseUrlsMap[] = getPreferredUrls()): BaseUrlsIterator {
+function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = endpointMap): BaseUrlsIterator {
+  const _urls = getPreferredUrls(endpoints)
+
   let _counter = 0
 
   return {
     next: () => {
-      if (_counter < urls.length) {
-        return { value: urls[_counter++], done: false }
+      if (_counter < _urls.length) {
+        return { value: _urls[_counter++], done: false }
       } else {
         return { value: undefined, done: true }
       }
@@ -127,5 +133,6 @@ function getBaseUrlsIterator(urls: BaseUrlsMap[] = getPreferredUrls()): BaseUrls
     }
   }
 }
+
 
 export { urlStrategyRetries, getBaseUrlsIterator, BaseUrlsIterator, UrlStrategy, BaseUrlsMap }

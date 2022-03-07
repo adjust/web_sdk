@@ -4,7 +4,7 @@ jest.mock('../../../logger')
 jest.mock('../../../url-strategy')
 
 const UrlStartegyMock = jest.requireMock('../../../url-strategy')
-const testEndpoints = UrlStartegyMock.mockUrls.endpoints
+const testEndpoints = UrlStartegyMock.mockEndpoints.endpoints
 
 describe('Network tests', () => {
   const defaultEndpoint = 'https://app.adjust.com'

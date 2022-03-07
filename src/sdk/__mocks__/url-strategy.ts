@@ -8,17 +8,20 @@ const testEndpoints = {
   china: { app: 'app.china', gdpr: '' }
 }
 
-const testBaseUrls = { app: 'app', gdpr: 'gdpr' }
+const singleEndpoint = { default: { app: 'app', gdpr: 'gdpr' } }
 
-export const mockUrls = {
+export const mockEndpoints = {
   endpoints: testEndpoints,
-  baseUrls: testBaseUrls
+  singleEndpoint
 }
 
-export function urlStrategyRetries<T>(sendRequest: (urls: BaseUrlsMap) => Promise<T>, endpoints: Record<UrlStrategy, BaseUrlsMap> = mockUrls.endpoints) {
+export function urlStrategyRetries<T>(
+  sendRequest: (urls: BaseUrlsMap) => Promise<T>,
+  endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = mockEndpoints.endpoints
+) {
   return module.urlStrategyRetries(sendRequest, endpoints)
 }
 
-export function getBaseUrlsIterator(urls: BaseUrlsMap[] = [mockUrls.baseUrls]) {
-  return module.getBaseUrlsIterator(urls)
+export function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = mockEndpoints.singleEndpoint) {
+  return module.getBaseUrlsIterator(endpoints)
 }
