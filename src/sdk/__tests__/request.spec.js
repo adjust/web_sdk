@@ -3,6 +3,7 @@ import * as http from '../http'
 import * as Time from '../time'
 import * as Logger from '../logger'
 import * as Listeners from '../listeners'
+import * as UrlStartegy from '../url-strategy'
 
 jest.mock('../http')
 jest.mock('../logger')
@@ -1398,6 +1399,277 @@ describe('test request functionality', () => {
           code: 'MISSING_URL'
         })
       })
+
+  })
+
+  describe('url startegy retries functionality', () => {
+    const testEndpoints = jest.requireMock('../url-strategy').mockEndpoints.endpoints
+
+    const iterator = jest.requireActual(('../url-strategy')).getBaseUrlsIterator(testEndpoints)
+
+    const expectHttpCall = (times, endpoint) => {
+      expect(http.default).toHaveBeenCalledTimes(times)
+      expect(http.default).toHaveBeenCalledWith({
+        endpoint: endpoint,
+        url: '/global-request',
+        method: 'GET',
+        params: {
+          attempts: times,
+          createdAt: now,
+          some: 'param'
+        }
+      })
+    }
+
+    const clearIteratorMock = () => {
+      jest.spyOn(iterator, 'next').mockClear()
+      jest.spyOn(iterator, 'reset').mockClear()
+    }
+
+    beforeAll(() => {
+      jest.spyOn(UrlStartegy, 'getBaseUrlsIterator').mockImplementation(() => iterator)
+      jest.spyOn(iterator, 'next')
+      jest.spyOn(iterator, 'reset')
+
+      createdAtSpy.mockReturnValue(now)
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+      iterator.reset()
+    })
+
+    afterAll(() => {
+      jest.clearAllTimers()
+      jest.restoreAllMocks()
+    })
+
+    it('does not retries if request succesfully sent', () => {
+      Request
+        .default({
+          url: '/global-request',
+          params: {
+            some: 'param'
+          }
+        })
+        .send()
+
+      expect.assertions(9)
+
+      expect(UrlStartegy.getBaseUrlsIterator).toHaveBeenCalled()
+      expect(iterator.next).toHaveBeenCalledTimes(1)
+      expect(iterator.next).toReturnWith({ value: testEndpoints.default, done: false })
+
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /global-request in 150ms')
+
+      jest.runOnlyPendingTimers()
+
+      expect(http.default).toHaveBeenCalledWith({
+        endpoint: 'app.default',
+        url: '/global-request',
+        method: 'GET',
+        params: {
+          attempts: 1,
+          createdAt: now,
+          some: 'param'
+        }
+      })
+
+      return Utils.flushPromises()
+        .then(() => {
+          expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
+
+          // iterator was reset and next called in request successful callback
+          expect(iterator.next).toHaveBeenCalledTimes(2)
+          expect(iterator.next).toReturnTimes(2)
+          expect(iterator.next).toReturnWith({ value: testEndpoints.default, done: false })
+        })
+    })
+
+    it('retries to send request to endpoints iteratively and stops to iterate when connected succesfully', () => {
+      http.default.mockRejectedValue(Utils.errorResponse('NO_CONNECTION'))
+
+      Request
+        .default({
+          url: '/global-request',
+          params: {
+            some: 'param'
+          }
+        })
+        .send()
+
+      expect.assertions(38)
+
+      expect(UrlStartegy.getBaseUrlsIterator).toHaveBeenCalled()
+      expect(iterator.next).toReturnWith({ value: testEndpoints.default, done: false })
+      clearIteratorMock()
+
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /global-request in 150ms')
+
+      jest.runOnlyPendingTimers()
+
+      expectHttpCall(1, 'app.default')
+
+      return Utils.flushPromises()
+        .then(() => {
+          expect(iterator.next).toReturnWith({ value: testEndpoints.india, done: false })
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 150ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(2, 'app.india')
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+          expect(iterator.next).toReturnWith({ value: testEndpoints.china, done: false })
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 150ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(3, 'app.china')
+
+          return Utils.flushPromises()
+        }).then(() => {
+          expect(iterator.next).toReturnWith({ value: undefined, done: true })
+          expect(iterator.reset).toHaveBeenCalled()
+          expect(iterator.next).toReturnWith({ value: testEndpoints.default, done: false })
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 60000ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(4, 'app.default')
+
+          return Utils.flushPromises()
+        }).then(() => {
+          expect(iterator.next).toReturnWith({ value: testEndpoints.india, done: false })
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 150ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(5, 'app.india')
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+          expect(iterator.next).toReturnWith({ value: testEndpoints.china, done: false })
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 150ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(6, 'app.china')
+
+          return Utils.flushPromises()
+        }).then(() => {
+          expect(iterator.next).toReturnWith({ value: undefined, done: true })
+          expect(iterator.reset).toHaveBeenCalled()
+          expect(iterator.next).toReturnWith({ value: testEndpoints.default, done: false })
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 60000ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(7, 'app.default')
+
+          http.default.mockResolvedValue({}) // let http successfully resolve
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+          expect(iterator.next).toReturnWith({ value: testEndpoints.india, done: false })
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 150ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(8, 'app.india')
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+
+          jest.runOnlyPendingTimers()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
+        })
+    })
+
+    it('does not iterate endpoints if another error happened', () => {
+      http.default.mockRejectedValue(Utils.errorResponse('UNKNOWN'))
+
+      Request
+        .default({
+          url: '/global-request',
+          params: {
+            some: 'param'
+          }
+        })
+        .send()
+
+      expect(UrlStartegy.getBaseUrlsIterator).toHaveBeenCalled()
+      expect(iterator.next).toReturnWith({ value: testEndpoints.default, done: false })
+      clearIteratorMock()
+
+      expect(Logger.default.log).toHaveBeenLastCalledWith('Trying request /global-request in 150ms')
+
+      jest.runOnlyPendingTimers()
+
+      expectHttpCall(1, 'app.default')
+
+      return Utils.flushPromises()
+        .then(() => {
+          expect(iterator.next).not.toHaveBeenCalled()
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 100ms') // 100ms is because of back-off
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(2, 'app.default')
+
+          http.default.mockResolvedValue({}) // let http successfully resolve
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+          expect(iterator.next).not.toHaveBeenCalled()
+          clearIteratorMock()
+
+          expect(Logger.default.log).toHaveBeenLastCalledWith('Re-trying request /global-request in 200ms')
+
+          jest.runOnlyPendingTimers()
+
+          expectHttpCall(3, 'app.default')
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+
+          jest.runOnlyPendingTimers()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Request /global-request has been finished')
+        })
+    })
+
+    it('resets endpoints iterator for next request', () => {
+      fail('not implemented')
+    })
+
+    it('resets endpoints iterator when out of retries', () => {
+      fail('not implemented')
+    })
 
   })
 
