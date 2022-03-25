@@ -84,6 +84,7 @@ export type RequestParamsT = $Shape<{|
 |}>
 
 export type HttpRequestParamsT = $ReadOnly<{|
+  endpoint: string,
   url: UrlT,
   method?: MethodT,
   params: $ReadOnly<{|

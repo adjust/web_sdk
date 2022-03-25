@@ -10,6 +10,7 @@ import * as Storage from '../storage/storage'
 
 jest.mock('../http')
 jest.mock('../logger')
+jest.mock('../url-strategy')
 jest.useFakeTimers()
 
 const appOptions = {
@@ -20,6 +21,7 @@ const appOptions = {
 function expectRequest (requestConfig, timestamp) {
 
   const fullConfig = {
+    endpoint: 'app',
     ...requestConfig,
     params: {
       attempts: 1,

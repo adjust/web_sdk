@@ -14,6 +14,7 @@ import {MINUTE, SECOND} from '../constants'
 
 jest.mock('../logger')
 jest.mock('../http')
+jest.mock('../url-strategy')
 jest.useFakeTimers()
 
 function goToForeground () {
@@ -372,6 +373,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
+            endpoint: 'app',
             url: '/session',
             method: 'POST',
             params: {
@@ -442,6 +444,7 @@ describe('test session functionality', () => {
           jest.advanceTimersByTime(150)
 
           expect(http.default).toHaveBeenCalledWith({
+            endpoint: 'app',
             url: '/session',
             method: 'POST',
             params: {
@@ -776,6 +779,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
+            endpoint: 'app',
             url: '/session',
             method: 'POST',
             params: {
@@ -847,6 +851,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
+            endpoint: 'app',
             url: '/session',
             method: 'POST',
             params: {
@@ -950,6 +955,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
+            endpoint: 'app',
             url: '/session',
             method: 'POST',
             params: {

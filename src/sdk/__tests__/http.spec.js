@@ -4,9 +4,9 @@ import * as Time from '../time'
 import * as ActivityState from '../activity-state'
 import * as PubSub from '../pub-sub'
 import * as Config from '../config'
-import * as UrlStrategy from '../url-strategy'
 
 jest.mock('../logger')
+jest.mock('../url-strategy')
 jest.useFakeTimers()
 
 describe('perform api requests', () => {
@@ -30,9 +30,6 @@ describe('perform api requests', () => {
     'queue_size=0'
   ].join('&')
 
-  const urlStrategyRetriesMock = sendRequestCb => sendRequestCb({ app: 'app', gdpr: 'gdpr' })
-  const urlStrategyRetriesActual = UrlStrategy.urlStrategyRetries
-
   const oldXMLHttpRequest = global.XMLHttpRequest
   const oldLocale = global.navigator.language
   const oldPlatform = global.navigator.platform
@@ -46,9 +43,6 @@ describe('perform api requests', () => {
     Utils.setGlobalProp(global.navigator, 'language')
     Utils.setGlobalProp(global.navigator, 'platform')
     Utils.setGlobalProp(global.navigator, 'doNotTrack')
-
-
-    jest.spyOn(UrlStrategy, 'urlStrategyRetries').mockImplementation(urlStrategyRetriesMock)
 
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     ActivityState.default.init({uuid: 'some-uuid'})
@@ -78,6 +72,7 @@ describe('perform api requests', () => {
     expect.assertions(1)
 
     expect(http.default({
+      endpoint: 'app',
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -102,6 +97,7 @@ describe('perform api requests', () => {
     expect.assertions(1)
 
     expect(http.default({
+      endpoint: 'app',
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -126,6 +122,7 @@ describe('perform api requests', () => {
     expect.assertions(1)
 
     expect(http.default({
+      endpoint: 'app',
       url: '/some-url',
       params: {}
     })).resolves.toEqual({
@@ -150,6 +147,7 @@ describe('perform api requests', () => {
     expect.assertions(1)
 
     expect(http.default({
+      endpoint: 'app',
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -174,6 +172,7 @@ describe('perform api requests', () => {
     expect.assertions(1)
 
     expect(http.default({
+      endpoint: 'app',
       url: '/some-url',
       params: {}
     })).rejects.toEqual({
@@ -198,6 +197,7 @@ describe('perform api requests', () => {
     expect.assertions(0)
 
     expect(http.default({
+      endpoint: 'app',
       url: '/not-resolved-request'
     })).resolves.toEqual({})
 
@@ -228,6 +228,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       expect(http.default({
+        endpoint: 'app',
         url: '/some-url',
         params: {
           eventToken: '567abc',
@@ -263,6 +264,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       expect(http.default({
+        endpoint: 'app',
         url: '/some-url',
         params: {
           eventToken: '567abc'
@@ -305,6 +307,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       expect(http.default({
+        endpoint: 'app',
         url: '/some-other-url',
         params: {
           bla: 'truc'
@@ -349,6 +352,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       expect(http.default({
+        endpoint: 'app',
         url: '/some-other-url',
         params: {
           bla: 'truc'
@@ -375,6 +379,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       expect(http.default({
+        endpoint: 'gdpr',
         url: '/gdpr_forget_device',
         method: 'POST'
       })).resolves.toEqual({
@@ -399,6 +404,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       expect(http.default({
+        endpoint: 'app',
         url: '/sweet-url',
         params: {
           some: 'thing'
@@ -421,46 +427,12 @@ describe('perform api requests', () => {
         })
     })
 
-    describe('custom url', () => {
-      beforeAll(() => {
-        jest.spyOn(UrlStrategy, 'urlStrategyRetries').mockImplementation(urlStrategyRetriesActual)
-      })
-
-      afterAll(() => {
-        jest.spyOn(UrlStrategy, 'urlStrategyRetries').mockImplementation(urlStrategyRetriesMock)
-      })
-
-      it('overrides base and gdpr url with custom one', () => {
-        Config.default.set({ customUrl: 'custom-base', ...appParams })
-
-        expect.assertions(4)
-
-        expect(http.default({
-          url: '/some-url'
-        })).resolves.toEqual({
-          status: 'success',
-          ...response
-        })
-
-        return Utils.flushPromises()
-          .then(() => {
-
-            expect(mockXHR.open).toHaveBeenCalledWith('GET', `custom-base/some-url?${defaultParamsString}`, true)
-            expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
-            expect(mockXHR.send).toHaveBeenCalledWith(undefined)
-
-            mockXHR.onreadystatechange()
-
-            Config.default.set(appParams)
-          })
-      })
-    })
-
     it('excludes empty values from the request params', () => {
 
       expect.assertions(4)
 
       expect(http.default({
+        endpoint: 'app',
         url: '/some-url',
         params: {
           some: 'thing',
@@ -493,6 +465,7 @@ describe('perform api requests', () => {
       expect.assertions(5)
 
       expect(http.default({
+        endpoint: 'app',
         url: '/some-url',
         method: 'POST',
         params: {
@@ -535,6 +508,7 @@ describe('perform api requests', () => {
       })
 
       expect(http.default({
+        endpoint: 'app',
         url: '/session',
         params: {
           some: 'thing',
@@ -564,6 +538,7 @@ describe('perform api requests', () => {
       })
 
       expect(http.default({
+        endpoint: 'app',
         url: '/attribution',
         params: {
           some: 'thing',
@@ -617,6 +592,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       http.default({
+        endpoint: 'app',
         url: '/session'
       }).then(result => {
         expect(result).toEqual({
@@ -678,6 +654,7 @@ describe('perform api requests', () => {
       expect.assertions(3)
 
       http.default({
+        endpoint: 'app',
         url: '/event',
         params: {
           eventToken: 'token1'
@@ -708,6 +685,7 @@ describe('perform api requests', () => {
       expect.assertions(3)
 
       http.default({
+        endpoint: 'app',
         url: '/anything',
         params: {
           bla: 'truc'
@@ -734,6 +712,7 @@ describe('perform api requests', () => {
       expect.assertions(2)
 
       http.default({
+        endpoint: 'app',
         url: '/session'
       }).then(result => {
         expect(result).toEqual({status: 'success'})
@@ -757,6 +736,7 @@ describe('perform api requests', () => {
       expect.assertions(4)
 
       http.default({
+        endpoint: 'app',
         url: '/anything',
         params: {
           bla: 'truc'
@@ -788,6 +768,7 @@ describe('perform api requests', () => {
       expect.assertions(2)
 
       http.default({
+        endpoint: 'gdpr',
         url: '/gdpr_forget_device'
       }).then(result => {
         expect(result).toEqual({
@@ -811,6 +792,7 @@ describe('perform api requests', () => {
       expect.assertions(2)
 
       http.default({
+        endpoint: 'app',
         url: '/disable_third_party_sharing'
       }).then(result => {
         expect(result).toEqual({
