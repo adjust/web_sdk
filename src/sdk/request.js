@@ -17,6 +17,7 @@ import Logger from './logger'
 import backOff from './backoff'
 import {isConnected} from './listeners'
 import {SECOND, HTTP_ERRORS} from './constants'
+import {getBaseUrlsIterator, BaseUrlsIterator, BaseUrlsMap} from './url-strategy'
 
 type RequestConfigT = {|
   url?: UrlT,
@@ -90,6 +91,33 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   const _strategy: ?BackOffStrategyT = strategy
+
+  /**
+   * Url Startegy iterator to go through endpoints to retry to send request
+   */
+  const _baseUrlsIterator: BaseUrlsIterator = getBaseUrlsIterator()
+
+  /**
+   * Current base urls map to send request
+   */
+  let _baseUrlsIteratorCurrent: { value: BaseUrlsMap, done: boolean } = _baseUrlsIterator.next()
+
+
+  /**
+   * Reset iterator state and get the first endpoint to use it in the next try
+   */
+  const _resetBaseUrlsIterator = () => {
+    _baseUrlsIterator.reset()
+    _baseUrlsIteratorCurrent = _baseUrlsIterator.next()
+  }
+
+  /**
+   * Returns base url depending on request path
+   */
+  const _getBaseUrl = (urlsMap: BaseUrlsMap, url: UrlT): string => {
+    const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
+    return urlsMap[base]
+  }
 
   /**
    * Timeout id to be used for clearing
@@ -236,6 +264,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
     _startAt = Date.now()
 
     return _preRequest({
+      endpoint: _getBaseUrl(_baseUrlsIteratorCurrent.value, _url),
       url: _url,
       method: _method,
       params: {
@@ -287,6 +316,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
           .reduce(reducer, {})
 
         return http({
+          endpoint: options.endpoint,
           url: options.url,
           method: options.method,
           params: {
@@ -365,6 +395,8 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
       return
     }
 
+    _resetBaseUrlsIterator()
+
     if (typeof _continueCb === 'function') {
       _continueCb(result, _finish, _retry)
     } else {
@@ -384,7 +416,21 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    */
   function _error (result: HttpErrorResponseT, resolve, reject): void {
     if (result && result.action === 'RETRY') {
-      resolve(_retry(result.code === 'NO_CONNECTION' ? NO_CONNECTION_WAIT : undefined))
+
+      if (result.code === 'NO_CONNECTION') {
+
+        const nextEndpoint = _baseUrlsIterator.next() // get next endpoint
+
+        if (!nextEndpoint.done) { // next endpoint exists
+          _baseUrlsIteratorCurrent = nextEndpoint // use the endpoint in the next try
+          resolve(_retry(DEFAULT_WAIT))
+        } else { // no more endpoints, seems there is no connection at all
+          _resetBaseUrlsIterator()
+          resolve(_retry(NO_CONNECTION_WAIT))
+        }
+      } else {
+        resolve(_retry())
+      }
       return
     }
 

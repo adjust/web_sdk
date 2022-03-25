@@ -13,6 +13,7 @@ import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as http from '../../http'
 import * as Scheduler from '../../scheduler'
+import * as ActivityState from '../../activity-state'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
@@ -56,6 +57,8 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
     jest.spyOn(Listeners, 'register')
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
+    jest.spyOn(ActivityState.default, 'getWebUUID')
+    jest.spyOn(ActivityState.default, 'getAttribution')
 
     Preferences.setDisabled({reason: 'gdpr'})
   })
@@ -79,7 +82,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(28)
+      expect.assertions(32)
 
       return Utils.flushPromises()
         .then(() => {
@@ -173,7 +176,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(30)
+      expect.assertions(34)
 
       return Utils.flushPromises()
         .then(() => {
@@ -222,7 +225,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially GDPR disabled
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(30)
+      expect.assertions(34)
 
       return Utils.flushPromises()
         .then(() => {

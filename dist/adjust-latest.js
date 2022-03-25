@@ -2774,7 +2774,7 @@ function isEmptyEntry(value
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || false,
-  version: "5.2.1" || false,
+  version: "5.3.0" || false,
   env: "production"
 };
 /* harmony default export */ var globals = (Globals);
@@ -4044,7 +4044,7 @@ function timePassed(d1
 
 
 /*:: // 
-import { type UrlT, type ActivityStateMapT, type CommonRequestParams } from './types';*/
+import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonRequestParams } from './types';*/
 
 
 
@@ -4439,6 +4439,31 @@ function activity_state_destroy()
   _active = false;
 }
 
+function getAttribution()
+/*: AttributionMapT | null*/
+{
+  if (!_started) {
+    return null;
+  }
+
+  if (!_activityState.attribution) {
+    logger.log('No attribution data yet');
+    return null;
+  }
+
+  return _activityState.attribution;
+}
+
+function getWebUUID()
+/*: string*/
+{
+  if (!_started) {
+    return null;
+  }
+
+  return _activityState.uuid;
+}
+
 var ActivityState = {
   get current() {
     return currentGetter();
@@ -4460,7 +4485,9 @@ var ActivityState = {
   updateSessionLength: updateSessionLength,
   resetSessionOffset: resetSessionOffset,
   updateLastActive: updateLastActive,
-  destroy: activity_state_destroy
+  destroy: activity_state_destroy,
+  getAttribution: getAttribution,
+  getWebUUID: getWebUUID
 };
 /* harmony default export */ var activity_state = (ActivityState);
 // CONCATENATED MODULE: ./src/sdk/pub-sub.js
@@ -11532,25 +11559,7 @@ var _excluded = ["logLevel", "logOutput"];
 
 var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
 /*:: // 
-import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type SmartBannerOptionsT } from './types';*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type SmartBannerOptionsT, type AttributionMapT } from './types';*/
 
 
 
@@ -11633,6 +11642,34 @@ function initSdk()
     main_options = objectSpread2_default()({}, options);
 
     _start(options);
+  });
+}
+/**
+ * Get user's current attribution information
+ *
+ * @returns {AttributionMapT|undefined} current attribution information if available or `undefined` otherwise
+ */
+
+
+function main_getAttribution()
+/*: ?AttributionMapT*/
+{
+  return _preCheck('get attribution', function () {
+    return activity_state.getAttribution();
+  });
+}
+/**
+ * Get `web_uuid` - a unique ID of user generated per subdomain and per browser
+ *
+ * @returns {string|undefined} `web_uuid` if available or `undefined` otherwise
+ */
+
+
+function main_getWebUUID()
+/*: ?string*/
+{
+  return _preCheck('get web_uuid', function () {
+    return activity_state.getWebUUID();
   });
 }
 /**
@@ -12108,7 +12145,9 @@ function _preCheck(description
 /*: string*/
 , callback
 /*: () => mixed*/
-) {
+)
+/*: mixed*/
+{
   var _ref3 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
       schedule = _ref3.schedule,
       stopBeforeInit = _ref3.stopBeforeInit;
@@ -12133,7 +12172,7 @@ function _preCheck(description
       scheduler_delay(callback, description);
       logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
     } else {
-      callback();
+      return callback();
     }
   }
 }
@@ -12144,6 +12183,8 @@ function _clearDatabase() {
 
 var Adjust = {
   initSdk: initSdk,
+  getAttribution: main_getAttribution,
+  getWebUUID: main_getWebUUID,
   trackEvent: trackEvent,
   addGlobalCallbackParameters: addGlobalCallbackParameters,
   addGlobalPartnerParameters: addGlobalPartnerParameters,

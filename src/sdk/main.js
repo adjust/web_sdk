@@ -6,7 +6,8 @@ import {
   type GlobalParamsT,
   type CustomErrorT,
   type ActivityStateMapT,
-  type SmartBannerOptionsT
+  type SmartBannerOptionsT,
+  type AttributionMapT
 } from './types'
 import Config from './config'
 import Storage from './storage/storage'
@@ -97,6 +98,24 @@ function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
 
       _start(options)
     })
+}
+
+/**
+ * Get user's current attribution information
+ *
+ * @returns {AttributionMapT|undefined} current attribution information if available or `undefined` otherwise
+ */
+function getAttribution (): ?AttributionMapT {
+  return _preCheck('get attribution', () => ActivityState.getAttribution())
+}
+
+/**
+ * Get `web_uuid` - a unique ID of user generated per subdomain and per browser
+ *
+ * @returns {string|undefined} `web_uuid` if available or `undefined` otherwise
+ */
+function getWebUUID (): ?string {
+  return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
 }
 
 /**
@@ -459,7 +478,7 @@ function _start (options: InitOptionsT): void {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}) {
+function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}): mixed {
   if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -480,7 +499,7 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
-      callback()
+      return callback()
     }
   }
 }
@@ -491,6 +510,8 @@ function _clearDatabase () {
 
 const Adjust = {
   initSdk,
+  getAttribution,
+  getWebUUID,
   trackEvent,
   addGlobalCallbackParameters,
   addGlobalPartnerParameters,

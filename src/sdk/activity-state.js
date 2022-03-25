@@ -2,12 +2,14 @@
 import {
   type UrlT,
   type ActivityStateMapT,
+  type AttributionMapT,
   type CommonRequestParams
 } from './types'
 import {SECOND} from './constants'
 import {timePassed} from './time'
 import {isRequest} from './utilities'
 import Config from './config'
+import Logger from './logger'
 
 /**
  * Reference to the activity state
@@ -308,6 +310,27 @@ function destroy (): void {
   _active = false
 }
 
+function getAttribution (): AttributionMapT | null {
+  if (!_started) {
+    return null
+  }
+
+  if (!_activityState.attribution) {
+    Logger.log('No attribution data yet')
+    return null
+  }
+
+  return _activityState.attribution
+}
+
+function getWebUUID (): string {
+  if (!_started) {
+    return null
+  }
+
+  return _activityState.uuid
+}
+
 const ActivityState = {
   get current () { return currentGetter() },
   set current (value) { currentSetter(value) },
@@ -323,7 +346,9 @@ const ActivityState = {
   updateSessionLength,
   resetSessionOffset,
   updateLastActive,
-  destroy
+  destroy,
+  getAttribution,
+  getWebUUID
 }
 
 export default ActivityState

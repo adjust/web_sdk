@@ -106,7 +106,7 @@ function expectDelayedTrackEvent_Async () {
     .then(() => {
       PubSub.publish('sdk:installed')
       jest.runOnlyPendingTimers()
-  
+
       expect(Logger.default.log).toHaveBeenLastCalledWith('Delayed track event task is running now')
 
       expect(event.default).toHaveBeenCalledWith({eventToken: 'bla123'}, expect.any(Number))
@@ -164,6 +164,12 @@ function expectNotRunningTrackEventWhenNoStorage () {
 
 function expectRunningStatic () {
 
+  _instance.getWebUUID()
+  expect(ActivityState.default.getWebUUID).toHaveBeenCalled()
+
+  _instance.getAttribution()
+  expect(ActivityState.default.getAttribution).toHaveBeenCalled()
+
   const params = [
     {key: 'key1', value: 'value1'},
     {key: 'key2', value: 'value2'}
@@ -193,10 +199,18 @@ function expectRunningStatic () {
   _instance.switchToOfflineMode()
   expect(Queue.setOffline).toHaveBeenCalledWith(true)
 
-  return {assertions: 8}
+  return {assertions: 10}
 }
 
 function expectNotRunningStatic () {
+
+  _instance.getWebUUID()
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not get web_uuid')
+  expect(ActivityState.default.getWebUUID).not.toHaveBeenCalled()
+
+  _instance.getAttribution()
+  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not get attribution')
+  expect(ActivityState.default.getAttribution).not.toHaveBeenCalled()
 
   _instance.addGlobalCallbackParameters([{key: 'key', value: 'value'}])
 
@@ -233,7 +247,7 @@ function expectNotRunningStatic () {
   expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not set offline mode')
   expect(Queue.setOffline).not.toHaveBeenCalled()
 
-  return {assertions: 14}
+  return {assertions: 18}
 }
 
 function expectNotRunningStaticWhenNoStorage () {

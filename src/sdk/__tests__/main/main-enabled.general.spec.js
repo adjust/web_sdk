@@ -13,6 +13,7 @@ import * as Preferences from '../../preferences'
 import * as GdprForgetDevice from '../../gdpr-forget-device'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
+import * as ActivityState from '../../activity-state'
 import AdjustInstance from '../../main.js'
 import Suite from './main.suite'
 
@@ -54,6 +55,8 @@ describe('main entry point - test enable/disable when in initially enabled state
     jest.spyOn(Listeners, 'destroy')
     jest.spyOn(Scheduler, 'delay')
     jest.spyOn(Scheduler, 'flush')
+    jest.spyOn(ActivityState.default, 'getWebUUID')
+    jest.spyOn(ActivityState.default, 'getAttribution')
   })
 
   afterEach(() => {
@@ -234,7 +237,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(28)
+      expect.assertions(32)
 
       return Utils.flushPromises()
         .then(() => {
@@ -435,7 +438,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(28)
+      expect.assertions(32)
 
       return Utils.flushPromises()
         .then(() => {

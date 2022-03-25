@@ -14,7 +14,6 @@ import Logger from './logger'
 import {isObject, isValidJson, isRequest, entries, isEmptyEntry, reducer} from './utilities'
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
-import {urlStrategyRetries, BaseUrlsMap} from './url-strategy'
 
 type ParamsWithAttemptsT = $PropertyType<HttpRequestParamsT, 'params'>
 
@@ -175,13 +174,11 @@ function _handleReadyStateChange (reject, resolve, {xhr, url}: {xhr: XMLHttpRequ
  * @returns {{encodedParams: string, fullUrl: string}}
  * @private
  */
-function _prepareUrlAndParams ({url, method, params}: HttpRequestParamsT, defaultParams: DefaultParamsT, baseUrlsMap: BaseUrlsMap): {fullUrl: string, encodedParams: string} {
+function _prepareUrlAndParams ({endpoint, url, method, params}: HttpRequestParamsT, defaultParams: DefaultParamsT): {fullUrl: string, encodedParams: string} {
   const encodedParams = _encodeParams(params, defaultParams)
-  const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app'
-  const baseUrl = baseUrlsMap[base]
 
   return {
-    fullUrl: baseUrl + url + (method === 'GET' ? `?${encodedParams}` : ''),
+    fullUrl: endpoint + url + (method === 'GET' ? `?${encodedParams}` : ''),
     encodedParams
   }
 }
@@ -217,8 +214,8 @@ function _prepareHeaders (xhr: XMLHttpRequest, method: $PropertyType<HttpRequest
  * @param {Object} defaultParams
  * @returns {Promise}
  */
-function _buildXhr ({url, method = 'GET', params = {}}: HttpRequestParamsT, defaultParams: DefaultParamsT, baseUrlsMap: BaseUrlsMap): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
-  const {fullUrl, encodedParams} = _prepareUrlAndParams({url, method, params}, defaultParams, baseUrlsMap)
+function _buildXhr ({endpoint, url, method = 'GET', params = {}}: HttpRequestParamsT, defaultParams: DefaultParamsT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
+  const {fullUrl, encodedParams} = _prepareUrlAndParams({endpoint, url, method, params}, defaultParams)
 
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest()
@@ -230,10 +227,6 @@ function _buildXhr ({url, method = 'GET', params = {}}: HttpRequestParamsT, defa
 
     xhr.send(method === 'GET' ? undefined : encodedParams)
   })
-}
-
-function _sendRequestWithUrlStrategyRetries (options: HttpRequestParamsT, defaultParams: DefaultParamsT) {
-  return urlStrategyRetries(baseUrlsMap => _buildXhr(options, defaultParams, baseUrlsMap))
 }
 
 /**
@@ -302,6 +295,6 @@ function _interceptSuccess (result: HttpSuccessResponseT, url): HttpSuccessRespo
  */
 export default function http (options: HttpRequestParamsT): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
   return defaultParams()
-    .then(defaultParams => _sendRequestWithUrlStrategyRetries(options, defaultParams))
+    .then(defaultParams => _buildXhr(options, defaultParams))
     .then(result => _interceptResponse(result, options.url))
 }

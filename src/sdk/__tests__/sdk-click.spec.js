@@ -6,6 +6,7 @@ import * as ActivityState from '../activity-state'
 
 jest.mock('../http')
 jest.mock('../logger')
+jest.mock('../url-strategy')
 jest.useFakeTimers()
 
 describe('test sdk-click functionality', () => {
@@ -63,6 +64,7 @@ describe('test sdk-click functionality', () => {
     }
 
     const fullConfig = {
+      endpoint: 'app',
       ...requestConfig,
       params: {
         attempts: 1,
