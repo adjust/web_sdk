@@ -4049,7 +4049,6 @@ import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonReq
 
 
 
-
 /**
  * Reference to the activity state
  *
@@ -11561,24 +11560,6 @@ var _excluded = ["logLevel", "logOutput"];
 var main_Promise = typeof Promise === 'undefined' ? __webpack_require__(3).Promise : Promise;
 /*:: // 
 import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type SmartBannerOptionsT, type AttributionMapT } from './types';*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
