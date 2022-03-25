@@ -1,7 +1,10 @@
-### Version 5.3.0 (18th February 2021)
+### Version 5.3.0 (25th March 2021)
 #### Added
 - Added `getWebUUID` method to access SDK generated ID `web_uuid`.
 - Added `getAttribution` method to access user's current attribution information.
+
+#### Fixed
+- Fixed issue with URL strategy retried to send requests after SDK was disabled.
 
 ---
 ### Version 5.2.1 (16th September 2021)
