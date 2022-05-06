@@ -1,0 +1,313 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name='viewport' content='user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+    <style type='text/css'>
+        html {
+            font-family: Helvetica;
+            color: #222;
+            font-size: 16px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: steelblue;
+            font-size: 1.5rem;
+            line-height: 2.5rem;
+            margin: 12px;
+        }
+
+        h2 {
+            background-color: rgb(219, 236, 251);
+            color: steelblue;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            padding: 16px;
+            margin: 8px 0 24px;
+        }
+
+        button {
+            margin: 0 3px 10px;
+            font-size: 0.75rem;
+        }
+    </style>
+
+    <!-- Detect user agent platform and attach Android bridge scripts -->
+    <script>
+        function getPlatform() {
+            const platformString = navigator.userAgentData && navigator.userAgentData.platform || navigator.userAgent
+
+            if (navigator.userAgentData && navigator.userAgentData.platform) {
+                alert(navigator.userAgentData.platform)
+            }
+
+            if (/iPad|iPhone|iPod/.test(platformString)) {
+                return 'ios'
+            }
+
+            if (/Android/.test(platformString)) {
+                return 'android'
+            }
+        }
+
+        var platform = getPlatform()
+
+        if (platform === 'android') {
+            attachAndroidBridgeScripts()
+        }
+
+        function attachAndroidBridgeScripts() {
+            const path = 'https://github.com/adjust/android_sdk/blob/master/Adjust/sdk-plugin-webbridge/src/main/assets/'
+            const scriptSources = ['adjust_event.js', 'adjust_third_party_sharing.js', 'adjust_config.js', 'adjust.js']
+
+            for (let scriptSrc of scriptSources) {
+                let scriptTag = document.createElement('script');
+                document.head.appendChild(scriptTag);
+                scriptTag.async = true;
+                scriptTag.src = path + scriptSrc;
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Adjust Web View Demo</h1>
+
+    <h2 hidden="true">Platform is not supported</h2>
+
+    <div id='buttons' style='display:flex;flex-direction:column;align-items:center;'>
+    </div>
+
+    <script>
+        if (!platform) {
+            let notSupportedTitle = document.getElementsByTagName('h2')[0]
+            notSupportedTitle.hidden = false;
+        }
+
+        renderButtons(platform)
+
+        if (platform === 'ios') {
+            setupWebViewJavascriptBridge(function (bridge) {
+                setupAdjustBridge(platform)
+            })
+        } else if (platform === 'android') {
+            // wait until Android bridge scripts are loaded
+            window.onload = function () {
+                setupAdjustBridge(platform)
+            }
+        }
+
+        function configureAdjust() {
+            let adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            adjustConfig.setOpenDeferredDeeplink(true) // Just for test, is true by default.
+
+            adjustConfig.setAttributionCallback(function (attribution) {
+                alert('Tracker token = ' + attribution.trackerToken + '\n' +
+                    'Tracker name = ' + attribution.trackerName + '\n' +
+                    'Network = ' + attribution.network + '\n' +
+                    'Campaign = ' + attribution.campaign + '\n' +
+                    'Adgroup = ' + attribution.adgroup + '\n' +
+                    'Creative = ' + attribution.creative + '\n' +
+                    'Click label = ' + attribution.clickLabel)
+            })
+
+            adjustConfig.setEventSuccessCallback(function (eventSuccess) {
+                alert('Message = ' + eventSuccess.message + '\n' +
+                    'Timestamp = ' + eventSuccess.timestamp + '\n' +
+                    'Adid = ' + eventSuccess.adid + '\n' +
+                    'CallbackId = ' + eventSuccess.callbackId + '\n' +
+                    'Event token = ' + eventSuccess.eventToken)
+            })
+
+            adjustConfig.setEventFailureCallback(function (eventFailure) {
+                alert('Message = ' + eventFailure.message + '\n' +
+                    'Timestamp = ' + eventFailure.timestamp + '\n' +
+                    'Adid = ' + eventFailure.adid + '\n' +
+                    'Event token = ' + eventFailure.eventToken + '\n' +
+                    'CallbackId = ' + eventSuccess.callbackId + '\n' +
+                    'Will retry = ' + eventFailure.willRetry)
+            })
+
+            adjustConfig.setSessionSuccessCallback(function (sessionSuccess) {
+                alert('Message = ' + sessionSuccess.message + '\n' +
+                    'Timestamp = ' + sessionSuccess.timestamp + '\n' +
+                    'Adid = ' + sessionSuccess.adid)
+            })
+
+            adjustConfig.setSessionFailureCallback(function (sessionFailure) {
+                alert('Message = ' + sessionFailure.message + '\n' +
+                    'Timestamp = ' + sessionFailure.timestamp + '\n' +
+                    'Adid = ' + sessionFailure.adid + '\n' +
+                    'Will retry = ' + sessionFailure.willRetry)
+            })
+
+            adjustConfig.setDeferredDeeplinkCallback(function (deferredDeeplink) {
+                alert('Deferred deeplink:\n' + deferredDeeplink)
+            })
+
+            return adjustConfig
+        }
+
+        function setupAdjustBridge(platform) {
+            if (!platform) {
+                return
+            }
+
+            let adjustConfig = configureAdjust()
+
+            if (platform === 'ios') {
+                Adjust.appDidLaunch(adjustConfig); //ios
+            } else if (platform === 'android') {
+                Adjust.onCreate(adjustConfig); // android
+            }
+        }
+
+        function setupWebViewJavascriptBridge(callback) {
+            if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+            if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+            window.WVJBCallbacks = [callback];
+            var WVJBIframe = document.createElement('iframe');
+            WVJBIframe.style.display = 'none';
+            WVJBIframe.src = 'https://__bridge_loaded__';
+            document.documentElement.appendChild(WVJBIframe);
+            setTimeout(function () { document.documentElement.removeChild(WVJBIframe) }, 0)
+        }
+
+        function renderButtons(platform) {
+            const buttonsData = [{
+                id: 'btnTrackSimpleEvent',
+                label: 'Track Simple event',
+                clickHandler: () => {
+                    var adjustEvent = new AdjustEvent('g3mfiw');
+                    Adjust.trackEvent(adjustEvent);
+                }
+            }, {
+                id: 'btnTrackRevenueEvent',
+                label: 'Track Revenue event',
+                clickHandler: () => {
+                    var adjustEvent = new AdjustEvent('a4fd35');
+                    adjustEvent.setRevenue(0.01, 'EUR');
+                    Adjust.trackEvent(adjustEvent);
+                }
+            }, {
+                id: 'btnTrackCallbackEvent',
+                label: 'Track Callback event',
+                clickHandler: () => {
+                    var adjustEvent = new AdjustEvent('34vgg9');
+                    adjustEvent.addCallbackParameter('key', 'value');
+                    adjustEvent.addCallbackParameter('x', 'y');
+                    adjustEvent.addCallbackParameter('key', 'lock');
+                    Adjust.trackEvent(adjustEvent);
+                }
+            }, {
+                id: 'btnTrackPartnerEvent',
+                label: 'Track Partner event',
+                clickHandler: () => {
+                    var adjustEvent = new AdjustEvent('w788qs');
+                    adjustEvent.addPartnerParameter('foo', 'bar');
+                    adjustEvent.addPartnerParameter('x', 'y');
+                    adjustEvent.addPartnerParameter('foo', 'foot');
+                    adjustEvent.addPartnerParameter('x', 'z');
+                    Adjust.trackEvent(adjustEvent);
+                }
+            }, {
+                id: 'btnEnableOfflineMode',
+                label: 'Enable Offline mode',
+                clickHandler: () => {
+                    Adjust.setOfflineMode(true);
+                }
+            }, {
+                id: 'btnDisableOfflineMode',
+                label: 'Disable Offline mode',
+                clickHandler: () => {
+                    Adjust.setOfflineMode(false);
+                }
+            }, {
+                id: 'btnEnableSdk',
+                label: 'Enable SDK',
+                clickHandler: () => {
+                    Adjust.setEnabled(true);
+                }
+            }, {
+                id: 'btnDisableSdk',
+                label: 'Disable SDK',
+                clickHandler: () => {
+                    Adjust.setEnabled(false);
+                }
+            }, {
+                id: 'btnIsSdkEnabled',
+                label: 'Is SDK Enabled?',
+                clickHandler: () => {
+                    alert('Is SDK enabled? ' + Adjust.isEnabled());
+                },
+                platform: 'android'
+            }, {
+                id: 'btnIsSdkEnabled',
+                label: 'Is SDK Enabled?',
+                clickHandler: () => {
+                    Adjust.isEnabled(function (isEnabled) {
+                        alert('Is SDK enabled? ' + isEnabled)
+                    })
+                },
+                platform: 'ios'
+            }, {
+                id: 'btnGetGoogleAdId',
+                label: 'Get Google Ad Id',
+                clickHandler: () => {
+                    Adjust.getGoogleAdId(function (gpsAdid) {
+                        alert('Google Play Ad Id:\n' + gpsAdid);
+                    });
+                },
+                platform: 'android'
+            }, {
+                id: 'btnGetIdfa',
+                label: 'Get IDFA',
+                clickHandler: () => {
+                    Adjust.getIdfa(function (idfa) {
+                        alert('IDFA\n' + idfa)
+                    })
+                },
+                platform: 'ios'
+            }, {
+                id: 'btnAskTrackingPermission',
+                label: 'Ask tracking permission',
+                clickHandler: () => {
+                    Adjust.requestTrackingAuthorizationWithCompletionHandler(function (status) {
+                        alert('Tracking permission status\n' + status)
+                    })
+                },
+                platform: 'ios'
+            }]
+
+            let buttons = document.getElementById('buttons')
+
+            for (let btn of buttonsData) {
+                if (btn.platform && btn.platform !== platform) {
+                    continue // don't render inappropriate buttons 
+                }
+
+                let button = document.createElement('button');
+                button.setAttribute('id', btn.id);
+                button.innerText = btn.label;
+
+                if (!platform) {
+                    button.disabled = true;
+                } else {
+                    button.addEventListener('click', btn.clickHandler);
+                }
+
+                buttons.appendChild(button);
+            }
+        }
+    </script>
+</body>
+
+</html>
