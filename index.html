@@ -63,7 +63,7 @@
         }
 
         function attachAndroidBridgeScripts() {
-            const path = 'https://github.com/adjust/android_sdk/blob/master/Adjust/sdk-plugin-webbridge/src/main/assets/'
+            const path = 'android-bridge/'
             const scriptSources = ['adjust_event.js', 'adjust_third_party_sharing.js', 'adjust_config.js', 'adjust.js']
 
             for (let scriptSrc of scriptSources) {
@@ -164,9 +164,9 @@
             let adjustConfig = configureAdjust()
 
             if (platform === 'ios') {
-                Adjust.appDidLaunch(adjustConfig); //ios
+                Adjust.appDidLaunch(adjustConfig);
             } else if (platform === 'android') {
-                Adjust.onCreate(adjustConfig); // android
+                Adjust.onCreate(adjustConfig);
             }
         }
 
