@@ -30,6 +30,8 @@
   'Adjust',
   [
     'initSdk',
+    'getAttribution',
+    'getWebUUID',
     'trackEvent',
     'addGlobalCallbackParameters',
     'addGlobalPartnerParameters',
