@@ -369,7 +369,8 @@ describe('event tracking functionality', () => {
               url: '/event',
               method: 'POST',
               params: {
-                eventToken: '123abc'
+                eventToken: '123abc',
+                deduplicationId: '123-abc-456'
               }
             }) // + 2 assertions
           })
@@ -441,7 +442,8 @@ describe('event tracking functionality', () => {
                 url: '/event',
                 method: 'POST',
                 params: {
-                  eventToken: '123abc'
+                  eventToken: '123abc',
+                  deduplicationId: 'dedup-1240-abc'
                 }
               }) // + 2 assertions
             })
@@ -520,7 +522,8 @@ describe('event tracking functionality', () => {
                 url: '/event',
                 method: 'POST',
                 params: {
-                  eventToken: '123abc'
+                  eventToken: '123abc',
+                  deduplicationId: 'dedup-1240-abc'
                 }
               }) // + 2 assertions
             })
@@ -573,7 +576,8 @@ describe('event tracking functionality', () => {
                 url: '/event',
                 method: 'POST',
                 params: {
-                  eventToken: '123abc'
+                  eventToken: '123abc',
+                  deduplicationId: 'dedup-1240-abc'
                 }
               }) // + 2 assertions
             })
