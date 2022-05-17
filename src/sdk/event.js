@@ -70,6 +70,7 @@ function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: 
   const globalParams = {}
   const baseParams = {
     eventToken: params.eventToken,
+    deduplicationId: params.deduplicationId,
     ..._getRevenue(params.revenue, params.currency)
   }
 
