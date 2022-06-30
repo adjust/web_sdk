@@ -1822,34 +1822,6 @@ function _defineProperty(obj, key, value) {
 
   return obj;
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
-
-
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    enumerableOnly && (symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    })), keys.push.apply(keys, symbols);
-  }
-
-  return keys;
-}
-
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = null != arguments[i] ? arguments[i] : {};
-    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
-      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-    });
-  }
-
-  return target;
-}
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
@@ -2008,6 +1980,9 @@ function _typeof(obj) {
 
 
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 /**
  * Build human readable list
@@ -2117,7 +2092,7 @@ function convertToMap
   /*: Array<{ key: string, value: T }>*/
   = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   return array.reduce(function (acc, o) {
-    return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, o.key, o.value));
+    return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, o.key, o.value));
   }, {});
 }
 /**
@@ -2186,7 +2161,7 @@ function reducer
       key = _ref2[0],
       value = _ref2[1];
 
-  return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, value));
+  return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, value));
 }
 /**
  * Extracts object entries in the [key, value] format
@@ -2448,6 +2423,10 @@ var Logger = {
 
 
 
+function config_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function config_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? config_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : config_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 /*:: // 
 import { type BaseParamsT, type CustomConfigT, type InitOptionsT, type BaseParamsListT, type BaseParamsMandatoryListT, type CustomConfigListT } from './types';*/
 
@@ -2550,7 +2529,7 @@ function isInitialised()
 function getBaseParams()
 /*: BaseParamsT*/
 {
-  return _objectSpread2({}, _baseParams);
+  return config_objectSpread({}, _baseParams);
 }
 /**
  * Set base params and custom config for the sdk to run
@@ -2596,7 +2575,7 @@ function set(options
 function getCustomConfig()
 /*: CustomConfigT*/
 {
-  return _objectSpread2({}, _customConfig);
+  return config_objectSpread({}, _customConfig);
 }
 /**
  * Check if there are  missing mandatory parameters
@@ -2635,7 +2614,7 @@ function destroy()
   _customConfig = {};
 }
 
-var Config = _objectSpread2(_objectSpread2({}, _baseConfig), {}, {
+var Config = config_objectSpread(config_objectSpread({}, _baseConfig), {}, {
   set: set,
   getBaseParams: getBaseParams,
   getCustomConfig: getCustomConfig,
@@ -2906,6 +2885,11 @@ function isComplexStoreField(field
 
 
 
+function scheme_map_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function scheme_map_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? scheme_map_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : scheme_map_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+
 
 
 /**
@@ -2994,7 +2978,7 @@ function _flipStoreScheme(storeName
       return _getShortKey(storeName, key);
     })
   } : {};
-  return _objectSpread2(_objectSpread2(_objectSpread2({
+  return scheme_map_objectSpread(scheme_map_objectSpread(scheme_map_objectSpread({
     key: key
   }, values), keys), composite);
 }
@@ -3191,6 +3175,10 @@ function valueIsRecord(value
 
 
 
+function converter_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function converter_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? converter_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : converter_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 
 
 
@@ -3285,7 +3273,7 @@ function convertRecord(storeName
         key = _ref4[0],
         value = _ref4[1];
 
-    return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, value));
+    return converter_objectSpread(converter_objectSpread({}, acc), {}, _defineProperty({}, key, value));
   }, {});
 }
 /**
@@ -3553,6 +3541,10 @@ function timePassed(d1
 ;// CONCATENATED MODULE: ./src/sdk/activity-state.js
 
 
+function activity_state_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function activity_state_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? activity_state_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : activity_state_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 /*:: // 
 import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonRequestParams } from './types';*/
 
@@ -3598,7 +3590,7 @@ var _active
 function currentGetter()
 /*: ActivityStateMapT*/
 {
-  return _started ? _objectSpread2({}, _activityState) : {};
+  return _started ? activity_state_objectSpread({}, _activityState) : {};
 }
 /**
  * Set current activity state
@@ -3611,7 +3603,7 @@ function currentSetter() {
   var params
   /*: ActivityStateMapT*/
   = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  _activityState = _started ? _objectSpread2({}, params) : {};
+  _activityState = _started ? activity_state_objectSpread({}, params) : {};
 }
 /**
  * Initiate in-memory activity state
@@ -3666,7 +3658,7 @@ function _update(params
 )
 /*: void*/
 {
-  _activityState = _objectSpread2(_objectSpread2({}, _activityState), params);
+  _activityState = activity_state_objectSpread(activity_state_objectSpread({}, _activityState), params);
 }
 /**
  * Set active flag to true when going foreground
@@ -4298,6 +4290,11 @@ var QuickStorage = /*#__PURE__*/function () {
 ;// CONCATENATED MODULE: ./src/sdk/preferences.js
 
 
+function preferences_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function preferences_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? preferences_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : preferences_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+
 
 
 
@@ -4350,7 +4347,7 @@ function _getPreferences()
     _setPreferences();
   }
 
-  return _preferences ? _objectSpread2({}, _preferences) : null;
+  return _preferences ? preferences_objectSpread({}, _preferences) : null;
 }
 /**
  * Set local reference of the preserved preferences
@@ -4390,8 +4387,8 @@ function setDisabled(value
 )
 /*: void*/
 {
-  var sdkDisabled = value ? _objectSpread2({}, value) : null;
-  quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
+  var sdkDisabled = value ? preferences_objectSpread({}, value) : null;
+  quick_storage.stores[_storeName] = preferences_objectSpread(preferences_objectSpread({}, _getPreferences()), {}, {
     sdkDisabled: sdkDisabled
   });
 
@@ -4425,8 +4422,8 @@ function setThirdPartySharing(value
 )
 /*: void*/
 {
-  var thirdPartySharingDisabled = value ? _objectSpread2({}, value) : null;
-  quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
+  var thirdPartySharingDisabled = value ? preferences_objectSpread({}, value) : null;
+  quick_storage.stores[_storeName] = preferences_objectSpread(preferences_objectSpread({}, _getPreferences()), {}, {
     thirdPartySharingDisabled: thirdPartySharingDisabled
   });
 
@@ -4466,7 +4463,7 @@ function recover()
   = quick_storage.stores[_storeName];
 
   if (!stored) {
-    quick_storage.stores[_storeName] = _objectSpread2({}, _preferences);
+    quick_storage.stores[_storeName] = preferences_objectSpread({}, _preferences);
   }
 }
 
@@ -4477,6 +4474,9 @@ function recover()
 
 
 
+function indexeddb_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function indexeddb_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? indexeddb_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : indexeddb_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var indexeddb_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
@@ -4950,7 +4950,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
         if (this.targetIsObject(target)) {
           // target is a StoredRecord
           // extend target with composite path if needed and return it
-          return composite ? _objectSpread2(_defineProperty({}, options.keyPath, composite.map(function (key) {
+          return composite ? indexeddb_objectSpread(_defineProperty({}, options.keyPath, composite.map(function (key) {
             return target[key];
           }).join('')), target) : target;
         }
@@ -5603,6 +5603,9 @@ _defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
 
 
 
+function localstorage_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function localstorage_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? localstorage_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : localstorage_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var localstorage_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
@@ -5757,7 +5760,7 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
           ;
 
           if (!id) {
-            target = _objectSpread2({}, item);
+            target = localstorage_objectSpread({}, item);
           } else {
             var ids = Array.isArray(id) ? id.slice() : [id];
             target = keys.map(function (key, index) {
@@ -5833,9 +5836,9 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
     /*: StoredRecord*/
     {
       var composite = this.getCompositeKeys(options);
-      return composite ? _objectSpread2(_defineProperty({}, options.keyPath, composite.map(function (key) {
+      return composite ? localstorage_objectSpread(_defineProperty({}, options.keyPath, composite.map(function (key) {
         return target[key];
-      }).join('')), target) : options.autoIncrement && next ? _objectSpread2(_defineProperty({}, options.keyPath, next), target) : _objectSpread2({}, target);
+      }).join('')), target) : options.autoIncrement && next ? localstorage_objectSpread(_defineProperty({}, options.keyPath, next), target) : localstorage_objectSpread({}, target);
     }
     /**
      * Prepare the result to be return depending on the composite key definition
@@ -6355,6 +6358,10 @@ _defineProperty(LocalStorageWrapper, "isSupportedPromise", null);
 
 
 
+function storage_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function storage_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? storage_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : storage_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 var storage_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
 
@@ -6731,13 +6738,17 @@ function storage_init(dbName
   return _initializationPromise;
 }
 
-/* harmony default export */ const storage = (_objectSpread2({
+/* harmony default export */ const storage = (storage_objectSpread({
   init: storage_init,
   getType: getType
 }, _augment()));
 ;// CONCATENATED MODULE: ./src/sdk/default-params.js
 
 
+
+function default_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function default_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? default_params_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : default_params_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var default_params_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
@@ -6902,12 +6913,16 @@ function defaultParams()
 /*: Promise<DefaultParamsT>*/
 {
   return _getQueueSize().then(function (queueSize) {
-    return _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
+    return default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
   });
 }
 ;// CONCATENATED MODULE: ./src/sdk/http.js
 
 
+
+function http_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function http_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? http_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : http_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var http_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
@@ -7073,7 +7088,7 @@ function _encodeParams(params
     });
   };
 
-  var allParams = entries(_objectSpread2(_objectSpread2(_objectSpread2({}, config.getBaseParams()), defaultParams), params)).map(function (_ref5
+  var allParams = entries(http_objectSpread(http_objectSpread(http_objectSpread({}, config.getBaseParams()), defaultParams), params)).map(function (_ref5
   /*:: */
   ) {
     var _ref6 = _slicedToArray(_ref5
@@ -7756,6 +7771,10 @@ function getBaseUrlsIterator()
 
 
 
+function request_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function request_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? request_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : request_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 var request_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpContinueCbT, type BackOffStrategyT, type WaitT, type UrlT, type MethodT, type RequestParamsT, type HttpRequestParamsT } from './types';*/
@@ -7855,7 +7874,7 @@ var Request = function Request() {
 
   var _params
   /*: RequestParamsT*/
-  = _objectSpread2({}, params);
+  = request_objectSpread({}, params);
   /**
    * Optional continue callback per instance or per request
    *
@@ -8019,10 +8038,10 @@ var Request = function Request() {
     }
 
     if (!isEmpty(params)) {
-      _params = _objectSpread2({}, params);
+      _params = request_objectSpread({}, params);
     }
 
-    _params = _objectSpread2({
+    _params = request_objectSpread({
       createdAt: getTimestamp()
     }, _params);
 
@@ -8110,7 +8129,7 @@ var Request = function Request() {
       endpoint: _getBaseUrl(_baseUrlsIteratorCurrent.value, _url),
       url: _url,
       method: _method,
-      params: _objectSpread2({
+      params: request_objectSpread({
         attempts: 1
       }, _params)
     });
@@ -8170,7 +8189,7 @@ var Request = function Request() {
           endpoint: options.endpoint,
           url: options.url,
           method: options.method,
-          params: _objectSpread2(_objectSpread2({}, filteredParams), {}, {
+          params: request_objectSpread(request_objectSpread({}, filteredParams), {}, {
             attempts: (_attempts.request ? _attempts.request + 1 : 1) + _attempts.connection
           })
         }).then(function (result) {
@@ -8193,7 +8212,7 @@ var Request = function Request() {
   {
     _url = _default.url;
     _method = _default.method;
-    _params = _objectSpread2({}, _default.params);
+    _params = request_objectSpread({}, _default.params);
     _continueCb = _default.continueCb;
   }
   /**
@@ -8591,6 +8610,10 @@ function disable_status()
 ;// CONCATENATED MODULE: ./src/sdk/identity.js
 
 
+function identity_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function identity_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? identity_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : identity_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 var identity_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type ActivityStateMapT } from './types';*/
@@ -8741,7 +8764,7 @@ function persist()
     return identity_Promise.resolve(null);
   }
 
-  var activityState = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
+  var activityState = identity_objectSpread(identity_objectSpread({}, activity_state.current), {}, {
     lastActive: Date.now()
   });
 
@@ -8813,6 +8836,10 @@ function identity_destroy()
 ;// CONCATENATED MODULE: ./src/sdk/queue.js
 
 
+
+function queue_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function queue_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? queue_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : queue_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var queue_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
@@ -8998,7 +9025,7 @@ function push(_ref
     timestamp: _prepareTimestamp(),
     url: url,
     method: method,
-    params: _objectSpread2(_objectSpread2({}, activity_state.getParams(url)), filteredParams)
+    params: queue_objectSpread(queue_objectSpread({}, activity_state.getParams(url)), filteredParams)
   };
 
   if (timestamp) {
@@ -9050,7 +9077,7 @@ function _prepareToSend()
   return _request.send({
     url: url,
     method: method,
-    params: _objectSpread2(_objectSpread2({}, params), {}, {
+    params: queue_objectSpread(queue_objectSpread({}, params), {}, {
       createdAt: getTimestamp(createdAt || timestamp)
     }),
     wait: wait || _checkWait()
@@ -9708,6 +9735,10 @@ function _checkSession()
 
 
 
+function attribution_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function attribution_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? attribution_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : attribution_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 var attribution_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type HttpRetryCbT, type AttributionStateT, type AttributionWhiteListT, type ActivityStateMapT, type AttributionMapT } from './types';*/
@@ -9824,7 +9855,7 @@ function _setAttribution(result
   }).reduce(reducer, {
     adid: result.adid
   });
-  activity_state.current = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
+  activity_state.current = attribution_objectSpread(attribution_objectSpread({}, activity_state.current), {}, {
     attribution: attribution
   });
   return persist().then(function () {
@@ -9890,7 +9921,7 @@ function check(sessionResult
   }
 
   attribution_request.send({
-    params: _objectSpread2({
+    params: attribution_objectSpread({
       initiatedBy: !sessionResult ? 'sdk' : 'backend'
     }, activity_state.getParams()),
     wait: askIn
@@ -9912,6 +9943,11 @@ function attribution_destroy()
 
 
 ;// CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.js
+
+
+function gdpr_forget_device_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function gdpr_forget_device_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? gdpr_forget_device_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : gdpr_forget_device_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
@@ -9971,7 +10007,7 @@ function forget(force
   }
 
   gdpr_forget_device_request.send({
-    params: _objectSpread2({}, activity_state.getParams())
+    params: gdpr_forget_device_objectSpread({}, activity_state.getParams())
   }).then(function () {
     publish('sdk:gdpr-forget-me');
   });
@@ -10240,6 +10276,10 @@ function scheduler_destroy()
 ;// CONCATENATED MODULE: ./src/sdk/event.js
 
 
+function event_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function event_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? event_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : event_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 var event_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type EventParamsT, type EventRequestParamsT, type GlobalParamsMapT, type GlobalKeyValueParamsT } from './types';*/
@@ -10327,18 +10367,18 @@ function event_prepareParams(params
   .partnerParams;
   var globalParams = {};
 
-  var baseParams = _objectSpread2({
+  var baseParams = event_objectSpread({
     eventToken: params.eventToken,
     deduplicationId: params.deduplicationId
   }, _getRevenue(params.revenue, params.currency));
 
   var eventCallbackParams
   /*: GlobalKeyValueParamsT*/
-  = _objectSpread2(_objectSpread2({}, convertToMap(callbackParams)), convertToMap(params.callbackParams));
+  = event_objectSpread(event_objectSpread({}, convertToMap(callbackParams)), convertToMap(params.callbackParams));
 
   var eventPartnerParams
   /*: GlobalKeyValueParamsT*/
-  = _objectSpread2(_objectSpread2({}, convertToMap(partnerParams)), convertToMap(params.partnerParams));
+  = event_objectSpread(event_objectSpread({}, convertToMap(partnerParams)), convertToMap(params.partnerParams));
 
   if (!isEmpty(eventCallbackParams)) {
     globalParams.callbackParams = eventCallbackParams;
@@ -10348,7 +10388,7 @@ function event_prepareParams(params
     globalParams.partnerParams = eventPartnerParams;
   }
 
-  return _objectSpread2(_objectSpread2({}, baseParams), globalParams);
+  return event_objectSpread(event_objectSpread({}, baseParams), globalParams);
 }
 /**
  * Get event deduplication ids
@@ -11355,6 +11395,10 @@ var smartBanner = new SmartBanner();
 
 var _excluded = ["logLevel", "logOutput"];
 
+function main_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function main_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? main_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : main_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 var main_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type SmartBannerOptionsT, type AttributionMapT } from './types';*/
@@ -11437,7 +11481,7 @@ function initSdk()
     }
 
     logger.info("Available storage is ".concat(availableStorage.type));
-    main_options = _objectSpread2({}, options);
+    main_options = main_objectSpread({}, options);
 
     _start(options);
   });
