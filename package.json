@@ -37,7 +37,7 @@
     "@types/jest": "^28.1.3",
     "@typescript-eslint/eslint-plugin": "^5.24.0",
     "@typescript-eslint/parser": "^5.24.0",
-    "babel-jest": "^28.1.1",
+    "babel-jest": "^28.1.2",
     "babel-loader": "^8.2.5",
     "babel-plugin-es6-promise": "^1.1.1",
     "core-js-bundle": "^3.23.3",
@@ -71,7 +71,7 @@
     "webpack-dev-server": "^4.9.2"
   },
   "dependencies": {
-    "@babel/runtime": "^7.17.9"
+    "@babel/runtime": "^7.18.6"
   },
   "directories": {
     "doc": "docs"
