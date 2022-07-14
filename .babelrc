@@ -10,18 +10,13 @@
     "@babel/plugin-transform-flow-comments",
     "@babel/plugin-transform-runtime"
   ],
-  "env": {
-    "test": {
-      "plugins": ["@babel/plugin-transform-modules-commonjs"]
-    }
-  },
   "overrides": [
     {
       "test": ["./src/**/*.ts"],
       "presets": [
         "@babel/preset-typescript",
         ["@babel/preset-env", {
-          "targets": ["> 0.25%", "not dead"]
+          "targets": ">0.25%, not dead, ie 11"
         }]
       ],
       "plugins": [
