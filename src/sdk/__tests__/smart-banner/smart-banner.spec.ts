@@ -27,6 +27,7 @@ describe('Smart Banner tests', () => {
     jest.spyOn(document, 'createElement')
     jest.spyOn(Logger, 'log')
     jest.spyOn(Logger, 'error')
+    jest.spyOn(global, 'setTimeout')
 
     smartBanner = require('../../smart-banner/smart-banner').SmartBanner
   })

@@ -77,7 +77,7 @@ describe('IndexedDB usage', () => {
           })
       })
 
-      it('forces no-support of indexedDB on iOS devices', (done) => {
+      it('forces no-support of indexedDB on iOS devices', () => {
         expect.assertions(2)
 
         const IndexedDB = require('../../storage/indexeddb').IndexedDB
@@ -93,7 +93,6 @@ describe('IndexedDB usage', () => {
           })
           .then(() => {
             platformSpy.mockRestore()
-            done()
           })
       })
     })

@@ -33,6 +33,8 @@ describe('test request functionality', () => {
     jest.spyOn(http, 'default')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'error')
+    jest.spyOn(global, 'setTimeout')
+    jest.spyOn(global, 'clearTimeout')
 
     dateNowSpy = jest.spyOn(Date, 'now')
     createdAtSpy = jest.spyOn(Time, 'getTimestamp')
