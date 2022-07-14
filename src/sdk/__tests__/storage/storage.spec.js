@@ -29,7 +29,7 @@ describe('test storage availability', () => {
     jest.restoreAllMocks()
   })
 
-  it('reports that there is no storage available', (done) => {
+  it('reports that there is no storage available', () => {
 
     expect.assertions(2)
 
@@ -43,8 +43,6 @@ describe('test storage availability', () => {
           expect(storage.type).toBe(STORAGE_TYPES.NO_STORAGE)
 
           expect(Logger.default.error).toHaveBeenCalledWith('There is no storage available, app will run with minimum set of features')
-
-          done()
         })
     })
   })
