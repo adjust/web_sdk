@@ -1,3 +1,5 @@
+import { setImmediate } from 'timers';
+
 function flushPromises () {
   return new Promise(resolve => setImmediate(resolve))
 }
