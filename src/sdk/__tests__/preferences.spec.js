@@ -1,13 +1,8 @@
 import * as QuickStorage from '../storage/quick-storage'
-import * as PubSub from '../pub-sub'
 
 describe('activity state functionality', () => {
 
   const storeName = QuickStorage.default.storeNames.preferences.name
-
-  beforeAll(() => {
-    jest.spyOn(PubSub, 'publish')
-  })
 
   afterEach(() => {
     localStorage.clear()
@@ -20,6 +15,9 @@ describe('activity state functionality', () => {
   it('gets preferences', () => {
     jest.isolateModules(() => {
       const Preferences = require('../preferences')
+
+      const PubSub = require('../pub-sub')
+      jest.spyOn(PubSub, 'publish')
 
       expect(Preferences.getDisabled()).toBeNull()
       expect(Preferences.getThirdPartySharing()).toBeNull()
@@ -59,6 +57,9 @@ describe('activity state functionality', () => {
   it('reloads in-memory variables when storage got changed outside of current tab', () => {
     jest.isolateModules(() => {
       const Preferences = require('../preferences')
+
+      const PubSub = require('../pub-sub')
+      jest.spyOn(PubSub, 'publish')
 
       QuickStorage.default.stores[storeName] = {
         sdkDisabled: {reason: 'general', pending: false},
