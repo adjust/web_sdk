@@ -1,4 +1,4 @@
-import { indexedDB as fakeIDB, IDBKeyRange } from "fake-indexeddb";
+import { indexedDB as fakeIDB, IDBKeyRange } from 'fake-indexeddb'
 import { values } from '../../utilities'
 
 jest.useFakeTimers()
@@ -159,6 +159,7 @@ describe('Custom namespace functionality', () => {
       jest.resetModules()
     })
 
+    // eslint-disable-next-line
     xit('Creates a custom-named IndexedDb storage', () => {
       AdjustInstance.initSdk({ ...config, namespace: 'test' })
 
@@ -225,6 +226,7 @@ describe('Custom namespace functionality', () => {
         global.indexedDB.deleteDatabase(customName)
       })
 
+      // eslint-disable-next-line
       xit('Migrates data', () => {
         expect.assertions(9)
 
