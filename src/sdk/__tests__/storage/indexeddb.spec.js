@@ -1,4 +1,4 @@
-import { indexedDB as fakeIDB, IDBKeyRange } from "fake-indexeddb";
+import { indexedDB as fakeIDB, IDBKeyRange } from 'fake-indexeddb'
 import * as QuickStorage from '../../storage/quick-storage'
 import * as SchemeMap from '../../storage/scheme-map'
 import Suite from './storage.suite'
