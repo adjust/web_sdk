@@ -2230,7 +2230,7 @@ function isEmptyEntry(value
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.3.0" || 0,
+  version: "5.3.1" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);

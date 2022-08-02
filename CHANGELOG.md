@@ -1,4 +1,12 @@
-### Version 5.3.0 (25th March 2021)
+### Version 5.3.1 (1st August 2022)
+#### Added
+- Added sending of `deduplication_id` parameter in `event` package.
+
+#### Fixed
+- Updated deprecated and vulnerable dependencies.
+
+---
+### Version 5.3.0 (25th March 2022)
 #### Added
 - Added `getWebUUID` method to access SDK generated ID `web_uuid`.
 - Added `getAttribution` method to access user's current attribution information.
