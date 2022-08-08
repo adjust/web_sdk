@@ -1,6 +1,7 @@
-### Version 5.3.1 (1st August 2022)
+### Version 5.3.1 (8st August 2022)
 #### Added
 - Added sending of `deduplication_id` parameter in `event` package.
+- Added SRI feature support.
 
 #### Fixed
 - Updated deprecated and vulnerable dependencies.
