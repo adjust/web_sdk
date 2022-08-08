@@ -22,6 +22,7 @@ describe('test attribution functionality', () => {
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(ActivityState.default, 'updateSessionOffset')
+    jest.spyOn(global, 'setTimeout')
   })
 
   afterEach(() => {

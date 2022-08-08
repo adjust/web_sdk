@@ -61,6 +61,7 @@ describe('test request queuing functionality', () => {
     jest.spyOn(Logger.default, 'info')
     jest.spyOn(Logger.default, 'log')
     jest.spyOn(Logger.default, 'error')
+    jest.spyOn(global, 'setTimeout')
   })
 
   beforeEach(() => {

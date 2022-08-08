@@ -1,5 +1,4 @@
-import fakeIDB from 'fake-indexeddb'
-import * as IDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange'
+import { indexedDB as fakeIDB, IDBKeyRange } from 'fake-indexeddb'
 import * as QuickStorage from '../../storage/quick-storage'
 import * as SchemeMap from '../../storage/scheme-map'
 import Suite from './storage.suite'
@@ -77,7 +76,7 @@ describe('IndexedDB usage', () => {
           })
       })
 
-      it('forces no-support of indexedDB on iOS devices', (done) => {
+      it('forces no-support of indexedDB on iOS devices', () => {
         expect.assertions(2)
 
         const IndexedDB = require('../../storage/indexeddb').IndexedDB
@@ -93,7 +92,6 @@ describe('IndexedDB usage', () => {
           })
           .then(() => {
             platformSpy.mockRestore()
-            done()
           })
       })
     })

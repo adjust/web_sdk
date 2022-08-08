@@ -1,6 +1,9 @@
 #!groovy
 
 pipeline {
+  tools {
+    nodejs 'nodejs_14.20.0'
+  }
   agent {
     node {
       label 'new'

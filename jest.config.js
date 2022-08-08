@@ -1,9 +1,11 @@
 module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
   testMatch: [
     '<rootDir>/src/sdk/**/?(*.)(spec|test).{js,ts}'
   ],
   transform: {
-    '^.+\\.(js|ts)$': 'babel-jest',
+    '^.+\\.js$': 'babel-jest',
   },
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',

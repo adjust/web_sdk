@@ -54,6 +54,9 @@ describe('test session functionality', () => {
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(ActivityState.default, 'updateInstalled')
     jest.spyOn(ActivityState.default, 'updateSessionLength')
+    jest.spyOn(global, 'clearTimeout')
+    jest.spyOn(global, 'setInterval')
+    jest.spyOn(global, 'clearInterval')
 
     pvaSpy = jest.spyOn(Listeners, 'getVisibilityApiAccess')
   })

@@ -1,5 +1,5 @@
 /* eslint-disable */
-(function (window, document, tag, url, sdkName, methods, placeholder, script, first) {
+(function (window, document, tag, url, corsMode, integrity, sdkName, methods, placeholder, script, first) {
 
   var queueName = sdkName + '_q';
 
@@ -15,6 +15,11 @@
   script.async = true;
   script.src = url;
 
+  if (integrity) {
+    script.crossorigin = corsMode;
+    script.integrity = integrity;
+  }
+
   script.onload = function () {
     for (var i = 0; i < window[queueName].length; i++) {
       window[sdkName][window[queueName][i][0]].apply(window[sdkName], window[queueName][i][1]);
@@ -27,9 +32,13 @@
   document,
   'script',
   'https://cdn.adjust.com/adjust-latest.min.js',
+  'anonymous',
+  env.INTEGRITY,
   'Adjust',
   [
     'initSdk',
+    'getAttribution',
+    'getWebUUID',
     'trackEvent',
     'addGlobalCallbackParameters',
     'addGlobalPartnerParameters',

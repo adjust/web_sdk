@@ -124,7 +124,7 @@ function _prepareForm () {
     attributionCallback: _handleAttributionChange
   })
   Adjust.initSmartBanner({
-    webToken: '77170eewyww0',
+    webToken: 'p6o2pnb1zkzk',
     logLevel: 'verbose'
   })
 
