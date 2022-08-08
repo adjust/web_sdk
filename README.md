@@ -31,13 +31,20 @@ Our sdk is exposed under all module definitions, so it works under CommonJS and 
 To lazy <a id="loading-snippet">load the Adjust Web SDK through CDN</a> paste the following snippet into the `<head>` tag:
 ```html
 <script type="application/javascript">
-!function(t,a,e,r,n,s,l,d,o){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var i=0;i<s.length;i++)l(t.Adjust,t.Adjust_q,s[i]);d=a.createElement(e),o=a.getElementsByTagName(e)[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest.min.js",d.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},o.parentNode.insertBefore(d,o)}(window,document,"script",0,0,["initSdk","getAttribution","getWebUUID","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner"],(function(t,a,e){t[e]=function(){a.push([e,arguments])}}));
+!function(t,a,e,r,n,s,l,d,o,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<d.length;c++)o(t.Adjust,t.Adjust_q,d[c]);i=a.createElement(e),u=a.getElementsByTagName(e)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,0,0,["initSdk","getAttribution","getWebUUID","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner"],(function(t,a,e){t[e]=function(){a.push([e,arguments])}}));
 </script>
 ```
 
 The Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
 
-When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.3.1.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.   
+When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.3.1.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.
+
+You may want to use [Subresource Integrity (SRI)](sri-mdn) feature to mitigate XSS attacks risk. In this case you could use the loading snippet that enables SRI check instructing browser to validate the script before running it:
+```html
+<script type="application/javascript">
+!function(t,a,e,r,n,o,s,l,d,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)d(t.Adjust,t.Adjust_q,l[c]);i=a.createElement(e),u=a.getElementsByTagName(e)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.crossorigin="anonymous",i.integrity=o,i.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,"sha384-CjBQNn/4oEjO+JooquiRlZogj8ajC3b2XT5jnXwz53eE4KtewkHjdo6s9Fy4FK2a",0,["initSdk","getAttribution","getWebUUID","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner"],(function(t,a,e){t[e]=function(){a.push([e,arguments])}}));
+</script>
+```
 
 It's also possible to install our sdk through NPM:
 
@@ -443,6 +450,7 @@ SOFTWARE.
 [adjust.com]:   https://adjust.com
 [dashboard]:    https://adjust.com
 [example-app]:  src/demo.html
+[sri-mdn]:      https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
 
 [callbacks-guide]:      https://help.adjust.com/manage-data/raw-data-exports/callbacks
 [special-partners]:     https://help.adjust.com/dashboard/integrated-partners
