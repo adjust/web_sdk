@@ -13,7 +13,7 @@ const RemoveGlobalParam = (id, handleName) => {
     _parent = document.getElementById(_id)
     _ui.actionButton = _parent.querySelector('button[type="button"]')
     _ui.submitButton = _parent.querySelector('button[type="submit"]')
-    _ui.input = _parent.querySelector('input[type="text"]')
+    _ui.input = _parent.querySelector(`input#${_id}-input`)
     _ui.form = _parent.querySelector('form')
     _ui.json = _parent.querySelector('pre.config')
 
