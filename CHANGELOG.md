@@ -16,6 +16,7 @@
 - Fixed issue with URL strategy retrying to send requests after SDK was disabled.
 
 ---
+
 ### Version 5.2.1 (16th September 2021)
 #### Fixed
 - Fixed top-level Typescript declarations.

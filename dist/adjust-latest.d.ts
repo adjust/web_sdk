@@ -68,7 +68,7 @@ declare namespace Adjust {
   }
 
   type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
-
+  
   interface Attribution {
 
     /** Adjust device identifier */
