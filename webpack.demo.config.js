@@ -1,10 +1,11 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
 const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const FlowWebpackPlugin = require('flow-webpack-plugin')
+const FlowWebpackPlugin = require('flowtype-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin')
 const webpack = require('webpack')
 const packageJson = require('./package.json')
 const namespace = 'adjust-sdk'
@@ -19,13 +20,13 @@ module.exports = () => ({
   optimization: {
     minimizer: [
       new TerserPlugin({
-        cache: true,
         parallel: true
       }),
-      new OptimizeCSSAssetsPlugin({})
+      new CssMinimizerPlugin()
     ]
   },
   plugins: [
+    new ESLintPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'src/index.html')
     }),
@@ -45,11 +46,6 @@ module.exports = () => ({
   },
   module: {
     rules: [{
-      enforce: 'pre',
-      test: /\.(js|ts)$/,
-      exclude: /node_modules/,
-      use: 'eslint-loader'
-    }, {
       test: /\.(js|ts)$/,
       exclude: /node_modules/,
       use: 'babel-loader'
@@ -68,8 +64,9 @@ module.exports = () => ({
         {
           loader: 'css-loader',
           options: {
-            modules: true,
-            localIdentName: 'adjust-smart-banner-[local]__[hash:base64:5]',
+            modules: {
+              localIdentName: 'adjust-smart-banner-[local]__[hash:base64:5]',
+            }
           }
         },
         { loader: 'sass-loader' }
@@ -81,18 +78,15 @@ module.exports = () => ({
           loader: 'html-loader',
           options: {
             minimize: true,
-            interpolate: true
           }
+        },
+        {
+          loader: 'template-ejs-loader'
         }
       ]
     }, {
       test: /\.(png|jpg|gif|svg)$/,
-      use: {
-        loader: 'file-loader',
-        options: {
-          name: 'assets/images/[hash].[ext]'
-        }
-      }
+      type: 'asset/resource'
     }]
   }
 })

@@ -11,6 +11,8 @@ describe('test publish-subscribe pattern', () => {
   }
 
   beforeAll(() => {
+    jest.spyOn(global, 'setTimeout')
+
     callbacks.one.id = PubSub.subscribe('pretty-event', callbacks.one.cb)
     callbacks.two.id = PubSub.subscribe('ugly-event', callbacks.two.cb)
     callbacks.three.id =  PubSub.subscribe('pretty-event', callbacks.three.cb)
