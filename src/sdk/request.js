@@ -95,12 +95,12 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
   /**
    * Url Startegy iterator to go through endpoints to retry to send request
    */
-  const _baseUrlsIterator: BaseUrlsIterator = getBaseUrlsIterator()
+  let _baseUrlsIterator: BaseUrlsIterator
 
   /**
    * Current base urls map to send request
    */
-  let _baseUrlsIteratorCurrent: { value: BaseUrlsMap, done: boolean } = _baseUrlsIterator.next()
+  let _baseUrlsIteratorCurrent: { value: BaseUrlsMap, done: boolean }
 
 
   /**
@@ -236,6 +236,11 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @private
    */
   function _prepareRequest ({wait, retrying}: {wait?: ?WaitT, retrying?: boolean}): Promise<HttpSuccessResponseT | HttpErrorResponseT> {
+    if (!_baseUrlsIterator) {
+      _baseUrlsIterator = getBaseUrlsIterator()
+      _baseUrlsIteratorCurrent = _baseUrlsIterator.next()
+    }
+
     _wait = wait ? _prepareWait(wait) : _wait
 
     if (_skip(wait)) {
