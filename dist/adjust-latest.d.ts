@@ -68,7 +68,7 @@ declare namespace Adjust {
   }
 
   type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
-  
+
   interface Attribution {
 
     /** Adjust device identifier */
@@ -126,7 +126,7 @@ declare namespace Adjust {
     eventDeduplicationListLimit?: number;
 
     /** Optional. */
-    urlStrategy?: 'india' | 'china';
+    urlStrategy?: 'india' | 'china' | 'EU' | 'TR' | 'US';
 
     /**
      * Optional. A custom namespace for SDK data storage. If not set then default one is used.

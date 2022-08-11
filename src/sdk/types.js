@@ -161,7 +161,7 @@ export type BaseParamsT = $ReadOnly<$Shape<{
 }>>
 
 export type CustomConfigT = $ReadOnly<$Shape<{
-  urlStrategy: 'india' | 'china',
+  urlStrategy: 'india' | 'china' | 'EU' | 'TR' | 'US',
   customUrl: string,
   eventDeduplicationListLimit: number,
   namespace: string

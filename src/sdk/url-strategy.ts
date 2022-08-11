@@ -7,7 +7,13 @@ enum UrlStrategy {
   China = 'china'
 }
 
-type EndpointName = UrlStrategy
+enum DataResidency {
+  EU = 'EU',
+  TR = 'TR',
+  US = 'US'
+}
+
+type EndpointName = UrlStrategy | DataResidency
 
 type BaseUrlsMap = {
   app: string;
@@ -32,10 +38,22 @@ function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
     return [UrlStrategy.China, UrlStrategy.Default]
   }
 
+  if (urlStrategy === DataResidency.EU) {
+    return [DataResidency.EU]
+  }
+
+  if (urlStrategy === DataResidency.TR) {
+    return [DataResidency.TR]
+  }
+
+  if (urlStrategy === DataResidency.US) {
+    return [DataResidency.US]
+  }
+
   return [UrlStrategy.Default, UrlStrategy.India, UrlStrategy.China]
 }
 
-const endpointMap: Record<UrlStrategy, BaseUrlsMap> = {
+const endpointMap: Record<UrlStrategy | DataResidency, BaseUrlsMap> = {
   [UrlStrategy.Default]: {
     app: 'https://app.adjust.com',
     gdpr: 'https://gdpr.adjust.com'
@@ -47,6 +65,18 @@ const endpointMap: Record<UrlStrategy, BaseUrlsMap> = {
   [UrlStrategy.China]: {
     app: 'https://app.adjust.world',
     gdpr: 'https://gdpr.adjust.world'
+  },
+  [DataResidency.EU]: {
+    app: 'https://app.eu.adjust.world',
+    gdpr: 'https://gdpr.eu.adjust.world'
+  },
+  [DataResidency.TR]: {
+    app: 'https://app.tr.adjust.world',
+    gdpr: 'https://gdpr.tr.adjust.world'
+  },
+  [DataResidency.US]: {
+    app: 'https://app.us.adjust.world',
+    gdpr: 'https://gdpr.us.adjust.world'
   }
 }
 
@@ -115,7 +145,7 @@ function getPreferredUrls(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>>):
   }
 }
 
-function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = endpointMap): BaseUrlsIterator {
+function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy | DataResidency, BaseUrlsMap>> = endpointMap): BaseUrlsIterator {
   const _urls = getPreferredUrls(endpoints)
 
   let _counter = 0
@@ -133,6 +163,5 @@ function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>
     }
   }
 }
-
 
 export { urlStrategyRetries, getBaseUrlsIterator, BaseUrlsIterator, UrlStrategy, BaseUrlsMap }
