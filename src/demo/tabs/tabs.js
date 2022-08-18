@@ -1,6 +1,6 @@
 import {hyphenToCamelCase} from '../utils'
 import {getItem, setItem, clear} from '../storage'
-import {write} from '../log'
+import {write, clear as clearLog} from '../log'
 import Adjust from '../../sdk/main'
 
 const _ui = {}
@@ -15,6 +15,7 @@ function init (defaultAppConfig) {
 
   _ui.logTab = document.getElementById('log-tab')
   _ui.logTabContainer = document.getElementById('log-tab-container')
+  _ui.logClearButton = document.getElementById('log-tab-clear-button')
   _ui.appConfigTab = document.getElementById('app-config-tab')
   _ui.appConfigTabContainer = document.getElementById('app-config-tab-container')
   _ui.appConfigForm = document.getElementById('app-config-form')
@@ -28,6 +29,7 @@ function init (defaultAppConfig) {
   _active.container = _ui.logTabContainer
 
   _ui.logTab.addEventListener('click', _handleTab, false)
+  _ui.logClearButton.addEventListener('click', _handleClearLog, false)
   _ui.appConfigTab.addEventListener('click', _handleTab, false)
   _ui.appConfigForm.addEventListener('submit', _handleSave, false)
   _ui.resetButton.addEventListener('click', _handleReset, false)
@@ -49,6 +51,10 @@ function _handleTab (e) {
 
   _active.tab = tab
   _active.container = container
+}
+
+function _handleClearLog () {
+  clearLog()
 }
 
 function _handleSave (e) {
@@ -133,6 +139,7 @@ function _prepareForm () {
   _form.defaultTracker = _ui.appConfigForm.querySelector('#default-tracker')
   _form.customUrl = _ui.appConfigForm.querySelector('#custom-url')
   _form.logLevel = _ui.appConfigForm.querySelector('#log-level')
+  _form.urlStrategy = _ui.appConfigForm.querySelector('#url-strategy')
   _form.logOutput = _ui.appConfigForm.querySelector('#log-output')
   _form.eventDeduplicationListLimit = _ui.appConfigForm.querySelector('#event-deduplication-list-limit')
   _form.externalDeviceId = _ui.appConfigForm.querySelector('#external-device-id')

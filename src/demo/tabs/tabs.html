@@ -5,6 +5,10 @@
 
 <div class="tab active" id="log-tab-container">
   <pre class="log" id="log"></pre>
+
+  <div class="fab fab-clear" id="log-tab-clear-button" title="Clear log">
+    <img src="assets/images/trash-bin.svg"/>
+  </div>
 </div>
 
 <div class="tab" id="app-config-tab-container">
@@ -32,7 +36,12 @@
 
           <div class="form-row">
             <label for="external-device-id">External Device Id</label>
-            <input type="text" min="0" id="external-device-id">
+            <input type="text" id="external-device-id">
+          </div>
+
+          <div class="form-row">
+            <label for="event-deduplication-list-limit">Event Deduplication List Limit</label>
+            <input type="number" min="0" id="event-deduplication-list-limit" placeholder="default is 10">
           </div>
         </div>
 
@@ -40,6 +49,18 @@
           <div class="form-row">
             <label for="custom-url">Custom URL</label>
             <input type="text" id="custom-url">
+          </div>
+
+          <div class="form-row">
+            <label for="url-strategy">Data Residency / URL strategy</label>
+            <select id="url-strategy">
+              <option value="undefined" selected>None</option>
+              <option value="US">Data residency: USA</option>
+              <option value="TR">Data residency: Turkey</option>
+              <option value="EU">Data residency: Europe</option>
+              <option value="india">India</option>
+              <option value="china">China</option>
+            </select>
           </div>
 
           <div class="form-row">
@@ -56,11 +77,6 @@
           <div class="form-row">
             <label for="log-output">Log Output</label>
             <input type="text" id="log-output" disabled>
-          </div>
-
-          <div class="form-row">
-            <label for="event-deduplication-list-limit">Event Deduplication List Limit</label>
-            <input type="number" min="0" id="event-deduplication-list-limit" placeholder="default is 10">
           </div>
 
           <div class="form-row inline-actions">
