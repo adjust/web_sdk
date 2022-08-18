@@ -67,16 +67,16 @@ const endpointMap: Record<UrlStrategy | DataResidency, BaseUrlsMap> = {
     gdpr: 'https://gdpr.adjust.world'
   },
   [DataResidency.EU]: {
-    app: 'https://app.eu.adjust.world',
-    gdpr: 'https://gdpr.eu.adjust.world'
+    app: 'https://app.eu.adjust.com',
+    gdpr: 'https://gdpr.eu.adjust.com'
   },
   [DataResidency.TR]: {
-    app: 'https://app.tr.adjust.world',
-    gdpr: 'https://gdpr.tr.adjust.world'
+    app: 'https://app.tr.adjust.com',
+    gdpr: 'https://gdpr.tr.adjust.com'
   },
   [DataResidency.US]: {
-    app: 'https://app.us.adjust.world',
-    gdpr: 'https://gdpr.us.adjust.world'
+    app: 'https://app.us.adjust.com',
+    gdpr: 'https://gdpr.us.adjust.com'
   }
 }
 
