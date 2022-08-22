@@ -24,10 +24,26 @@ type BaseUrlsMap = {
  * Returns a map of base URLs or a list of endpoint names depending on SDK configuration
  */
 function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
-  const { customUrl, urlStrategy } = Config.getCustomConfig()
+  const { customUrl, urlStrategy, dataResidency } = Config.getCustomConfig()
 
   if (customUrl) { // If custom URL is set then send all requests there
     return { app: customUrl, gdpr: customUrl }
+  }
+
+  if (dataResidency && urlStrategy) {
+    Logger.warn('Both urlStrategy and dataResidency are set in config, urlStartegy would be ignored')
+  }
+
+  if (dataResidency === DataResidency.EU) {
+    return [DataResidency.EU]
+  }
+
+  if (dataResidency === DataResidency.US) {
+    return [DataResidency.US]
+  }
+
+  if (dataResidency === DataResidency.TR) {
+    return [DataResidency.TR]
   }
 
   if (urlStrategy === UrlStrategy.India) {
@@ -36,18 +52,6 @@ function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
 
   if (urlStrategy === UrlStrategy.China) {
     return [UrlStrategy.China, UrlStrategy.Default]
-  }
-
-  if (urlStrategy === DataResidency.EU) {
-    return [DataResidency.EU]
-  }
-
-  if (urlStrategy === DataResidency.TR) {
-    return [DataResidency.TR]
-  }
-
-  if (urlStrategy === DataResidency.US) {
-    return [DataResidency.US]
   }
 
   return [UrlStrategy.Default, UrlStrategy.India, UrlStrategy.China]
