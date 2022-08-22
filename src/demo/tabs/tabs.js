@@ -21,6 +21,7 @@ function init (defaultAppConfig) {
   _ui.appConfigForm = document.getElementById('app-config-form')
   _ui.appConfigJson = document.getElementById('app-config-json')
   _ui.submitButton = _ui.appConfigForm.querySelector('button[type="submit"]')
+  _ui.restoreDefaultConfig = _ui.appConfigForm.querySelector('#restore-default-config')
   _ui.resetButton = _ui.appConfigForm.querySelector('#reset')
 
   _prepareForm()
@@ -32,6 +33,7 @@ function init (defaultAppConfig) {
   _ui.logClearButton.addEventListener('click', _handleClearLog, false)
   _ui.appConfigTab.addEventListener('click', _handleTab, false)
   _ui.appConfigForm.addEventListener('submit', _handleSave, false)
+  _ui.restoreDefaultConfig.addEventListener('click', _handleRestoreDefaultConfig, false)
   _ui.resetButton.addEventListener('click', _handleReset, false)
 }
 
@@ -53,6 +55,17 @@ function _handleTab (e) {
   _active.container = container
 }
 
+function _getAppConfig (form) {
+  return Object.keys(form)
+    .map(key => [key, form[key].value])
+    .filter(([, value]) => value)
+    .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
+}
+
+function _reflectConfigInForm (appConfig, form) {
+  Object.keys(form).map(key => form[key].value = appConfig[key] || '')
+}
+
 function _handleClearLog () {
   clearLog()
 }
@@ -68,12 +81,9 @@ function _handleSave (e) {
   _ui.submitButton.classList.add('loading')
   _ui.submitButton.disabled = true
 
-  const appConfig = Object.keys(_form)
-    .map(key => [key, _form[key].value])
-    .filter(([, value]) => value)
-    .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
-
+  const appConfig = _getAppConfig(_form)
   _setJson(appConfig)
+
   setItem('appConfig', appConfig)
   clearTimeout(_timeoutId)
   _timeoutId = setTimeout(() => {
@@ -90,6 +100,30 @@ function _handleSave (e) {
   })
 }
 
+function _handleRestoreDefaultConfig () {
+  if (_disabled) {
+    return
+  }
+
+  _disabled = true
+  _ui.submitButton.classList.add('loading')
+  _ui.submitButton.disabled = true
+
+  setItem('appConfig', null)
+
+  const appConfig = {..._defaultAppConfig}
+
+  _reflectConfigInForm(appConfig, _form)
+  _setJson(appConfig)
+
+  clearTimeout(_timeoutId)
+  _timeoutId = setTimeout(() => {
+    _disabled = false
+    _ui.submitButton.classList.remove('loading')
+    _ui.submitButton.disabled = false
+  })
+}
+
 function _handleReset () {
   if (_disabled) {
     return
@@ -99,9 +133,9 @@ function _handleReset () {
   _ui.resetButton.classList.add('loading')
   _ui.resetButton.disabled = true
 
-  const appConfig = {..._defaultAppConfig}
-
+  const appConfig = _getAppConfig(_form)
   _setJson(appConfig)
+
   clear()
   Adjust.__testonly__.clearDatabase()
     .catch(error => {
@@ -144,8 +178,7 @@ function _prepareForm () {
   _form.eventDeduplicationListLimit = _ui.appConfigForm.querySelector('#event-deduplication-list-limit')
   _form.externalDeviceId = _ui.appConfigForm.querySelector('#external-device-id')
 
-  Object.keys(_form).map(key => _form[key].value = appConfig[key] || '')
-
+  _reflectConfigInForm(appConfig, _form)
   _setJson(appConfig)
 }
 

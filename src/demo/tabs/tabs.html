@@ -7,7 +7,7 @@
   <pre class="log" id="log"></pre>
 
   <div class="fab fab-clear" id="log-tab-clear-button" title="Clear log">
-    <img src="assets/images/trash-bin.svg"/>
+    <img src="assets/images/trash-bin.svg" />
   </div>
 </div>
 
@@ -80,9 +80,16 @@
           </div>
 
           <div class="form-row inline-actions">
-            <button type="submit">Save and re-init</button>
-            <button type="button" class="remove" id="reset">Reset</button>
+            <button type="submit" title="Calls Adjust.initSdk()">Re-init SDK</button>
+            <button type="button" id="restore-default-config" title="Restores default config">Reset
+              config</button>
           </div>
+
+          <div class="form-row inline-actions">
+            <button type="button" class="remove" id="reset"
+              title="Removes SDK stored data and calls Adjust.initSdk()">Reset</button>
+          </div>
+
         </div>
       </div>
     </form>

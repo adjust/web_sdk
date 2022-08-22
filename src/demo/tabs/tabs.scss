@@ -1,6 +1,6 @@
 @import "../../assets/scss/variables";
 
-$height: 290px;
+$height: 300px;
 
 .tabs {
   @extend .flex-box-row;
@@ -98,11 +98,14 @@ $height: 290px;
 }
 
 .inline-actions {
+  display: flex;
+
   button {
     display: inline-block;
+    flex: 1 0 0%;
   }
 
-  #reset {
-    float: right;
+  :nth-child(n+2) {
+    margin-left: 10px;
   }
 }
