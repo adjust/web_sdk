@@ -173,6 +173,7 @@ function _prepareForm () {
   _form.defaultTracker = _ui.appConfigForm.querySelector('#default-tracker')
   _form.customUrl = _ui.appConfigForm.querySelector('#custom-url')
   _form.logLevel = _ui.appConfigForm.querySelector('#log-level')
+  _form.dataResidency = _ui.appConfigForm.querySelector('#data-residency')
   _form.urlStrategy = _ui.appConfigForm.querySelector('#url-strategy')
   _form.logOutput = _ui.appConfigForm.querySelector('#log-output')
   _form.eventDeduplicationListLimit = _ui.appConfigForm.querySelector('#event-deduplication-list-limit')

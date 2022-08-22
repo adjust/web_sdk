@@ -67,16 +67,14 @@ $height: 300px;
 }
 
 .log {
-  color: $logFontColor;
-  background: $logBgColor;
-  border-color: $headerBgColor;
   padding: 10px 5px 10px 10px;
   height: 100%;
   box-sizing: border-box;
 }
 
 .config {
-  @extend .log;
+  padding: 10px 5px 10px 10px;
+  box-sizing: border-box;
   border: none;
 }
 
@@ -89,7 +87,7 @@ $height: 300px;
   padding: 0;
 
   & > .flex-box-row {
-    height: 100%;
+    align-items: stretch;
   }
 
   form {
