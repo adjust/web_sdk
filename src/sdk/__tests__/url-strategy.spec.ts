@@ -1,21 +1,34 @@
-import { UrlStrategy, urlStrategyRetries, getBaseUrlsIterator, BaseUrlsMap, BaseUrlsIterator } from '../url-strategy'
+import { UrlStrategy, urlStrategyRetries, getBaseUrlsIterator, BaseUrlsMap, BaseUrlsIterator, DataResidency } from '../url-strategy'
 import * as Globals from '../globals'
+import * as Logger from '../logger'
 
 jest.mock('../logger')
 
 describe('test url strategy', () => {
   const testEndpoints = {
-    default: {
+    [UrlStrategy.Default]: {
       app: 'app.default',
       gdpr: 'gdpr.default'
     },
-    india: {
+    [UrlStrategy.India]: {
       app: 'app.india',
       gdpr: 'gdpr.india'
     },
-    china: {
+    [UrlStrategy.China]: {
       app: 'app.china',
       gdpr: 'gdpr.china'
+    },
+    [DataResidency.EU]: {
+      app: 'app.eu',
+      gdpr: 'gdpr.eu'
+    },
+    [DataResidency.TR]: {
+      app: 'app.tr',
+      gdpr: 'gdpr.tr'
+    },
+    [DataResidency.US]: {
+      app: 'app.us',
+      gdpr: 'gdpr.us'
     }
   }
 
@@ -32,6 +45,7 @@ describe('test url strategy', () => {
 
   beforeAll(() => {
     Globals.default.env = 'development'
+    jest.spyOn(Logger.default, 'warn')
   })
 
   beforeEach(() => {
@@ -102,6 +116,48 @@ describe('test url strategy', () => {
         })
     })
 
+    describe('data residency', () => {
+
+      it.each([
+        DataResidency.EU,
+        DataResidency.US,
+        DataResidency.TR
+      ])('tries to reach only regional endpoint if data residency set', (dataResidency) => {
+        Config.set({ ...options, dataResidency: dataResidency })
+
+        expect.assertions(3)
+
+        return urlStrategyRetries(sendRequestMock, testEndpoints)
+          .catch(reason => expect(reason).toEqual({ code: 'NO_CONNECTION' }))
+          .then(() => {
+            expect(sendRequestMock).toHaveBeenCalledTimes(1)
+            expect(sendRequestMock).toHaveBeenCalledWith({ app: testEndpoints[dataResidency].app, gdpr: testEndpoints[dataResidency].gdpr })
+          })
+
+      })
+
+      it.each([
+        [UrlStrategy.China, DataResidency.EU],
+        [UrlStrategy.China, DataResidency.US],
+        [UrlStrategy.China, DataResidency.TR],
+        [UrlStrategy.India, DataResidency.EU],
+        [UrlStrategy.India, DataResidency.US],
+        [UrlStrategy.India, DataResidency.TR]
+      ])('drops url strategy if data residency set', (urlStrategy, dataResidency) => {
+        Config.set({ ...options, urlStrategy: urlStrategy, dataResidency: dataResidency })
+
+        expect.assertions(4)
+
+        return urlStrategyRetries(sendRequestMock, testEndpoints)
+          .catch(reason => expect(reason).toEqual({ code: 'NO_CONNECTION' }))
+          .then(() => {
+            expect(Logger.default.warn).toHaveBeenCalledWith('Both urlStrategy and dataResidency are set in config, urlStartegy would be ignored')
+            expect(sendRequestMock).toHaveBeenCalledTimes(1)
+            expect(sendRequestMock).toHaveBeenCalledWith({ app: testEndpoints[dataResidency].app, gdpr: testEndpoints[dataResidency].gdpr })
+          })
+      })
+    })
+
     it('stops to iterate endpoints if connected succesfully', () => {
       const sendRequestMock = jest.fn()
         .mockImplementationOnce(() => Promise.reject({ code: 'NO_CONNECTION' }))
@@ -126,8 +182,6 @@ describe('test url strategy', () => {
 
   describe('BaseUrlsIterator tests', () => {
 
-    const numberOfIterations = Object.keys(testEndpoints).length
-
     const iterateThrough = (iterator: BaseUrlsIterator, iterationsNumber?: number) => {
       const results: BaseUrlsMap[] = []
       let current
@@ -146,10 +200,10 @@ describe('test url strategy', () => {
     it('returns all values through iteration when default url startegy used', () => {
       const iterator = getBaseUrlsIterator(testEndpoints)
 
-      expect(iterator.next()).toEqual({value: testEndpoints.default, done: false})
-      expect(iterator.next()).toEqual({value: testEndpoints.india, done: false})
-      expect(iterator.next()).toEqual({value: testEndpoints.china, done: false})
-      expect(iterator.next()).toEqual({value: undefined, done: true})
+      expect(iterator.next()).toEqual({ value: testEndpoints.default, done: false })
+      expect(iterator.next()).toEqual({ value: testEndpoints.india, done: false })
+      expect(iterator.next()).toEqual({ value: testEndpoints.china, done: false })
+      expect(iterator.next()).toEqual({ value: undefined, done: true })
     })
 
     it('prefers Indian enpoint and does not try reach Chinese one when india url strategy set', () => {
@@ -184,7 +238,9 @@ describe('test url strategy', () => {
 
     describe('reset allows to restart iteration', () => {
 
-      it('iterate through all endpoints twice', () => {
+      it('iterates through all endpoints twice in default order', () => {
+        const defaultEndpointsNumber = 3 // number of endpoints to try if default url strategy used
+
         const iterator = getBaseUrlsIterator(testEndpoints)
 
         const first = iterateThrough(iterator)
@@ -193,12 +249,12 @@ describe('test url strategy', () => {
 
         const second = iterateThrough(iterator)
 
-        expect(first.length).toEqual(numberOfIterations)
-        expect(second.length).toEqual(numberOfIterations)
+        expect(first.length).toEqual(defaultEndpointsNumber)
+        expect(second.length).toEqual(defaultEndpointsNumber)
         expect(second).toEqual(first)
       })
 
-      it('iterate partially then reset', () => {
+      it('iterates partially then reset', () => {
         const iterator = getBaseUrlsIterator(testEndpoints)
 
         const firstIteration = iterateThrough(iterator, 1)
@@ -220,6 +276,39 @@ describe('test url strategy', () => {
         expect(thirdIteration[1]).toEqual(testEndpoints.india)
 
         expect(thirdIteration[2]).toEqual(testEndpoints.china)
+      })
+    })
+
+    describe('data residency', () => {
+
+      it.each([
+        DataResidency.EU,
+        DataResidency.US,
+        DataResidency.TR
+      ])('tries to reach only regional endpoint if data residency set', (dataResidency) => {
+        Config.set({ ...options, dataResidency: dataResidency })
+
+        const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+        expect(values.length).toEqual(1)
+        expect(values[0]).toEqual(testEndpoints[dataResidency])
+      })
+
+      it.each([
+        [UrlStrategy.China, DataResidency.EU],
+        [UrlStrategy.China, DataResidency.US],
+        [UrlStrategy.China, DataResidency.TR],
+        [UrlStrategy.India, DataResidency.EU],
+        [UrlStrategy.India, DataResidency.US],
+        [UrlStrategy.India, DataResidency.TR]
+      ])('drops url strategy if data residency set', (urlStrategy, dataResidency) => {
+        Config.set({ ...options, urlStrategy: urlStrategy, dataResidency: dataResidency })
+
+        const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+        expect(Logger.default.warn).toHaveBeenCalledWith('Both urlStrategy and dataResidency are set in config, urlStartegy would be ignored')
+        expect(values.length).toEqual(1)
+        expect(values[0]).toEqual(testEndpoints[dataResidency])
       })
     })
   })

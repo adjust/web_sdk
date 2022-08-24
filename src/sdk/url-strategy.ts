@@ -168,4 +168,4 @@ function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy | DataResiden
   }
 }
 
-export { urlStrategyRetries, getBaseUrlsIterator, BaseUrlsIterator, UrlStrategy, BaseUrlsMap }
+export { urlStrategyRetries, getBaseUrlsIterator, BaseUrlsIterator, UrlStrategy, DataResidency, BaseUrlsMap }
