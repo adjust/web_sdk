@@ -1,6 +1,6 @@
 import styles from '../assets/styles.module.scss'
 import render from '../assets/template'
-import { Position, SmartBannerData } from '../network/api'
+import { Position, SmartBannerData } from '../api'
 import { AppIcon } from './app-icon'
 
 export class SmartBannerView {

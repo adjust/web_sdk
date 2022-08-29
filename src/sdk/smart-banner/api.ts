@@ -1,5 +1,5 @@
-import Logger from '../../logger'
-import { DeviceOS } from '../detect-os'
+import Logger from '../logger'
+import { DeviceOS } from './detect-os'
 import { Network } from './network'
 
 export enum Position {
@@ -60,10 +60,10 @@ function validate(response: Partial<SmartBannerResponse>): SmartBannerData | nul
   return null
 }
 
-export function fetchSmartBannerData(webToken: string, deviceOs: DeviceOS): Promise<SmartBannerData | null> {
+export function fetchSmartBannerData(webToken: string, deviceOs: DeviceOS, network: Network): Promise<SmartBannerData | null> {
   const path = '/smart_banner'
 
-  return Network.request<Partial<SmartBannerResponse>[]>(path, { 'app_web_token': webToken })
+  return network.request<Partial<SmartBannerResponse>[]>(path, { 'app_web_token': webToken })
     .then(banners => {
       const banner = banners.find(item => item.platform === deviceOs)
 

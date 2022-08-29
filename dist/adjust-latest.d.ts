@@ -368,6 +368,11 @@ declare namespace Adjust {
      * - `none` - won't print anything
      */
     logLevel?: LogLevel;
+
+    /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
+     * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
+     * Adjust will store your data in a data center located in the region your have chosen. */
+     dataResidency?: 'EU' | 'TR' | 'US';
   }
 
   /**
@@ -381,6 +386,13 @@ declare namespace Adjust {
    * Adjust.initSmartBanner({
    *   webToken: 'YOUR_WEB_TOKEN',
    *   logLevel: 'verbose'
+   * });
+   *
+   * @example
+   * Adjust.initSmartBanner({
+   *   webToken: 'YOUR_WEB_TOKEN',
+   *   logLevel: 'error',
+   *   dataResidency: 'EU',
    * });
    */
   function initSmartBanner(options: SmartBannerOptions): void

@@ -1,7 +1,7 @@
 import Logger from '../../../logger'
 import { DeviceOS } from '../../../smart-banner/detect-os'
-import { fetchSmartBannerData, Position } from '../../../smart-banner/network/api'
-import { Network } from '../../../smart-banner/network/network'
+import { fetchSmartBannerData, Position } from '../../../smart-banner/api'
+import { Network } from '../../../smart-banner/network'
 
 jest.mock('../../../logger')
 
@@ -19,12 +19,17 @@ describe('Smart banner API tests', () => {
       button_label: 'Go!'
     }
 
+    let testNetwork: Network = {
+      endpoint: 'test-endpoint',
+      request: jest.fn()
+    }
+
     let requestSpy: jest.SpyInstance
 
     beforeAll(() => {
       jest.spyOn(Logger, 'error')
 
-      requestSpy = jest.spyOn(Network, 'request')
+      requestSpy = jest.spyOn(testNetwork, 'request')
     })
 
     afterEach(() => {
@@ -35,7 +40,7 @@ describe('Smart banner API tests', () => {
       expect.assertions(2)
       requestSpy.mockResolvedValueOnce([serverResponseMock])
 
-      const smartBannerData = await fetchSmartBannerData(webToken, platform)
+      const smartBannerData = await fetchSmartBannerData(webToken, platform, testNetwork)
 
       expect(smartBannerData).not.toBeNull()
       expect(smartBannerData).toEqual({
@@ -54,7 +59,7 @@ describe('Smart banner API tests', () => {
       expect.assertions(1)
       requestSpy.mockResolvedValueOnce([{ ...serverResponseMock, platform: 'android' }])
 
-      const smartBannerData = await fetchSmartBannerData(webToken, platform)
+      const smartBannerData = await fetchSmartBannerData(webToken, platform, testNetwork)
 
       expect(smartBannerData).toBeNull()
     })
@@ -63,7 +68,7 @@ describe('Smart banner API tests', () => {
       expect.assertions(1)
       requestSpy.mockResolvedValueOnce([{ ...serverResponseMock, title: '' }])
 
-      const smartBannerData = await fetchSmartBannerData(webToken, platform)
+      const smartBannerData = await fetchSmartBannerData(webToken, platform, testNetwork)
 
       expect(smartBannerData).toBeNull()
     })
@@ -74,7 +79,7 @@ describe('Smart banner API tests', () => {
       const error = { status: 404, message: 'Not found' }
       requestSpy.mockRejectedValueOnce(error)
 
-      const smartBannerData = await fetchSmartBannerData(webToken, platform)
+      const smartBannerData = await fetchSmartBannerData(webToken, platform, testNetwork)
 
       expect(smartBannerData).toBeNull()
       expect(Logger.error).toHaveBeenCalledWith('Network error occurred during loading Smart Banner: ' + JSON.stringify(error))
