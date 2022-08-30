@@ -25,7 +25,7 @@ export namespace BlockedUrlBypass {
     }
   }
 
-  let getPreferredUrlsWithOption = (option?: BlockedUrlBypass.Strategy) => {
+  let getPreferredUrlsWithOption = (endpoints: Record<BlockedUrlBypass.Strategy, BaseUrlsMap>, option?: BlockedUrlBypass.Strategy) => {
 
     if (option === BlockedUrlBypass.India) {
       return [
@@ -48,7 +48,7 @@ export namespace BlockedUrlBypass {
     ]
   }
 
-  export function preferredUrlsGetter(option?: BlockedUrlBypass.Strategy) {
-    return () => getPreferredUrlsWithOption(option)
+  export function preferredUrlsGetter(option?: BlockedUrlBypass.Strategy, endpointsMap: Record<BlockedUrlBypass.Strategy, BaseUrlsMap> = endpoints) {
+    return () => getPreferredUrlsWithOption(endpointsMap, option)
   }
 }

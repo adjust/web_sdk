@@ -25,11 +25,11 @@ export namespace DataResidency {
     }
   }
 
-  let getPreferredUrlsWithOption = (option: DataResidency.Region) => {
+  let getPreferredUrlsWithOption = (endpoints: Record<DataResidency.Region, BaseUrlsMap>, option: DataResidency.Region) => {
     return [endpoints[option]]
   }
 
-  export function preferredUrlsGetter(option: DataResidency.Region) {
-    return () => getPreferredUrlsWithOption(option)
+  export function preferredUrlsGetter(option: DataResidency.Region, endpointsMap: Record<DataResidency.Region, BaseUrlsMap> = endpoints) {
+    return () => getPreferredUrlsWithOption(endpointsMap, option)
   }
 }

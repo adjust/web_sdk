@@ -4,7 +4,7 @@ import { NoConnectionError } from '../../../../smart-banner/network/errors'
 
 jest.mock('../../../../logger')
 
-describe('Abstract UrlStrategy', () => {
+describe('UrlStrategy', () => {
   const urls: BaseUrlsMap[] = [{
     endpointName: 'foo',
     app: 'foo',
@@ -21,9 +21,10 @@ describe('Abstract UrlStrategy', () => {
 
   beforeAll(() => {
     jest.spyOn(Logger, 'error')
+    jest.spyOn(Logger, 'log')
   })
 
-  afterAll(() => {
+  afterEach(() => {
     jest.clearAllMocks()
   })
 
@@ -55,9 +56,9 @@ describe('Abstract UrlStrategy', () => {
     })
   })
 
-  describe('', () => {
+  describe('retries functionality', () => {
     beforeAll(() => {
-      preferredUrlsMock.mockImplementationOnce(() => urls)
+      preferredUrlsMock.mockImplementation(() => urls)
     })
 
     it('tries to reach next endpoint if could not connect', async () => {
@@ -65,24 +66,49 @@ describe('Abstract UrlStrategy', () => {
         .mockRejectedValueOnce(NoConnectionError)
         .mockResolvedValueOnce('all good')
 
+      expect.assertions(4)
+
       const result = await testedUrlStrategy.retries(sendRequestMock)
 
       expect(sendRequestMock).toHaveBeenCalledTimes(urls.length)
-      expect(Logger.error).toHaveBeenCalledWith(`Failed to connect ${urls[0].endpointName} endpoint`)
-      expect(Logger.error).toHaveBeenCalledWith(`Trying ${urls[1].endpointName} one`)
+      expect(Logger.log).toHaveBeenCalledWith(`Failed to connect ${urls[0].endpointName} endpoint`)
+      expect(Logger.log).toHaveBeenCalledWith(`Trying ${urls[1].endpointName} one`)
       expect(result).toEqual('all good')
     })
 
     it('re-throws if there is no available endpoint', async () => {
       sendRequestMock.mockRejectedValue(NoConnectionError)
 
-      await testedUrlStrategy.retries(sendRequestMock)
+      expect.assertions(6)
+
+      try {
+        await testedUrlStrategy.retries(sendRequestMock)
+      }
+      catch (err) {
+        expect(err).toEqual(NoConnectionError)
+      }
 
       expect(sendRequestMock).toHaveBeenCalledTimes(urls.length)
+      expect(Logger.log).toHaveBeenCalledWith(`Failed to connect ${urls[0].endpointName} endpoint`)
+      expect(Logger.log).toHaveBeenCalledWith(`Trying ${urls[1].endpointName} one`)
+      expect(Logger.log).toHaveBeenCalledWith(`Failed to connect ${urls[1].endpointName} endpoint`)
+      expect(testedUrlStrategy.retries).toThrow()
     })
 
     it('re-throws if other error occured', async () => {
+      sendRequestMock.mockRejectedValue({ status: 404, message: 'not found' })
 
+      expect.assertions(3)
+
+      try {
+        await testedUrlStrategy.retries(sendRequestMock)
+      }
+      catch (err) {
+        expect(err).toEqual({ status: 404, message: 'not found' })
+      }
+
+      expect(sendRequestMock).toHaveBeenCalledTimes(1)
+      expect(testedUrlStrategy.retries).toThrow()
     })
   })
 })
