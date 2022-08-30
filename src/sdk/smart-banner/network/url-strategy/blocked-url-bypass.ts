@@ -1,11 +1,13 @@
-import { UrlStrategy, BaseUrlsMap } from "./url-strategy"
+import { BaseUrlsMap } from "./url-strategy"
 
-export class BlockedUrlBypass extends UrlStrategy {
-  constructor(private option?: BlockedUrlBypass.Strategy) {
-    super()
-  }
+export namespace BlockedUrlBypass {
+  export const Default = 'default'
+  export const India = 'india'
+  export const China = 'china'
 
-  private endpoints: Record<BlockedUrlBypass.Strategy, BaseUrlsMap> = {
+  export type Strategy = typeof Default | typeof India | typeof China
+
+  let endpoints: Record<BlockedUrlBypass.Strategy, BaseUrlsMap> = {
     [BlockedUrlBypass.Default]: {
       endpointName: 'Default',
       app: 'https://app.adjust.com',
@@ -23,34 +25,30 @@ export class BlockedUrlBypass extends UrlStrategy {
     }
   }
 
-  public getPreferredUrls = () => {
+  let getPreferredUrlsWithOption = (option?: BlockedUrlBypass.Strategy) => {
 
-    if (this.option === BlockedUrlBypass.India) {
+    if (option === BlockedUrlBypass.India) {
       return [
-        this.endpoints[BlockedUrlBypass.India],
-        this.endpoints[BlockedUrlBypass.Default]
+        endpoints[BlockedUrlBypass.India],
+        endpoints[BlockedUrlBypass.Default]
       ]
     }
 
-    if (this.option === BlockedUrlBypass.China) {
+    if (option === BlockedUrlBypass.China) {
       return [
-        this.endpoints[BlockedUrlBypass.China],
-        this.endpoints[BlockedUrlBypass.Default]
+        endpoints[BlockedUrlBypass.China],
+        endpoints[BlockedUrlBypass.Default]
       ]
     }
 
     return [
-      this.endpoints[BlockedUrlBypass.Default],
-      this.endpoints[BlockedUrlBypass.India],
-      this.endpoints[BlockedUrlBypass.China]
+      endpoints[BlockedUrlBypass.Default],
+      endpoints[BlockedUrlBypass.India],
+      endpoints[BlockedUrlBypass.China]
     ]
   }
-}
 
-export namespace BlockedUrlBypass {
-  export const Default = 'default'
-  export const India = 'india'
-  export const China = 'china'
-
-  export type Strategy = typeof Default | typeof India | typeof China
+  export function preferredUrlsGetter(option?: BlockedUrlBypass.Strategy) {
+    return () => getPreferredUrlsWithOption(option)
+  }
 }

@@ -1,5 +1,5 @@
 import Logger from '../../../logger'
-import { NetworkError, NoConnectionError } from '../errors';
+import { NetworkError, NoConnectionError } from '../errors'
 
 export type BaseUrlsMap = {
   endpointName: string;
@@ -7,8 +7,10 @@ export type BaseUrlsMap = {
   gdpr: string;
 }
 
-export abstract class UrlStrategy {
-  abstract getPreferredUrls: () => BaseUrlsMap[];
+export class UrlStrategy {
+  static NoPreferredUrlsDefinedError = new ReferenceError('UrlStrategy: No preferred URL defined')
+
+  constructor(private preferredUrls: () => BaseUrlsMap[]) { }
 
   /**
    * Gets the list of preferred endpoints and wraps `sendRequest` function with iterative retries until available
@@ -18,15 +20,22 @@ export abstract class UrlStrategy {
     let attempt = 0
 
     const trySendRequest = (): Promise<T> => {
-      const urlsMap = this.getPreferredUrls()[attempt++]
+      const preferredUrls = this.preferredUrls()
+
+      if (!preferredUrls || preferredUrls.length === 0) {
+        Logger.error(UrlStrategy.NoPreferredUrlsDefinedError.message)
+        throw UrlStrategy.NoPreferredUrlsDefinedError
+      }
+
+      const urlsMap = preferredUrls[attempt++]
 
       return sendRequest(urlsMap)
         .catch((reason: NetworkError) => {
           if (reason === NoConnectionError) {
             Logger.log(`Failed to connect ${urlsMap.endpointName} endpoint`)
 
-            if (attempt < this.getPreferredUrls.length) {
-              Logger.log(`Trying ${urlsMap.endpointName} one`)
+            if (attempt < preferredUrls.length) {
+              Logger.log(`Trying ${preferredUrls[attempt].endpointName} one`)
 
               return trySendRequest() // Trying next endpoint
             }

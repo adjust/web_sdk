@@ -27,7 +27,8 @@ export class SmartBanner {
   constructor({ webToken, logLevel = 'error', dataResidency }: SmartBannerOptions, network?: Network) {
     Logger.setLogLevel(logLevel)
 
-    this.network = network || new UrlStrategyNetwork({ urlStrategyConfig: { dataResidency } })
+    const config = dataResidency ? { dataResidency } : {}
+    this.network = network || new UrlStrategyNetwork({ urlStrategyConfig: config })
 
     this.init(webToken)
   }

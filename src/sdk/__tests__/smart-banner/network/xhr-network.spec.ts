@@ -24,7 +24,7 @@ describe('XhrNetwork tests', () => {
     jest.clearAllMocks()
   })
 
-  describe('request', () => {
+  describe('request method', () => {
     it('sends request to path with encoded params', async () => {
       expect.assertions(1)
 
@@ -78,7 +78,7 @@ describe('XhrNetwork tests', () => {
     })
   })
 
-  describe('getEndpoint', () => {
+  describe('endpoint property', () => {
     it('returns endpoint', () => {
       expect(testedNetwork.endpoint).toEqual(testEndpoint)
     })

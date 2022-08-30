@@ -1,16 +1,7 @@
 import { XhrNetwork } from './xhr-network'
 import { UrlStrategy } from './url-strategy/url-strategy'
-import { DataResidency } from './url-strategy/data-residency'
-import { BlockedUrlBypass } from './url-strategy/blocked-url-bypass'
+import { UrlStrategyFactory, UrlStrategyConfig } from './url-strategy/url-strategy-factory'
 import { NetworkError } from './errors'
-
-type UrlStrategyConfig = {
-  dataResidency?: DataResidency.Region;
-  urlStrategy?: never;
-} | {
-  dataResidency?: never;
-  urlStrategy: BlockedUrlBypass.Strategy;
-}
 
 export class UrlStrategyNetwork extends XhrNetwork {
   private static readonly defaultEndpoint = 'https://app.adjust.com'
@@ -20,15 +11,7 @@ export class UrlStrategyNetwork extends XhrNetwork {
   constructor({ urlStrategy, urlStrategyConfig }: UrlStrategyNetwork.ConstructorParameters) {
     super(UrlStrategyNetwork.defaultEndpoint)
 
-    this.urlStrategy = urlStrategy || this.createUrlStrategy(urlStrategyConfig)
-  }
-
-  private createUrlStrategy(config: UrlStrategyConfig): UrlStrategy {
-    if (config.dataResidency) {
-      return new DataResidency(config.dataResidency)
-    } else {
-      return new BlockedUrlBypass(config.urlStrategy)
-    }
+    this.urlStrategy = urlStrategy || UrlStrategyFactory.create(urlStrategyConfig)
   }
 
   /**

@@ -1,11 +1,13 @@
-import { UrlStrategy, BaseUrlsMap } from "./url-strategy"
+import { BaseUrlsMap } from "./url-strategy"
 
-export class DataResidency extends UrlStrategy {
-  constructor(private option: DataResidency.Region) {
-    super()
-  }
+export namespace DataResidency {
+  export const EU = 'EU'
+  export const TR = 'TR'
+  export const US = 'US'
 
-  private endpoints: Record<DataResidency.Region, BaseUrlsMap> = {
+  export type Region = typeof EU | typeof TR | typeof US
+
+  const endpoints: Record<DataResidency.Region, BaseUrlsMap> = {
     [DataResidency.EU]: {
       endpointName: 'EU',
       app: 'https://app.eu.adjust.com',
@@ -23,15 +25,11 @@ export class DataResidency extends UrlStrategy {
     }
   }
 
-  public getPreferredUrls = () => {
-    return [this.endpoints[this.option]]
+  let getPreferredUrlsWithOption = (option: DataResidency.Region) => {
+    return [endpoints[option]]
   }
-}
 
-export namespace DataResidency {
-  export const EU = 'EU'
-  export const TR = 'TR'
-  export const US = 'US'
-
-  export type Region = typeof EU | typeof TR | typeof US
+  export function preferredUrlsGetter(option: DataResidency.Region) {
+    return () => getPreferredUrlsWithOption(option)
+  }
 }
