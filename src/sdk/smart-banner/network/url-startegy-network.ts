@@ -1,4 +1,4 @@
-import { NetworkDecorator, Network } from './network'
+import { NetworkDecorator, Network } from '../network/network'
 import { UrlStrategy } from './url-strategy/url-strategy'
 import { UrlStrategyFactory, UrlStrategyConfig } from './url-strategy/url-strategy-factory'
 import { NetworkError } from './errors'

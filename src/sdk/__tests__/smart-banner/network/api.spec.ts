@@ -1,7 +1,7 @@
 import Logger from '../../../logger'
 import { DeviceOS } from '../../../smart-banner/detect-os'
 import { fetchSmartBannerData, Position } from '../../../smart-banner/api'
-import { Network } from '../../../smart-banner/network'
+import { Network } from '../../../smart-banner/network/network'
 
 jest.mock('../../../logger')
 

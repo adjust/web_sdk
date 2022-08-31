@@ -1,4 +1,4 @@
-import { Network } from '../../../smart-banner/network'
+import { Network } from '../../../smart-banner/network/network'
 import { NetworkWithUrlStrategy } from '../../../smart-banner/network/url-startegy-network'
 import { UrlStrategy } from '../../../smart-banner/network/url-strategy/url-strategy'
 import { UrlStrategyFactory } from '../../../smart-banner/network/url-strategy/url-strategy-factory'

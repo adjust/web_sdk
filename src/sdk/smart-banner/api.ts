@@ -1,6 +1,6 @@
 import Logger from '../logger'
 import { DeviceOS } from './detect-os'
-import { Network } from './network'
+import { Network } from './network/network'
 
 export enum Position {
   Top = 'top',
