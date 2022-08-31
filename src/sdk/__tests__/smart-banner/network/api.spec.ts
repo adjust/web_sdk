@@ -19,7 +19,7 @@ describe('Smart banner API tests', () => {
       button_label: 'Go!'
     }
 
-    let testNetwork: Network = {
+    const testNetwork: Network = {
       endpoint: 'test-endpoint',
       request: jest.fn()
     }

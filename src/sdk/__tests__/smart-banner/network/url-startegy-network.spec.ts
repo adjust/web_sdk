@@ -102,7 +102,7 @@ describe('NetworkWithUrlStrategy', () => {
       try {
         await network.request('/whatever')
       } catch (err) {
-
+        // nothing to do here
       }
 
       expect(network.endpoint).toEqual(defaultEndpoint)

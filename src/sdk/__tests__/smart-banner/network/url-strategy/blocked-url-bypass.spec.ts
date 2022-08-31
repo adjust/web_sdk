@@ -2,7 +2,7 @@ import { BlockedUrlBypass } from '../../../../smart-banner/network/url-strategy/
 import { BaseUrlsMap } from '../../../../smart-banner/network/url-strategy/url-strategy'
 
 describe('BlockedUrlBypass', () => {
-  let testEndpoints: Record<BlockedUrlBypass.Strategy, BaseUrlsMap> = {
+  const testEndpoints: Record<BlockedUrlBypass.Strategy, BaseUrlsMap> = {
     [BlockedUrlBypass.Default]: {
       endpointName: BlockedUrlBypass.Default,
       app: 'app',

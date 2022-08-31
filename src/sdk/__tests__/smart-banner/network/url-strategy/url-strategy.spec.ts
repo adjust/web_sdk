@@ -16,7 +16,7 @@ describe('UrlStrategy', () => {
   }]
 
   const preferredUrlsMock = jest.fn()
-  let testedUrlStrategy = new UrlStrategy(preferredUrlsMock)
+  const testedUrlStrategy = new UrlStrategy(preferredUrlsMock)
   const sendRequestMock = jest.fn()
 
   beforeAll(() => {

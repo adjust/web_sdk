@@ -1,5 +1,5 @@
 export namespace CustomUrl {
-  let getPreferredUrlsWithOption = (customUrl: string) => {
+  const getPreferredUrlsWithOption = (customUrl: string) => {
 
     return [{
       endpointName: `Custom (${customUrl})`,

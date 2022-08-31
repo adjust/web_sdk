@@ -1,4 +1,4 @@
-import { BaseUrlsMap } from "./url-strategy"
+import { BaseUrlsMap } from './url-strategy'
 
 export namespace DataResidency {
   export const EU = 'EU'
@@ -25,7 +25,7 @@ export namespace DataResidency {
     }
   }
 
-  let getPreferredUrlsWithOption = (endpoints: Record<DataResidency.Region, BaseUrlsMap>, option: DataResidency.Region) => {
+  const getPreferredUrlsWithOption = (endpoints: Record<DataResidency.Region, BaseUrlsMap>, option: DataResidency.Region) => {
     return [endpoints[option]]
   }
 
