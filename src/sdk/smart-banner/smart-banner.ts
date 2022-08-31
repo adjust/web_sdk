@@ -3,7 +3,7 @@ import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
 import { fetchSmartBannerData, SmartBannerData } from './api'
 import { SmartBannerView } from './view/smart-banner-view'
-import { Network, UrlStrategyNetwork } from './network'
+import { Network, NetworkWithUrlStrategy, XhrNetwork } from './network'
 import { DataResidency } from './network/url-strategy/data-residency'
 
 type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
@@ -28,7 +28,7 @@ export class SmartBanner {
     Logger.setLogLevel(logLevel)
 
     const config = dataResidency ? { dataResidency } : {}
-    this.network = network || new UrlStrategyNetwork({ urlStrategyConfig: config })
+    this.network = network || new NetworkWithUrlStrategy(new XhrNetwork(), { urlStrategyConfig: config })
 
     this.init(webToken)
   }

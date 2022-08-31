@@ -1,15 +1,15 @@
-import { XhrNetwork } from './xhr-network'
+import { NetworkDecorator, Network } from './network'
 import { UrlStrategy } from './url-strategy/url-strategy'
 import { UrlStrategyFactory, UrlStrategyConfig } from './url-strategy/url-strategy-factory'
 import { NetworkError } from './errors'
 
-export class UrlStrategyNetwork extends XhrNetwork {
+export class NetworkWithUrlStrategy extends NetworkDecorator {
   private static readonly defaultEndpoint = 'https://app.adjust.com'
   private lastSuccessfulEndpoint: string | undefined
   private urlStrategy: UrlStrategy
 
-  constructor({ urlStrategy, urlStrategyConfig }: UrlStrategyNetwork.ConstructorParameters) {
-    super(UrlStrategyNetwork.defaultEndpoint)
+  constructor(network: Network, { urlStrategy, urlStrategyConfig }: NetworkWithUrlStrategy.UrlStrategyParameters) {
+    super(network)
 
     this.urlStrategy = urlStrategy || UrlStrategyFactory.create(urlStrategyConfig)
   }
@@ -18,7 +18,7 @@ export class UrlStrategyNetwork extends XhrNetwork {
    * Returns last succesfull endpoint or default (`https://app.adjust.com`) one
    */
   public get endpoint(): string {
-    return this.lastSuccessfulEndpoint || UrlStrategyNetwork.defaultEndpoint
+    return this.lastSuccessfulEndpoint || NetworkWithUrlStrategy.defaultEndpoint
   }
 
   /**
@@ -31,9 +31,9 @@ export class UrlStrategyNetwork extends XhrNetwork {
   public request<T>(path: string, params?: Record<string, string | number | boolean>): Promise<T> {
 
     return this.urlStrategy.retries((baseUrlsMap) => {
-      super.origin = baseUrlsMap.app
+      this.network.endpoint = baseUrlsMap.app
 
-      return super.request(path, params)
+      return this.network.request(path, params)
         .then((result: T) => {
           this.lastSuccessfulEndpoint = baseUrlsMap.app
           return result
@@ -46,9 +46,8 @@ export class UrlStrategyNetwork extends XhrNetwork {
   }
 }
 
-namespace UrlStrategyNetwork {
-
-  export type ConstructorParameters = {
+namespace NetworkWithUrlStrategy {
+  export type UrlStrategyParameters = {
     urlStrategy: UrlStrategy;
     urlStrategyConfig?: never;
   } | {

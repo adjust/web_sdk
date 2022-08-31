@@ -7,10 +7,18 @@ type Primitive = string | number | boolean
 
 /** Sends HTTP GET request using XMLHttpRequest */
 export class XhrNetwork implements Network {
-  constructor(protected origin: string) { }
+  constructor(public origin?: string) { }
 
   public get endpoint(): string {
+    if (!this.origin) {
+      throw Error('XhrNetwork: Origin not defined')
+    }
+
     return this.origin
+  }
+
+  public set endpoint(value: string) {
+    this.origin = value
   }
 
   /**
@@ -65,6 +73,6 @@ export class XhrNetwork implements Network {
   public request<T>(path: string, params?: Record<string, Primitive>): Promise<T> {
     const encodedParams = params ? `?${this.encodeParams(params)}` : ''
 
-    return this.xhr<T>(`${this.origin}${path}${encodedParams}`)
+    return this.xhr<T>(`${this.endpoint}${path}${encodedParams}`)
   }
 }

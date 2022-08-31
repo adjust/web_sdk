@@ -1,5 +1,5 @@
 import { XhrNetwork } from '../../../smart-banner/network'
-import { NetworkError, NoConnectionError } from '../../../smart-banner/network/errors'
+import { NoConnectionError } from '../../../smart-banner/network/errors'
 
 jest.mock('../../../logger')
 
