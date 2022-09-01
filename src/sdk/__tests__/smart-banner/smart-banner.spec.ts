@@ -216,7 +216,7 @@ describe('Smart Banner tests', () => {
     it('banner removed from DOM when dismissed', () => {
       expect.assertions(7)
 
-      expect(storage.setItem).toHaveBeenCalledWith(smartBanner.dismissedStorageKey, now) // add timestamp in Local Storage
+      expect(storage.setItem).toHaveBeenCalledWith(smartBanner.STORAGE_KEY_DISMISSED, now) // add timestamp in Local Storage
 
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner dismissed')
       expect(smartBanner.destroy).toHaveBeenCalled()

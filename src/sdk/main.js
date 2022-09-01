@@ -252,6 +252,7 @@ function disableThirdPartySharing (): void {
 
 function initSmartBanner (options: SmartBannerOptionsT): void {
   if (_smartBanner) {
+    Logger.error('Smart Banner already initialised')
     return
   }
 

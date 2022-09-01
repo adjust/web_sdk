@@ -76,6 +76,6 @@ describe('UrlStrategyFactory', () => {
 
     expect(DataResidency.preferredUrlsGetter).toHaveBeenCalledWith(region)
     expect(urlStrategyConstructorMock).toHaveBeenCalledWith(dataResidencyMock)
-    expect(Logger.warn).toHaveBeenCalledWith('Both urlStrategy and dataResidency are set in config, urlStartegy would be ignored')
+    expect(Logger.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
   })
 })

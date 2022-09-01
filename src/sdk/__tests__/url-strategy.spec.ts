@@ -188,7 +188,7 @@ describe('test url strategy', () => {
 
         const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
-        expect(Logger.default.warn).toHaveBeenCalledWith('Both urlStrategy and dataResidency are set in config, urlStartegy would be ignored')
+        expect(Logger.default.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
         expect(values.length).toEqual(1)
         expect(values[0]).toEqual(testEndpoints[dataResidency])
       })

@@ -20,7 +20,7 @@ interface SmartBannerOptions {
  * Adjust Web SDK Smart Banner
  */
 export class SmartBanner {
-  private readonly dismissedStorageKey = 'closed'
+  private readonly STORAGE_KEY_DISMISSED = 'closed'
   private network: Network
   private timer: ReturnType<typeof setTimeout> | null = null
   private dataFetchPromise: Promise<SmartBannerData | null> | null
@@ -153,7 +153,7 @@ export class SmartBanner {
   private dismiss(webToken: string, dismissInterval: number) {
     Logger.log('Smart Banner dismissed')
 
-    storage.setItem(this.dismissedStorageKey, Date.now())
+    storage.setItem(this.STORAGE_KEY_DISMISSED, Date.now())
     const whenToShow = this.getDateToShowAgain(dismissInterval)
     this.scheduleCreation(webToken, whenToShow)
 
@@ -185,7 +185,7 @@ export class SmartBanner {
    * Returns date when Smart Banner should be shown again
    */
   private getDateToShowAgain(dismissInterval: number): number {
-    const dismissedDate = storage.getItem(this.dismissedStorageKey)
+    const dismissedDate = storage.getItem(this.STORAGE_KEY_DISMISSED)
     if (!dismissedDate) {
       return Date.now()
     }

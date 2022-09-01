@@ -19,18 +19,27 @@ export type UrlStrategyConfig = {
 }
 
 export namespace UrlStrategyFactory {
+  function incorrectOptionIgnoreMessage(higherPriority: string, lowerPriority: string) {
+    Logger.warn(`Both ${higherPriority} and ${lowerPriority} are set in config, ${lowerPriority} will be ignored`)
+  }
 
   export function create(config: UrlStrategyConfig): UrlStrategy {
-    if (config.urlStrategy && config.dataResidency) {
-      Logger.warn('Both urlStrategy and dataResidency are set in config, urlStartegy would be ignored')
-    }
+    const { customUrl, dataResidency, urlStrategy } = config
 
-    if (config.customUrl) {
-      return new UrlStrategy(CustomUrl.preferredUrlsGetter(config.customUrl))
-    } else if (config.dataResidency) {
-      return new UrlStrategy(DataResidency.preferredUrlsGetter(config.dataResidency))
+    if (customUrl) {
+      if (dataResidency || urlStrategy) {
+        incorrectOptionIgnoreMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy')
+      }
+
+      return new UrlStrategy(CustomUrl.preferredUrlsGetter(customUrl))
+    } else if (dataResidency) {
+      if (urlStrategy) {
+        incorrectOptionIgnoreMessage('dataResidency', 'urlStrategy')
+      }
+
+      return new UrlStrategy(DataResidency.preferredUrlsGetter(dataResidency))
     } else {
-      return new UrlStrategy(BlockedUrlBypass.preferredUrlsGetter(config.urlStrategy))
+      return new UrlStrategy(BlockedUrlBypass.preferredUrlsGetter(urlStrategy))
     }
   }
 }

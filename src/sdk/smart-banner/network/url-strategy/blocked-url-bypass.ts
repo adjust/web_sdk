@@ -1,4 +1,5 @@
 import { BaseUrlsMap } from './url-strategy'
+import { ENDPOINTS } from '../../../constants'
 
 export namespace BlockedUrlBypass {
   export const Default = 'default'
@@ -8,21 +9,9 @@ export namespace BlockedUrlBypass {
   export type Strategy = typeof Default | typeof India | typeof China
 
   const endpoints: Record<BlockedUrlBypass.Strategy, BaseUrlsMap> = {
-    [BlockedUrlBypass.Default]: {
-      endpointName: 'Default',
-      app: 'https://app.adjust.com',
-      gdpr: 'https://gdpr.adjust.com'
-    },
-    [BlockedUrlBypass.India]: {
-      endpointName: 'Indian',
-      app: 'https://app.adjust.net.in',
-      gdpr: 'https://gdpr.adjust.net.in'
-    },
-    [BlockedUrlBypass.China]: {
-      endpointName: 'Chinese',
-      app: 'https://app.adjust.world',
-      gdpr: 'https://gdpr.adjust.world'
-    }
+    [BlockedUrlBypass.Default]: ENDPOINTS.default,
+    [BlockedUrlBypass.India]: ENDPOINTS.india,
+    [BlockedUrlBypass.China]: ENDPOINTS.china,
   }
 
   const getPreferredUrlsWithOption = (endpoints: Record<BlockedUrlBypass.Strategy, BaseUrlsMap>, option?: BlockedUrlBypass.Strategy) => {

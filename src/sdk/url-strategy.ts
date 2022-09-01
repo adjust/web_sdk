@@ -1,5 +1,6 @@
 import Config from './config'
 import Logger from './logger'
+import { ENDPOINTS } from './constants'
 
 enum UrlStrategy {
   Default = 'default',
@@ -20,6 +21,10 @@ type BaseUrlsMap = {
   gdpr: string;
 }
 
+function incorrectOptionIgnoreMessage(higherPriority: string, lowerPriority: string) {
+  Logger.warn(`Both ${higherPriority} and ${lowerPriority} are set in config, ${lowerPriority} will be ignored`)
+}
+
 /**
  * Returns a map of base URLs or a list of endpoint names depending on SDK configuration
  */
@@ -27,11 +32,15 @@ function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
   const { customUrl, urlStrategy, dataResidency } = Config.getCustomConfig()
 
   if (customUrl) { // If custom URL is set then send all requests there
+    if (dataResidency || urlStrategy) {
+      incorrectOptionIgnoreMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy')
+    }
+
     return { app: customUrl, gdpr: customUrl }
   }
 
   if (dataResidency && urlStrategy) {
-    Logger.warn('Both urlStrategy and dataResidency are set in config, urlStartegy would be ignored')
+    incorrectOptionIgnoreMessage('dataResidency', 'urlStrategy')
   }
 
   if (dataResidency) {
@@ -50,30 +59,12 @@ function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
 }
 
 const endpointMap: Record<UrlStrategy | DataResidency, BaseUrlsMap> = {
-  [UrlStrategy.Default]: {
-    app: 'https://app.adjust.com',
-    gdpr: 'https://gdpr.adjust.com'
-  },
-  [UrlStrategy.India]: {
-    app: 'https://app.adjust.net.in',
-    gdpr: 'https://gdpr.adjust.net.in'
-  },
-  [UrlStrategy.China]: {
-    app: 'https://app.adjust.world',
-    gdpr: 'https://gdpr.adjust.world'
-  },
-  [DataResidency.EU]: {
-    app: 'https://app.eu.adjust.com',
-    gdpr: 'https://gdpr.eu.adjust.com'
-  },
-  [DataResidency.TR]: {
-    app: 'https://app.tr.adjust.com',
-    gdpr: 'https://gdpr.tr.adjust.com'
-  },
-  [DataResidency.US]: {
-    app: 'https://app.us.adjust.com',
-    gdpr: 'https://gdpr.us.adjust.com'
-  }
+  [UrlStrategy.Default]: ENDPOINTS.default,
+  [UrlStrategy.India]: ENDPOINTS.india,
+  [UrlStrategy.China]: ENDPOINTS.china,
+  [DataResidency.EU]: ENDPOINTS.EU,
+  [DataResidency.TR]: ENDPOINTS.TR,
+  [DataResidency.US]: ENDPOINTS.US
 }
 
 interface BaseUrlsIterator extends Iterator<BaseUrlsMap> {
@@ -81,12 +72,12 @@ interface BaseUrlsIterator extends Iterator<BaseUrlsMap> {
 }
 
 function getPreferredUrls(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>>): BaseUrlsMap[] {
-  const getPreferredUrls = getEndpointPreference()
+  const preference = getEndpointPreference()
 
-  if (!Array.isArray(getPreferredUrls)) {
-    return [getPreferredUrls]
+  if (!Array.isArray(preference)) {
+    return [preference]
   } else {
-    const res = getPreferredUrls
+    const res = preference
       .map(strategy => endpoints[strategy] || null)
       .filter((i): i is BaseUrlsMap => !!i)
 

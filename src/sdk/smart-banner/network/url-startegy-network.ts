@@ -1,10 +1,11 @@
+import { ENDPOINTS } from '../../constants'
 import { NetworkDecorator, Network } from '../network/network'
 import { UrlStrategy } from './url-strategy/url-strategy'
 import { UrlStrategyFactory, UrlStrategyConfig } from './url-strategy/url-strategy-factory'
 import { NetworkError } from './errors'
 
 export class NetworkWithUrlStrategy extends NetworkDecorator {
-  private static readonly defaultEndpoint = 'https://app.adjust.com'
+  private static readonly DEFAULT_ENDPOINT = ENDPOINTS.default.app
   private lastSuccessfulEndpoint: string | undefined
   private urlStrategy: UrlStrategy
 
@@ -18,7 +19,7 @@ export class NetworkWithUrlStrategy extends NetworkDecorator {
    * Returns last succesfull endpoint or default (`https://app.adjust.com`) one
    */
   public get endpoint(): string {
-    return this.lastSuccessfulEndpoint || NetworkWithUrlStrategy.defaultEndpoint
+    return this.lastSuccessfulEndpoint || NetworkWithUrlStrategy.DEFAULT_ENDPOINT
   }
 
   /**
