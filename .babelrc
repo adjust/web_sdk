@@ -8,7 +8,7 @@
   "plugins": [
     "es6-promise",
     "@babel/plugin-transform-flow-comments",
-    "@babel/plugin-transform-runtime"
+    ["@babel/plugin-transform-runtime", {"version": "7.18.10"}]
   ],
   "overrides": [
     {
