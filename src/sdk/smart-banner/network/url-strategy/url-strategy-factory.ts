@@ -19,7 +19,7 @@ export type UrlStrategyConfig = {
 }
 
 export namespace UrlStrategyFactory {
-  function incorrectOptionIgnoreMessage(higherPriority: string, lowerPriority: string) {
+  const incorrectOptionIgnoredMessage = (higherPriority: string, lowerPriority: string) => {
     Logger.warn(`Both ${higherPriority} and ${lowerPriority} are set in config, ${lowerPriority} will be ignored`)
   }
 
@@ -28,13 +28,13 @@ export namespace UrlStrategyFactory {
 
     if (customUrl) {
       if (dataResidency || urlStrategy) {
-        incorrectOptionIgnoreMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy')
+        incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy')
       }
 
       return new UrlStrategy(CustomUrl.preferredUrlsGetter(customUrl))
     } else if (dataResidency) {
       if (urlStrategy) {
-        incorrectOptionIgnoreMessage('dataResidency', 'urlStrategy')
+        incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy')
       }
 
       return new UrlStrategy(DataResidency.preferredUrlsGetter(dataResidency))

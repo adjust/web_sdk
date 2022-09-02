@@ -98,18 +98,20 @@ class IndexedDBWrapper implements IStorage {
     if (IndexedDBWrapper.isSupportedPromise) {
       return IndexedDBWrapper.isSupportedPromise
     } else {
+      const notSupportedMessage = 'IndexedDB is not supported in this browser'
+
       IndexedDBWrapper.isSupportedPromise = new Promise((resolve) => {
         const indexedDB = IndexedDBWrapper.getIndexedDB()
         const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
 
         if (!indexedDB || iOS) {
-          Logger.warn('IndexedDB is not supported in this browser')
+          Logger.warn(notSupportedMessage)
           resolve(false)
         } else {
           const dbOpenablePromise = IndexedDBWrapper.tryOpen(indexedDB)
             .then((dbOpenable) => {
               if (!dbOpenable) {
-                Logger.warn('IndexedDB is not supported in this browser')
+                Logger.warn(notSupportedMessage)
               }
 
               return dbOpenable

@@ -21,7 +21,7 @@ type BaseUrlsMap = {
   gdpr: string;
 }
 
-function incorrectOptionIgnoreMessage(higherPriority: string, lowerPriority: string) {
+function incorrectOptionIgnoredMessage(higherPriority: string, lowerPriority: string) {
   Logger.warn(`Both ${higherPriority} and ${lowerPriority} are set in config, ${lowerPriority} will be ignored`)
 }
 
@@ -33,14 +33,14 @@ function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
 
   if (customUrl) { // If custom URL is set then send all requests there
     if (dataResidency || urlStrategy) {
-      incorrectOptionIgnoreMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy')
+      incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy')
     }
 
     return { app: customUrl, gdpr: customUrl }
   }
 
   if (dataResidency && urlStrategy) {
-    incorrectOptionIgnoreMessage('dataResidency', 'urlStrategy')
+    incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy')
   }
 
   if (dataResidency) {
