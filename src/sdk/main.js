@@ -259,6 +259,24 @@ function initSmartBanner (options: SmartBannerOptionsT): void {
   _smartBanner = new SmartBanner(options)
 }
 
+function showSmartBanner (): void {
+  if (!_smartBanner) {
+    Logger.error('Smart Banner is not initialised yet')
+    return
+  }
+
+  _smartBanner.show()
+}
+
+function hideSmartBanner (): void {
+  if (!_smartBanner) {
+    Logger.error('Smart Banner is not initialised yet')
+    return
+  }
+
+  _smartBanner.hide()
+}
+
 /**
  * Handle third party sharing disable
  *
@@ -538,6 +556,8 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   initSmartBanner,
+  showSmartBanner,
+  hideSmartBanner,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase

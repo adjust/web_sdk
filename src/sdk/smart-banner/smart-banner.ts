@@ -10,10 +10,14 @@ import { DataResidency } from './network/url-strategy/data-residency'
 
 type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
 
+type Callback = () => any;
+
 interface SmartBannerOptions {
   webToken: string;
   logLevel?: LogLevel;
   dataResidency?: DataResidency.Region;
+  onCreated?: Callback;
+  onDismissed?: Callback;
 }
 
 /**
@@ -25,8 +29,13 @@ export class SmartBanner {
   private timer: ReturnType<typeof setTimeout> | null = null
   private dataFetchPromise: Promise<SmartBannerData | null> | null
   private banner: SmartBannerView | null
+  private onCreated?: Callback
+  private onDismissed?: Callback
 
-  constructor({ webToken, logLevel = 'error', dataResidency }: SmartBannerOptions, network?: Network) {
+  constructor({ webToken, logLevel = 'error', dataResidency, onCreated, onDismissed }: SmartBannerOptions, network?: Network) {
+    this.onCreated = onCreated
+    this.onDismissed = onDismissed
+
     Logger.setLogLevel(logLevel)
 
     const config = dataResidency ? { dataResidency } : {}
@@ -83,6 +92,10 @@ export class SmartBanner {
       )
 
       Logger.log('Smart Banner created')
+
+      if (this.onCreated) {
+        this.onCreated()
+      }
     })
   }
 
@@ -158,6 +171,10 @@ export class SmartBanner {
     this.scheduleCreation(webToken, whenToShow)
 
     this.destroy()
+
+    if (this.onDismissed) {
+      this.onDismissed()
+    }
   }
 
   /**
