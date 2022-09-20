@@ -43,6 +43,7 @@ You may want to use [Subresource Integrity (SRI)](sri-mdn) feature to mitigate X
 ```html
 <script type="application/javascript">
 !function(t,a,e,r,n,s,o,l,d,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)d(t.Adjust,t.Adjust_q,l[c]);i=a.createElement(e),u=a.getElementsByTagName(e)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.crossorigin="anonymous",i.integrity=s,i.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,"sha384-LI7u4QN3zwrvM7cl2KryLTxj5wtSZqQ8aV6ORY7gm/zm0lQb32ZQb7l7k0oKIxMq",0,["initSdk","getAttribution","getWebUUID","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,a,e){t[e]=function(){a.push([e,arguments])}}));
+</script>
 ```
 
 It's also possible to install our sdk through NPM:
