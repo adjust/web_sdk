@@ -38,7 +38,7 @@ Adjust SDK는 CommonJS와 AMD 환경에서 작동하고 CDN을 통해 로딩될 
 
 Adjust 웹 SDK는 페이지당 한 번만 로딩되어야 하며 페이지 로딩당 한번만 초기화되어야 합니다. 
 
-CDN을 통해 SDK를 로딩할 때 축소 버전을 사용하는 것이 좋습니다. `https://cdn.adjust.com/adjust-5.3.1.min.js`와 같은 특정 버전을 타깃팅하거나 대상 파일을 변경할 필요 없이 자동 업데이트를 원하는 경우 최신 버전`https://cdn.adjust.com/adjust-latest.min.js`을 타깃팅 합니다. sdk 파일은 캐싱되어 최대한 빠르게 제공되며 30분 마다 캐시가 새로고침됩니다. 즉시 업데이트를 원하는 경우에는 특정 버전을 타깃팅해야 합니다.
+CDN을 통해 SDK를 로딩할 때 축소 버전을 사용하는 것이 좋습니다. `https://cdn.adjust.com/adjust-5.4.0.min.js`와 같은 특정 버전을 타깃팅하거나 대상 파일을 변경할 필요 없이 자동 업데이트를 원하는 경우 최신 버전`https://cdn.adjust.com/adjust-latest.min.js`을 타깃팅 합니다. sdk 파일은 캐싱되어 최대한 빠르게 제공되며 30분 마다 캐시가 새로고침됩니다. 즉시 업데이트를 원하는 경우에는 특정 버전을 타깃팅해야 합니다.
 
 NPM을 통한 SDK 설치 역시 가능합니다:
 

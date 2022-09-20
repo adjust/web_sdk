@@ -64,6 +64,13 @@ let _isStarted: boolean = false
 let _isInstalled: boolean = false
 
 /**
+ * SmartBanner instance
+ *
+ * @private
+ */
+let _smartBanner: ?SmartBanner = null
+
+/**
  * Initiate the instance with parameters
  *
  * @param {Object} options
@@ -243,8 +250,31 @@ function disableThirdPartySharing (): void {
   })
 }
 
-function initSmartBanner ({ webToken, logLevel }: SmartBannerOptionsT): void {
-  SmartBanner.init(webToken, logLevel)
+function initSmartBanner (options: SmartBannerOptionsT): void {
+  if (_smartBanner) {
+    Logger.error('Smart Banner already initialised')
+    return
+  }
+
+  _smartBanner = new SmartBanner(options)
+}
+
+function showSmartBanner (): void {
+  if (!_smartBanner) {
+    Logger.error('Smart Banner is not initialised yet')
+    return
+  }
+
+  _smartBanner.show()
+}
+
+function hideSmartBanner (): void {
+  if (!_smartBanner) {
+    Logger.error('Smart Banner is not initialised yet')
+    return
+  }
+
+  _smartBanner.hide()
 }
 
 /**
@@ -526,6 +556,8 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   initSmartBanner,
+  showSmartBanner,
+  hideSmartBanner,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase

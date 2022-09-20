@@ -52,7 +52,9 @@
     'restart',
     'gdprForgetMe',
     'disableThirdPartySharing',
-    'initSmartBanner'
+    'initSmartBanner',
+    'showSmartBanner',
+    'hideSmartBanner',
   ],
   function (context, queue, methodName) {
     context[methodName] = function () {

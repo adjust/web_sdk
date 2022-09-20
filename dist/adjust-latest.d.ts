@@ -68,7 +68,7 @@ declare namespace Adjust {
   }
 
   type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
-  
+
   interface Attribution {
 
     /** Adjust device identifier */
@@ -116,16 +116,21 @@ declare namespace Adjust {
     /** Optional. */
     externalDeviceId?: string;
 
-    /** Optional. By default all requests go to Adjust's endpoints. You are able to redirect all requests to your custom
-     * endpoint. */
-    customUrl?: string;
-
     /** Optional. By default this param is set to `10`. It is possible to override this limit but make sure that it is a
      * positive number and not too big. This will cache last `n` deduplication ids (defined by this param) and use them
      * to deduplicate events with repeating ids. */
     eventDeduplicationListLimit?: number;
 
-    /** Optional. */
+    /** Optional. By default all requests go to Adjust's endpoints. You are able to redirect all requests to your custom
+     * endpoint. */
+    customUrl?: string;
+
+    /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
+     * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
+     * Adjust will store your data in a data center located in the region your have chosen. */
+    dataResidency?: 'EU' | 'TR' | 'US';
+
+    /** Optional. The Adjust SDK can use the url strategy setting to prioritise regional endpoints. */
     urlStrategy?: 'india' | 'china';
 
     /**
@@ -202,7 +207,7 @@ declare namespace Adjust {
    * @example
    * const attribution = Adjust.getAttribution();
    */
-  function getAttribution (): Attribution | undefined
+  function getAttribution(): Attribution | undefined
 
   /**
    * Get web_uuid - a unique ID of user generated per subdomain and per browser
@@ -212,7 +217,7 @@ declare namespace Adjust {
    * @example
    * const webUuid = Adjust.getWebUUID();
    */
-  function getWebUUID (): string | undefined
+  function getWebUUID(): string | undefined
 
   /**
    * Track event with already initiated Adjust SDK instance
@@ -363,6 +368,17 @@ declare namespace Adjust {
      * - `none` - won't print anything
      */
     logLevel?: LogLevel;
+
+    /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
+     * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
+     * Adjust will store your data in a data center located in the region your have chosen. */
+    dataResidency?: 'EU' | 'TR' | 'US';
+
+    /** Optional. Callback which is called when SmartBanner view is created and shown. */
+    onCreated?: () => any;
+
+    /** Optional. Callback which is called when SmartBanner is being dismissed with a closing button on it. */
+    onDismissed?: () => any;
   }
 
   /**
@@ -376,6 +392,13 @@ declare namespace Adjust {
    * Adjust.initSmartBanner({
    *   webToken: 'YOUR_WEB_TOKEN',
    *   logLevel: 'verbose'
+   * });
+   *
+   * @example
+   * Adjust.initSmartBanner({
+   *   webToken: 'YOUR_WEB_TOKEN',
+   *   logLevel: 'error',
+   *   dataResidency: 'EU',
    * });
    */
   function initSmartBanner(options: SmartBannerOptions): void

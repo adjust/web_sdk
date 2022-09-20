@@ -1,7 +1,8 @@
 import Logger from '../../logger'
-import * as Api from '../../smart-banner/network/api'
+import * as Api from '../../smart-banner/api'
 import * as DetectOS from '../../smart-banner/detect-os'
 import { storage } from '../../smart-banner/local-storage'
+import { SmartBanner } from '../../smart-banner/smart-banner'
 
 jest.mock('../../logger')
 jest.useFakeTimers()
@@ -20,6 +21,8 @@ describe('Smart Banner tests', () => {
     position: Api.Position.Top,
     trackerToken: 'abcd'
   }
+  const onCreatedCallbackSpy = jest.fn()
+  const onDismissedCallbackSpy = jest.fn()
 
   let smartBanner
 
@@ -29,7 +32,7 @@ describe('Smart Banner tests', () => {
     jest.spyOn(Logger, 'error')
     jest.spyOn(global, 'setTimeout')
 
-    smartBanner = require('../../smart-banner/smart-banner').SmartBanner
+    smartBanner = new SmartBanner({ webToken, onCreated: onCreatedCallbackSpy, onDismissed: onDismissedCallbackSpy })
   })
 
   beforeEach(() => {
@@ -48,7 +51,7 @@ describe('Smart Banner tests', () => {
     })
 
     it(('initialises and renders banner'), async () => {
-      expect.assertions(5)
+      expect.assertions(6)
 
       smartBanner.init(webToken)
       await Utils.flushPromises() // resolves data fetch promise that allows initialisation to finish
@@ -58,11 +61,12 @@ describe('Smart Banner tests', () => {
       expect(smartBanner.banner).not.toBeNull()
       expect(smartBanner.dismissButton).not.toBeNull()
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner created')
+      expect(onCreatedCallbackSpy).toHaveBeenCalled()
     })
 
     describe('can not call init repeatedly', () => {
       it('initialisation in progress', async () => {
-        expect.assertions(1)
+        expect.assertions(2)
 
         smartBanner.init(webToken) // setup
 
@@ -71,10 +75,12 @@ describe('Smart Banner tests', () => {
         expect(Logger.error).toHaveBeenCalledWith('Smart Banner is initialising already')
 
         await Utils.flushPromises() // tear down
+
+        expect(onCreatedCallbackSpy).toHaveBeenCalledTimes(1)
       })
 
       it('initialisation finished', async () => {
-        expect.assertions(1)
+        expect.assertions(2)
 
         smartBanner.init(webToken) // setup
         await Utils.flushPromises() // allow initialisation to finish
@@ -82,18 +88,20 @@ describe('Smart Banner tests', () => {
         smartBanner.init(webToken)
 
         expect(Logger.error).toHaveBeenCalledWith('Smart Banner already exists')
+        expect(onCreatedCallbackSpy).toHaveBeenCalledTimes(1)
       })
     })
 
     it('logs message when no banner for platform', async () => {
       jest.spyOn(Api, 'fetchSmartBannerData').mockResolvedValueOnce(null)
 
-      expect.assertions(1)
+      expect.assertions(2)
 
       smartBanner.init(webToken)
       await Utils.flushPromises()
 
       expect(Logger.log).toHaveBeenCalledWith(`No Smart Banners for ${platform} platform found`)
+      expect(onCreatedCallbackSpy).not.toHaveBeenCalled()
     })
 
     it('logs message when no target platform', () => {
@@ -102,6 +110,7 @@ describe('Smart Banner tests', () => {
       smartBanner.init(webToken)
 
       expect(Logger.log).toHaveBeenCalledWith('This platform is not one of the targeting ones, Smart Banner will not be shown')
+      expect(onCreatedCallbackSpy).not.toHaveBeenCalled()
     })
   })
 
@@ -213,9 +222,9 @@ describe('Smart Banner tests', () => {
     })
 
     it('banner removed from DOM when dismissed', () => {
-      expect.assertions(7)
+      expect.assertions(8)
 
-      expect(storage.setItem).toHaveBeenCalledWith(smartBanner.dismissedStorageKey, now) // add timestamp in Local Storage
+      expect(storage.setItem).toHaveBeenCalledWith(smartBanner.STORAGE_KEY_DISMISSED, now) // add timestamp in Local Storage
 
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner dismissed')
       expect(smartBanner.destroy).toHaveBeenCalled()
@@ -225,10 +234,12 @@ describe('Smart Banner tests', () => {
 
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner removed') // banner removed from DOM
       expect(smartBanner.banner).toBeNull()
+
+      expect(onDismissedCallbackSpy).toHaveBeenCalled()
     })
 
     it('intialisation reschedules banner display when dismiss interval has not over', async () => {
-      expect.assertions(4)
+      expect.assertions(6)
 
       smartBanner.init(webToken)
       await Utils.flushPromises()
@@ -238,10 +249,13 @@ describe('Smart Banner tests', () => {
 
       expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), defaultDismissInterval) // initialisation scheduled
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner creation scheduled on ' + new Date(now + defaultDismissInterval))
+
+      expect(onCreatedCallbackSpy).not.toHaveBeenCalled()
+      expect(onDismissedCallbackSpy).toHaveBeenCalledTimes(1)
     })
 
     it('banner is displayed again when dismiss interval is over', async () => {
-      expect.assertions(6)
+      expect.assertions(7)
 
       jest.spyOn(Date, 'now').mockReturnValue(now + defaultDismissInterval)
       jest.advanceTimersByTime(defaultDismissInterval)
@@ -255,6 +269,7 @@ describe('Smart Banner tests', () => {
       expect(smartBanner.banner).not.toBeNull()
       expect(smartBanner.dismissButton).not.toBeNull()
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner created')
+      expect(onCreatedCallbackSpy).toHaveBeenCalled()
 
       smartBanner.destroy()
     })

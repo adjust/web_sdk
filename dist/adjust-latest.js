@@ -1822,6 +1822,34 @@ function _defineProperty(obj, key, value) {
 
   return obj;
 }
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
+
+
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    enumerableOnly && (symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    })), keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = null != arguments[i] ? arguments[i] : {};
+    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
+      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+    });
+  }
+
+  return target;
+}
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
@@ -1965,6 +1993,38 @@ var STORAGE_TYPES = {
   INDEXED_DB: 'indexedDB',
   LOCAL_STORAGE: 'localStorage'
 };
+var ENDPOINTS = {
+  default: {
+    endpointName: 'Default',
+    app: 'https://app.adjust.com',
+    gdpr: 'https://gdpr.adjust.com'
+  },
+  india: {
+    endpointName: 'Indian',
+    app: 'https://app.adjust.net.in',
+    gdpr: 'https://gdpr.adjust.net.in'
+  },
+  china: {
+    endpointName: 'Chinese',
+    app: 'https://app.adjust.world',
+    gdpr: 'https://gdpr.adjust.world'
+  },
+  EU: {
+    endpointName: 'EU',
+    app: 'https://app.eu.adjust.com',
+    gdpr: 'https://gdpr.eu.adjust.com'
+  },
+  TR: {
+    endpointName: 'TR',
+    app: 'https://app.tr.adjust.com',
+    gdpr: 'https://gdpr.tr.adjust.com'
+  },
+  US: {
+    endpointName: 'US',
+    app: 'https://app.us.adjust.com',
+    gdpr: 'https://gdpr.us.adjust.com'
+  }
+};
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
 function _typeof(obj) {
   "@babel/helpers - typeof";
@@ -1980,9 +2040,6 @@ function _typeof(obj) {
 
 
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 /**
  * Build human readable list
@@ -2092,7 +2149,7 @@ function convertToMap
   /*: Array<{ key: string, value: T }>*/
   = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   return array.reduce(function (acc, o) {
-    return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, o.key, o.value));
+    return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, o.key, o.value));
   }, {});
 }
 /**
@@ -2161,7 +2218,7 @@ function reducer
       key = _ref2[0],
       value = _ref2[1];
 
-  return _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, value));
+  return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, value));
 }
 /**
  * Extracts object entries in the [key, value] format
@@ -2230,7 +2287,7 @@ function isEmptyEntry(value
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.3.1" || 0,
+  version: "5.4.0" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
@@ -2423,10 +2480,6 @@ var Logger = {
 
 
 
-function config_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function config_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? config_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : config_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 /*:: // 
 import { type BaseParamsT, type CustomConfigT, type InitOptionsT, type BaseParamsListT, type BaseParamsMandatoryListT, type CustomConfigListT } from './types';*/
 
@@ -2488,7 +2541,7 @@ var _allowedParams
 
 var _allowedConfig
 /*: CustomConfigListT*/
-= ['urlStrategy', 'customUrl', 'eventDeduplicationListLimit', 'namespace'];
+= ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
 /**
  * Global configuration object used across the sdk
  *
@@ -2529,7 +2582,7 @@ function isInitialised()
 function getBaseParams()
 /*: BaseParamsT*/
 {
-  return config_objectSpread({}, _baseParams);
+  return _objectSpread2({}, _baseParams);
 }
 /**
  * Set base params and custom config for the sdk to run
@@ -2575,7 +2628,7 @@ function set(options
 function getCustomConfig()
 /*: CustomConfigT*/
 {
-  return config_objectSpread({}, _customConfig);
+  return _objectSpread2({}, _customConfig);
 }
 /**
  * Check if there are  missing mandatory parameters
@@ -2614,7 +2667,7 @@ function destroy()
   _customConfig = {};
 }
 
-var Config = config_objectSpread(config_objectSpread({}, _baseConfig), {}, {
+var Config = _objectSpread2(_objectSpread2({}, _baseConfig), {}, {
   set: set,
   getBaseParams: getBaseParams,
   getCustomConfig: getCustomConfig,
@@ -2885,11 +2938,6 @@ function isComplexStoreField(field
 
 
 
-function scheme_map_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function scheme_map_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? scheme_map_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : scheme_map_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
 
 
 /**
@@ -2978,7 +3026,7 @@ function _flipStoreScheme(storeName
       return _getShortKey(storeName, key);
     })
   } : {};
-  return scheme_map_objectSpread(scheme_map_objectSpread(scheme_map_objectSpread({
+  return _objectSpread2(_objectSpread2(_objectSpread2({
     key: key
   }, values), keys), composite);
 }
@@ -3175,10 +3223,6 @@ function valueIsRecord(value
 
 
 
-function converter_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function converter_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? converter_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : converter_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 
 
 
@@ -3273,7 +3317,7 @@ function convertRecord(storeName
         key = _ref4[0],
         value = _ref4[1];
 
-    return converter_objectSpread(converter_objectSpread({}, acc), {}, _defineProperty({}, key, value));
+    return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, value));
   }, {});
 }
 /**
@@ -3541,12 +3585,9 @@ function timePassed(d1
 ;// CONCATENATED MODULE: ./src/sdk/activity-state.js
 
 
-function activity_state_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function activity_state_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? activity_state_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : activity_state_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 /*:: // 
 import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonRequestParams } from './types';*/
+
 
 
 
@@ -3590,7 +3631,7 @@ var _active
 function currentGetter()
 /*: ActivityStateMapT*/
 {
-  return _started ? activity_state_objectSpread({}, _activityState) : {};
+  return _started ? _objectSpread2({}, _activityState) : {};
 }
 /**
  * Set current activity state
@@ -3603,7 +3644,7 @@ function currentSetter() {
   var params
   /*: ActivityStateMapT*/
   = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  _activityState = _started ? activity_state_objectSpread({}, params) : {};
+  _activityState = _started ? _objectSpread2({}, params) : {};
 }
 /**
  * Initiate in-memory activity state
@@ -3658,7 +3699,7 @@ function _update(params
 )
 /*: void*/
 {
-  _activityState = activity_state_objectSpread(activity_state_objectSpread({}, _activityState), params);
+  _activityState = _objectSpread2(_objectSpread2({}, _activityState), params);
 }
 /**
  * Set active flag to true when going foreground
@@ -4290,11 +4331,6 @@ var QuickStorage = /*#__PURE__*/function () {
 ;// CONCATENATED MODULE: ./src/sdk/preferences.js
 
 
-function preferences_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function preferences_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? preferences_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : preferences_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
 
 
 
@@ -4347,7 +4383,7 @@ function _getPreferences()
     _setPreferences();
   }
 
-  return _preferences ? preferences_objectSpread({}, _preferences) : null;
+  return _preferences ? _objectSpread2({}, _preferences) : null;
 }
 /**
  * Set local reference of the preserved preferences
@@ -4387,8 +4423,8 @@ function setDisabled(value
 )
 /*: void*/
 {
-  var sdkDisabled = value ? preferences_objectSpread({}, value) : null;
-  quick_storage.stores[_storeName] = preferences_objectSpread(preferences_objectSpread({}, _getPreferences()), {}, {
+  var sdkDisabled = value ? _objectSpread2({}, value) : null;
+  quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
     sdkDisabled: sdkDisabled
   });
 
@@ -4422,8 +4458,8 @@ function setThirdPartySharing(value
 )
 /*: void*/
 {
-  var thirdPartySharingDisabled = value ? preferences_objectSpread({}, value) : null;
-  quick_storage.stores[_storeName] = preferences_objectSpread(preferences_objectSpread({}, _getPreferences()), {}, {
+  var thirdPartySharingDisabled = value ? _objectSpread2({}, value) : null;
+  quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
     thirdPartySharingDisabled: thirdPartySharingDisabled
   });
 
@@ -4463,7 +4499,7 @@ function recover()
   = quick_storage.stores[_storeName];
 
   if (!stored) {
-    quick_storage.stores[_storeName] = preferences_objectSpread({}, _preferences);
+    quick_storage.stores[_storeName] = _objectSpread2({}, _preferences);
   }
 }
 
@@ -4474,9 +4510,6 @@ function recover()
 
 
 
-function indexeddb_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function indexeddb_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? indexeddb_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : indexeddb_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var indexeddb_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
@@ -4950,7 +4983,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
         if (this.targetIsObject(target)) {
           // target is a StoredRecord
           // extend target with composite path if needed and return it
-          return composite ? indexeddb_objectSpread(_defineProperty({}, options.keyPath, composite.map(function (key) {
+          return composite ? _objectSpread2(_defineProperty({}, options.keyPath, composite.map(function (key) {
             return target[key];
           }).join('')), target) : target;
         }
@@ -5553,17 +5586,18 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
       if (IndexedDBWrapper.isSupportedPromise) {
         return IndexedDBWrapper.isSupportedPromise;
       } else {
+        var notSupportedMessage = 'IndexedDB is not supported in this browser';
         IndexedDBWrapper.isSupportedPromise = new indexeddb_Promise(function (resolve) {
           var indexedDB = IndexedDBWrapper.getIndexedDB();
           var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 
           if (!indexedDB || iOS) {
-            logger.warn('IndexedDB is not supported in this browser');
+            logger.warn(notSupportedMessage);
             resolve(false);
           } else {
             var dbOpenablePromise = IndexedDBWrapper.tryOpen(indexedDB).then(function (dbOpenable) {
               if (!dbOpenable) {
-                logger.warn('IndexedDB is not supported in this browser');
+                logger.warn(notSupportedMessage);
               }
 
               return dbOpenable;
@@ -5603,9 +5637,6 @@ _defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
 
 
 
-function localstorage_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function localstorage_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? localstorage_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : localstorage_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var localstorage_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
@@ -5760,7 +5791,7 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
           ;
 
           if (!id) {
-            target = localstorage_objectSpread({}, item);
+            target = _objectSpread2({}, item);
           } else {
             var ids = Array.isArray(id) ? id.slice() : [id];
             target = keys.map(function (key, index) {
@@ -5836,9 +5867,9 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
     /*: StoredRecord*/
     {
       var composite = this.getCompositeKeys(options);
-      return composite ? localstorage_objectSpread(_defineProperty({}, options.keyPath, composite.map(function (key) {
+      return composite ? _objectSpread2(_defineProperty({}, options.keyPath, composite.map(function (key) {
         return target[key];
-      }).join('')), target) : options.autoIncrement && next ? localstorage_objectSpread(_defineProperty({}, options.keyPath, next), target) : localstorage_objectSpread({}, target);
+      }).join('')), target) : options.autoIncrement && next ? _objectSpread2(_defineProperty({}, options.keyPath, next), target) : _objectSpread2({}, target);
     }
     /**
      * Prepare the result to be return depending on the composite key definition
@@ -6358,10 +6389,6 @@ _defineProperty(LocalStorageWrapper, "isSupportedPromise", null);
 
 
 
-function storage_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function storage_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? storage_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : storage_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 var storage_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
 
@@ -6738,17 +6765,13 @@ function storage_init(dbName
   return _initializationPromise;
 }
 
-/* harmony default export */ const storage = (storage_objectSpread({
+/* harmony default export */ const storage = (_objectSpread2({
   init: storage_init,
   getType: getType
 }, _augment()));
 ;// CONCATENATED MODULE: ./src/sdk/default-params.js
 
 
-
-function default_params_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function default_params_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? default_params_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : default_params_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var default_params_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
@@ -6913,16 +6936,12 @@ function defaultParams()
 /*: Promise<DefaultParamsT>*/
 {
   return _getQueueSize().then(function (queueSize) {
-    return default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread(default_params_objectSpread({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
+    return _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
   });
 }
 ;// CONCATENATED MODULE: ./src/sdk/http.js
 
 
-
-function http_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function http_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? http_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : http_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var http_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
@@ -7088,7 +7107,7 @@ function _encodeParams(params
     });
   };
 
-  var allParams = entries(http_objectSpread(http_objectSpread(http_objectSpread({}, config.getBaseParams()), defaultParams), params)).map(function (_ref5
+  var allParams = entries(_objectSpread2(_objectSpread2(_objectSpread2({}, config.getBaseParams()), defaultParams), params)).map(function (_ref5
   /*:: */
   ) {
     var _ref6 = _slicedToArray(_ref5
@@ -7609,9 +7628,8 @@ function listeners_destroy()
 ;// CONCATENATED MODULE: ./src/sdk/url-strategy.ts
 
 
-var _endpointMap, _endpointNiceNames;
+var _endpointMap;
 
-var url_strategy_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
 
 
@@ -7623,22 +7641,52 @@ var UrlStrategy;
   UrlStrategy["China"] = "china";
 })(UrlStrategy || (UrlStrategy = {}));
 
+var DataResidency;
+
+(function (DataResidency) {
+  DataResidency["EU"] = "EU";
+  DataResidency["TR"] = "TR";
+  DataResidency["US"] = "US";
+})(DataResidency || (DataResidency = {}));
+
+function incorrectOptionIgnoredMessage(higherPriority
+/*: string*/
+, lowerPriority
+/*: string*/
+) {
+  logger.warn("Both ".concat(higherPriority, " and ").concat(lowerPriority, " are set in config, ").concat(lowerPriority, " will be ignored"));
+}
 /**
  * Returns a map of base URLs or a list of endpoint names depending on SDK configuration
  */
+
+
 function getEndpointPreference()
 /*: BaseUrlsMap | EndpointName[]*/
 {
   var _Config$getCustomConf = config.getCustomConfig(),
       customUrl = _Config$getCustomConf.customUrl,
-      urlStrategy = _Config$getCustomConf.urlStrategy;
+      urlStrategy = _Config$getCustomConf.urlStrategy,
+      dataResidency = _Config$getCustomConf.dataResidency;
 
   if (customUrl) {
     // If custom URL is set then send all requests there
+    if (dataResidency || urlStrategy) {
+      incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy');
+    }
+
     return {
       app: customUrl,
       gdpr: customUrl
     };
+  }
+
+  if (dataResidency && urlStrategy) {
+    incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy');
+  }
+
+  if (dataResidency) {
+    return [dataResidency];
   }
 
   if (urlStrategy === UrlStrategy.India) {
@@ -7653,78 +7701,20 @@ function getEndpointPreference()
 }
 
 var endpointMap
-/*: Record<UrlStrategy, BaseUrlsMap>*/
-= (_endpointMap = {}, _defineProperty(_endpointMap, UrlStrategy.Default, {
-  app: 'https://app.adjust.com',
-  gdpr: 'https://gdpr.adjust.com'
-}), _defineProperty(_endpointMap, UrlStrategy.India, {
-  app: 'https://app.adjust.net.in',
-  gdpr: 'https://gdpr.adjust.net.in'
-}), _defineProperty(_endpointMap, UrlStrategy.China, {
-  app: 'https://app.adjust.world',
-  gdpr: 'https://gdpr.adjust.world'
-}), _endpointMap);
-var endpointNiceNames
-/*: Record<UrlStrategy, string>*/
-= (_endpointNiceNames = {}, _defineProperty(_endpointNiceNames, UrlStrategy.Default, 'default'), _defineProperty(_endpointNiceNames, UrlStrategy.India, 'Indian'), _defineProperty(_endpointNiceNames, UrlStrategy.China, 'Chinese'), _endpointNiceNames);
-/**
- * Gets the list of preferred endpoints and wraps `sendRequest` function with iterative retries until available
- * endpoint found or another error occurred.
- */
-
-function urlStrategyRetries
-/*:: <T>*/
-(sendRequest
-/*: (urls: BaseUrlsMap) => Promise<T>*/
-)
-/*: Promise<T>*/
-{
-  var endpoints
-  /*: Record<UrlStrategy, BaseUrlsMap>*/
-  = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : endpointMap;
-  var preferredUrls = getEndpointPreference();
-
-  if (!Array.isArray(preferredUrls)) {
-    // There is only one endpoint
-    return sendRequest(preferredUrls);
-  } else {
-    var attempt = 0;
-
-    var trySendRequest = function trySendRequest()
-    /*: Promise<T>*/
-    {
-      var endpointKey = preferredUrls[attempt++];
-      var urlsMap = endpoints[endpointKey];
-      return sendRequest(urlsMap).catch(function (reason) {
-        if (reason.code === 'NO_CONNECTION') {
-          logger.log("Failed to connect ".concat(endpointNiceNames[endpointKey], " endpoint"));
-
-          if (attempt < preferredUrls.length) {
-            logger.log("Trying ".concat(endpointNiceNames[preferredUrls[attempt]], " one"));
-            return trySendRequest(); // Trying next endpoint
-          }
-        } // Another error occurred or we ran out of attempts, re-throw
-
-
-        throw reason;
-      });
-    };
-
-    return trySendRequest();
-  }
-}
+/*: Record<UrlStrategy | DataResidency, BaseUrlsMap>*/
+= (_endpointMap = {}, _defineProperty(_endpointMap, UrlStrategy.Default, ENDPOINTS["default"]), _defineProperty(_endpointMap, UrlStrategy.India, ENDPOINTS.india), _defineProperty(_endpointMap, UrlStrategy.China, ENDPOINTS.china), _defineProperty(_endpointMap, DataResidency.EU, ENDPOINTS.EU), _defineProperty(_endpointMap, DataResidency.TR, ENDPOINTS.TR), _defineProperty(_endpointMap, DataResidency.US, ENDPOINTS.US), _endpointMap);
 
 function getPreferredUrls(endpoints
 /*: Partial<Record<UrlStrategy, BaseUrlsMap>>*/
 )
 /*: BaseUrlsMap[]*/
 {
-  var preferredUrls = getEndpointPreference();
+  var preference = getEndpointPreference();
 
-  if (!Array.isArray(preferredUrls)) {
-    return [preferredUrls];
+  if (!Array.isArray(preference)) {
+    return [preference];
   } else {
-    var res = preferredUrls.map(function (strategy) {
+    var res = preference.map(function (strategy) {
       return endpoints[strategy] || null;
     }).filter(function (i) {
       return (
@@ -7740,7 +7730,7 @@ function getBaseUrlsIterator()
 /*: BaseUrlsIterator*/
 {
   var endpoints
-  /*: Partial<Record<UrlStrategy, BaseUrlsMap>>*/
+  /*: Partial<Record<UrlStrategy | DataResidency, BaseUrlsMap>>*/
   = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : endpointMap;
 
   var _urls = getPreferredUrls(endpoints);
@@ -7770,10 +7760,6 @@ function getBaseUrlsIterator()
 ;// CONCATENATED MODULE: ./src/sdk/request.js
 
 
-
-function request_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function request_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? request_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : request_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var request_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
@@ -7874,7 +7860,7 @@ var Request = function Request() {
 
   var _params
   /*: RequestParamsT*/
-  = request_objectSpread({}, params);
+  = _objectSpread2({}, params);
   /**
    * Optional continue callback per instance or per request
    *
@@ -7902,7 +7888,7 @@ var Request = function Request() {
 
   var _baseUrlsIterator
   /*: BaseUrlsIterator*/
-  = getBaseUrlsIterator();
+  ;
   /**
    * Current base urls map to send request
    */
@@ -7910,7 +7896,7 @@ var Request = function Request() {
 
   var _baseUrlsIteratorCurrent
   /*: { value: BaseUrlsMap, done: boolean }*/
-  = _baseUrlsIterator.next();
+  ;
   /**
    * Reset iterator state and get the first endpoint to use it in the next try
    */
@@ -8038,10 +8024,10 @@ var Request = function Request() {
     }
 
     if (!isEmpty(params)) {
-      _params = request_objectSpread({}, params);
+      _params = _objectSpread2({}, params);
     }
 
-    _params = request_objectSpread({
+    _params = _objectSpread2({
       createdAt: getTimestamp()
     }, _params);
 
@@ -8100,6 +8086,12 @@ var Request = function Request() {
         retrying = _ref3
     /*:: */
     .retrying;
+
+    if (!_baseUrlsIterator) {
+      _baseUrlsIterator = getBaseUrlsIterator();
+      _baseUrlsIteratorCurrent = _baseUrlsIterator.next();
+    }
+
     _wait = wait ? _prepareWait(wait) : _wait;
 
     if (_skip(wait)) {
@@ -8129,7 +8121,7 @@ var Request = function Request() {
       endpoint: _getBaseUrl(_baseUrlsIteratorCurrent.value, _url),
       url: _url,
       method: _method,
-      params: request_objectSpread({
+      params: _objectSpread2({
         attempts: 1
       }, _params)
     });
@@ -8189,7 +8181,7 @@ var Request = function Request() {
           endpoint: options.endpoint,
           url: options.url,
           method: options.method,
-          params: request_objectSpread(request_objectSpread({}, filteredParams), {}, {
+          params: _objectSpread2(_objectSpread2({}, filteredParams), {}, {
             attempts: (_attempts.request ? _attempts.request + 1 : 1) + _attempts.connection
           })
         }).then(function (result) {
@@ -8212,7 +8204,7 @@ var Request = function Request() {
   {
     _url = _default.url;
     _method = _default.method;
-    _params = request_objectSpread({}, _default.params);
+    _params = _objectSpread2({}, _default.params);
     _continueCb = _default.continueCb;
   }
   /**
@@ -8610,10 +8602,6 @@ function disable_status()
 ;// CONCATENATED MODULE: ./src/sdk/identity.js
 
 
-function identity_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function identity_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? identity_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : identity_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 var identity_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type ActivityStateMapT } from './types';*/
@@ -8764,7 +8752,7 @@ function persist()
     return identity_Promise.resolve(null);
   }
 
-  var activityState = identity_objectSpread(identity_objectSpread({}, activity_state.current), {}, {
+  var activityState = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
     lastActive: Date.now()
   });
 
@@ -8836,10 +8824,6 @@ function identity_destroy()
 ;// CONCATENATED MODULE: ./src/sdk/queue.js
 
 
-
-function queue_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function queue_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? queue_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : queue_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 var queue_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
@@ -9025,7 +9009,7 @@ function push(_ref
     timestamp: _prepareTimestamp(),
     url: url,
     method: method,
-    params: queue_objectSpread(queue_objectSpread({}, activity_state.getParams(url)), filteredParams)
+    params: _objectSpread2(_objectSpread2({}, activity_state.getParams(url)), filteredParams)
   };
 
   if (timestamp) {
@@ -9077,7 +9061,7 @@ function _prepareToSend()
   return _request.send({
     url: url,
     method: method,
-    params: queue_objectSpread(queue_objectSpread({}, params), {}, {
+    params: _objectSpread2(_objectSpread2({}, params), {}, {
       createdAt: getTimestamp(createdAt || timestamp)
     }),
     wait: wait || _checkWait()
@@ -9735,10 +9719,6 @@ function _checkSession()
 
 
 
-function attribution_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function attribution_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? attribution_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : attribution_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 var attribution_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type HttpRetryCbT, type AttributionStateT, type AttributionWhiteListT, type ActivityStateMapT, type AttributionMapT } from './types';*/
@@ -9855,7 +9835,7 @@ function _setAttribution(result
   }).reduce(reducer, {
     adid: result.adid
   });
-  activity_state.current = attribution_objectSpread(attribution_objectSpread({}, activity_state.current), {}, {
+  activity_state.current = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
     attribution: attribution
   });
   return persist().then(function () {
@@ -9921,7 +9901,7 @@ function check(sessionResult
   }
 
   attribution_request.send({
-    params: attribution_objectSpread({
+    params: _objectSpread2({
       initiatedBy: !sessionResult ? 'sdk' : 'backend'
     }, activity_state.getParams()),
     wait: askIn
@@ -9943,11 +9923,6 @@ function attribution_destroy()
 
 
 ;// CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.js
-
-
-function gdpr_forget_device_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function gdpr_forget_device_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? gdpr_forget_device_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : gdpr_forget_device_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
@@ -10007,7 +9982,7 @@ function forget(force
   }
 
   gdpr_forget_device_request.send({
-    params: gdpr_forget_device_objectSpread({}, activity_state.getParams())
+    params: _objectSpread2({}, activity_state.getParams())
   }).then(function () {
     publish('sdk:gdpr-forget-me');
   });
@@ -10276,10 +10251,6 @@ function scheduler_destroy()
 ;// CONCATENATED MODULE: ./src/sdk/event.js
 
 
-function event_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function event_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? event_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : event_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 var event_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type EventParamsT, type EventRequestParamsT, type GlobalParamsMapT, type GlobalKeyValueParamsT } from './types';*/
@@ -10367,18 +10338,18 @@ function event_prepareParams(params
   .partnerParams;
   var globalParams = {};
 
-  var baseParams = event_objectSpread({
+  var baseParams = _objectSpread2({
     eventToken: params.eventToken,
     deduplicationId: params.deduplicationId
   }, _getRevenue(params.revenue, params.currency));
 
   var eventCallbackParams
   /*: GlobalKeyValueParamsT*/
-  = event_objectSpread(event_objectSpread({}, convertToMap(callbackParams)), convertToMap(params.callbackParams));
+  = _objectSpread2(_objectSpread2({}, convertToMap(callbackParams)), convertToMap(params.callbackParams));
 
   var eventPartnerParams
   /*: GlobalKeyValueParamsT*/
-  = event_objectSpread(event_objectSpread({}, convertToMap(partnerParams)), convertToMap(params.partnerParams));
+  = _objectSpread2(_objectSpread2({}, convertToMap(partnerParams)), convertToMap(params.partnerParams));
 
   if (!isEmpty(eventCallbackParams)) {
     globalParams.callbackParams = eventCallbackParams;
@@ -10388,7 +10359,7 @@ function event_prepareParams(params
     globalParams.partnerParams = eventPartnerParams;
   }
 
-  return event_objectSpread(event_objectSpread({}, baseParams), globalParams);
+  return _objectSpread2(_objectSpread2({}, baseParams), globalParams);
 }
 /**
  * Get event deduplication ids
@@ -10655,160 +10626,8 @@ var local_storage_storage = {
   getItem: getItem,
   setItem: setItem
 };
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/errors.ts
-/*:: export interface NetworkError {
-  status: number;
-  code?: string;
-  message: string;
-}*/
-var NoConnectionError
-/*: NetworkError*/
-= {
-  status: 0,
-  code: 'NO_CONNECTION',
-  // for compatibility with UrlStrategy
-  message: 'No internet connectivity'
-};
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/network.ts
-
-
-
-
-
-var network_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-
-
-
-
-
-var Network = /*#__PURE__*/function () {
-  function Network() {
-    _classCallCheck(this, Network);
-  }
-
-  _createClass(Network, null, [{
-    key: "xhr",
-    value:
-    /**
-     * Creates an XMLHttpRequest object and sends a GET request with provided encoded URL
-     * @param url encoded URL
-     */
-    function xhr
-    /*:: <T>*/
-    (url
-    /*: string*/
-    )
-    /*: Promise<T>*/
-    {
-      return new network_Promise(function (resolve, reject
-      /*: (err: NetworkError) => void*/
-      ) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url);
-        var headers = [['Client-SDK', "js".concat(globals.version)], ['Content-Type', 'application/json']];
-        headers.forEach(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 2),
-              key = _ref2[0],
-              value = _ref2[1];
-
-          xhr.setRequestHeader(key, value);
-        });
-
-        xhr.onerror = function () {
-          return reject(NoConnectionError);
-        };
-
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState !== 4) {
-            return;
-          }
-
-          var okStatus = xhr.status >= 200 && xhr.status < 300;
-          var json = parseJson(xhr.responseText);
-
-          if (xhr.status === 0) {
-            reject(NoConnectionError);
-          } else {
-            if (okStatus) {
-              resolve(json);
-            } else {
-              reject({
-                status: xhr.status,
-                message: json || xhr.responseText || ''
-              });
-            }
-          }
-        };
-
-        xhr.send();
-      });
-    }
-  }, {
-    key: "encodeParams",
-    value: function encodeParams(params
-    /*: Record<string, Primitive>*/
-    )
-    /*: string*/
-    {
-      return Object.keys(params).map(function (key) {
-        return [encodeURIComponent(key), encodeURIComponent(params[key])].join('=');
-      }).join('&');
-    }
-    /**
-     * Returns last succesfull endpoint or default (`https://app.adjust.com`) one
-     */
-
-  }, {
-    key: "getEndpoint",
-    value: function getEndpoint()
-    /*: string*/
-    {
-      return Network.lastSuccessfulEndpoint || Network.defaultEndpoint;
-    }
-    /**
-     * Sends a request to provided path choosing origin with `urlStrategyRetries`
-     * @param path
-     * @param params non-encoded parameters of the request
-     */
-
-  }, {
-    key: "request",
-    value: function request
-    /*:: <T>*/
-    (path
-    /*: string*/
-    , params
-    /*: Record<string, Primitive>*/
-    )
-    /*: Promise<T>*/
-    {
-      return urlStrategyRetries(function (baseUrlsMap) {
-        var origin = baseUrlsMap.app;
-        var encodedParams = params ? "?".concat(Network.encodeParams(params)) : '';
-        return Network.xhr("".concat(origin).concat(path).concat(encodedParams)).then(function (result
-        /*: T*/
-        ) {
-          Network.lastSuccessfulEndpoint = baseUrlsMap.app;
-          return result;
-        }).catch(function (err
-        /*: NetworkError*/
-        ) {
-          Network.lastSuccessfulEndpoint = undefined;
-          throw err;
-        });
-      });
-    }
-  }]);
-
-  return Network;
-}();
-
-_defineProperty(Network, "defaultEndpoint", 'https://app.adjust.com');
-
-_defineProperty(Network, "lastSuccessfulEndpoint", void 0);
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/api.ts
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/api.ts
 var api_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-
 
 
 var Position;
@@ -10870,11 +10689,13 @@ function fetchSmartBannerData(webToken
 /*: string*/
 , deviceOs
 /*: DeviceOS*/
+, network
+/*: Network*/
 )
 /*: Promise<SmartBannerData | null>*/
 {
   var path = '/smart_banner';
-  return Network.request(path, {
+  return network.request(path, {
     'app_web_token': webToken
   }).then(function (banners) {
     var banner = banners.find(function (item) {
@@ -11155,6 +10976,634 @@ var SmartBannerView = /*#__PURE__*/function () {
 
   return SmartBannerView;
 }();
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/errors.ts
+/*:: export interface NetworkError {
+  status: number;
+  message: string;
+}*/
+var NoConnectionError
+/*: NetworkError*/
+= {
+  status: 0,
+  message: 'No internet connectivity'
+};
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/xhr-network.ts
+
+
+
+
+var xhr_network_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
+
+
+
+
+
+/** Sends HTTP GET request using XMLHttpRequest */
+var XhrNetwork = /*#__PURE__*/function () {
+  function XhrNetwork(origin
+  /*: string*/
+  ) {
+    _classCallCheck(this, XhrNetwork);
+
+    this.origin
+    /*:: ?*/
+    = origin
+    /*:: ?*/
+    ;
+  }
+
+  _createClass(XhrNetwork, [{
+    key: "endpoint",
+    get: function get()
+    /*: string*/
+    {
+      if (!this.origin) {
+        throw Error('XhrNetwork: Origin not defined');
+      }
+
+      return this.origin;
+    },
+    set: function set(value
+    /*: string*/
+    ) {
+      this.origin = value;
+    }
+    /**
+     * Creates an XMLHttpRequest object and sends a GET request with provided encoded URL
+     * @param url encoded URL
+     */
+
+  }, {
+    key: "xhr",
+    value: function xhr
+    /*:: <T>*/
+    (url
+    /*: string*/
+    )
+    /*: Promise<T>*/
+    {
+      return new xhr_network_Promise(function (resolve, reject
+      /*: (err: NetworkError) => void*/
+      ) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        var headers = [['Client-SDK', "js".concat(globals.version)], ['Content-Type', 'application/json']];
+        headers.forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+              key = _ref2[0],
+              value = _ref2[1];
+
+          xhr.setRequestHeader(key, value);
+        });
+
+        xhr.onerror = function () {
+          return reject(NoConnectionError);
+        };
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState !== 4) {
+            return;
+          }
+
+          var okStatus = xhr.status >= 200 && xhr.status < 300;
+          var json = parseJson(xhr.responseText);
+
+          if (xhr.status === 0) {
+            reject(NoConnectionError);
+          } else {
+            if (okStatus) {
+              resolve(json);
+            } else {
+              reject({
+                status: xhr.status,
+                message: json || xhr.responseText || ''
+              });
+            }
+          }
+        };
+
+        xhr.send();
+      });
+    }
+  }, {
+    key: "encodeParams",
+    value: function encodeParams(params
+    /*: Record<string, Primitive>*/
+    )
+    /*: string*/
+    {
+      return Object.keys(params).map(function (key) {
+        return [encodeURIComponent(key), encodeURIComponent(params[key])].join('=');
+      }).join('&');
+    }
+  }, {
+    key: "request",
+    value: function request
+    /*:: <T>*/
+    (path
+    /*: string*/
+    , params
+    /*: Record<string, Primitive>*/
+    )
+    /*: Promise<T>*/
+    {
+      var encodedParams = params ? "?".concat(this.encodeParams(params)) : '';
+      return this.xhr("".concat(this.endpoint).concat(path).concat(encodedParams));
+    }
+  }]);
+
+  return XhrNetwork;
+}();
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+  return _setPrototypeOf(o, p);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/inherits.js
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
+function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
+  return _getPrototypeOf(o);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/isNativeReflectConstruct.js
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js
+
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+
+  return _assertThisInitialized(self);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createSuper.js
+
+
+
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf(Derived),
+        result;
+
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+
+    return _possibleConstructorReturn(this, result);
+  };
+}
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/network.ts
+
+
+
+var network_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
+/*:: export interface Network {
+  endpoint: string;
+  request: <T>(path: string, params?: Record<string, string | number | boolean>) => Promise<T>;
+}*/
+
+
+var NetworkDecorator = /*#__PURE__*/function () {
+  function NetworkDecorator(network
+  /*: Network*/
+  ) {
+    _classCallCheck(this, NetworkDecorator);
+
+    this.network
+    /*:: */
+    = network
+    /*:: */
+    ;
+  }
+
+  _createClass(NetworkDecorator, [{
+    key: "endpoint",
+    get: function get()
+    /*: string*/
+    {
+      return this.network.endpoint;
+    },
+    set: function set(value
+    /*: string*/
+    ) {
+      this.network.endpoint = value;
+    }
+  }, {
+    key: "request",
+    value: function request
+    /*:: <T>*/
+    (path
+    /*: string*/
+    , params
+    /*: Record<string, string | number | boolean>*/
+    )
+    /*: Promise<T>*/
+    {
+      return this.network.request(path, params);
+    }
+  }]);
+
+  return NetworkDecorator;
+}();
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/url-strategy.ts
+
+
+
+
+var url_strategy_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
+
+
+
+/*:: export type BaseUrlsMap = {
+  endpointName: string;
+  app: string;
+  gdpr: string;
+}*/
+
+var url_strategy_UrlStrategy = /*#__PURE__*/function () {
+  function UrlStrategy(preferredUrls
+  /*: () => BaseUrlsMap[]*/
+  ) {
+    _classCallCheck(this, UrlStrategy);
+
+    this.preferredUrls
+    /*:: */
+    = preferredUrls
+    /*:: */
+    ;
+  }
+  /**
+   * Gets the list of preferred endpoints and wraps `sendRequest` function with iterative retries until available
+   * endpoint found or another error occurred.
+   */
+
+
+  _createClass(UrlStrategy, [{
+    key: "retries",
+    value: function retries
+    /*:: <T>*/
+    (sendRequest
+    /*: (urls: BaseUrlsMap) => Promise<T>*/
+    )
+    /*: Promise<T>*/
+    {
+      var _this = this;
+
+      var attempt = 0;
+
+      var trySendRequest = function trySendRequest()
+      /*: Promise<T>*/
+      {
+        var preferredUrls = _this.preferredUrls();
+
+        if (!preferredUrls || preferredUrls.length === 0) {
+          logger.error(UrlStrategy.NoPreferredUrlsDefinedError.message);
+          throw UrlStrategy.NoPreferredUrlsDefinedError;
+        }
+
+        var urlsMap = preferredUrls[attempt++];
+        return sendRequest(urlsMap).catch(function (reason
+        /*: NetworkError*/
+        ) {
+          if (reason === NoConnectionError) {
+            logger.log("Failed to connect ".concat(urlsMap.endpointName, " endpoint"));
+
+            if (attempt < preferredUrls.length) {
+              logger.log("Trying ".concat(preferredUrls[attempt].endpointName, " one"));
+              return trySendRequest(); // Trying next endpoint
+            }
+          } // Another error occurred or we ran out of attempts, re-throw
+
+
+          throw reason;
+        });
+      };
+
+      return trySendRequest();
+    }
+  }]);
+
+  return UrlStrategy;
+}();
+
+_defineProperty(url_strategy_UrlStrategy, "NoPreferredUrlsDefinedError", new ReferenceError('UrlStrategy: No preferred URL defined'));
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/blocked-url-bypass.ts
+
+
+var BlockedUrlBypass;
+
+(function (_BlockedUrlBypass) {
+  var _endpoints;
+
+  var Default = _BlockedUrlBypass.Default = 'default';
+  var India = _BlockedUrlBypass.India = 'india';
+  var China = _BlockedUrlBypass.China = 'china';
+  /*:: */
+
+  var endpoints
+  /*:: */
+  = (_endpoints = {}, _defineProperty(_endpoints, BlockedUrlBypass.Default, ENDPOINTS["default"]), _defineProperty(_endpoints, BlockedUrlBypass.India, ENDPOINTS.india), _defineProperty(_endpoints, BlockedUrlBypass.China, ENDPOINTS.china), _endpoints);
+
+  var getPreferredUrlsWithOption = function getPreferredUrlsWithOption(endpoints
+  /*:: */
+  , option
+  /*:: */
+  ) {
+    if (option === BlockedUrlBypass.India) {
+      return [endpoints[BlockedUrlBypass.India], endpoints[BlockedUrlBypass.Default]];
+    }
+
+    if (option === BlockedUrlBypass.China) {
+      return [endpoints[BlockedUrlBypass.China], endpoints[BlockedUrlBypass.Default]];
+    }
+
+    return [endpoints[BlockedUrlBypass.Default], endpoints[BlockedUrlBypass.India], endpoints[BlockedUrlBypass.China]];
+  };
+
+  function preferredUrlsGetter(option
+  /*:: */
+  ) {
+    var endpointsMap
+    /*:: */
+    = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : endpoints;
+    return function () {
+      return getPreferredUrlsWithOption(endpointsMap, option);
+    };
+  }
+
+  _BlockedUrlBypass.preferredUrlsGetter = preferredUrlsGetter;
+})(BlockedUrlBypass || (BlockedUrlBypass = {}));
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/custom-url.ts
+var CustomUrl;
+
+(function (_CustomUrl) {
+  var getPreferredUrlsWithOption = function getPreferredUrlsWithOption(customUrl
+  /*:: */
+  ) {
+    return [{
+      endpointName: "Custom (".concat(customUrl, ")"),
+      app: customUrl,
+      gdpr: customUrl
+    }];
+  };
+
+  function preferredUrlsGetter(customUrl
+  /*:: */
+  ) {
+    return function () {
+      return getPreferredUrlsWithOption(customUrl);
+    };
+  }
+
+  _CustomUrl.preferredUrlsGetter = preferredUrlsGetter;
+})(CustomUrl || (CustomUrl = {}));
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/data-residency.ts
+
+
+var data_residency_DataResidency;
+
+(function (_DataResidency) {
+  var _endpoints;
+
+  var EU = _DataResidency.EU = 'EU';
+  var TR = _DataResidency.TR = 'TR';
+  var US = _DataResidency.US = 'US';
+  /*:: */
+
+  var endpoints
+  /*:: */
+  = (_endpoints = {}, _defineProperty(_endpoints, data_residency_DataResidency.EU, ENDPOINTS.EU), _defineProperty(_endpoints, data_residency_DataResidency.TR, ENDPOINTS.TR), _defineProperty(_endpoints, data_residency_DataResidency.US, ENDPOINTS.US), _endpoints);
+
+  var getPreferredUrlsWithOption = function getPreferredUrlsWithOption(endpoints
+  /*:: */
+  , option
+  /*:: */
+  ) {
+    return [endpoints[option]];
+  };
+
+  function preferredUrlsGetter(option
+  /*:: */
+  ) {
+    var endpointsMap
+    /*:: */
+    = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : endpoints;
+    return function () {
+      return getPreferredUrlsWithOption(endpointsMap, option);
+    };
+  }
+
+  _DataResidency.preferredUrlsGetter = preferredUrlsGetter;
+})(data_residency_DataResidency || (data_residency_DataResidency = {}));
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/url-strategy-factory.ts
+
+
+
+
+
+/*:: export type UrlStrategyConfig = {
+  customUrl: string;
+  urlStrategy?: never;
+  dataResidency?: never;
+} | {
+  customUrl?: never;
+  dataResidency: DataResidency.Region;
+  urlStrategy?: never;
+} | {
+  customUrl?: never;
+  dataResidency?: never;
+  urlStrategy?: BlockedUrlBypass.Strategy;
+}*/
+
+var UrlStrategyFactory;
+
+(function (_UrlStrategyFactory) {
+  var incorrectOptionIgnoredMessage = function incorrectOptionIgnoredMessage(higherPriority
+  /*:: */
+  , lowerPriority
+  /*:: */
+  ) {
+    logger.warn("Both ".concat(higherPriority, " and ").concat(lowerPriority, " are set in config, ").concat(lowerPriority, " will be ignored"));
+  };
+
+  function create(config
+  /*:: */
+  )
+  /*:: */
+  {
+    var customUrl = config.customUrl,
+        dataResidency = config.dataResidency,
+        urlStrategy = config.urlStrategy;
+
+    if (customUrl) {
+      if (dataResidency || urlStrategy) {
+        incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy');
+      }
+
+      return new url_strategy_UrlStrategy(CustomUrl.preferredUrlsGetter(customUrl));
+    } else if (dataResidency) {
+      if (urlStrategy) {
+        incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy');
+      }
+
+      return new url_strategy_UrlStrategy(data_residency_DataResidency.preferredUrlsGetter(dataResidency));
+    } else {
+      return new url_strategy_UrlStrategy(BlockedUrlBypass.preferredUrlsGetter(urlStrategy));
+    }
+  }
+
+  _UrlStrategyFactory.create = create;
+})(UrlStrategyFactory || (UrlStrategyFactory = {}));
+;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-startegy-network.ts
+
+
+
+
+
+
+
+var url_startegy_network_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
+
+
+
+
+var NetworkWithUrlStrategy = /*#__PURE__*/function (_NetworkDecorator) {
+  _inherits(NetworkWithUrlStrategy, _NetworkDecorator);
+
+  var _super = _createSuper(NetworkWithUrlStrategy);
+
+  function NetworkWithUrlStrategy(network
+  /*: Network*/
+  , _ref
+  /*:: */
+  ) {
+    var _this;
+
+    var urlStrategy = _ref
+    /*:: */
+    .urlStrategy,
+        urlStrategyConfig = _ref
+    /*:: */
+    .urlStrategyConfig;
+
+    _classCallCheck(this, NetworkWithUrlStrategy);
+
+    _this = _super.call(this, network);
+
+    _defineProperty(_assertThisInitialized(_this), "lastSuccessfulEndpoint", void 0);
+
+    _defineProperty(_assertThisInitialized(_this), "urlStrategy", void 0);
+
+    _this.urlStrategy = urlStrategy || UrlStrategyFactory.create(urlStrategyConfig);
+    return _this;
+  }
+  /**
+   * Returns last succesfull endpoint or default (`https://app.adjust.com`) one
+   */
+
+
+  _createClass(NetworkWithUrlStrategy, [{
+    key: "endpoint",
+    get: function get()
+    /*: string*/
+    {
+      return this.lastSuccessfulEndpoint || NetworkWithUrlStrategy.DEFAULT_ENDPOINT;
+    }
+    /**
+     * Sends a request to provided path choosing origin with UrlStrategy and caches used origin if it was successfully
+     * reached
+     *
+     * @param path
+     * @param params non-encoded parameters of the request
+     */
+
+  }, {
+    key: "request",
+    value: function request
+    /*:: <T>*/
+    (path
+    /*: string*/
+    , params
+    /*: Record<string, string | number | boolean>*/
+    )
+    /*: Promise<T>*/
+    {
+      var _this2 = this;
+
+      return this.urlStrategy.retries(function (baseUrlsMap) {
+        _this2.network.endpoint = baseUrlsMap.app;
+        return _this2.network.request(path, params).then(function (result
+        /*: T*/
+        ) {
+          _this2.lastSuccessfulEndpoint = baseUrlsMap.app;
+          return result;
+        }).catch(function (err
+        /*: NetworkError*/
+        ) {
+          _this2.lastSuccessfulEndpoint = undefined;
+          throw err;
+        });
+      });
+    }
+  }]);
+
+  return NetworkWithUrlStrategy;
+}(NetworkDecorator);
+
+_defineProperty(NetworkWithUrlStrategy, "DEFAULT_ENDPOINT", ENDPOINTS["default"].app);
+
+(function (_NetworkWithUrlStrategy) {
+  /*:: */
+})(NetworkWithUrlStrategy || (NetworkWithUrlStrategy = {}));
 ;// CONCATENATED MODULE: ./src/sdk/smart-banner/smart-banner.ts
 
 
@@ -11169,14 +11618,38 @@ var smart_banner_Promise = typeof Promise === 'undefined' ? (__webpack_require__
 
 
 
+
 /**
  * Adjust Web SDK Smart Banner
  */
 var SmartBanner = /*#__PURE__*/function () {
-  function SmartBanner() {
+  function SmartBanner(_ref
+  /*:: */
+  , network
+  /*: Network*/
+  ) {
+    var webToken = _ref
+    /*:: */
+    .webToken,
+        _ref$logLevel = _ref
+    /*:: */
+    .logLevel,
+        logLevel = _ref$logLevel === void 0 ? 'error' : _ref$logLevel,
+        dataResidency = _ref
+    /*:: */
+    .dataResidency,
+        onCreated = _ref
+    /*:: */
+    .onCreated,
+        onDismissed = _ref
+    /*:: */
+    .onDismissed;
+
     _classCallCheck(this, SmartBanner);
 
-    _defineProperty(this, "dismissedStorageKey", 'closed');
+    _defineProperty(this, "STORAGE_KEY_DISMISSED", 'closed');
+
+    _defineProperty(this, "network", void 0);
 
     _defineProperty(this, "timer", null);
 
@@ -11184,27 +11657,34 @@ var SmartBanner = /*#__PURE__*/function () {
 
     _defineProperty(this, "banner", void 0);
 
-    _defineProperty(this, "logLevel", void 0);
+    _defineProperty(this, "onCreated", void 0);
+
+    _defineProperty(this, "onDismissed", void 0);
+
+    this.onCreated = onCreated;
+    this.onDismissed = onDismissed;
+    logger.setLogLevel(logLevel);
+    var config = dataResidency ? {
+      dataResidency: dataResidency
+    } : {};
+    this.network = network || new NetworkWithUrlStrategy(new XhrNetwork(), {
+      urlStrategyConfig: config
+    });
+    this.init(webToken);
   }
+  /**
+   * Initiate Smart Banner
+   *
+   * @param webToken token used to get data from backend
+   */
+
 
   _createClass(SmartBanner, [{
     key: "init",
-    value:
-    /**
-     * Initiate Smart Banner
-     *
-     * @param webToken token used to get data from backend
-     */
-    function init(webToken
+    value: function init(webToken
     /*: string*/
     ) {
       var _this = this;
-
-      var logLevel
-      /*: LogLevel*/
-      = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'error';
-      this.logLevel = logLevel;
-      logger.setLogLevel(logLevel);
 
       if (this.banner) {
         logger.error('Smart Banner already exists');
@@ -11223,7 +11703,7 @@ var SmartBanner = /*#__PURE__*/function () {
         return;
       }
 
-      this.dataFetchPromise = fetchSmartBannerData(webToken, deviceOs);
+      this.dataFetchPromise = fetchSmartBannerData(webToken, deviceOs, this.network);
       this.dataFetchPromise.then(function (bannerData) {
         _this.dataFetchPromise = null;
 
@@ -11245,8 +11725,12 @@ var SmartBanner = /*#__PURE__*/function () {
         logger.log('Creating Smart Banner');
         _this.banner = new SmartBannerView(bannerData, function () {
           return _this.dismiss(webToken, bannerData.dismissInterval);
-        }, Network.getEndpoint());
+        }, _this.network.endpoint);
         logger.log('Smart Banner created');
+
+        if (_this.onCreated) {
+          _this.onCreated();
+        }
       });
     }
     /**
@@ -11332,10 +11816,14 @@ var SmartBanner = /*#__PURE__*/function () {
     /*: number*/
     ) {
       logger.log('Smart Banner dismissed');
-      local_storage_storage.setItem(this.dismissedStorageKey, Date.now());
+      local_storage_storage.setItem(this.STORAGE_KEY_DISMISSED, Date.now());
       var whenToShow = this.getDateToShowAgain(dismissInterval);
       this.scheduleCreation(webToken, whenToShow);
       this.destroy();
+
+      if (this.onDismissed) {
+        this.onDismissed();
+      }
     }
     /**
      * Sets a timeout to schedule next Smart Banner show
@@ -11360,7 +11848,7 @@ var SmartBanner = /*#__PURE__*/function () {
       this.timer = setTimeout(function () {
         _this4.timer = null;
 
-        _this4.init(webToken, _this4.logLevel);
+        _this4.init(webToken);
       }, delay);
       logger.log('Smart Banner creation scheduled on ' + new Date(when));
     }
@@ -11375,7 +11863,7 @@ var SmartBanner = /*#__PURE__*/function () {
     )
     /*: number*/
     {
-      var dismissedDate = local_storage_storage.getItem(this.dismissedStorageKey);
+      var dismissedDate = local_storage_storage.getItem(this.STORAGE_KEY_DISMISSED);
 
       if (!dismissedDate) {
         return Date.now();
@@ -11387,21 +11875,32 @@ var SmartBanner = /*#__PURE__*/function () {
 
   return SmartBanner;
 }();
-
-var smartBanner = new SmartBanner();
-
 ;// CONCATENATED MODULE: ./src/sdk/main.js
 
 
 var _excluded = ["logLevel", "logOutput"];
 
-function main_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function main_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? main_ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : main_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 var main_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type SmartBannerOptionsT, type AttributionMapT } from './types';*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -11447,6 +11946,15 @@ var _isInstalled
 /*: boolean*/
 = false;
 /**
+ * SmartBanner instance
+ *
+ * @private
+ */
+
+var _smartBanner
+/*: ?SmartBanner*/
+= null;
+/**
  * Initiate the instance with parameters
  *
  * @param {Object} options
@@ -11481,7 +11989,7 @@ function initSdk()
     }
 
     logger.info("Available storage is ".concat(availableStorage.type));
-    main_options = main_objectSpread({}, options);
+    main_options = _objectSpread2({}, options);
 
     _start(options);
   });
@@ -11707,18 +12215,39 @@ function disableThirdPartySharing()
   });
 }
 
-function initSmartBanner(_ref2
-/*:: */
+function initSmartBanner(options
+/*: SmartBannerOptionsT*/
 )
 /*: void*/
 {
-  var webToken = _ref2
-  /*:: */
-  .webToken,
-      logLevel = _ref2
-  /*:: */
-  .logLevel;
-  smartBanner.init(webToken, logLevel);
+  if (_smartBanner) {
+    logger.error('Smart Banner already initialised');
+    return;
+  }
+
+  _smartBanner = new SmartBanner(options);
+}
+
+function showSmartBanner()
+/*: void*/
+{
+  if (!_smartBanner) {
+    logger.error('Smart Banner is not initialised yet');
+    return;
+  }
+
+  _smartBanner.show();
+}
+
+function hideSmartBanner()
+/*: void*/
+{
+  if (!_smartBanner) {
+    logger.error('Smart Banner is not initialised yet');
+    return;
+  }
+
+  _smartBanner.hide();
 }
 /**
  * Handle third party sharing disable
@@ -11996,9 +12525,9 @@ function _preCheck(description
 )
 /*: mixed*/
 {
-  var _ref3 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      schedule = _ref3.schedule,
-      stopBeforeInit = _ref3.stopBeforeInit;
+  var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      schedule = _ref2.schedule,
+      stopBeforeInit = _ref2.stopBeforeInit;
 
   if (storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     logger.log("Adjust SDK can not ".concat(description, ", no storage available"));
@@ -12047,6 +12576,8 @@ var Adjust = {
   gdprForgetMe: gdprForgetMe,
   disableThirdPartySharing: disableThirdPartySharing,
   initSmartBanner: initSmartBanner,
+  showSmartBanner: showSmartBanner,
+  hideSmartBanner: hideSmartBanner,
   __testonly__: {
     destroy: main_destroy,
     clearDatabase: _clearDatabase

@@ -1,31 +1,55 @@
 import Logger from '../logger'
 import { getDeviceOS } from './detect-os'
 import { storage } from './local-storage'
-import { fetchSmartBannerData, SmartBannerData } from './network/api'
+import { fetchSmartBannerData, SmartBannerData } from './api'
 import { SmartBannerView } from './view/smart-banner-view'
 import { Network } from './network/network'
+import { XhrNetwork } from './network/xhr-network'
+import { NetworkWithUrlStrategy } from './network/url-startegy-network'
+import { DataResidency } from './network/url-strategy/data-residency'
 
 type LogLevel = 'none' | 'error' | 'warning' | 'info' | 'verbose'
+
+type Callback = () => any;
+
+interface SmartBannerOptions {
+  webToken: string;
+  logLevel?: LogLevel;
+  dataResidency?: DataResidency.Region;
+  onCreated?: Callback;
+  onDismissed?: Callback;
+}
 
 /**
  * Adjust Web SDK Smart Banner
  */
-class SmartBanner {
-  private dismissedStorageKey = 'closed'
-  private timer: NodeJS.Timeout | null = null
+export class SmartBanner {
+  private readonly STORAGE_KEY_DISMISSED = 'closed'
+  private network: Network
+  private timer: ReturnType<typeof setTimeout> | null = null
   private dataFetchPromise: Promise<SmartBannerData | null> | null
   private banner: SmartBannerView | null
-  private logLevel: LogLevel
+  private onCreated?: Callback
+  private onDismissed?: Callback
+
+  constructor({ webToken, logLevel = 'error', dataResidency, onCreated, onDismissed }: SmartBannerOptions, network?: Network) {
+    this.onCreated = onCreated
+    this.onDismissed = onDismissed
+
+    Logger.setLogLevel(logLevel)
+
+    const config = dataResidency ? { dataResidency } : {}
+    this.network = network || new NetworkWithUrlStrategy(new XhrNetwork(), { urlStrategyConfig: config })
+
+    this.init(webToken)
+  }
 
   /**
    * Initiate Smart Banner
    *
    * @param webToken token used to get data from backend
    */
-  init(webToken: string, logLevel: LogLevel = 'error') {
-    this.logLevel = logLevel
-    Logger.setLogLevel(logLevel)
-
+  init(webToken: string) {
     if (this.banner) {
       Logger.error('Smart Banner already exists')
       return
@@ -42,7 +66,7 @@ class SmartBanner {
       return
     }
 
-    this.dataFetchPromise = fetchSmartBannerData(webToken, deviceOs)
+    this.dataFetchPromise = fetchSmartBannerData(webToken, deviceOs, this.network)
 
     this.dataFetchPromise.then(bannerData => {
       this.dataFetchPromise = null
@@ -64,10 +88,14 @@ class SmartBanner {
       this.banner = new SmartBannerView(
         bannerData,
         () => this.dismiss(webToken, bannerData.dismissInterval),
-        Network.getEndpoint()
+        this.network.endpoint
       )
 
       Logger.log('Smart Banner created')
+
+      if (this.onCreated) {
+        this.onCreated()
+      }
     })
   }
 
@@ -138,11 +166,15 @@ class SmartBanner {
   private dismiss(webToken: string, dismissInterval: number) {
     Logger.log('Smart Banner dismissed')
 
-    storage.setItem(this.dismissedStorageKey, Date.now())
+    storage.setItem(this.STORAGE_KEY_DISMISSED, Date.now())
     const whenToShow = this.getDateToShowAgain(dismissInterval)
     this.scheduleCreation(webToken, whenToShow)
 
     this.destroy()
+
+    if (this.onDismissed) {
+      this.onDismissed()
+    }
   }
 
   /**
@@ -159,7 +191,7 @@ class SmartBanner {
     this.timer = setTimeout(
       () => {
         this.timer = null
-        this.init(webToken, this.logLevel)
+        this.init(webToken)
       },
       delay)
 
@@ -170,7 +202,7 @@ class SmartBanner {
    * Returns date when Smart Banner should be shown again
    */
   private getDateToShowAgain(dismissInterval: number): number {
-    const dismissedDate = storage.getItem(this.dismissedStorageKey)
+    const dismissedDate = storage.getItem(this.STORAGE_KEY_DISMISSED)
     if (!dismissedDate) {
       return Date.now()
     }
@@ -178,7 +210,3 @@ class SmartBanner {
     return dismissedDate + dismissInterval
   }
 }
-
-const smartBanner = new SmartBanner()
-
-export { smartBanner as SmartBanner }
