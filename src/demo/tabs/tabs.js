@@ -166,7 +166,9 @@ function _prepareForm () {
   Adjust.initSmartBanner({
     ...appConfig,
     webToken: 'p6o2pnb1zkzk',
-    logLevel: 'verbose'
+    logLevel: 'verbose',
+    onCreated: () => write('Hey, where is a Smart Banner!'),
+    onDismissed: () => write('Oh, you have dismissed the Smart Banner'),
   })
 
   _form.appToken = _ui.appConfigForm.querySelector('#app-token')

@@ -123,12 +123,12 @@ declare namespace Adjust {
 
     /** Optional. By default all requests go to Adjust's endpoints. You are able to redirect all requests to your custom
      * endpoint. */
-     customUrl?: string;
+    customUrl?: string;
 
     /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
      * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
      * Adjust will store your data in a data center located in the region your have chosen. */
-     dataResidency?: 'EU' | 'TR' | 'US';
+    dataResidency?: 'EU' | 'TR' | 'US';
 
     /** Optional. The Adjust SDK can use the url strategy setting to prioritise regional endpoints. */
     urlStrategy?: 'india' | 'china';
@@ -207,7 +207,7 @@ declare namespace Adjust {
    * @example
    * const attribution = Adjust.getAttribution();
    */
-  function getAttribution (): Attribution | undefined
+  function getAttribution(): Attribution | undefined
 
   /**
    * Get web_uuid - a unique ID of user generated per subdomain and per browser
@@ -217,7 +217,7 @@ declare namespace Adjust {
    * @example
    * const webUuid = Adjust.getWebUUID();
    */
-  function getWebUUID (): string | undefined
+  function getWebUUID(): string | undefined
 
   /**
    * Track event with already initiated Adjust SDK instance
@@ -372,7 +372,13 @@ declare namespace Adjust {
     /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
      * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
      * Adjust will store your data in a data center located in the region your have chosen. */
-     dataResidency?: 'EU' | 'TR' | 'US';
+    dataResidency?: 'EU' | 'TR' | 'US';
+
+    /** Optional. Callback which is called when SmartBanner view is created and shown. */
+    onCreated?: () => any;
+
+    /** Optional. Callback which is called when SmartBanner is being dismissed with a closing button on it. */
+    onDismissed?: () => any;
   }
 
   /**
