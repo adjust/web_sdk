@@ -1,4 +1,15 @@
-### Version 5.3.1 (8st August 2022)
+### Version 5.4.0 (20th September 2022)
+#### Added
+- Added support of Data Residency.
+- Added Smart Banner `onCreated` and `onDismissed` optional callbacks. To set callbacks pass them to `initSmartBanner` method.
+- Added `showSmartBanner` and `hideSmartBanner` methods to control Smart Banner visibility after initialisation.
+
+
+#### Fixed
+- Fixed issue when Url Strategy ignored SDK config.
+
+---
+### Version 5.3.1 (8th August 2022)
 #### Added
 - Added sending of `deduplication_id` parameter in `event` package.
 - Added SRI feature support.
