@@ -47,7 +47,17 @@ function write (entry) {
   _persist()
 }
 
+function clear () {
+  const now = (new Date()).toISOString()
+
+  _logContainer.textContent = [`[${Config.namespace}]`, now, 'Log was cleared'].join(' ') + '\n'
+  _logContainer.scrollTop = _logContainer.scrollHeight
+
+  _persist()
+}
+
 export {
   init,
-  write
+  write,
+  clear
 }

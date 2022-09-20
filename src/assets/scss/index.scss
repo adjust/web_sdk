@@ -100,12 +100,12 @@ button {
 }
 
 pre {
-  border: 1px solid $borderColor;
-  background-color: #fefefe;
+  border: 1px solid $headerBgColor;
+  color: $logFontColor;
+  background: $logBgColor;
   padding: 10px;
   overflow: auto;
   line-height: 20px;
-  color: #bbb;
   margin: 0;
 }
 

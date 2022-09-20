@@ -1,6 +1,6 @@
 @import "../../assets/scss/variables";
 
-$height: 240px;
+$height: 300px;
 
 .tabs {
   @extend .flex-box-row;
@@ -35,17 +35,46 @@ $height: 240px;
   }
 }
 
+.fab {
+  position: relative;
+  top: - $fabSize - $fabMargin;
+  float: right;
+  margin-right: $fabMargin;
+  margin-bottom: - $fabSize;
+  height: $fabSize;
+  width: $fabSize;
+  background-color: $headerBgColor;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+
+  img {
+    user-select: none;
+    width: 50%;
+    height: 50%;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: #383f49;
+    transition: all linear;
+  }
+}
+
 .log {
-  color: $logFontColor;
-  background: $logBgColor;
-  border-color: $headerBgColor;
   padding: 10px 5px 10px 10px;
   height: 100%;
   box-sizing: border-box;
 }
 
 .config {
-  @extend .log;
+  padding: 10px 5px 10px 10px;
+  box-sizing: border-box;
   border: none;
 }
 
@@ -58,7 +87,7 @@ $height: 240px;
   padding: 0;
 
   & > .flex-box-row {
-    height: 100%;
+    align-items: stretch;
   }
 
   form {
@@ -67,11 +96,14 @@ $height: 240px;
 }
 
 .inline-actions {
+  display: flex;
+
   button {
     display: inline-block;
+    flex: 1 0 0%;
   }
 
-  #reset {
-    float: right;
+  :nth-child(n+2) {
+    margin-left: 10px;
   }
 }

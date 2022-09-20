@@ -1,6 +1,6 @@
 import {hyphenToCamelCase} from '../utils'
 import {getItem, setItem, clear} from '../storage'
-import {write} from '../log'
+import {write, clear as clearLog} from '../log'
 import Adjust from '../../sdk/main'
 
 const _ui = {}
@@ -15,11 +15,13 @@ function init (defaultAppConfig) {
 
   _ui.logTab = document.getElementById('log-tab')
   _ui.logTabContainer = document.getElementById('log-tab-container')
+  _ui.logClearButton = document.getElementById('log-tab-clear-button')
   _ui.appConfigTab = document.getElementById('app-config-tab')
   _ui.appConfigTabContainer = document.getElementById('app-config-tab-container')
   _ui.appConfigForm = document.getElementById('app-config-form')
   _ui.appConfigJson = document.getElementById('app-config-json')
   _ui.submitButton = _ui.appConfigForm.querySelector('button[type="submit"]')
+  _ui.restoreDefaultConfig = _ui.appConfigForm.querySelector('#restore-default-config')
   _ui.resetButton = _ui.appConfigForm.querySelector('#reset')
 
   _prepareForm()
@@ -28,8 +30,10 @@ function init (defaultAppConfig) {
   _active.container = _ui.logTabContainer
 
   _ui.logTab.addEventListener('click', _handleTab, false)
+  _ui.logClearButton.addEventListener('click', _handleClearLog, false)
   _ui.appConfigTab.addEventListener('click', _handleTab, false)
   _ui.appConfigForm.addEventListener('submit', _handleSave, false)
+  _ui.restoreDefaultConfig.addEventListener('click', _handleRestoreDefaultConfig, false)
   _ui.resetButton.addEventListener('click', _handleReset, false)
 }
 
@@ -51,6 +55,21 @@ function _handleTab (e) {
   _active.container = container
 }
 
+function _getAppConfig (form) {
+  return Object.keys(form)
+    .map(key => [key, form[key].value])
+    .filter(([, value]) => value)
+    .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
+}
+
+function _reflectConfigInForm (appConfig, form) {
+  Object.keys(form).map(key => form[key].value = appConfig[key] || '')
+}
+
+function _handleClearLog () {
+  clearLog()
+}
+
 function _handleSave (e) {
   e.preventDefault()
 
@@ -62,12 +81,9 @@ function _handleSave (e) {
   _ui.submitButton.classList.add('loading')
   _ui.submitButton.disabled = true
 
-  const appConfig = Object.keys(_form)
-    .map(key => [key, _form[key].value])
-    .filter(([, value]) => value)
-    .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
-
+  const appConfig = _getAppConfig(_form)
   _setJson(appConfig)
+
   setItem('appConfig', appConfig)
   clearTimeout(_timeoutId)
   _timeoutId = setTimeout(() => {
@@ -84,6 +100,30 @@ function _handleSave (e) {
   })
 }
 
+function _handleRestoreDefaultConfig () {
+  if (_disabled) {
+    return
+  }
+
+  _disabled = true
+  _ui.submitButton.classList.add('loading')
+  _ui.submitButton.disabled = true
+
+  setItem('appConfig', null)
+
+  const appConfig = {..._defaultAppConfig}
+
+  _reflectConfigInForm(appConfig, _form)
+  _setJson(appConfig)
+
+  clearTimeout(_timeoutId)
+  _timeoutId = setTimeout(() => {
+    _disabled = false
+    _ui.submitButton.classList.remove('loading')
+    _ui.submitButton.disabled = false
+  })
+}
+
 function _handleReset () {
   if (_disabled) {
     return
@@ -93,9 +133,9 @@ function _handleReset () {
   _ui.resetButton.classList.add('loading')
   _ui.resetButton.disabled = true
 
-  const appConfig = {..._defaultAppConfig}
-
+  const appConfig = _getAppConfig(_form)
   _setJson(appConfig)
+
   clear()
   Adjust.__testonly__.clearDatabase()
     .catch(error => {
@@ -124,6 +164,7 @@ function _prepareForm () {
     attributionCallback: _handleAttributionChange
   })
   Adjust.initSmartBanner({
+    ...appConfig,
     webToken: 'p6o2pnb1zkzk',
     logLevel: 'verbose'
   })
@@ -133,12 +174,13 @@ function _prepareForm () {
   _form.defaultTracker = _ui.appConfigForm.querySelector('#default-tracker')
   _form.customUrl = _ui.appConfigForm.querySelector('#custom-url')
   _form.logLevel = _ui.appConfigForm.querySelector('#log-level')
+  _form.dataResidency = _ui.appConfigForm.querySelector('#data-residency')
+  _form.urlStrategy = _ui.appConfigForm.querySelector('#url-strategy')
   _form.logOutput = _ui.appConfigForm.querySelector('#log-output')
   _form.eventDeduplicationListLimit = _ui.appConfigForm.querySelector('#event-deduplication-list-limit')
   _form.externalDeviceId = _ui.appConfigForm.querySelector('#external-device-id')
 
-  Object.keys(_form).map(key => _form[key].value = appConfig[key] || '')
-
+  _reflectConfigInForm(appConfig, _form)
   _setJson(appConfig)
 }
 

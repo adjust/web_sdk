@@ -1,4 +1,4 @@
-import { SmartBannerData } from '../network/api'
+import { SmartBannerData } from '../api'
 
 type AppIconData = Pick<SmartBannerData, 'appId' | 'appName' | 'imageUrl'>
 

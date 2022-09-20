@@ -1,6 +1,6 @@
 import type { BaseUrlsMap, UrlStrategy } from '../url-strategy'
 
-const urlStartegyModule = jest.requireActual('../url-strategy')
+const urlStrategyModule = jest.requireActual('../url-strategy')
 
 const testEndpoints = {
   default: { app: 'app.default', gdpr: '' },
@@ -19,9 +19,9 @@ export function urlStrategyRetries<T>(
   sendRequest: (urls: BaseUrlsMap) => Promise<T>,
   endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = mockEndpoints.endpoints
 ) {
-  return urlStartegyModule.urlStrategyRetries(sendRequest, endpoints)
+  return urlStrategyModule.urlStrategyRetries(sendRequest, endpoints)
 }
 
 export function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = mockEndpoints.singleEndpoint) {
-  return urlStartegyModule.getBaseUrlsIterator(endpoints)
+  return urlStrategyModule.getBaseUrlsIterator(endpoints)
 }

@@ -1,5 +1,6 @@
 import Config from './config'
 import Logger from './logger'
+import { ENDPOINTS } from './constants'
 
 enum UrlStrategy {
   Default = 'default',
@@ -7,21 +8,43 @@ enum UrlStrategy {
   China = 'china'
 }
 
-type EndpointName = UrlStrategy
+enum DataResidency {
+  EU = 'EU',
+  TR = 'TR',
+  US = 'US'
+}
+
+type EndpointName = UrlStrategy | DataResidency
 
 type BaseUrlsMap = {
   app: string;
   gdpr: string;
 }
 
+function incorrectOptionIgnoredMessage(higherPriority: string, lowerPriority: string) {
+  Logger.warn(`Both ${higherPriority} and ${lowerPriority} are set in config, ${lowerPriority} will be ignored`)
+}
+
 /**
  * Returns a map of base URLs or a list of endpoint names depending on SDK configuration
  */
 function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
-  const { customUrl, urlStrategy } = Config.getCustomConfig()
+  const { customUrl, urlStrategy, dataResidency } = Config.getCustomConfig()
 
   if (customUrl) { // If custom URL is set then send all requests there
+    if (dataResidency || urlStrategy) {
+      incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy')
+    }
+
     return { app: customUrl, gdpr: customUrl }
+  }
+
+  if (dataResidency && urlStrategy) {
+    incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy')
+  }
+
+  if (dataResidency) {
+    return [dataResidency]
   }
 
   if (urlStrategy === UrlStrategy.India) {
@@ -35,66 +58,13 @@ function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
   return [UrlStrategy.Default, UrlStrategy.India, UrlStrategy.China]
 }
 
-const endpointMap: Record<UrlStrategy, BaseUrlsMap> = {
-  [UrlStrategy.Default]: {
-    app: 'https://app.adjust.com',
-    gdpr: 'https://gdpr.adjust.com'
-  },
-  [UrlStrategy.India]: {
-    app: 'https://app.adjust.net.in',
-    gdpr: 'https://gdpr.adjust.net.in'
-  },
-  [UrlStrategy.China]: {
-    app: 'https://app.adjust.world',
-    gdpr: 'https://gdpr.adjust.world'
-  }
-}
-
-const endpointNiceNames: Record<UrlStrategy, string> = {
-  [UrlStrategy.Default]: 'default',
-  [UrlStrategy.India]: 'Indian',
-  [UrlStrategy.China]: 'Chinese'
-}
-
-/**
- * Gets the list of preferred endpoints and wraps `sendRequest` function with iterative retries until available
- * endpoint found or another error occurred.
- */
-function urlStrategyRetries<T>(
-  sendRequest: (urls: BaseUrlsMap) => Promise<T>,
-  endpoints: Record<UrlStrategy, BaseUrlsMap> = endpointMap
-): Promise<T> {
-  const preferredUrls = getEndpointPreference()
-
-  if (!Array.isArray(preferredUrls)) {
-    // There is only one endpoint
-    return sendRequest(preferredUrls)
-  } else {
-    let attempt = 0
-
-    const trySendRequest = (): Promise<T> => {
-      const endpointKey = preferredUrls[attempt++]
-      const urlsMap = endpoints[endpointKey]
-
-      return sendRequest(urlsMap)
-        .catch((reason) => {
-          if (reason.code === 'NO_CONNECTION') {
-            Logger.log(`Failed to connect ${endpointNiceNames[endpointKey]} endpoint`)
-
-            if (attempt < preferredUrls.length) {
-              Logger.log(`Trying ${endpointNiceNames[preferredUrls[attempt]]} one`)
-
-              return trySendRequest() // Trying next endpoint
-            }
-          }
-
-          // Another error occurred or we ran out of attempts, re-throw
-          throw reason
-        })
-    }
-
-    return trySendRequest()
-  }
+const endpointMap: Record<UrlStrategy | DataResidency, BaseUrlsMap> = {
+  [UrlStrategy.Default]: ENDPOINTS.default,
+  [UrlStrategy.India]: ENDPOINTS.india,
+  [UrlStrategy.China]: ENDPOINTS.china,
+  [DataResidency.EU]: ENDPOINTS.EU,
+  [DataResidency.TR]: ENDPOINTS.TR,
+  [DataResidency.US]: ENDPOINTS.US
 }
 
 interface BaseUrlsIterator extends Iterator<BaseUrlsMap> {
@@ -102,12 +72,12 @@ interface BaseUrlsIterator extends Iterator<BaseUrlsMap> {
 }
 
 function getPreferredUrls(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>>): BaseUrlsMap[] {
-  const preferredUrls = getEndpointPreference()
+  const preference = getEndpointPreference()
 
-  if (!Array.isArray(preferredUrls)) {
-    return [preferredUrls]
+  if (!Array.isArray(preference)) {
+    return [preference]
   } else {
-    const res = preferredUrls
+    const res = preference
       .map(strategy => endpoints[strategy] || null)
       .filter((i): i is BaseUrlsMap => !!i)
 
@@ -115,7 +85,7 @@ function getPreferredUrls(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>>):
   }
 }
 
-function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = endpointMap): BaseUrlsIterator {
+function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy | DataResidency, BaseUrlsMap>> = endpointMap): BaseUrlsIterator {
   const _urls = getPreferredUrls(endpoints)
 
   let _counter = 0
@@ -134,5 +104,4 @@ function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>
   }
 }
 
-
-export { urlStrategyRetries, getBaseUrlsIterator, BaseUrlsIterator, UrlStrategy, BaseUrlsMap }
+export { getBaseUrlsIterator, BaseUrlsIterator, UrlStrategy, DataResidency, BaseUrlsMap }

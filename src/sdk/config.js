@@ -63,8 +63,9 @@ const _allowedParams: BaseParamsListT = [
  * @private
  */
 const _allowedConfig: CustomConfigListT = [
-  'urlStrategy',
   'customUrl',
+  'dataResidency',
+  'urlStrategy',
   'eventDeduplicationListLimit',
   'namespace'
 ]

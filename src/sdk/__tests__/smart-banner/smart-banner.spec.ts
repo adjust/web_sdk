@@ -1,7 +1,8 @@
 import Logger from '../../logger'
-import * as Api from '../../smart-banner/network/api'
+import * as Api from '../../smart-banner/api'
 import * as DetectOS from '../../smart-banner/detect-os'
 import { storage } from '../../smart-banner/local-storage'
+import { SmartBanner } from '../../smart-banner/smart-banner'
 
 jest.mock('../../logger')
 jest.useFakeTimers()
@@ -29,7 +30,7 @@ describe('Smart Banner tests', () => {
     jest.spyOn(Logger, 'error')
     jest.spyOn(global, 'setTimeout')
 
-    smartBanner = require('../../smart-banner/smart-banner').SmartBanner
+    smartBanner = new SmartBanner({ webToken })
   })
 
   beforeEach(() => {
@@ -215,7 +216,7 @@ describe('Smart Banner tests', () => {
     it('banner removed from DOM when dismissed', () => {
       expect.assertions(7)
 
-      expect(storage.setItem).toHaveBeenCalledWith(smartBanner.dismissedStorageKey, now) // add timestamp in Local Storage
+      expect(storage.setItem).toHaveBeenCalledWith(smartBanner.STORAGE_KEY_DISMISSED, now) // add timestamp in Local Storage
 
       expect(Logger.log).toHaveBeenCalledWith('Smart Banner dismissed')
       expect(smartBanner.destroy).toHaveBeenCalled()
