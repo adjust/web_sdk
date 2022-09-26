@@ -159,16 +159,18 @@ describe('Custom namespace functionality', () => {
       jest.resetModules()
     })
 
-    // eslint-disable-next-line
-    xit('Creates a custom-named IndexedDb storage', () => {
+    it('Creates a custom-named IndexedDb storage', () => {
       AdjustInstance.initSdk({ ...config, namespace: 'test' })
 
       expect.assertions(3)
 
       return Utils.flushPromises()
-        .then(() => nextTick(4))
+        .then(() => nextTick(6))
+        .then(() => {
+          AdjustInstance.stop()
+          AdjustInstance.__testonly__.destroy()
+        })
         .then(() => expectDatabaseExists('adjust-sdk-test'))
-        .then(() => AdjustInstance.__testonly__.destroy())
         .then(() => AdjustInstance.__testonly__.clearDatabase())
     })
 
