@@ -95,7 +95,9 @@ describe('Custom namespace functionality', () => {
         }
 
         jest.runOnlyPendingTimers()
-
+      })
+      .then(() => nextTick(2))
+      .then(() => {
         expect(successMock).toHaveBeenCalled()
         expect(errorMock).not.toHaveBeenCalled()
       })
@@ -112,6 +114,9 @@ describe('Custom namespace functionality', () => {
     })
 
     afterEach(() => {
+      AdjustInstance.stop()
+      AdjustInstance.__testonly__.destroy()
+
       return AdjustInstance.__testonly__.clearDatabase()
         .then(() => {
           QuickStorage.deleteData(true)
@@ -225,11 +230,13 @@ describe('Custom namespace functionality', () => {
       })
 
       afterEach(() => {
-        global.indexedDB.deleteDatabase(customName)
+        return AdjustInstance.__testonly__.clearDatabase()
+          .then(() => {
+            QuickStorage.deleteData(true)
+          })
       })
 
-      // eslint-disable-next-line
-      xit('Migrates data', () => {
+      it('Migrates data', () => {
         expect.assertions(9)
 
         return Storage.init(namespace)
