@@ -123,6 +123,22 @@ function isEmptyEntry(value: any): boolean { // eslint-disable-line @typescript-
   return !!value || (value === 0)
 }
 
+function isLocalStorageSupported(): boolean {
+  try {
+    const uid = (new Date).toString()
+    const storage = window.localStorage
+    storage.setItem(uid, uid)
+    const result = storage.getItem(uid) === uid
+    storage.removeItem(uid)
+    const support = !!(result && storage)
+
+    return support
+
+  } catch (e) {
+    return false
+  }
+}
+
 export {
   buildList,
   isEmpty,
@@ -136,5 +152,6 @@ export {
   reducer,
   entries,
   values,
-  isEmptyEntry
+  isEmptyEntry,
+  isLocalStorageSupported
 }

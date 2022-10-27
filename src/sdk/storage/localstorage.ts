@@ -1,7 +1,7 @@
 import ActivityState from '../activity-state'
 import Logger from '../logger'
 import { recover as recoverPreferences } from '../preferences'
-import { entries, findIndex, isEmpty, reducer } from '../utilities'
+import { entries, findIndex, isEmpty, reducer, isLocalStorageSupported } from '../utilities'
 import { convertRecord, convertStoreName, Direction } from './converter'
 import QuickStorage from './quick-storage'
 import { isCompositeKeyStoreField, ShortStoreName, StoreOptions } from './scheme'
@@ -35,15 +35,8 @@ class LocalStorageWrapper implements IStorage {
     if (LocalStorageWrapper.isSupportedPromise) {
       return LocalStorageWrapper.isSupportedPromise
     } else {
-      const uid = (new Date).toString()
-
       LocalStorageWrapper.isSupportedPromise = new Promise((resolve: (value: boolean) => void) => {
-        const storage = window.localStorage
-        storage.setItem(uid, uid)
-        const result = storage.getItem(uid) === uid
-        storage.removeItem(uid)
-        const support = !!(result && storage)
-        resolve(support)
+        resolve(isLocalStorageSupported())
       })
         .catch(() => {
           Logger.warn('LocalStorage is not supported in this browser')
