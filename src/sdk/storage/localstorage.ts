@@ -36,9 +36,9 @@ class LocalStorageWrapper implements IStorage {
       return LocalStorageWrapper.isSupportedPromise
     } else {
       const uid = (new Date).toString()
-      const storage = window.localStorage
 
       LocalStorageWrapper.isSupportedPromise = new Promise((resolve: (value: boolean) => void) => {
+        const storage = window.localStorage
         storage.setItem(uid, uid)
         const result = storage.getItem(uid) === uid
         storage.removeItem(uid)
