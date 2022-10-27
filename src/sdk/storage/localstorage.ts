@@ -36,12 +36,14 @@ class LocalStorageWrapper implements IStorage {
       return LocalStorageWrapper.isSupportedPromise
     } else {
       LocalStorageWrapper.isSupportedPromise = new Promise((resolve: (value: boolean) => void) => {
-        resolve(isLocalStorageSupported())
-      })
-        .catch(() => {
+        const supported = isLocalStorageSupported()
+
+        if (!supported) {
           Logger.warn('LocalStorage is not supported in this browser')
-          return Promise.resolve(false)
-        })
+        }
+
+        resolve(supported)
+      })
     }
 
     return LocalStorageWrapper.isSupportedPromise
