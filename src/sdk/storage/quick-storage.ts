@@ -4,10 +4,33 @@ import Globals from '../globals'
 import SchemeMap from './scheme-map'
 import { ShortPreferencesStoreName, ShortStoreName } from './scheme'
 import { StoredRecord } from './types'
+import { isLocalStorageSupported } from '../utilities'
 
 type StoreContent = Array<StoredRecord> | StoredRecord
 
 type StoresMap = Record<ShortStoreName, Nullable<Array<StoredRecord>>> | Record<ShortPreferencesStoreName, StoredRecord>
+
+interface LocalStorage {
+  getItem(key: string): string | null;
+  removeItem(key: string): void;
+  setItem(key: string, value: string): void;
+}
+
+class InMemoryStorage implements LocalStorage {
+  private items = {}
+
+  public getItem(key: string): string | null {
+    return this.items.hasOwnProperty(key) ? this.items[key] : null
+  }
+
+  public removeItem(key: string): void {
+    delete this.items[key]
+  }
+
+  public setItem(key: string, value: string): void {
+    this.items[key] = value
+  }
+}
 
 class QuickStorage {
   private defaultName = Globals.namespace
@@ -18,11 +41,13 @@ class QuickStorage {
 
   private storesMap: StoresMap
 
+  private storage: LocalStorage
+
   /**
- * Get the value for specified key
- */
+   * Get the value for specified key
+   */
   private read(key: ShortStoreName | ShortPreferencesStoreName): Nullable<StoreContent> {
-    const valueToParse = localStorage.getItem(`${this.storageName}.${key}`)
+    const valueToParse = this.storage.getItem(`${this.storageName}.${key}`)
     const value = valueToParse ? JSON.parse(valueToParse) : null
 
     if (key === ShortPreferencesStoreName.Preferences && value) {
@@ -37,9 +62,9 @@ class QuickStorage {
    */
   private write(key: ShortStoreName | ShortPreferencesStoreName, value: StoreContent) {
     if (!value) {
-      localStorage.removeItem(`${this.storageName}.${key}`)
+      this.storage.removeItem(`${this.storageName}.${key}`)
     } else {
-      localStorage.setItem(`${this.storageName}.${key}`, JSON.stringify(
+      this.storage.setItem(`${this.storageName}.${key}`, JSON.stringify(
         value instanceof Array
           ? value
           : convertRecord(ShortPreferencesStoreName.Preferences, Direction.left, value)
@@ -63,13 +88,19 @@ class QuickStorage {
     values(this.storeNames)
       .forEach((store) => {
         if (wipe || !store.permanent) {
-          localStorage.removeItem(`${this.storageName}.${store.name}`)
+          this.storage.removeItem(`${this.storageName}.${store.name}`)
         }
       })
   }
 
   constructor() {
     this.storesMap = {} as StoresMap
+
+    if (isLocalStorageSupported()) {
+      this.storage = window.localStorage
+    } else {
+      this.storage = new InMemoryStorage()
+    }
 
     const read = this.read.bind(this)
     const write = this.write.bind(this)
@@ -100,9 +131,9 @@ class QuickStorage {
     values(this.storeNames)
       .forEach((store) => {
         const key = store.name
-        const rawData = localStorage.getItem(`${this.storageName}.${key}`) // Get data from the store, no need to encode it
+        const rawData = this.storage.getItem(`${this.storageName}.${key}`) // Get data from the store, no need to encode it
         if (rawData) {
-          localStorage.setItem(`${newName}.${key}`, rawData) // Put data into a new store
+          this.storage.setItem(`${newName}.${key}`, rawData) // Put data into a new store
         }
       })
 
