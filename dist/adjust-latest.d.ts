@@ -220,6 +220,14 @@ declare namespace Adjust {
   function getWebUUID(): string | undefined
 
   /**
+   * Set referrer manually. Please note that `referrer` should be URL-encoded.
+   *
+   * @example
+   * Adjust.setReferrer("adjust_external_click_id%3DclickIdValue")
+   */
+  function setReferrer(referrer: string): void
+
+  /**
    * Track event with already initiated Adjust SDK instance
    *
    * @param {EventParams} params Parameters of event to be tracked.
