@@ -39,6 +39,7 @@
     'initSdk',
     'getAttribution',
     'getWebUUID',
+    'setReferrer',
     'trackEvent',
     'addGlobalCallbackParameters',
     'addGlobalPartnerParameters',
