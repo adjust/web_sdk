@@ -90,4 +90,80 @@ describe('test sdk-click functionality', () => {
       })
   })
 
+  describe('set referrer manually', () => {
+
+    beforeAll(() => {
+      global.history.pushState({}, '', '/')
+    })
+
+    it('requests sdk_click if called with non-empty referrer', () => {
+
+      expect.assertions(2)
+
+      sdkClick.default('ref%3Dmeow')
+
+      const requestConfig = {
+        url: '/sdk_click',
+        method: 'POST',
+        params: {
+          clickTime: 'some-time',
+          source: 'web_referrer',
+          referrer: 'ref=meow'
+        }
+      }
+
+      const fullConfig = {
+        endpoint: 'app',
+        ...requestConfig,
+        params: {
+          attempts: 1,
+          createdAt: 'some-time',
+          timeSpent: 0,
+          sessionLength: 0,
+          sessionCount: 1,
+          lastInterval: 0,
+          ...requestConfig.params
+        }
+      }
+
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
+
+      return Utils.flushPromises()
+        .then(() => {
+
+          jest.runOnlyPendingTimers()
+
+          expect(http.default).toHaveBeenCalledWith(fullConfig)
+
+          return Utils.flushPromises()
+        })
+
+    })
+
+    it('does nothing when called without parameters', () => {
+
+      sdkClick.default()
+
+      expect(Queue.push).not.toHaveBeenCalled()
+
+      jest.runOnlyPendingTimers()
+
+      expect(http.default).not.toHaveBeenCalled()
+
+    })
+
+    it('does nothing when called with empty parameters', () => {
+
+      sdkClick.default('')
+
+      expect(Queue.push).not.toHaveBeenCalled()
+
+      jest.runOnlyPendingTimers()
+
+      expect(http.default).not.toHaveBeenCalled()
+
+    })
+
+  })
+
 })
