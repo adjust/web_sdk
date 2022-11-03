@@ -1,0 +1,30 @@
+<div class="action-block">
+  <div class="action-wrap flex-box-row">
+    <button id="set-referrer" class="action flex-one">Set Referrer</button>
+    <button type="button" id="referrer-side-form-toggle" class="form-toggle flex-auto">...</button>
+  </div>
+
+  <div class="side-form fixed" id="referrer-side-form">
+    <div class="flex-box-row">
+      <form class="flex-two" id="referrer-config-form">
+        <div class="flex-box-row">
+          <div class="flex-one">
+            <div class="form-row">
+              <label for="referrer-key">Referrer key</label>
+              <input type="text" id="refferer-key">
+            </div>
+
+            <div class="form-row">
+              <label for="refferer-value">Value</label>
+              <input id="refferer-value">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit">Save and Run</button>
+      </form>
+
+      <pre class="flex-one config" id="referrer-config-json"></pre>
+    </div>
+  </div>
+</div>
