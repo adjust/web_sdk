@@ -125,6 +125,13 @@ function getWebUUID (): ?string {
   return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
 }
 
+function setReferrer (referrer: string) {
+  _preCheck('setting reftag', () => sdkClick(referrer), {
+    schedule: true,
+    stopBeforeInit: true
+  })
+}
+
 /**
  * Track event with already initiated instance
  *
@@ -542,6 +549,7 @@ const Adjust = {
   initSdk,
   getAttribution,
   getWebUUID,
+  setReferrer,
   trackEvent,
   addGlobalCallbackParameters,
   addGlobalPartnerParameters,
