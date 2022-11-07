@@ -438,6 +438,8 @@ Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
 
 Please note that `referrer` should be properly URL-encoded.
 
+> **Important** For proper attribution this method should be called as close as possible to SDK initialization.
+
 ## <a id="license">License</a>
 
 The Adjust SDK is licensed under the MIT License.
