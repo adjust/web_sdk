@@ -12,7 +12,6 @@ function isSupported () {
   try {
     _localStorageSupported = window.localStorage && true
   } catch (e) {
-    console.log('LocalStorage is not supported')
     _localStorageSupported = false
   }
 
