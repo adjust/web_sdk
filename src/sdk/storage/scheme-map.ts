@@ -160,7 +160,7 @@ function _getShortKey(storeName: StoreNames, key: Maybe<string>): Maybe<string> 
  * Get store names and their general configuration (if store is permanent or not)
  */
 function _getStoreNames(): StoresConfigurationMap {
-  const storeNames: Array<[StoreName, StoreConfiguration]> = entries<StoreName, Store>(Scheme)
+  const storeNames: Array<[StoreNames, StoreConfiguration]> = entries<StoreNames, Store>(Scheme)
     .map(([name, store]) => {
       const config = {
         name: store.name,
