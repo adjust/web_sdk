@@ -3,7 +3,7 @@ import {getItem, setItem} from '../storage'
 
 const _ui = {}
 const _form = {}
-let _defaultReferrerConfig = {'adjust_click_id': 'dummy_id'}
+let _defaultReferrerConfig = {'adjust_external_click_id': 'dummy_id'}
 let _disabled = false
 let _timeoutId = null
 
