@@ -128,7 +128,7 @@ function getWebUUID (): ?string {
 function setReferrer (referrer: string) {
   _preCheck('setting reftag', () => sdkClick(referrer), {
     schedule: true,
-    stopBeforeInit: true
+    waitForInitFinished: true
   })
 }
 
@@ -140,7 +140,7 @@ function setReferrer (referrer: string) {
 function trackEvent (params: EventParamsT): void {
   _preCheck('track event', (timestamp) => event(params, timestamp), {
     schedule: true,
-    stopBeforeInit: true
+    waitForInitFinished: true
   })
 }
 
@@ -253,7 +253,7 @@ function gdprForgetMe (): void {
 function disableThirdPartySharing (): void {
   _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
     schedule: true,
-    stopBeforeInit: false
+    waitForInitFinished: false
   })
 }
 
@@ -515,7 +515,7 @@ function _start (options: InitOptionsT): void {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}): mixed {
+function _preCheck (description: string, callback: () => mixed, {schedule, waitForInitFinished}: {schedule?: boolean, waitForInitFinished?: boolean} = {}): mixed {
   if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -526,13 +526,13 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
     return
   }
 
-  if (schedule && stopBeforeInit && !_isInitialised()) {
+  if (waitForInitFinished && !_isInitialised()) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || _isInitialised())) {
+    if (schedule && !(_isInstalled && _isStarted) && _isInitialised()) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
