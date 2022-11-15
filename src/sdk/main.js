@@ -126,6 +126,11 @@ function getWebUUID (): ?string {
 }
 
 function setReferrer (referrer: string) {
+  if (!referrer || typeof referrer !== 'string') {
+    Logger.error('You must provide a string referrer')
+    return
+  }
+
   _preCheck('setting reftag', () => sdkClick(referrer), {
     schedule: true,
     waitForInitFinished: true
