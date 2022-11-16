@@ -1,9 +1,16 @@
+### Version 5.5.0 (4th November 2022)
+#### Added
+- Added `setReferrer` method to set referrer and trigger `/sdk_click` request manually.
+
+#### Fixed
+- Fixed error occurred when cookies are blocked in browser.
+
+---
 ### Version 5.4.0 (20th September 2022)
 #### Added
 - Added support of Data Residency.
 - Added Smart Banner `onCreated` and `onDismissed` optional callbacks. To set callbacks pass them to `initSmartBanner` method.
 - Added `showSmartBanner` and `hideSmartBanner` methods to control Smart Banner visibility after initialisation.
-
 
 #### Fixed
 - Fixed issue when Url Strategy ignored SDK config.
