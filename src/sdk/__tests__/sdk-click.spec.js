@@ -77,7 +77,7 @@ describe('test sdk-click functionality', () => {
       }
     }
 
-    expect(Queue.push).toHaveBeenCalledWith(requestConfig)
+    expect(Queue.push).toHaveBeenCalledWith(requestConfig, {timestamp: undefined})
 
     return Utils.flushPromises()
       .then(() => {
@@ -126,7 +126,7 @@ describe('test sdk-click functionality', () => {
         }
       }
 
-      expect(Queue.push).toHaveBeenCalledWith(requestConfig)
+      expect(Queue.push).toHaveBeenCalledWith(requestConfig, {timestamp: undefined})
 
       return Utils.flushPromises()
         .then(() => {

@@ -131,7 +131,7 @@ function setReferrer (referrer: string) {
     return
   }
 
-  _preCheck('setting reftag', () => sdkClick(referrer), {
+  _preCheck('setting reftag', (timestamp) => sdkClick(referrer, timestamp), {
     schedule: true,
     waitForInitFinished: true
   })

@@ -38,7 +38,7 @@ function _prepareParams (referrer): SdkClickRequestParamsT {
 /**
  * Sends sdk_click request with manually settled referrer or with automatically grabbed one
  */
-export default function sdkClick (manualReferrer: ?string): void {
+export default function sdkClick (manualReferrer?: string, timestamp?: number): void {
   let referrer
 
   if (manualReferrer) {
@@ -52,6 +52,6 @@ export default function sdkClick (manualReferrer: ?string): void {
       url: '/sdk_click',
       method: 'POST',
       params: _prepareParams(referrer)
-    })
+    }, {timestamp})
   }
 }
