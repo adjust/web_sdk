@@ -133,7 +133,8 @@ function setReferrer (referrer: string) {
 
   _preCheck('setting reftag', (timestamp) => sdkClick(referrer, timestamp), {
     schedule: true,
-    waitForInitFinished: true
+    waitForInitFinished: true,
+    optionalInit: true
   })
 }
 
@@ -520,7 +521,7 @@ function _start (options: InitOptionsT): void {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed, {schedule, waitForInitFinished}: {schedule?: boolean, waitForInitFinished?: boolean} = {}): mixed {
+function _preCheck (description: string, callback: () => mixed, {schedule, waitForInitFinished, optionalInit}: {schedule?: boolean, waitForInitFinished?: boolean, optionalInit?: boolean} = {}): mixed {
   if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -531,13 +532,13 @@ function _preCheck (description: string, callback: () => mixed, {schedule, waitF
     return
   }
 
-  if (waitForInitFinished && !_isInitialised()) {
+  if (!optionalInit && waitForInitFinished && !_isInitialised()) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && _isInitialised()) {
+    if (schedule && !(_isInstalled && _isStarted) && (_isInitialised() || optionalInit)) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
