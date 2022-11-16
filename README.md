@@ -422,6 +422,24 @@ const attribution = Adjust.getAttribution();
 > **Note** Current attribution information is only available after our backend tracks the app install and triggers the attribution callback.
 It is not possible to access a user's attribution value before the SDK has been initialized and the attribution callback has been triggered.
 
+## <a id="set-referrer">Setting `referrer`</a>
+
+You may want to set `referrer` to trigger `sdk_click` manually.
+
+To set `referrer` use the following method: 
+
+<a id="set-referrer-manually">**setReferrer**</a>
+
+Example:
+
+```js
+Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
+```
+
+Please note that `referrer` should be properly URL-encoded.
+
+> **Important** For proper attribution this method should be called as close as possible to SDK initialization.
+
 ## <a id="license">License</a>
 
 The Adjust SDK is licensed under the MIT License.

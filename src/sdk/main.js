@@ -125,6 +125,19 @@ function getWebUUID (): ?string {
   return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
 }
 
+function setReferrer (referrer: string) {
+  if (!referrer || typeof referrer !== 'string') {
+    Logger.error('You must provide a string referrer')
+    return
+  }
+
+  _preCheck('setting reftag', (timestamp) => sdkClick(referrer, timestamp), {
+    schedule: true,
+    waitForInitFinished: true,
+    optionalInit: true
+  })
+}
+
 /**
  * Track event with already initiated instance
  *
@@ -133,7 +146,7 @@ function getWebUUID (): ?string {
 function trackEvent (params: EventParamsT): void {
   _preCheck('track event', (timestamp) => event(params, timestamp), {
     schedule: true,
-    stopBeforeInit: true
+    waitForInitFinished: true
   })
 }
 
@@ -246,7 +259,7 @@ function gdprForgetMe (): void {
 function disableThirdPartySharing (): void {
   _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
     schedule: true,
-    stopBeforeInit: false
+    waitForInitFinished: false
   })
 }
 
@@ -508,7 +521,7 @@ function _start (options: InitOptionsT): void {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed, {schedule, stopBeforeInit}: {schedule?: boolean, stopBeforeInit?: boolean} = {}): mixed {
+function _preCheck (description: string, callback: () => mixed, {schedule, waitForInitFinished, optionalInit}: {schedule?: boolean, waitForInitFinished?: boolean, optionalInit?: boolean} = {}): mixed {
   if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -519,13 +532,13 @@ function _preCheck (description: string, callback: () => mixed, {schedule, stopB
     return
   }
 
-  if (schedule && stopBeforeInit && !_isInitialised()) {
+  if (!optionalInit && waitForInitFinished && !_isInitialised()) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (stopBeforeInit || _isInitialised())) {
+    if (schedule && !(_isInstalled && _isStarted) && (_isInitialised() || optionalInit)) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
@@ -542,6 +555,7 @@ const Adjust = {
   initSdk,
   getAttribution,
   getWebUUID,
+  setReferrer,
   trackEvent,
   addGlobalCallbackParameters,
   addGlobalPartnerParameters,
