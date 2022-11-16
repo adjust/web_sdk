@@ -32,13 +32,13 @@ CDNでAdjustSDKを遅延ロードするためには、以下のコードを`<hea
 
 ```html
 <script type="application/javascript">
-!function(t,a,e,r,n,s,d,l,o,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)o(t.Adjust,t.Adjust_q,l[c]);i=a.createElement(e),u=a.getElementsByTagName(e)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,0,0,["initSdk","getAttribution","getWebUUID","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,a,e){t[e]=function(){a.push([e,arguments])}}));
+!function(t,e,a,r,n,s,d,l,o,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)o(t.Adjust,t.Adjust_q,l[c]);i=e.createElement(a),u=e.getElementsByTagName(a)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,0,0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
 </script>
 ```
 
 Adjust Web SDKはページごとに1回だけ読み込まれ、ページの読み込みごとに1回起動される必要があります。
 
-CDNを利用してSDKをロードするときは、縮小バージョンを使用することを推奨します。そうすることで、   `https://cdn.adjust.com/adjust-5.4.0.min.js` のような特定のバージョンをターゲットにしたり、あるいは   ターゲットファイルを変更せずに自動更新する場合は、最新バージョン    `https：//adjust.com/adjust-latest.min.js` をターゲットにすることが可能です。   SDKファイルはキャッシュされるため即時に提供され、更新は30分ごとに行われます。すぐに更新する必要がある場合は、必ず特定のバージョンをターゲットにしてください。  
+CDNを利用してSDKをロードするときは、縮小バージョンを使用することを推奨します。そうすることで、   `https://cdn.adjust.com/adjust-5.5.0.min.js` のような特定のバージョンをターゲットにしたり、あるいは   ターゲットファイルを変更せずに自動更新する場合は、最新バージョン    `https：//adjust.com/adjust-latest.min.js` をターゲットにすることが可能です。   SDKファイルはキャッシュされるため即時に提供され、更新は30分ごとに行われます。すぐに更新する必要がある場合は、必ず特定のバージョンをターゲットにしてください。  
 
 また、NPMを利用してSDKをインストールすることも可能です：
 
