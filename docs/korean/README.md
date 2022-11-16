@@ -32,13 +32,13 @@ Adjust SDK는 CommonJS와 AMD 환경에서 작동하고 CDN을 통해 로딩될 
 
 ```html
 <script type="application/javascript">
-!function(t,a,e,r,n,s,d,l,o,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)o(t.Adjust,t.Adjust_q,l[c]);i=a.createElement(e),u=a.getElementsByTagName(e)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.onload=function(){for(var a=0;a<t.Adjust_q.length;a++)t.Adjust[t.Adjust_q[a][0]].apply(t.Adjust,t.Adjust_q[a][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,0,0,["initSdk","getAttribution","getWebUUID","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,a,e){t[e]=function(){a.push([e,arguments])}}));
+!function(t,e,a,r,n,s,d,l,o,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)o(t.Adjust,t.Adjust_q,l[c]);i=e.createElement(a),u=e.getElementsByTagName(a)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,0,0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
 </script>
 ```
 
 Adjust 웹 SDK는 페이지당 한 번만 로딩되어야 하며 페이지 로딩당 한번만 초기화되어야 합니다. 
 
-CDN을 통해 SDK를 로딩할 때 축소 버전을 사용하는 것이 좋습니다. `https://cdn.adjust.com/adjust-5.4.0.min.js`와 같은 특정 버전을 타깃팅하거나 대상 파일을 변경할 필요 없이 자동 업데이트를 원하는 경우 최신 버전`https://cdn.adjust.com/adjust-latest.min.js`을 타깃팅 합니다. sdk 파일은 캐싱되어 최대한 빠르게 제공되며 30분 마다 캐시가 새로고침됩니다. 즉시 업데이트를 원하는 경우에는 특정 버전을 타깃팅해야 합니다.
+CDN을 통해 SDK를 로딩할 때 축소 버전을 사용하는 것이 좋습니다. `https://cdn.adjust.com/adjust-5.5.0.min.js`와 같은 특정 버전을 타깃팅하거나 대상 파일을 변경할 필요 없이 자동 업데이트를 원하는 경우 최신 버전`https://cdn.adjust.com/adjust-latest.min.js`을 타깃팅 합니다. sdk 파일은 캐싱되어 최대한 빠르게 제공되며 30분 마다 캐시가 새로고침됩니다. 즉시 업데이트를 원하는 경우에는 특정 버전을 타깃팅해야 합니다.
 
 NPM을 통한 SDK 설치 역시 가능합니다:
 
