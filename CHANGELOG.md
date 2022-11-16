@@ -1,4 +1,4 @@
-### Version 5.5.0 (4th November 2022)
+### Version 5.5.0 (16th November 2022)
 #### Added
 - Added `setReferrer` method to set referrer and trigger `/sdk_click` request manually.
 
