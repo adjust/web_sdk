@@ -1,6 +1,6 @@
 import Logger from '../logger'
 import { getDeviceOS } from './detect-os'
-import { storage } from './local-storage'
+import { Storage, StorageFactory } from './storage/factory'
 import { fetchSmartBannerData, SmartBannerData } from './api'
 import { SmartBannerView } from './view/smart-banner-view'
 import { Network } from './network/network'
@@ -26,6 +26,7 @@ interface SmartBannerOptions {
 export class SmartBanner {
   private readonly STORAGE_KEY_DISMISSED = 'closed'
   private network: Network
+  private storage: Storage
   private timer: ReturnType<typeof setTimeout> | null = null
   private dataFetchPromise: Promise<SmartBannerData | null> | null
   private banner: SmartBannerView | null
@@ -40,6 +41,8 @@ export class SmartBanner {
 
     const config = dataResidency ? { dataResidency } : {}
     this.network = network || new NetworkWithUrlStrategy(new XhrNetwork(), { urlStrategyConfig: config })
+
+    this.storage = StorageFactory.createStorage()
 
     this.init(webToken)
   }
@@ -166,7 +169,7 @@ export class SmartBanner {
   private dismiss(webToken: string, dismissInterval: number) {
     Logger.log('Smart Banner dismissed')
 
-    storage.setItem(this.STORAGE_KEY_DISMISSED, Date.now())
+    this.storage.setItem(this.STORAGE_KEY_DISMISSED, Date.now())
     const whenToShow = this.getDateToShowAgain(dismissInterval)
     this.scheduleCreation(webToken, whenToShow)
 
@@ -202,8 +205,9 @@ export class SmartBanner {
    * Returns date when Smart Banner should be shown again
    */
   private getDateToShowAgain(dismissInterval: number): number {
-    const dismissedDate = storage.getItem(this.STORAGE_KEY_DISMISSED)
-    if (!dismissedDate) {
+    const dismissedDate = this.storage.getItem(this.STORAGE_KEY_DISMISSED)
+
+    if (!dismissedDate || typeof dismissedDate !== 'number') {
       return Date.now()
     }
 

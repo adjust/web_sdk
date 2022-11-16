@@ -1,11 +1,16 @@
 import Logger from '../../logger'
 import * as Api from '../../smart-banner/api'
 import * as DetectOS from '../../smart-banner/detect-os'
-import { storage } from '../../smart-banner/local-storage'
+import { StorageFactory } from '../../smart-banner/storage/factory'
+import { LocalStorage } from '../../smart-banner/storage/local-storage'
 import { SmartBanner } from '../../smart-banner/smart-banner'
 
 jest.mock('../../logger')
+
 jest.useFakeTimers()
+
+const storage = new LocalStorage
+jest.spyOn(StorageFactory, 'createStorage').mockImplementation(() => storage)
 
 describe('Smart Banner tests', () => {
   const webToken = 'abc123'

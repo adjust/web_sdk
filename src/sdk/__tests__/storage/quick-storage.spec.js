@@ -24,6 +24,11 @@ describe('test low-level localStorage manipulation', () => {
     jest.spyOn(localStorage, 'setItem')
   })
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+    localStorage.clear()
+  })
+
   afterEach(() => {
     localStorage.clear()
   })
