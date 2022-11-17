@@ -3587,7 +3587,7 @@ var InMemoryStorage = /*#__PURE__*/function () {
   _createClass(InMemoryStorage, [{
     key: "getItem",
     value: function getItem(key /*: string*/) /*: string | null*/{
-      return this.items.hasOwnProperty(key) ? this.items[key] : null;
+      return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null;
     }
   }, {
     key: "removeItem",
@@ -8413,7 +8413,7 @@ var in_memory_storage_InMemoryStorage = /*#__PURE__*/function () {
   }, {
     key: "getItem",
     value: function getItem(key /*: string*/) /*: any | null*/{
-      return this.items.hasOwnProperty(key) ? this.items[key] : null;
+      return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null;
     }
   }, {
     key: "removeItem",

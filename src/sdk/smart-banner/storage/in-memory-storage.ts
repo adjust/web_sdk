@@ -8,7 +8,7 @@ export class InMemoryStorage implements Storage {
   }
 
   public getItem(key: string): any | null {
-    return this.items.hasOwnProperty(key) ? this.items[key] : null
+    return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null
   }
 
   public removeItem(key: string): void {

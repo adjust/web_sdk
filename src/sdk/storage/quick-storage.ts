@@ -20,7 +20,7 @@ class InMemoryStorage implements LocalStorage {
   private items = {}
 
   public getItem(key: string): string | null {
-    return this.items.hasOwnProperty(key) ? this.items[key] : null
+    return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null
   }
 
   public removeItem(key: string): void {
