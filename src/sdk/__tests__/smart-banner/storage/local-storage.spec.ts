@@ -1,6 +1,7 @@
-import { storage } from '../../smart-banner/local-storage'
+import { LocalStorage } from '../../../smart-banner/storage/local-storage'
 
 describe('Local storage', () => {
+  const storage = new LocalStorage
 
   beforeAll(() => {
     jest.spyOn(localStorage, 'getItem')
@@ -37,7 +38,7 @@ describe('Local storage', () => {
   it('removes record', () => {
     localStorage.setItem(lsKey, lsValue)
 
-    storage.setItem(key, null)
+    storage.removeItem(key)
 
     expect(localStorage.getItem(lsKey)).toBeNull()
     expect(localStorage.removeItem).toHaveBeenCalled()

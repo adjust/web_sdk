@@ -16,7 +16,7 @@
   script.src = url;
 
   if (integrity) {
-    script.crossorigin = corsMode;
+    script.crossOrigin = corsMode;
     script.integrity = integrity;
   }
 
@@ -39,6 +39,7 @@
     'initSdk',
     'getAttribution',
     'getWebUUID',
+    'setReferrer',
     'trackEvent',
     'addGlobalCallbackParameters',
     'addGlobalPartnerParameters',
