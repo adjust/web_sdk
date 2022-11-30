@@ -551,6 +551,12 @@ function _clearDatabase () {
   return Storage.deleteDatabase()
 }
 
+function _restartAfterAsyncEnable () {
+  if (_options) {
+    _start(_options)
+  }
+}
+
 const Adjust = {
   initSdk,
   getAttribution,
@@ -575,6 +581,9 @@ const Adjust = {
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase
+  },
+  __internal__: {
+    restartAfterAsyncEnable: _restartAfterAsyncEnable
   }
 }
 
