@@ -122,8 +122,8 @@ describe('main entry point - test instance initiation when storage is available'
 
               let requests = Queue.push.mock.calls.map(call => call[0].url)
 
-              expect(requests[0]).toEqual('/session')
-              expect(requests[1]).toEqual('/sdk_click')
+              expect(requests[0]).toBe('/session')
+              expect(requests[1]).toBe('/sdk_click')
 
               PubSub.publish('sdk:installed')
               jest.runOnlyPendingTimers()
@@ -133,7 +133,7 @@ describe('main entry point - test instance initiation when storage is available'
               return Utils.flushPromises()
                 .then(() => {
                   requests = Queue.push.mock.calls.map(call => call[0].url)
-                  expect(requests[2]).toEqual('/event')
+                  expect(requests[2]).toBe('/event')
 
                   global.history.pushState({}, '', '?')
                 })
@@ -156,8 +156,8 @@ describe('main entry point - test instance initiation when storage is available'
 
           const requests = Queue.push.mock.calls.map(call => call[0].url)
 
-          expect(requests[0]).toEqual('/session')
-          expect(requests[1]).toEqual('/sdk_click')
+          expect(requests[0]).toBe('/session')
+          expect(requests[1]).toBe('/sdk_click')
 
           global.history.pushState({}, '', '?')
         })
@@ -189,15 +189,15 @@ describe('main entry point - test instance initiation when storage is available'
         .then(() => {
           const requests = Queue.push.mock.calls
 
-          expect(requests[0][0].url).toEqual('/session')
-          expect(requests[1][0].url).toEqual('/event')
-          expect(requests[1][0].params.eventToken).toEqual('bla1')
-          expect(requests[2][0].url).toEqual('/event')
-          expect(requests[2][0].params.eventToken).toEqual('bla2')
-          expect(requests[3][0].url).toEqual('/event')
-          expect(requests[3][0].params.eventToken).toEqual('bla3')
-          expect(requests[4][0].url).toEqual('/event')
-          expect(requests[4][0].params.eventToken).toEqual('bla4')
+          expect(requests[0][0].url).toBe('/session')
+          expect(requests[1][0].url).toBe('/event')
+          expect(requests[1][0].params.eventToken).toBe('bla1')
+          expect(requests[2][0].url).toBe('/event')
+          expect(requests[2][0].params.eventToken).toBe('bla2')
+          expect(requests[3][0].url).toBe('/event')
+          expect(requests[3][0].params.eventToken).toBe('bla3')
+          expect(requests[4][0].url).toBe('/event')
+          expect(requests[4][0].params.eventToken).toBe('bla4')
         })
 
     })
@@ -317,8 +317,8 @@ describe('main entry point - test instance initiation when storage is available'
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
-            expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-            expect(requests[1][0].url).toEqual('/session')
+            expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+            expect(requests[1][0].url).toBe('/session')
           })
       })
 
@@ -338,8 +338,8 @@ describe('main entry point - test instance initiation when storage is available'
                 const requests = Queue.push.mock.calls
 
                 expect(requests.length).toBe(2)
-                expect(requests[0][0].url).toEqual('/session')
-                expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                expect(requests[0][0].url).toBe('/session')
+                expect(requests[1][0].url).toBe('/disable_third_party_sharing')
               })
           })
       })
@@ -359,8 +359,8 @@ describe('main entry point - test instance initiation when storage is available'
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
-            expect(requests[0][0].url).toEqual('/session')
-            expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+            expect(requests[0][0].url).toBe('/session')
+            expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
             return Utils.flushPromises()
           })
@@ -379,8 +379,8 @@ describe('main entry point - test instance initiation when storage is available'
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
-            expect(requests[0][0].url).toEqual('/session')
-            expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+            expect(requests[0][0].url).toBe('/session')
+            expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
             return Utils.flushPromises()
           })
@@ -408,8 +408,8 @@ describe('main entry point - test instance initiation when storage is available'
 
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
               expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-              expect(requests[1][0].url).toEqual('/session')
+              expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+              expect(requests[1][0].url).toBe('/session')
 
               return Utils.flushPromises()
             })
@@ -441,8 +441,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/session')
-                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                  expect(requests[0][0].url).toBe('/session')
+                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
                   return Utils.flushPromises()
                 })
@@ -475,8 +475,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-                  expect(requests[1][0].url).toEqual('/session')
+                  expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+                  expect(requests[1][0].url).toBe('/session')
 
                   return Utils.flushPromises()
                 })
@@ -504,8 +504,8 @@ describe('main entry point - test instance initiation when storage is available'
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
               expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-              expect(requests[1][0].url).toEqual('/session')
+              expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+              expect(requests[1][0].url).toBe('/session')
 
               return Utils.flushPromises()
             })
@@ -535,8 +535,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/session')
-                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                  expect(requests[0][0].url).toBe('/session')
+                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
                   return Utils.flushPromises()
                 })
@@ -564,8 +564,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/session')
-                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                  expect(requests[0][0].url).toBe('/session')
+                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
                   return Utils.flushPromises()
                 })
@@ -606,8 +606,8 @@ describe('main entry point - test instance initiation when storage is available'
 
       expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
       expect(AdjustInstance).toBe(OtherInstance)
-      expect(baseParams.appToken).toEqual('some-app-token')
-      expect(baseParams.environment).toEqual('production')
+      expect(baseParams.appToken).toBe('some-app-token')
+      expect(baseParams.environment).toBe('production')
     })
 
     it('runs all static methods', () => {

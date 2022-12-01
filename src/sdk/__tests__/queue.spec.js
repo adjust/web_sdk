@@ -972,7 +972,7 @@ describe('test request queuing functionality', () => {
       })
       .then(() => Storage.default.getAll('queue'))
       .then(pending => {
-        expect(pending.length).toEqual(0)
+        expect(pending.length).toBe(0)
         expect(setTimeout).toHaveBeenCalledTimes(1)
       })
 

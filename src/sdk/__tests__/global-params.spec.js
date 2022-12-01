@@ -119,9 +119,9 @@ describe('global parameters functionality', () => {
           {key: 'key3', value: 'new value3'}
         ])
         expect(Logger.default.log).toHaveBeenCalledTimes(3)
-        expect(Logger.default.log.mock.calls[0][0]).toEqual('Following partner parameters have been saved: key1:value1, key2:value2, key3:value3')
-        expect(Logger.default.log.mock.calls[1][0]).toEqual('Following partner parameters have been saved: key1:new value1, key3:new value3')
-        expect(Logger.default.log.mock.calls[2][0]).toEqual('Keys: key1, key3 already existed so their values have been updated')
+        expect(Logger.default.log.mock.calls[0][0]).toBe('Following partner parameters have been saved: key1:value1, key2:value2, key3:value3')
+        expect(Logger.default.log.mock.calls[1][0]).toBe('Following partner parameters have been saved: key1:new value1, key3:new value3')
+        expect(Logger.default.log.mock.calls[2][0]).toBe('Keys: key1, key3 already existed so their values have been updated')
       })
   })
 
@@ -137,7 +137,7 @@ describe('global parameters functionality', () => {
     ], 'callback')
       .then(() => {
 
-        expect(Logger.default.log.mock.calls[0][0]).toEqual('Following callback parameters have been saved: key1:last value1, key2:value2, key3:value3')
+        expect(Logger.default.log.mock.calls[0][0]).toBe('Following callback parameters have been saved: key1:last value1, key2:value2, key3:value3')
 
         return GlobalParams.add([
           {key: 'key1', value: 'value1'},
@@ -146,7 +146,7 @@ describe('global parameters functionality', () => {
       })
       .then(() => {
 
-        expect(Logger.default.log.mock.calls[1][0]).toEqual('Following partner parameters have been saved: key1:value1, key3:value3')
+        expect(Logger.default.log.mock.calls[1][0]).toBe('Following partner parameters have been saved: key1:value1, key3:value3')
 
         return GlobalParams.add([
           {key: 'key2', value: 'new value2'},
@@ -155,8 +155,8 @@ describe('global parameters functionality', () => {
       })
       .then(() => {
 
-        expect(Logger.default.log.mock.calls[2][0]).toEqual('Following callback parameters have been saved: key2:new value2, key4:value4')
-        expect(Logger.default.log.mock.calls[3][0]).toEqual('Keys: key2 already existed so their values have been updated')
+        expect(Logger.default.log.mock.calls[2][0]).toBe('Following callback parameters have been saved: key2:new value2, key4:value4')
+        expect(Logger.default.log.mock.calls[3][0]).toBe('Keys: key2 already existed so their values have been updated')
 
         return GlobalParams.add([
           {key: 'key2', value: 'value2'},
@@ -167,8 +167,8 @@ describe('global parameters functionality', () => {
       .then(({callbackParams, partnerParams}) => {
 
         expect(Logger.default.log).toHaveBeenCalledTimes(6)
-        expect(Logger.default.log.mock.calls[4][0]).toEqual('Following partner parameters have been saved: key2:value2, key3:new value3')
-        expect(Logger.default.log.mock.calls[5][0]).toEqual('Keys: key3 already existed so their values have been updated')
+        expect(Logger.default.log.mock.calls[4][0]).toBe('Following partner parameters have been saved: key2:value2, key3:new value3')
+        expect(Logger.default.log.mock.calls[5][0]).toBe('Keys: key3 already existed so their values have been updated')
 
         expect(callbackParams).toEqual([
           {key: 'key1', value: 'last value1'},

@@ -46,7 +46,7 @@ describe('BlockedUrlBypass', () => {
 
     const baseUrlsMap = resultingFn()
 
-    expect(baseUrlsMap.length).toEqual(3)
+    expect(baseUrlsMap.length).toBe(3)
     expect(baseUrlsMap[0]).toEqual(testEndpoints[BlockedUrlBypass.Default])
     expect(baseUrlsMap[1]).toEqual(testEndpoints[BlockedUrlBypass.India])
     expect(baseUrlsMap[2]).toEqual(testEndpoints[BlockedUrlBypass.China])
