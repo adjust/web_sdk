@@ -552,6 +552,8 @@ function _clearDatabase () {
 }
 
 function _restartAfterAsyncEnable () {
+  Logger.log('Adjust SDK has been restarted due to asynchronous enable')
+
   if (_options) {
     _start(_options)
   }
