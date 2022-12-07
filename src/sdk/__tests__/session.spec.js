@@ -144,6 +144,9 @@ describe('test session functionality', () => {
 
       expectDestroyed()
 
+      // clear mock after _restoreAfterAsyncEnable was subscribed to visibilityChange event in session.destroy function
+      Listeners.on.mockClear()
+
       // when Page Visibility Api is not available
       pvaSpy.mockReturnValueOnce(null)
 

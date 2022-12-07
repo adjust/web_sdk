@@ -551,6 +551,14 @@ function _clearDatabase () {
   return Storage.deleteDatabase()
 }
 
+function _restartAfterAsyncEnable () {
+  Logger.log('Adjust SDK has been restarted due to asynchronous enable')
+
+  if (_options) {
+    _start(_options)
+  }
+}
+
 const Adjust = {
   initSdk,
   getAttribution,
@@ -575,6 +583,9 @@ const Adjust = {
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase
+  },
+  __internal__: {
+    restartAfterAsyncEnable: _restartAfterAsyncEnable
   }
 }
 

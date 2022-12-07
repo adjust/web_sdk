@@ -13,6 +13,7 @@ import * as Storage from '../../storage/storage'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
 import * as ActivityState from '../../activity-state'
+import * as Preferences from '../../preferences'
 import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
 import Suite from './main.suite'
@@ -45,6 +46,7 @@ describe('main entry point - test instance initiation when storage is available'
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(GdprForgetDevice, 'check')
+    jest.spyOn(Attribution, 'check')
     jest.spyOn(Attribution, 'destroy')
     jest.spyOn(Storage.default, 'destroy')
     jest.spyOn(Listeners, 'register')
@@ -234,6 +236,50 @@ describe('main entry point - test instance initiation when storage is available'
 
           suite.expectAllDown()
           suite.expectShutDown()
+        })
+    })
+
+    it('restores after asynchronously restarted', () => {
+
+      AdjustInstance.initSdk(suite.config)
+
+      return Utils.flushPromises()
+        .then(() => {
+          PubSub.publish('sdk:installed')
+          jest.runOnlyPendingTimers()
+
+          // disable
+          AdjustInstance.stop()
+          jest.runOnlyPendingTimers()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+
+          // wait for the next session just allow to use expectAllUp_Async to simplify check
+          jest.advanceTimersByTime(Config.default.sessionWindow)
+
+          // enable asynchronously:
+
+          // - clear disable state from prefs
+          Preferences.setDisabled(null)
+
+          // - fire visibility change event as like as SDK was moved foreground
+          Utils.setDocumentProp('hidden', false)
+          global.document.dispatchEvent(new Event('visibilitychange'))
+          jest.runOnlyPendingTimers()
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+          jest.runOnlyPendingTimers()
+
+          // check the instance re-enabled
+          const a = suite.expectAllUp_Async()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been restarted due to asynchronous enable')
+
+          expect.assertions(a.assertions + 2) // 2 assertions are for expecting certain messages been logged
+
+          return a.promise
         })
     })
 
