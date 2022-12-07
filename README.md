@@ -16,6 +16,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 * [Stop/Restart SDK](#stop-restart-sdk)
 * [GDPR Forget Me](#gdpr-forget-me)
 * [Marketing Opt-out](#marketing-opt-out)
+* [Data residency](#data-residency)
 * [License](#license)
 
 ## <a id="example-app">Example apps</a>
@@ -439,6 +440,27 @@ Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
 Please note that `referrer` should be properly URL-encoded.
 
 > **Important** For proper attribution this method should be called as close as possible to SDK initialization.
+
+## <a id="data-residency">Data residency</a>
+
+The data residency feature allows you to choose the country in which Adjust stores your data. This is useful if you are operating in a country with strict privacy requirements. When you set up data residency, Adjust stores your data in a data center located in the region your have chosen.
+
+To set your country of data residency, pass a `dataResidency` argument in your `initSdk` call.
+
+```js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "dataResidency": "EU"
+})
+```
+
+The following values are accepted:
+
+- `EU` – sets the data residency region to the EU.
+- `TR` – sets the data residency region to Turkey.
+- `US` – sets the data residency region to the USA.
 
 ## <a id="license">License</a>
 
