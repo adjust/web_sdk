@@ -449,7 +449,7 @@ To set your country of data residency, pass a `dataResidency` argument in your `
 
 ```js
 Adjust.initSdk({
-  "appToken": "TOKEN",
+  "appToken": "YOUR_APP_TOKEN",
   "environment": "production",
   "logLevel": "verbose",
   "dataResidency": "EU"
