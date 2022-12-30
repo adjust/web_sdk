@@ -16,6 +16,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 * [停用/重启 SDK](#stop-restart-sdk)
 * [GDPR 被遗忘权](#gdpr-forget-me)
 * [选择退出营销活动](#marketing-opt-out)
+* [数据驻留](#data-residency)
 * [许可协议](#license)
 
 ## <a id="example-app">应用示例</a>
@@ -355,6 +356,27 @@ Adjust.gdprForgetMe();
 ```js
 Adjust.disableThirdPartySharing();
 ```
+
+## <a id="data-residency">数据驻留</a>
+
+通过数据驻留 (data residency) 功能，您可以选择 Adjust 将您的数据存储在哪个国家。当应用运营的国家拥有严格的隐私规定时，此功能会非常有用。设置数据驻留后，Adjust 会将您的数据存储在所选地区的数据中心。
+
+要设置您的数据驻留地区，请在 `initSdk`调用中传递一个 `dataResidency` 参数。
+
+```js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "dataResidency": "EU"
+})
+```
+
+可用值如下：
+
+- `EU` – 将数据驻留地区设为欧盟。
+- `TR` – 将数据驻留地区设为土耳其。
+- `US` – 将数据驻留地区设为美国。
 
 ## <a id="license">许可协议</a>
 
