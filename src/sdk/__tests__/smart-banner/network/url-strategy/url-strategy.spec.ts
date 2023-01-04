@@ -73,7 +73,7 @@ describe('UrlStrategy', () => {
       expect(sendRequestMock).toHaveBeenCalledTimes(urls.length)
       expect(Logger.log).toHaveBeenCalledWith(`Failed to connect ${urls[0].endpointName} endpoint`)
       expect(Logger.log).toHaveBeenCalledWith(`Trying ${urls[1].endpointName} one`)
-      expect(result).toEqual('all good')
+      expect(result).toBe('all good')
     })
 
     it('re-throws if there is no available endpoint', async () => {

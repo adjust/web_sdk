@@ -85,7 +85,7 @@ describe('test for utility methods', () => {
         {id: 3, text: 'trt'}
       ]
 
-      expect(Utilities.findIndex(array, 'id', 2)).toEqual(1)
+      expect(Utilities.findIndex(array, 'id', 2)).toBe(1)
     })
 
     it('returns an index of an element with composite key', () => {
@@ -97,7 +97,7 @@ describe('test for utility methods', () => {
         {name: 'smor', type: 'two'}
       ]
 
-      expect(Utilities.findIndex(array, ['name', 'type'], {name: 'smor', type: 'one'})).toEqual(2)
+      expect(Utilities.findIndex(array, ['name', 'type'], {name: 'smor', type: 'one'})).toBe(2)
     })
 
     it('returns -1 if not found', () => {

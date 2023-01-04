@@ -70,10 +70,10 @@ describe('test low-level localStorage manipulation', () => {
     expect(stores[storeNames.preferences.name]).toBeNull()
 
     expect(localStorage.getItem).toHaveBeenCalledTimes(4)
-    expect(localStorage.getItem.mock.calls[0][0]).toEqual(`adjust-sdk.${storeNames.queue.name}`)
-    expect(localStorage.getItem.mock.calls[1][0]).toEqual(`adjust-sdk.${storeNames.activityState.name}`)
-    expect(localStorage.getItem.mock.calls[2][0]).toEqual(`adjust-sdk.${storeNames.globalParams.name}`)
-    expect(localStorage.getItem.mock.calls[3][0]).toEqual(`adjust-sdk.${storeNames.preferences.name}`)
+    expect(localStorage.getItem.mock.calls[0][0]).toBe(`adjust-sdk.${storeNames.queue.name}`)
+    expect(localStorage.getItem.mock.calls[1][0]).toBe(`adjust-sdk.${storeNames.activityState.name}`)
+    expect(localStorage.getItem.mock.calls[2][0]).toBe(`adjust-sdk.${storeNames.globalParams.name}`)
+    expect(localStorage.getItem.mock.calls[3][0]).toBe(`adjust-sdk.${storeNames.preferences.name}`)
 
   })
 

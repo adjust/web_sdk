@@ -59,7 +59,7 @@ describe('test identity methods', () => {
         return Storage.default.getAll('activityState')
       })
       .then(records => {
-        expect(records.length).toEqual(1)
+        expect(records.length).toBe(1)
         expect(records[0]).toEqual(activityState)
       })
 
