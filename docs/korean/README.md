@@ -16,6 +16,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 * [SDK 중지/ 재시작](#stop-restart-sdk)
 * [GDPR 잊혀질 권리](#gdpr-forget-me)
 * [마케팅 옵트 아웃](#marketing-opt-out)
+* [데이터 레지던시](#data-residency)
 * [라이선스](#license)
 
 ## <a id="example-app">앱 예시</a>
@@ -357,6 +358,27 @@ Adjust.gdprForgetMe();
 ```js
 Adjust.disableThirdPartySharing();
 ```
+
+## <a id="data-residency">데이터 레지던시</a>
+
+데이터 레지던시를 사용하면 Adjust가 데이터를 저장할 국가를 선택할 수 있습니다. 본 기능은 프라이버시 요건이 엄격한 나라에서 앱을 운영하는 경우에 유용합니다. 데이터 레지던시를 설정하면 Adjust는 선택한 지역의 데이터 센터에 고객의 데이터를 저장합니다.
+
+데이터 레지던시의 국가를 설정하려면 `initSdk` 콜에서 `dataResidency` 인수를 전달합니다.
+
+```js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "dataResidency": "EU"
+})
+```
+
+다음은 사용 가능한 값입니다. 
+
+- `EU` – 데이터 레지던시의 지역을 EU로 설정.
+- `TR` – 데이터 레지던시의 지역을 터키로 설정.
+- `US` – 데이터 레지던시의 지역을 미국으로 설정.
 
 ## <a id="license">라이센스</a>
 

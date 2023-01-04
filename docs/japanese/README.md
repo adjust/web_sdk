@@ -16,6 +16,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 * [SDKの停止/再起動](#stop-restart-sdk)
 * [GDPR 忘れられる権利 ](#gdpr-forget-me)
 * [マーケティングのオプトアウト](＃marketing-opt-out)
+* [データレジデンシー](#data-residency)
 * [ライセンス](#license)
 
 ## <a id="example-app">サンプルアプリ</a>
@@ -356,6 +357,27 @@ EUの一般データ保護規則（GDPR)に従い、ユーザーが忘れられ�
 ```js
 Adjust.disableThirdPartySharing();
 ```
+
+## <a id="data-residency">データレジデンシー</a>
+
+データレジデンシーにより、Adjustがデータを保管する国を選択できます。プライバシー要件の厳しい国で運営されている場合に便利な機能です。データレジデンシーを設定すると、Adjustは選択された地域のデータセンターにお客様のデータを保管します。
+
+データレジデンシーの国を設定するには、`initSdk`の呼び出しで引数`dataResidency`をパスします。
+
+```js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "dataResidency": "EU"
+})
+```
+
+次の値を使用できます：
+
+- `EU` – データレジデンシーの地域をEUに設定。
+- `TR` – データレジデンシーの地域をトルコに設定。
+- `US` – データレジデンシーの地域を米国に設定。
 
 ## <a id="license">ライセンス</a>
 
