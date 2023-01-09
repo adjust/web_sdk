@@ -165,8 +165,9 @@ function _checkEventDeduplicationId (id?: string): Promise<?number> {
  */
 export default function event (params: EventParamsT, timestamp?: number): void | Promise<void> {
   if (!params || (params && (isEmpty(params) || !params.eventToken))) {
-    Logger.error('You must provide event token in order to track event')
-    return
+    const reason = 'You must provide event token in order to track event'
+    Logger.error(reason)
+    return Promise.reject(reason)
   }
 
   return _checkEventDeduplicationId(params.deduplicationId)
