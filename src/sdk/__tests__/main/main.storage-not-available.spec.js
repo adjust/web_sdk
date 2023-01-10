@@ -66,7 +66,7 @@ describe('main entry point - test instance initiation when storage is not availa
         expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK can not start, there is no storage available')
         suite.expectNotStart()
         suite.expectNotRunningStaticWhenNoStorage()
-        suite.expectNotRunningTrackEventWhenNoStorage()
+        return suite.expectNotRunningTrackEventWhenNoStorage()
       })
 
   })

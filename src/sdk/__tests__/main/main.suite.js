@@ -77,6 +77,7 @@ function expectPartialStartWithGdprRequest_Async () {
   return {assertions: 18, promise}
 }
 
+// if restart then 8 assertions and 10 ones otherwise
 function expectNotStart (restart) {
 
   if (!restart) {
@@ -97,7 +98,7 @@ function expectNotStart (restart) {
 
 function expectDelayedTrackEvent_Async () {
 
-  _instance.trackEvent({eventToken: 'bla123'})
+  const eventPromise = _instance.trackEvent({eventToken: 'bla123'})
 
   expect(Scheduler.delay).toHaveBeenCalledTimes(1)
   expect(Logger.default.log).toHaveBeenLastCalledWith('Running track event is delayed until Adjust SDK is up')
@@ -108,47 +109,32 @@ function expectDelayedTrackEvent_Async () {
       jest.runOnlyPendingTimers()
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Delayed track event task is running now')
-
       expect(event.default).toHaveBeenCalledWith({eventToken: 'bla123'}, expect.any(Number))
+      expect(eventPromise).toResolve()
     })
 
-  return {assertions: 4, promise}
+  return {assertions: 5, promise}
 }
 
-function expectRunningTrackEvent_Async () {
-  const promise = Utils.flushPromises()
-    .then(() => {
-      PubSub.publish('sdk:installed')
-      jest.runOnlyPendingTimers()
+// 4 assertions
+async function expectNotRunningTrackEvent () {
+  const reason = 'Adjust SDK is disabled, can not track event'
 
-      _instance.trackEvent({eventToken: 'blabla'})
+  await expect(_instance.trackEvent({eventToken: 'blabla'})).rejects.toBe(reason)
 
-      expect(event.default).toHaveBeenCalledWith({eventToken: 'blabla'}, undefined)
-    })
-
-  return {assertions: 1, promise}
-}
-
-function expectNotRunningTrackEvent () {
-
-  _instance.trackEvent({eventToken: 'blabla'})
-
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is disabled, can not track event')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(reason)
   expect(event.default).not.toHaveBeenCalled()
   expect(GlobalParams.get).not.toHaveBeenCalled()
-
-  return {assertions: 3}
 }
 
-function expectNotRunningTrackEventWhenNoInstance () {
+// 3 assertions
+async function expectNotRunningTrackEventWhenNoInstance () {
+  const reason = 'Adjust SDK can not track event, sdk instance is not initialized'
 
-  _instance.trackEvent({eventToken: 'blabla'})
+  await expect(_instance.trackEvent({eventToken: 'blabla'})).rejects.toBe(reason)
 
-  expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK can not track event, sdk instance is not initialized')
+  expect(Logger.default.error).toHaveBeenLastCalledWith(reason)
   expect(GlobalParams.get).not.toHaveBeenCalled()
-
-  return {assertions: 2}
-
 }
 
 function expectNotRunningTrackEventWhenNoStorage () {
@@ -522,7 +508,6 @@ export default function Suite (instance) {
     expectPartialStartWithGdprRequest_Async,
     expectNotStart,
     expectDelayedTrackEvent_Async,
-    expectRunningTrackEvent_Async,
     expectNotRunningTrackEvent,
     expectNotRunningTrackEventWhenNoInstance,
     expectNotRunningTrackEventWhenNoStorage,

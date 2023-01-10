@@ -251,7 +251,7 @@ declare namespace Adjust {
    *   ]
    * });
    */
-  function trackEvent(params: EventParams): void
+  function trackEvent(params: EventParams): Promise<void>
 
   /**
    * Add global callback parameters

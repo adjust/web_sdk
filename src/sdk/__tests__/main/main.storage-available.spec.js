@@ -95,18 +95,20 @@ describe('main entry point - test instance initiation when storage is available'
         })
     })
 
-    it('logs an error and return when trying to track event before init', () => {
+    it('logs an error and return when trying to track event before init', async () => {
+      expect.assertions(2)
 
-      AdjustInstance.trackEvent()
+      const reason = 'Adjust SDK can not track event, sdk instance is not initialized'
 
-      expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK can not track event, sdk instance is not initialized')
+      await expect(AdjustInstance.trackEvent()).rejects.toBe(reason)
+      expect(Logger.default.error).toHaveBeenLastCalledWith(reason)
     })
 
-    it('runs session first and then sdk-click request and track event after sdk was installed', () => {
+    it('moo-moo', () => {
 
       global.history.pushState({}, '', '?adjust_referrer=param%3Dvalue&something=else')
 
-      expect.assertions(6)
+      expect.assertions(7)
 
       AdjustInstance.initSdk(suite.config)
 
@@ -114,7 +116,7 @@ describe('main entry point - test instance initiation when storage is available'
         .then(() => {
           expect(PubSub.subscribe).toHaveBeenCalledWith('sdk:installed', expect.any(Function))
 
-          AdjustInstance.trackEvent({eventToken: 'bla123'})
+          const trackEventPromise = AdjustInstance.trackEvent({eventToken: 'bla123'})
           expect(Logger.default.log).toHaveBeenLastCalledWith('Running track event is delayed until Adjust SDK is up')
 
           return Utils.flushPromises()
@@ -134,6 +136,7 @@ describe('main entry point - test instance initiation when storage is available'
                 .then(() => {
                   requests = Queue.push.mock.calls.map(call => call[0].url)
                   expect(requests[2]).toBe('/event')
+                  expect(trackEventPromise).toResolve()
 
                   global.history.pushState({}, '', '?')
                 })
@@ -614,9 +617,15 @@ describe('main entry point - test instance initiation when storage is available'
       suite.expectRunningStatic()
     })
 
-    it('runs track event', () => {
-      return suite.expectRunningTrackEvent_Async().promise
-    })
+    it('runs track event', async () => {
+      expect.assertions(2)
 
+      PubSub.publish('sdk:installed')
+      jest.runOnlyPendingTimers()
+
+      await expect(AdjustInstance.trackEvent({ eventToken: 'blabla' })).toResolve()
+
+      expect(event.default).toHaveBeenCalledWith({ eventToken: 'blabla' }, undefined)
+    })
   })
 })

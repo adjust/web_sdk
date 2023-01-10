@@ -143,11 +143,8 @@ function setReferrer (referrer: string) {
  *
  * @param {Object} params
  */
-function trackEvent (params: EventParamsT): void {
-  _preCheck('track event', (timestamp) => event(params, timestamp), {
-    schedule: true,
-    waitForInitFinished: true
-  })
+function trackEvent (params: EventParamsT): Promise<void> {
+  return _internalTrackEvent(params)
 }
 
 /**
@@ -511,6 +508,37 @@ function _start (options: InitOptionsT): void {
     .then(_continue)
     .then(sdkClick)
     .catch(_error)
+}
+
+function _internalTrackEvent (params: EventParamsT) {
+  if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
+    const reason = 'Adjust SDK can not track event, no storage available'
+    Logger.log(reason)
+    return Promise.reject(reason)
+  }
+
+  if (status() !== 'on') {
+    const reason = 'Adjust SDK is disabled, can not track event'
+    Logger.log(reason)
+    return Promise.reject(reason)
+  }
+
+  if (!_isInitialised()) {
+    const reason = 'Adjust SDK can not track event, sdk instance is not initialized'
+    Logger.error(reason)
+    return Promise.reject(reason)
+  }
+
+  return new Promise(resolve => {
+    const _callback = timestamp => resolve(event(params, timestamp))
+
+    if (!_isInstalled || !_isStarted && _isInitialised()) {
+      delay(_callback, 'track event')
+      Logger.log('Running track event is delayed until Adjust SDK is up')
+    } else {
+      _callback()
+    }
+  })
 }
 
 /**

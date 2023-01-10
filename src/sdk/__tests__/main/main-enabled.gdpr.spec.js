@@ -122,9 +122,11 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
       suite.expectNotGdprRequest('Adjust SDK is already disabled')
     })
 
-    it('prevents running all static methods and track event', () => {
+    it('prevents running all static methods and track event', async () => {
+      expect.assertions(22)
+
       suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      await suite.expectNotRunningTrackEvent()
     })
 
     it('fails to enable sdk after GDPR-Forget-Me has taken effect', () => {
@@ -191,6 +193,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     })
 
     it('initiates and prevents running all static methods and track event and runs forget-me request', () => {
+      expect.assertions(40)
 
       AdjustInstance.initSdk(suite.config)
 
@@ -201,9 +204,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
           const a2 = suite.expectNotRunningStatic()
           const a3 = suite.expectNotRunningTrackEvent()
 
-          return a1.promise.then(() => {
-            expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-          })
+          return Promise.all([a1.promise, a3])
         })
     })
 
@@ -238,6 +239,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     })
 
     it('initiates and prevents running all static methods and track event and runs forget-me request', () => {
+      expect.assertions(40)
 
       AdjustInstance.initSdk(suite.config)
 
@@ -248,9 +250,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
           const a2 = suite.expectNotRunningStatic()
           const a3 = suite.expectNotRunningTrackEvent()
 
-          expect.assertions(a1.assertions + a2.assertions + a3.assertions)
-
-          return a1.promise
+          return Promise.all([a1.promise, a3])
         })
     })
   })
