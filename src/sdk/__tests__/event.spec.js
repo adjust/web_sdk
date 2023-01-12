@@ -18,6 +18,12 @@ const appOptions = {
   environment: 'sandbox'
 }
 
+/**
+ * Skips until Promises resolved and runs Jest timers to make event tracking promise resolve.
+ * Expects that event was added to the Queue and than request wa sent over HTTP
+ *
+ *  2 assertions
+ */
 function expectRequest (requestConfig, timestamp) {
 
   const fullConfig = {
@@ -95,11 +101,11 @@ describe('event tracking functionality', () => {
 
       expect.assertions(3)
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: '123abc',
         callbackParams: [{ key: 'some-key', value: 'some-value' }],
         revenue: 0
-      })).toResolve()
+      })
 
       await expectRequest({
         url: '/event',
@@ -109,6 +115,8 @@ describe('event tracking functionality', () => {
           callbackParams: { 'some-key': 'some-value' }
         }
       })
+
+      await expect(eventPromise).toResolve()
     })
 
     it('resolves event request successfully without revenue and some map params 2', async () => {
@@ -117,11 +125,11 @@ describe('event tracking functionality', () => {
 
       expect.assertions(3)
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: '123abc',
         callbackParams: [{ key: 'some-key', value: 'some-value' }],
         revenue: 0
-      }, timestamp)).toResolve()
+      }, timestamp)
 
       await expectRequest({
         url: '/event',
@@ -131,16 +139,18 @@ describe('event tracking functionality', () => {
           callbackParams: { 'some-key': 'some-value' }
         }
       }, timestamp)
+
+      await expect(eventPromise).toResolve()
     })
 
     it('resolves event request successfully with revenue but no currency', async () => {
 
       expect.assertions(3)
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: '123abc',
         revenue: 1000
-      })).toResolve()
+      })
 
       await expectRequest({
         url: '/event',
@@ -149,16 +159,18 @@ describe('event tracking functionality', () => {
           eventToken: '123abc'
         }
       })
+
+      await expect(eventPromise).toResolve()
     })
 
     it('resolves event request successfully but ignores malformed revenue', async () => {
 
       expect.assertions(3)
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: '123abc',
         currency: 'EUR'
-      })).toResolve()
+      })
 
       await expectRequest({
         url: '/event',
@@ -167,13 +179,15 @@ describe('event tracking functionality', () => {
           eventToken: '123abc'
         }
       })
+
+      await expect(eventPromise).toResolve()
     })
 
     it('resolves event request successfully with revenue and some map params', async () => {
 
       expect.assertions(3)
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: '123abc',
         callbackParams: [
           { key: 'some-key', value: 'some-value' }
@@ -184,7 +198,7 @@ describe('event tracking functionality', () => {
         ],
         revenue: 100,
         currency: 'EUR'
-      })).toResolve()
+      })
 
       await expectRequest({
         url: '/event',
@@ -197,6 +211,8 @@ describe('event tracking functionality', () => {
           currency: 'EUR'
         }
       })
+
+      await expect(eventPromise).toResolve()
     })
 
     it('sets default callback parameters to be appended to each track event request', async () => {
@@ -210,11 +226,11 @@ describe('event tracking functionality', () => {
 
       await GlobalParams.add(callbackParams, 'callback')
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: 'bla',
         revenue: 34.67,
         currency: 'EUR'
-      })).toResolve()
+      })
 
       await expectRequest({
         url: '/event',
@@ -226,6 +242,8 @@ describe('event tracking functionality', () => {
           currency: 'EUR'
         }
       })
+
+      await expect(eventPromise).toResolve()
     })
 
     it('sets default partner parameters to be appended to each track event request', async () => {
@@ -239,9 +257,9 @@ describe('event tracking functionality', () => {
 
       await GlobalParams.add(partnerParams, 'partner')
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: 'bla'
-      })).toResolve()
+      })
 
       await expectRequest({
         url: '/event',
@@ -251,6 +269,8 @@ describe('event tracking functionality', () => {
           partnerParams: { key1: 'value1', key2: 'value2' }
         }
       })
+
+      await expect(eventPromise).toResolve()
     })
 
     it('overrides some default callback parameters with callback parameters passed directly', async () => {
@@ -264,13 +284,13 @@ describe('event tracking functionality', () => {
 
       await GlobalParams.add(callbackParams, 'callback')
 
-      await expect(event.default({
+      const eventPromise = event.default({
         eventToken: 'bla',
         callbackParams: [
           { key: 'key1', value: 'new value1' },
           { key: 'key3', value: 'value3' }
         ]
-      })).toResolve()
+      })
 
       await expectRequest({
         url: '/event',
@@ -280,6 +300,8 @@ describe('event tracking functionality', () => {
           callbackParams: { key1: 'new value1', key2: 'value2', key3: 'value3' }
         }
       })
+
+      await expect(eventPromise).toResolve()
     })
 
     it('sets default callback and partner parameters and override both with some parameters passed directly', () => {
@@ -329,13 +351,9 @@ describe('event tracking functionality', () => {
       it('resolves event request successfully when no deduplication id provided', async () => {
         expect.assertions(6)
 
-        await expect(event.default({
+        const eventPromise = event.default({
           eventToken: '123abc'
-        })).toResolve()
-
-        expect(Storage.default.trimItems).not.toHaveBeenCalled()
-        expect(Storage.default.addItem.mock.calls.length).toBe(1)
-        expect(Storage.default.addItem.mock.calls[0][0]).toBe('queue')
+        })
 
         await expectRequest({
           url: '/event',
@@ -344,20 +362,22 @@ describe('event tracking functionality', () => {
             eventToken: '123abc'
           }
         }) // + 2 assertions
+
+        await expect(eventPromise).toResolve()
+
+        expect(Storage.default.trimItems).not.toHaveBeenCalled()
+        expect(Storage.default.addItem.mock.calls.length).toBe(1)
+        expect(Storage.default.addItem.mock.calls[0][0]).toBe('queue')
       })
 
       it('resolves event request successfully when provided deduplication id does not exist in the list', async () => {
 
         expect.assertions(6)
 
-        await expect(event.default({
+        const eventPromise = event.default({
           eventToken: '123abc',
           deduplicationId: '123-abc-456'
-        })).toResolve()
-
-        expect(Storage.default.trimItems).not.toHaveBeenCalled()
-        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: '123-abc-456' })
-        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: 123-abc-456')
+        })
 
         await expectRequest({
           url: '/event',
@@ -367,6 +387,12 @@ describe('event tracking functionality', () => {
             deduplicationId: '123-abc-456'
           }
         }) // + 2 assertions
+
+        await expect(eventPromise).toResolve()
+
+        expect(Storage.default.trimItems).not.toHaveBeenCalled()
+        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: '123-abc-456' })
+        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: 123-abc-456')
       })
 
       it('rejects event tracking when already existing deduplication id provided', async () => {
@@ -384,7 +410,7 @@ describe('event tracking functionality', () => {
         await expect(event.default({
           eventToken: '123abc',
           deduplicationId: 'dedup-1235-abc'
-        })).toResolve()
+        })).toReject()
 
         expect(Storage.default.trimItems).not.toHaveBeenCalled()
         expect(Storage.default.addItem).not.toHaveBeenCalled()
@@ -415,15 +441,10 @@ describe('event tracking functionality', () => {
 
         await Storage.default.addBulk('eventDeduplication', list)
 
-        await expect(event.default({
+        const eventPromise = event.default({
           eventToken: '123abc',
           deduplicationId: 'dedup-1240-abc'
-        })).toResolve()
-
-        expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 1)
-        expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (1 of them)')
-        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
-        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
+        })
 
         await expectRequest({
           url: '/event',
@@ -433,6 +454,13 @@ describe('event tracking functionality', () => {
             deduplicationId: 'dedup-1240-abc'
           }
         }) // + 2 assertions
+
+        await expect(eventPromise).toResolve()
+
+        expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 1)
+        expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (1 of them)')
+        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
+        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
 
         const currentList = await Storage.default.getAll('eventDeduplication')
 
@@ -457,7 +485,7 @@ describe('event tracking functionality', () => {
         await expect(event.default({
           eventToken: '123abc',
           deduplicationId: 'dedup-1240-abc'
-        })).toResolve()
+        })).toReject() // the error is being caught inside event tracking, so outside we have a fullfiled one
 
         expect(Storage.default.trimItems).not.toHaveBeenCalled()
         expect(Storage.default.addItem).not.toHaveBeenCalled()
@@ -488,15 +516,10 @@ describe('event tracking functionality', () => {
 
         await Storage.default.addBulk('eventDeduplication', list)
 
-        await expect(event.default({
+        const eventPromise = event.default({
           eventToken: '123abc',
           deduplicationId: 'dedup-1240-abc'
-        })).toResolve()
-
-        expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 5)
-        expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (5 of them)')
-        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
-        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
+        })
 
         await expectRequest({
           url: '/event',
@@ -507,7 +530,15 @@ describe('event tracking functionality', () => {
           }
         }) // + 2 assertions
 
+        await expect(eventPromise).toResolve()
+
+        expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 5)
+        expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (5 of them)')
+        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
+        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
+
         const currentList = await Storage.default.getAll('eventDeduplication')
+
         expect(currentList.map(r => r.id)).toEqual([
           'dedup-1237-abc',
           'dedup-1238-abc',
@@ -538,16 +569,12 @@ describe('event tracking functionality', () => {
 
         await Storage.default.addBulk('eventDeduplication', list)
 
-        await expect(
-          event.default({
-            eventToken: '123abc',
-            deduplicationId: 'dedup-1240-abc'
-          })).toResolve()
+        const eventPromise = event.default({
+          eventToken: '123abc',
+          deduplicationId: 'dedup-1240-abc'
+        })
 
-        expect(Storage.default.trimItems).not.toHaveBeenCalled()
-        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
-        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
-
+        // letting event to be resolved
         await expectRequest({
           url: '/event',
           method: 'POST',
@@ -557,8 +584,13 @@ describe('event tracking functionality', () => {
           }
         }) // + 2 assertions
 
-        const currentList = await Storage.default.getAll('eventDeduplication')
+        await expect(eventPromise).toResolve()
 
+        expect(Storage.default.trimItems).not.toHaveBeenCalled()
+        expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })
+        expect(Logger.default.info).toHaveBeenCalledWith('New event deduplication id is added to the list: dedup-1240-abc')
+
+        const currentList = await Storage.default.getAll('eventDeduplication')
 
         expect(currentList.map(r => r.id)).toEqual([
           'dedup-1230-abc',
