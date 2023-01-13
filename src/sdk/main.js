@@ -255,8 +255,7 @@ function gdprForgetMe (): void {
  */
 function disableThirdPartySharing (): void {
   _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
-    schedule: true,
-    waitForInitFinished: false
+    schedule: true
   })
 }
 
@@ -560,13 +559,13 @@ function _preCheck (description: string, callback: () => mixed, {schedule, waitF
     return
   }
 
-  if (!optionalInit && waitForInitFinished && !_isInitialised()) {
+  if (!(optionalInit || _isInitialised()) && waitForInitFinished) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (_isInitialised() || optionalInit)) {
+    if (schedule && !(_isInstalled && _isStarted) && (optionalInit || _isInitialised())) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {
