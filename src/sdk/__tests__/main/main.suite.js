@@ -137,15 +137,14 @@ async function expectNotRunningTrackEventWhenNoInstance () {
   expect(GlobalParams.get).not.toHaveBeenCalled()
 }
 
-function expectNotRunningTrackEventWhenNoStorage () {
+// 3 assertions
+async function expectNotRunningTrackEventWhenNoStorage () {
+  const reason = 'Adjust SDK can not track event, no storage available'
 
-  _instance.trackEvent({eventToken: 'blabla'})
+  await expect(_instance.trackEvent({eventToken: 'blabla'})).rejects.toBe(reason)
 
-  expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK can not track event, no storage available')
+  expect(Logger.default.log).toHaveBeenLastCalledWith(reason)
   expect(GlobalParams.get).not.toHaveBeenCalled()
-
-  return {assertions: 2}
-
 }
 
 function expectRunningStatic () {

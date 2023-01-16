@@ -59,7 +59,7 @@ describe('main entry point - test instance initiation when storage is not availa
 
     AdjustInstance.initSdk(suite.config)
 
-    expect.assertions(27)
+    expect.assertions(28)
 
     return Utils.flushPromises()
       .then(() => {
