@@ -201,7 +201,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
         .then(() => {
 
           const a1 = suite.expectPartialStartWithGdprRequest_Async()
-          const a2 = suite.expectNotRunningStatic()
+          suite.expectNotRunningStatic()
           const a3 = suite.expectNotRunningTrackEvent()
 
           return Promise.all([a1.promise, a3])
@@ -247,7 +247,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
         .then(() => {
 
           const a1 = suite.expectPartialStartWithGdprRequest_Async()
-          const a2 = suite.expectNotRunningStatic()
+          suite.expectNotRunningStatic()
           const a3 = suite.expectNotRunningTrackEvent()
 
           return Promise.all([a1.promise, a3])
