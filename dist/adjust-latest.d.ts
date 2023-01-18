@@ -232,6 +232,11 @@ declare namespace Adjust {
    *
    * @param {EventParams} params Parameters of event to be tracked.
    *
+   * @returns Promise which is fulfilled when event was tracked and rejected if some internal error occured.
+   *
+   * **Important**: It might take pretty much time so do not block user application logic waiting for this promise to
+   * become settled and consider using a timeout (see examples).
+   *
    * @example
    * Adjust.trackEvent({
    *   eventToken: 'YOUR_EVENT_TOKEN',
@@ -245,11 +250,17 @@ declare namespace Adjust {
    *   partnerParams: [
    *     {key: 'key-1', value: 'new-value-1'},
    *     {key: 'some-partner-key-1', value: 'some-partner-value-1'},
-   *     {key: 'key-2', value: 'new-value-2'},
-   *     {key: 'some-partner-key-2', value: 'some-partner-value-2'},
-   *     {key: 'some-partner-key-1', value: 'some-partner-value-3'}
+   *     {key: 'key-2', value: 'new-value-2'}
    *   ]
    * });
+   *
+   * @example
+   * Promise.race([
+   *   Adjust.trackEvent({ eventToken: 'YOUR_EVENT_TOKEN' }),
+   *   new Promise((resolve, reject) => {
+   *     setTimeout(() => reject(new Error("Timed out")), 5000);
+   *   })
+   * ]);
    */
   function trackEvent(params: EventParams): Promise<void>
 
