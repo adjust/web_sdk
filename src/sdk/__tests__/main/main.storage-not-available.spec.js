@@ -59,14 +59,14 @@ describe('main entry point - test instance initiation when storage is not availa
 
     AdjustInstance.initSdk(suite.config)
 
-    expect.assertions(27)
+    expect.assertions(28)
 
     return Utils.flushPromises()
       .then(() => {
         expect(Logger.default.error).toHaveBeenCalledWith('Adjust SDK can not start, there is no storage available')
         suite.expectNotStart()
         suite.expectNotRunningStaticWhenNoStorage()
-        suite.expectNotRunningTrackEventWhenNoStorage()
+        return suite.expectNotRunningTrackEventWhenNoStorage()
       })
 
   })

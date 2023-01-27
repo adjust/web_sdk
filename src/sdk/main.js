@@ -143,11 +143,8 @@ function setReferrer (referrer: string) {
  *
  * @param {Object} params
  */
-function trackEvent (params: EventParamsT): void {
-  _preCheck('track event', (timestamp) => event(params, timestamp), {
-    schedule: true,
-    waitForInitFinished: true
-  })
+function trackEvent (params: EventParamsT): Promise<void> {
+  return _internalTrackEvent(params)
 }
 
 /**
@@ -258,8 +255,7 @@ function gdprForgetMe (): void {
  */
 function disableThirdPartySharing (): void {
   _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
-    schedule: true,
-    waitForInitFinished: false
+    schedule: true
   })
 }
 
@@ -513,6 +509,37 @@ function _start (options: InitOptionsT): void {
     .catch(_error)
 }
 
+function _internalTrackEvent (params: EventParamsT) {
+  if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
+    const reason = 'Adjust SDK can not track event, no storage available'
+    Logger.log(reason)
+    return Promise.reject(reason)
+  }
+
+  if (status() !== 'on') {
+    const reason = 'Adjust SDK is disabled, can not track event'
+    Logger.log(reason)
+    return Promise.reject(reason)
+  }
+
+  if (!_isInitialised()) {
+    const reason = 'Adjust SDK can not track event, sdk instance is not initialized'
+    Logger.error(reason)
+    return Promise.reject(reason)
+  }
+
+  return new Promise(resolve => {
+    const _callback = timestamp => resolve(event(params, timestamp))
+
+    if (!_isInstalled || !_isStarted && _isInitialised()) {
+      delay(_callback, 'track event')
+      Logger.log('Running track event is delayed until Adjust SDK is up')
+    } else {
+      _callback()
+    }
+  })
+}
+
 /**
  * Check if it's possible to run provided method
  *
@@ -532,13 +559,13 @@ function _preCheck (description: string, callback: () => mixed, {schedule, waitF
     return
   }
 
-  if (!optionalInit && waitForInitFinished && !_isInitialised()) {
+  if (!(optionalInit || _isInitialised()) && waitForInitFinished) {
     Logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`)
     return
   }
 
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (_isInitialised() || optionalInit)) {
+    if (schedule && !(_isInstalled && _isStarted) && (optionalInit || _isInitialised())) {
       delay(callback, description)
       Logger.log(`Running ${description} is delayed until Adjust SDK is up`)
     } else {

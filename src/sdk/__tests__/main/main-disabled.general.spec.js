@@ -75,9 +75,11 @@ describe('main entry point - test disable/enable when in initially disabled stat
       suite.teardownAndDisable()
     })
 
-    it('prevents running all static methods and track event', () => {
+    it('prevents running all static methods and track event', async () => {
+      expect.assertions(22)
+
       suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      await suite.expectNotRunningTrackEvent()
     })
 
     it('initiates and still prevents running all static methods and track event', () => {
@@ -90,7 +92,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
           suite.expectNotStart()
           suite.expectNotRunningStatic()
-          suite.expectNotRunningTrackEvent()
+          return suite.expectNotRunningTrackEvent()
         })
     })
 
@@ -136,7 +138,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
           suite.expectNotStart()
           suite.expectNotRunningStatic()
-          suite.expectNotRunningTrackEvent()
+          return suite.expectNotRunningTrackEvent()
         })
     })
 
@@ -177,9 +179,11 @@ describe('main entry point - test disable/enable when in initially disabled stat
       suite.expectShutDown()
     })
 
-    it('prevents running all static methods and track event', () => {
+    it('prevents running all static methods and track event', async () => {
+      expect.assertions(22)
+
       suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      await suite.expectNotRunningTrackEvent()
     })
 
     it('ensures that everything is shutdown', () => {
@@ -224,9 +228,11 @@ describe('main entry point - test disable/enable when in initially disabled stat
       suite.teardownAndDisable()
     })
 
-    it('prevents running all static methods amd track event', () => {
+    it('prevents running all static methods amd track event', async () => {
+      expect.assertions(22)
+
       suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      await suite.expectNotRunningTrackEvent()
     })
 
     it('fails to disable already disabled sdk', () => {
@@ -250,7 +256,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
           suite.expectNotStart()
           suite.expectNotRunningStatic()
-          suite.expectNotRunningTrackEvent()
+          return suite.expectNotRunningTrackEvent()
         })
     })
 
@@ -299,8 +305,9 @@ describe('main entry point - test disable/enable when in initially disabled stat
       suite.expectRunningStatic()
     })
 
-    it('prevents running track event', () => {
-      suite.expectNotRunningTrackEventWhenNoInstance()
+    it('prevents running track event', async () => {
+      expect.assertions(3)
+      await suite.expectNotRunningTrackEventWhenNoInstance()
     })
 
     it('initiates and runs all static methods and track event', () => {
@@ -458,7 +465,7 @@ describe('main entry point - test disable/enable when in initially disabled stat
 
           suite.expectNotStart()
           suite.expectNotRunningStatic()
-          suite.expectNotRunningTrackEvent()
+          return suite.expectNotRunningTrackEvent()
         })
     })
   })

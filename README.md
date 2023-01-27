@@ -236,6 +236,36 @@ You can read more about special partners and these integrations in our [guide to
 
 It's possible to provide event deduplication id in order to avoid tracking duplicated events. Deduplication list limit is set in initialization configuration as described [above](#event-deduplication-list-limit)
 
+### Tracking an event and redirect to an external page
+
+Sometimes you want to redirect user to an external page and track this redirect as an event. For this case to avoid redirect to happen earlier than the event was actually tracked `trackEvent` method returns a `Promise` which is fulfilled after the SDK has sent the event and received a response from the backend and rejected when some internal error happen.  
+
+> **Important** It might take pretty much time until this promise is settled so it's recommended to use a timeout.
+
+Please note that due to internal requests queue the event wouldn't be lost even if it timed out or an error happened, the SDK will preserve the event to the next time it's loaded and try to send it again.
+
+Example:
+
+```js
+Promise
+  .race([
+    Adjust.trackEvent({
+      eventToken: 'YOUR_EVENT_TOKEN',
+      // ... other event parameters
+    }),
+    new Promise((resolve, reject) => {
+      setTimeout(() => reject('Timed out'), 2000)
+    })
+  ])
+  .catch(error => {
+    // ... 
+  })
+  .then(() => {
+    // ... perform redirect, for example 
+    window.location.href = "https://www.example.org/"
+  });
+```
+
 ## <a id="global-callback-parameters">Global callback parameters</a>
 
 There are several methods available for global callback parameters like adding, removing and clearing them. Here is the list of each available method:

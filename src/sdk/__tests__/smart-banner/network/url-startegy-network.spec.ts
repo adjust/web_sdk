@@ -17,7 +17,7 @@ describe('NetworkWithUrlStrategy', () => {
 
   const networkMock: Network = {
     endpoint: '',
-    request: (path: string, params?: Record<string, string | number | boolean>) => Promise.resolve('all good') as any
+    request: (_: string, __?: Record<string, string | number | boolean>) => Promise.resolve('all good') as any
   }
 
   describe('instantiation', () => {

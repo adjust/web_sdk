@@ -163,16 +163,17 @@ function _checkEventDeduplicationId (id?: string): Promise<?number> {
  * @param {number=} timestamp
  * @return Promise
  */
-export default function event (params: EventParamsT, timestamp?: number): void | Promise<void> {
+export default function event (params: EventParamsT, timestamp?: number): Promise<void> {
   if (!params || (params && (isEmpty(params) || !params.eventToken))) {
-    Logger.error('You must provide event token in order to track event')
-    return
+    const reason = 'You must provide event token in order to track event'
+    Logger.error(reason)
+    return Promise.reject(reason)
   }
 
   return _checkEventDeduplicationId(params.deduplicationId)
     .then(getGlobalParams)
     .then(globalParams => {
-      push({
+      return push({
         url: '/event',
         method: 'POST',
         params: _prepareParams(params, globalParams)
@@ -182,6 +183,8 @@ export default function event (params: EventParamsT, timestamp?: number): void |
       if (error && error.message) {
         Logger.error(error.message)
       }
+
+      return Promise.reject(error)
     })
 
 }

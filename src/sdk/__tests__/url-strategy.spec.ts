@@ -39,8 +39,6 @@ describe('test url strategy', () => {
     environment: 'sandbox'
   }
 
-  const sendRequestMock = jest.fn(() => Promise.reject({ code: 'NO_CONNECTION' }))
-
   const env = Globals.default.env
 
   beforeAll(() => {

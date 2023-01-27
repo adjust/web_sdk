@@ -1,3 +1,6 @@
+import * as matchers from 'jest-extended'
+expect.extend(matchers)
+
 expect.extend({
   toEqualArrayIgnoringOrder (_received, _expected) {
     const received = [..._received]
