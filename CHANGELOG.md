@@ -1,3 +1,12 @@
+### Version 5.6.0 (31st January 2023)
+#### Added
+- Added a return of Promise from `trackEvent` method.
+
+#### Fixed
+- Fixed SDK state synchronization issue between multiple tabs.
+
+---
+
 ### Version 5.5.0 (17th November 2022)
 #### Added
 - Added `setReferrer` method to set referrer and trigger `/sdk_click` request manually.
@@ -6,6 +15,7 @@
 - Fixed [issue](https://github.com/adjust/web_sdk/issues/46) which caused site not to load when cookies are blocked in browser.
 
 ---
+
 ### Version 5.4.0 (20th September 2022)
 #### Added
 - Added support of Data Residency.
