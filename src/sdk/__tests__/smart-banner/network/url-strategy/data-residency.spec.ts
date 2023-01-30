@@ -32,7 +32,7 @@ describe('DataResidency', () => {
 
     const baseUrlsMap = resultingFn()
 
-    expect(baseUrlsMap.length).toEqual(1)
+    expect(baseUrlsMap.length).toBe(1)
     expect(baseUrlsMap[0]).toEqual(testEndpoints[dataResidency])
   })
 })

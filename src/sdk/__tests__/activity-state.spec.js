@@ -65,8 +65,8 @@ describe('activity state functionality', () => {
 
     const params = ActivityState.default.getParams()
 
-    expect(params.timeSpent).toEqual(0)
-    expect(params.sessionLength).toEqual(0)
+    expect(params.timeSpent).toBe(0)
+    expect(params.sessionLength).toBe(0)
   })
 
   it('returns zero for time spent and positive value for session length after some time when not in foreground', () => {
@@ -77,7 +77,7 @@ describe('activity state functionality', () => {
 
     const params = ActivityState.default.getParams()
 
-    expect(params.timeSpent).toEqual(0)
+    expect(params.timeSpent).toBe(0)
     expect(params.sessionLength).toEqual((2 * MINUTE) / SECOND)
   })
 
@@ -179,15 +179,15 @@ describe('activity state functionality', () => {
 
     params = ActivityState.default.getParams()
 
-    expect(params.timeSpent).toEqual(0)
-    expect(params.sessionLength).toEqual(0)
+    expect(params.timeSpent).toBe(0)
+    expect(params.sessionLength).toBe(0)
 
     dateNowSpy.mockReturnValue(currentTime += 3 * MINUTE)
     ActivityState.default.updateSessionOffset()
 
     params = ActivityState.default.getParams()
 
-    expect(params.timeSpent).toEqual(0)
+    expect(params.timeSpent).toBe(0)
     expect(params.sessionLength).toEqual((3 * MINUTE) / SECOND)
   })
 
@@ -238,24 +238,24 @@ describe('activity state functionality', () => {
     ActivityState.default.updateParams('/session')
     ActivityState.default.updateParams('/event')
 
-    expect(ActivityState.default.current.sessionCount).toEqual(1)
-    expect(ActivityState.default.current.eventCount).toEqual(1)
+    expect(ActivityState.default.current.sessionCount).toBe(1)
+    expect(ActivityState.default.current.eventCount).toBe(1)
 
     ActivityState.default.updateParams('/session')
 
-    expect(ActivityState.default.current.sessionCount).toEqual(2)
-    expect(ActivityState.default.current.eventCount).toEqual(1)
+    expect(ActivityState.default.current.sessionCount).toBe(2)
+    expect(ActivityState.default.current.eventCount).toBe(1)
 
     ActivityState.default.updateParams('/session')
     ActivityState.default.updateParams('/event')
 
-    expect(ActivityState.default.current.sessionCount).toEqual(3)
-    expect(ActivityState.default.current.eventCount).toEqual(2)
+    expect(ActivityState.default.current.sessionCount).toBe(3)
+    expect(ActivityState.default.current.eventCount).toBe(2)
 
     ActivityState.default.resetSessionOffset()
 
-    expect(ActivityState.default.current.sessionCount).toEqual(3)
-    expect(ActivityState.default.current.eventCount).toEqual(2)
+    expect(ActivityState.default.current.sessionCount).toBe(3)
+    expect(ActivityState.default.current.eventCount).toBe(2)
 
     ActivityState.default.destroy()
 
@@ -320,7 +320,7 @@ describe('activity state functionality', () => {
   describe('getting web-uuid', () => {
 
     it('returns actual uuid', () => {
-      expect(ActivityState.default.getWebUUID()).toEqual('some-uuid')
+      expect(ActivityState.default.getWebUUID()).toBe('some-uuid')
     })
 
     it('returns null when ActivityState is not initialised', () => {

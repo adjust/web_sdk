@@ -20,13 +20,13 @@ describe('test Converter utility', () => {
 
       it('encodes and decodes primaries values', () => {
 
-        expect(Converter.convertValues('queue', 'left', 123)).toEqual(123)
-        expect(Converter.convertValues('activityState', 'left', 'abc123')).toEqual('abc123')
+        expect(Converter.convertValues('queue', 'left', 123)).toBe(123)
+        expect(Converter.convertValues('activityState', 'left', 'abc123')).toBe('abc123')
         expect(Converter.convertValues('globalParams', 'left', [123, 'callback'])).toEqual([123, 1])
         expect(Converter.convertValues('globalParams', 'left', [123, 'partner'])).toEqual([123, 2])
 
-        expect(Converter.convertValues('queue', 'right', 123)).toEqual(123)
-        expect(Converter.convertValues('activityState', 'right', 'abc123')).toEqual('abc123')
+        expect(Converter.convertValues('queue', 'right', 123)).toBe(123)
+        expect(Converter.convertValues('activityState', 'right', 'abc123')).toBe('abc123')
         expect(Converter.convertValues('globalParams', 'right', [123, 1])).toEqual([123, 'callback'])
         expect(Converter.convertValues('globalParams', 'right', [123, 2])).toEqual([123, 'partner'])
 

@@ -13,6 +13,7 @@ import * as Storage from '../../storage/storage'
 import * as Listeners from '../../listeners'
 import * as Scheduler from '../../scheduler'
 import * as ActivityState from '../../activity-state'
+import * as Preferences from '../../preferences'
 import AdjustInstance from '../../main'
 import OtherInstance from '../../main'
 import Suite from './main.suite'
@@ -45,6 +46,7 @@ describe('main entry point - test instance initiation when storage is available'
     jest.spyOn(PubSub, 'subscribe')
     jest.spyOn(PubSub, 'destroy')
     jest.spyOn(GdprForgetDevice, 'check')
+    jest.spyOn(Attribution, 'check')
     jest.spyOn(Attribution, 'destroy')
     jest.spyOn(Storage.default, 'destroy')
     jest.spyOn(Listeners, 'register')
@@ -93,18 +95,20 @@ describe('main entry point - test instance initiation when storage is available'
         })
     })
 
-    it('logs an error and return when trying to track event before init', () => {
+    it('logs an error and return when trying to track event before init', async () => {
+      expect.assertions(2)
 
-      AdjustInstance.trackEvent()
+      const reason = 'Adjust SDK can not track event, sdk instance is not initialized'
 
-      expect(Logger.default.error).toHaveBeenLastCalledWith('Adjust SDK can not track event, sdk instance is not initialized')
+      await expect(AdjustInstance.trackEvent()).rejects.toBe(reason)
+      expect(Logger.default.error).toHaveBeenLastCalledWith(reason)
     })
 
-    it('runs session first and then sdk-click request and track event after sdk was installed', () => {
+    it('moo-moo', () => {
 
       global.history.pushState({}, '', '?adjust_referrer=param%3Dvalue&something=else')
 
-      expect.assertions(6)
+      expect.assertions(7)
 
       AdjustInstance.initSdk(suite.config)
 
@@ -112,7 +116,7 @@ describe('main entry point - test instance initiation when storage is available'
         .then(() => {
           expect(PubSub.subscribe).toHaveBeenCalledWith('sdk:installed', expect.any(Function))
 
-          AdjustInstance.trackEvent({eventToken: 'bla123'})
+          const trackEventPromise = AdjustInstance.trackEvent({eventToken: 'bla123'})
           expect(Logger.default.log).toHaveBeenLastCalledWith('Running track event is delayed until Adjust SDK is up')
 
           return Utils.flushPromises()
@@ -120,8 +124,8 @@ describe('main entry point - test instance initiation when storage is available'
 
               let requests = Queue.push.mock.calls.map(call => call[0].url)
 
-              expect(requests[0]).toEqual('/session')
-              expect(requests[1]).toEqual('/sdk_click')
+              expect(requests[0]).toBe('/session')
+              expect(requests[1]).toBe('/sdk_click')
 
               PubSub.publish('sdk:installed')
               jest.runOnlyPendingTimers()
@@ -131,7 +135,8 @@ describe('main entry point - test instance initiation when storage is available'
               return Utils.flushPromises()
                 .then(() => {
                   requests = Queue.push.mock.calls.map(call => call[0].url)
-                  expect(requests[2]).toEqual('/event')
+                  expect(requests[2]).toBe('/event')
+                  expect(trackEventPromise).toResolve()
 
                   global.history.pushState({}, '', '?')
                 })
@@ -154,8 +159,8 @@ describe('main entry point - test instance initiation when storage is available'
 
           const requests = Queue.push.mock.calls.map(call => call[0].url)
 
-          expect(requests[0]).toEqual('/session')
-          expect(requests[1]).toEqual('/sdk_click')
+          expect(requests[0]).toBe('/session')
+          expect(requests[1]).toBe('/sdk_click')
 
           global.history.pushState({}, '', '?')
         })
@@ -187,15 +192,15 @@ describe('main entry point - test instance initiation when storage is available'
         .then(() => {
           const requests = Queue.push.mock.calls
 
-          expect(requests[0][0].url).toEqual('/session')
-          expect(requests[1][0].url).toEqual('/event')
-          expect(requests[1][0].params.eventToken).toEqual('bla1')
-          expect(requests[2][0].url).toEqual('/event')
-          expect(requests[2][0].params.eventToken).toEqual('bla2')
-          expect(requests[3][0].url).toEqual('/event')
-          expect(requests[3][0].params.eventToken).toEqual('bla3')
-          expect(requests[4][0].url).toEqual('/event')
-          expect(requests[4][0].params.eventToken).toEqual('bla4')
+          expect(requests[0][0].url).toBe('/session')
+          expect(requests[1][0].url).toBe('/event')
+          expect(requests[1][0].params.eventToken).toBe('bla1')
+          expect(requests[2][0].url).toBe('/event')
+          expect(requests[2][0].params.eventToken).toBe('bla2')
+          expect(requests[3][0].url).toBe('/event')
+          expect(requests[3][0].params.eventToken).toBe('bla3')
+          expect(requests[4][0].url).toBe('/event')
+          expect(requests[4][0].params.eventToken).toBe('bla4')
         })
 
     })
@@ -237,6 +242,50 @@ describe('main entry point - test instance initiation when storage is available'
         })
     })
 
+    it('restores after asynchronously restarted', () => {
+
+      AdjustInstance.initSdk(suite.config)
+
+      return Utils.flushPromises()
+        .then(() => {
+          PubSub.publish('sdk:installed')
+          jest.runOnlyPendingTimers()
+
+          // disable
+          AdjustInstance.stop()
+          jest.runOnlyPendingTimers()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK disable process is now finished')
+
+          // wait for the next session just allow to use expectAllUp_Async to simplify check
+          jest.advanceTimersByTime(Config.default.sessionWindow)
+
+          // enable asynchronously:
+
+          // - clear disable state from prefs
+          Preferences.setDisabled(null)
+
+          // - fire visibility change event as like as SDK was moved foreground
+          Utils.setDocumentProp('hidden', false)
+          global.document.dispatchEvent(new Event('visibilitychange'))
+          jest.runOnlyPendingTimers()
+
+          return Utils.flushPromises()
+        })
+        .then(() => {
+          jest.runOnlyPendingTimers()
+
+          // check the instance re-enabled
+          const a = suite.expectAllUp_Async()
+
+          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK has been restarted due to asynchronous enable')
+
+          expect.assertions(a.assertions + 2) // 2 assertions are for expecting certain messages been logged
+
+          return a.promise
+        })
+    })
+
     it('cancels sdk start due to some error happened in the chain', () => {
 
       const shutDownNumOfAssertions = suite.expectShutDown(true).assertions
@@ -271,8 +320,8 @@ describe('main entry point - test instance initiation when storage is available'
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
-            expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-            expect(requests[1][0].url).toEqual('/session')
+            expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+            expect(requests[1][0].url).toBe('/session')
           })
       })
 
@@ -292,8 +341,8 @@ describe('main entry point - test instance initiation when storage is available'
                 const requests = Queue.push.mock.calls
 
                 expect(requests.length).toBe(2)
-                expect(requests[0][0].url).toEqual('/session')
-                expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                expect(requests[0][0].url).toBe('/session')
+                expect(requests[1][0].url).toBe('/disable_third_party_sharing')
               })
           })
       })
@@ -313,8 +362,8 @@ describe('main entry point - test instance initiation when storage is available'
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
-            expect(requests[0][0].url).toEqual('/session')
-            expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+            expect(requests[0][0].url).toBe('/session')
+            expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
             return Utils.flushPromises()
           })
@@ -333,8 +382,8 @@ describe('main entry point - test instance initiation when storage is available'
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
-            expect(requests[0][0].url).toEqual('/session')
-            expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+            expect(requests[0][0].url).toBe('/session')
+            expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
             return Utils.flushPromises()
           })
@@ -362,8 +411,8 @@ describe('main entry point - test instance initiation when storage is available'
 
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
               expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-              expect(requests[1][0].url).toEqual('/session')
+              expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+              expect(requests[1][0].url).toBe('/session')
 
               return Utils.flushPromises()
             })
@@ -395,8 +444,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/session')
-                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                  expect(requests[0][0].url).toBe('/session')
+                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
                   return Utils.flushPromises()
                 })
@@ -429,8 +478,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-                  expect(requests[1][0].url).toEqual('/session')
+                  expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+                  expect(requests[1][0].url).toBe('/session')
 
                   return Utils.flushPromises()
                 })
@@ -458,8 +507,8 @@ describe('main entry point - test instance initiation when storage is available'
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
               expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
               expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toEqual('/disable_third_party_sharing')
-              expect(requests[1][0].url).toEqual('/session')
+              expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+              expect(requests[1][0].url).toBe('/session')
 
               return Utils.flushPromises()
             })
@@ -489,8 +538,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/session')
-                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                  expect(requests[0][0].url).toBe('/session')
+                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
                   return Utils.flushPromises()
                 })
@@ -518,8 +567,8 @@ describe('main entry point - test instance initiation when storage is available'
                   expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
                   expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
                   expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toEqual('/session')
-                  expect(requests[1][0].url).toEqual('/disable_third_party_sharing')
+                  expect(requests[0][0].url).toBe('/session')
+                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
 
                   return Utils.flushPromises()
                 })
@@ -560,17 +609,23 @@ describe('main entry point - test instance initiation when storage is available'
 
       expect(Logger.default.error).toHaveBeenCalledWith('You already initiated your instance')
       expect(AdjustInstance).toBe(OtherInstance)
-      expect(baseParams.appToken).toEqual('some-app-token')
-      expect(baseParams.environment).toEqual('production')
+      expect(baseParams.appToken).toBe('some-app-token')
+      expect(baseParams.environment).toBe('production')
     })
 
     it('runs all static methods', () => {
       suite.expectRunningStatic()
     })
 
-    it('runs track event', () => {
-      return suite.expectRunningTrackEvent_Async().promise
-    })
+    it('runs track event', async () => {
+      expect.assertions(2)
 
+      PubSub.publish('sdk:installed')
+      jest.runOnlyPendingTimers()
+
+      await expect(AdjustInstance.trackEvent({ eventToken: 'blabla' })).toResolve()
+
+      expect(event.default).toHaveBeenCalledWith({ eventToken: 'blabla' }, undefined)
+    })
   })
 })

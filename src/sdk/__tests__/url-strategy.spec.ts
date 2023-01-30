@@ -39,8 +39,6 @@ describe('test url strategy', () => {
     environment: 'sandbox'
   }
 
-  const sendRequestMock = jest.fn(() => Promise.reject({ code: 'NO_CONNECTION' }))
-
   const env = Globals.default.env
 
   beforeAll(() => {
@@ -93,7 +91,7 @@ describe('test url strategy', () => {
 
       const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
-      expect(values.length).toEqual(2)
+      expect(values.length).toBe(2)
       expect(values[0]).toEqual(testEndpoints.india)
       expect(values[1]).toEqual(testEndpoints.default)
     })
@@ -103,7 +101,7 @@ describe('test url strategy', () => {
 
       const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
-      expect(values.length).toEqual(2)
+      expect(values.length).toBe(2)
       expect(values[0]).toEqual(testEndpoints.china)
       expect(values[1]).toEqual(testEndpoints.default)
     })
@@ -114,7 +112,7 @@ describe('test url strategy', () => {
 
       const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
-      expect(values.length).toEqual(1)
+      expect(values.length).toBe(1)
       expect(values[0]).toEqual({ app: 'custom-url', gdpr: 'custom-url' })
     })
 
@@ -146,9 +144,9 @@ describe('test url strategy', () => {
         const thirdIteration = iterateThrough(iterator, 3)
         iterator.reset()
 
-        expect(firstIteration.length).toEqual(1)
-        expect(secondIteration.length).toEqual(2)
-        expect(thirdIteration.length).toEqual(3)
+        expect(firstIteration.length).toBe(1)
+        expect(secondIteration.length).toBe(2)
+        expect(thirdIteration.length).toBe(3)
 
         expect(firstIteration[0]).toEqual(testEndpoints.default)
         expect(secondIteration[0]).toEqual(testEndpoints.default)
@@ -172,7 +170,7 @@ describe('test url strategy', () => {
 
         const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
-        expect(values.length).toEqual(1)
+        expect(values.length).toBe(1)
         expect(values[0]).toEqual(testEndpoints[dataResidency])
       })
 
@@ -189,7 +187,7 @@ describe('test url strategy', () => {
         const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
         expect(Logger.default.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
-        expect(values.length).toEqual(1)
+        expect(values.length).toBe(1)
         expect(values[0]).toEqual(testEndpoints[dataResidency])
       })
     })

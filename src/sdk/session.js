@@ -16,6 +16,9 @@ import {sync, persist} from './identity'
 import {get as getGlobalParams} from './global-params'
 import {publish, subscribe} from './pub-sub'
 import {SECOND} from './constants'
+import {reload as reloadPreferences} from './preferences'
+import {status} from './disable'
+import Adjust from './main'
 
 /**
  * Flag to mark if session watch is already on
@@ -112,6 +115,7 @@ function destroy (): void {
   if (_pva) {
     clearTimeout(_idTimeout)
     off(documentExt, _pva.visibilityChange, _handleVisibilityChange)
+    on(documentExt, _pva.visibilityChange, _restoreAfterAsyncEnable)
   }
 }
 
@@ -161,6 +165,19 @@ function _handleVisibilityChange (): void {
   const handler = _pva && documentExt[_pva.hidden] ? _handleBackground : _handleForeground
 
   _idTimeout = setTimeout(handler, 0)
+}
+
+function _restoreAfterAsyncEnable (): void {
+  if (!_pva || documentExt[_pva.hidden]) {
+    return
+  }
+
+  reloadPreferences()
+  if (!_running && status() === 'on') {
+    off(documentExt, _pva.visibilityChange, _restoreAfterAsyncEnable)
+
+    Adjust.__internal__.restartAfterAsyncEnable()
+  }
 }
 
 /**

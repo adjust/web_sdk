@@ -103,9 +103,11 @@ describe('main entry point - test enable/disable when in initially enabled state
       suite.expectShutDown()
     })
 
-    it('prevents running all static methods and track event', () => {
+    it('prevents running all static methods and track event', async () => {
+      expect.assertions(22)
+
       suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      await suite.expectNotRunningTrackEvent()
     })
 
     it('fails to disable already disabled sdk', () => {
@@ -206,9 +208,11 @@ describe('main entry point - test enable/disable when in initially enabled state
       suite.expectShutDown()
     })
 
-    it('prevents running all static methods and track event', () => {
+    it('prevents running all static methods and track event', async () => {
+      expect.assertions(22)
+
       suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      await suite.expectNotRunningTrackEvent()
     })
   })
 
@@ -228,16 +232,18 @@ describe('main entry point - test enable/disable when in initially enabled state
       suite.expectNotShutDown()
     })
 
-    it('prevents running all static methods and track event', () => {
+    it('prevents running all static methods and track event', async () => {
+      expect.assertions(22)
+
       suite.expectNotRunningStatic()
-      suite.expectNotRunningTrackEvent()
+      await suite.expectNotRunningTrackEvent()
     })
 
     it('initiates and still prevents running all static methods and track event', () => {
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(32)
+      expect.assertions(33)
 
       return Utils.flushPromises()
         .then(() => {
@@ -246,7 +252,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
           suite.expectNotStart()
           suite.expectNotRunningStatic()
-          suite.expectNotRunningTrackEvent()
+          return suite.expectNotRunningTrackEvent()
         })
     })
 
@@ -285,8 +291,9 @@ describe('main entry point - test enable/disable when in initially enabled state
       suite.expectRunningStatic()
     })
 
-    it('prevents running track event', () => {
-      suite.expectNotRunningTrackEventWhenNoInstance()
+    it('prevents running track event', async () => {
+      expect.assertions(3)
+      await suite.expectNotRunningTrackEventWhenNoInstance()
     })
 
     it('fails to enable already enabled sdk', () => {
@@ -438,7 +445,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
       AdjustInstance.initSdk(suite.config)
 
-      expect.assertions(32)
+      expect.assertions(33)
 
       return Utils.flushPromises()
         .then(() => {
@@ -447,7 +454,7 @@ describe('main entry point - test enable/disable when in initially enabled state
 
           suite.expectNotStart()
           suite.expectNotRunningStatic()
-          suite.expectNotRunningTrackEvent()
+          return suite.expectNotRunningTrackEvent()
         })
     })
   })

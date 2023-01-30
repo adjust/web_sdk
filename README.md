@@ -16,6 +16,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 * [Stop/Restart SDK](#stop-restart-sdk)
 * [GDPR Forget Me](#gdpr-forget-me)
 * [Marketing Opt-out](#marketing-opt-out)
+* [Data residency](#data-residency)
 * [License](#license)
 
 ## <a id="example-app">Example apps</a>
@@ -37,12 +38,12 @@ To lazy <a id="loading-snippet">load the Adjust Web SDK through CDN</a> paste th
 
 The Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
 
-When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.5.0.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.
+When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.6.0.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.
 
 You may want to use [Subresource Integrity (SRI)](sri-mdn) feature to mitigate XSS attacks risk. In this case you could use the loading snippet that enables SRI check instructing browser to validate the script before running it:
 ```html
 <script type="application/javascript">
-!function(t,e,a,r,n,s,o,l,i,d,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)i(t.Adjust,t.Adjust_q,l[c]);d=e.createElement(a),u=e.getElementsByTagName(a)[0],d.async=!0,d.src="https://cdn.adjust.com/adjust-latest.min.js",d.crossOrigin="anonymous",d.integrity=s,d.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(d,u)}(window,document,"script",0,0,"sha384-ti9hnBz5iMLIfOik3tirvSeTYG6T0ZZTluQjGNeL0/WZP2kNe+pi8On+zOoBJCl7",0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
+!function(t,e,a,r,n,s,o,d,l,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<d.length;c++)l(t.Adjust,t.Adjust_q,d[c]);i=e.createElement(a),u=e.getElementsByTagName(a)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.crossOrigin="anonymous",i.integrity=s,i.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,"sha384-BqbTn9xyk5DPznti1ZP8ksxKiOFhKufLBFWm5eNMCnZABFSG1eqQfcu5dsiZJHu5",0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
 </script>
 ```
 
@@ -234,6 +235,36 @@ You can read more about special partners and these integrations in our [guide to
 <a id="deduplication-id">**deduplicationId**</a> `string`
 
 It's possible to provide event deduplication id in order to avoid tracking duplicated events. Deduplication list limit is set in initialization configuration as described [above](#event-deduplication-list-limit)
+
+### Tracking an event and redirect to an external page
+
+Sometimes you want to redirect user to an external page and track this redirect as an event. For this case to avoid redirect to happen earlier than the event was actually tracked `trackEvent` method returns a `Promise` which is fulfilled after the SDK has sent the event and received a response from the backend and rejected when some internal error happen.  
+
+> **Important** It might take pretty much time until this promise is settled so it's recommended to use a timeout.
+
+Please note that due to internal requests queue the event wouldn't be lost even if it timed out or an error happened, the SDK will preserve the event to the next time it's loaded and try to send it again.
+
+Example:
+
+```js
+Promise
+  .race([
+    Adjust.trackEvent({
+      eventToken: 'YOUR_EVENT_TOKEN',
+      // ... other event parameters
+    }),
+    new Promise((resolve, reject) => {
+      setTimeout(() => reject('Timed out'), 2000)
+    })
+  ])
+  .catch(error => {
+    // ... 
+  })
+  .then(() => {
+    // ... perform redirect, for example 
+    window.location.href = "https://www.example.org/"
+  });
+```
 
 ## <a id="global-callback-parameters">Global callback parameters</a>
 
@@ -439,6 +470,27 @@ Adjust.setReferrer("adjust_external_click_id%3DEXTERNAL_CLICK_ID");
 Please note that `referrer` should be properly URL-encoded.
 
 > **Important** For proper attribution this method should be called as close as possible to SDK initialization.
+
+## <a id="data-residency">Data residency</a>
+
+The data residency feature allows you to choose the country in which Adjust stores your data. This is useful if you are operating in a country with strict privacy requirements. When you set up data residency, Adjust stores your data in a data center located in the region your have chosen.
+
+To set your country of data residency, pass a `dataResidency` argument in your `initSdk` call.
+
+```js
+Adjust.initSdk({
+  "appToken": "YOUR_APP_TOKEN",
+  "environment": "production",
+  "logLevel": "verbose",
+  "dataResidency": "EU"
+})
+```
+
+The following values are accepted:
+
+- `EU` – sets the data residency region to the EU.
+- `TR` – sets the data residency region to Turkey.
+- `US` – sets the data residency region to the USA.
 
 ## <a id="license">License</a>
 

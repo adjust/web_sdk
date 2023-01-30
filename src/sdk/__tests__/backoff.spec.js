@@ -17,9 +17,9 @@ describe('backOff strategy functionality', () => {
   })
 
   it('tries out strategy without jitter effect', () => {
-    expect(backOff.default(1, 'test')).toEqual(100)
-    expect(backOff.default(2, 'test')).toEqual(200)
-    expect(backOff.default(3, 'test')).toEqual(300)
+    expect(backOff.default(1, 'test')).toBe(100)
+    expect(backOff.default(2, 'test')).toBe(200)
+    expect(backOff.default(3, 'test')).toBe(300)
   })
 
   it('tries out long strategy with jitter effect', () => {
@@ -29,9 +29,9 @@ describe('backOff strategy functionality', () => {
       .mockReturnValueOnce(0.17364)
       .mockReturnValueOnce(0.43112)
 
-    expect(backOff.default(1, 'long')).toEqual(99388)
-    expect(backOff.default(2, 'long')).toEqual(140837)
-    expect(backOff.default(3, 'long')).toEqual(343469)
+    expect(backOff.default(1, 'long')).toBe(99388)
+    expect(backOff.default(2, 'long')).toBe(140837)
+    expect(backOff.default(3, 'long')).toBe(343469)
   })
 
   it('tries out short strategy with jitter effect', () => {
@@ -42,10 +42,10 @@ describe('backOff strategy functionality', () => {
       .mockReturnValueOnce(0.675)
       .mockReturnValueOnce(0.786)
 
-    expect(backOff.default(1, 'short')).toEqual(115)
-    expect(backOff.default(2, 'short')).toEqual(268)
-    expect(backOff.default(3, 'short')).toEqual(670)
-    expect(backOff.default(16, 'short')).toEqual(3214800)
+    expect(backOff.default(1, 'short')).toBe(115)
+    expect(backOff.default(2, 'short')).toBe(268)
+    expect(backOff.default(3, 'short')).toBe(670)
+    expect(backOff.default(16, 'short')).toBe(3214800)
 
   })
 

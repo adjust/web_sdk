@@ -2180,7 +2180,7 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.5.0" || 0,
+  version: "5.6.0" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
@@ -7452,6 +7452,9 @@ import { type DocumentT, type HttpSuccessResponseT, type HttpErrorResponseT, typ
 
 
 
+
+
+
 /**
  * Flag to mark if session watch is already on
  *
@@ -7540,6 +7543,7 @@ function session_destroy() /*: void*/{
   if (_pva) {
     clearTimeout(_idTimeout);
     off(documentExt, _pva.visibilityChange, _handleVisibilityChange);
+    on(documentExt, _pva.visibilityChange, _restoreAfterAsyncEnable);
   }
 }
 
@@ -7583,6 +7587,16 @@ function _handleVisibilityChange() /*: void*/{
   clearTimeout(_idTimeout);
   var handler = _pva && documentExt[_pva.hidden] ? _handleBackground : _handleForeground;
   _idTimeout = setTimeout(handler, 0);
+}
+function _restoreAfterAsyncEnable() /*: void*/{
+  if (!_pva || documentExt[_pva.hidden]) {
+    return;
+  }
+  reload();
+  if (!_running && disable_status() === 'on') {
+    off(documentExt, _pva.visibilityChange, _restoreAfterAsyncEnable);
+    main.__internal__.restartAfterAsyncEnable();
+  }
 }
 
 /**
@@ -8239,13 +8253,14 @@ function _checkEventDeduplicationId(id /*: string*/) /*: Promise<?number>*/{
  * @param {number=} timestamp
  * @return Promise
  */
-function event_event(params /*: EventParamsT*/, timestamp /*: number*/) /*: void | Promise<void>*/{
+function event_event(params /*: EventParamsT*/, timestamp /*: number*/) /*: Promise<void>*/{
   if (!params || params && (isEmpty(params) || !params.eventToken)) {
-    logger.error('You must provide event token in order to track event');
-    return;
+    var reason = 'You must provide event token in order to track event';
+    logger.error(reason);
+    return event_Promise.reject(reason);
   }
   return _checkEventDeduplicationId(params.deduplicationId).then(get).then(function (globalParams) {
-    push({
+    return push({
       url: '/event',
       method: 'POST',
       params: event_prepareParams(params, globalParams)
@@ -8256,6 +8271,7 @@ function event_event(params /*: EventParamsT*/, timestamp /*: number*/) /*: void
     if (error && error.message) {
       logger.error(error.message);
     }
+    return event_Promise.reject(error);
   });
 }
 ;// CONCATENATED MODULE: ./src/sdk/sdk-click.js
@@ -9484,13 +9500,8 @@ function setReferrer(referrer /*: string*/) {
  *
  * @param {Object} params
  */
-function trackEvent(params /*: EventParamsT*/) /*: void*/{
-  _preCheck('track event', function (timestamp) {
-    return event_event(params, timestamp);
-  }, {
-    schedule: true,
-    waitForInitFinished: true
-  });
+function trackEvent(params /*: EventParamsT*/) /*: Promise<void>*/{
+  return _internalTrackEvent(params);
 }
 
 /**
@@ -9612,8 +9623,7 @@ function gdprForgetMe() /*: void*/{
  */
 function disableThirdPartySharing() /*: void*/{
   _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
-    schedule: true,
-    waitForInitFinished: false
+    schedule: true
   });
 }
 function initSmartBanner(options /*: SmartBannerOptionsT*/) /*: void*/{
@@ -9839,6 +9849,34 @@ function _start(options /*: InitOptionsT*/) /*: void*/{
   }
   start().then(main_continue).then(sdkClick).catch(main_error);
 }
+function _internalTrackEvent(params /*: EventParamsT*/) {
+  if (storage.getType() === STORAGE_TYPES.NO_STORAGE) {
+    var reason = 'Adjust SDK can not track event, no storage available';
+    logger.log(reason);
+    return main_Promise.reject(reason);
+  }
+  if (disable_status() !== 'on') {
+    var _reason = 'Adjust SDK is disabled, can not track event';
+    logger.log(_reason);
+    return main_Promise.reject(_reason);
+  }
+  if (!_isInitialised()) {
+    var _reason2 = 'Adjust SDK can not track event, sdk instance is not initialized';
+    logger.error(_reason2);
+    return main_Promise.reject(_reason2);
+  }
+  return new main_Promise(function (resolve) {
+    var _callback = function _callback(timestamp) {
+      return resolve(event_event(params, timestamp));
+    };
+    if (!_isInstalled || !_isStarted && _isInitialised()) {
+      delay(_callback, 'track event');
+      logger.log('Running track event is delayed until Adjust SDK is up');
+    } else {
+      _callback();
+    }
+  });
+}
 
 /**
  * Check if it's possible to run provided method
@@ -9861,12 +9899,12 @@ function _preCheck(description /*: string*/, callback /*: () => mixed*/) /*: mix
     logger.log("Adjust SDK is disabled, can not ".concat(description));
     return;
   }
-  if (!optionalInit && waitForInitFinished && !_isInitialised()) {
+  if (!(optionalInit || _isInitialised()) && waitForInitFinished) {
     logger.error("Adjust SDK can not ".concat(description, ", sdk instance is not initialized"));
     return;
   }
   if (typeof callback === 'function') {
-    if (schedule && !(_isInstalled && _isStarted) && (_isInitialised() || optionalInit)) {
+    if (schedule && !(_isInstalled && _isStarted) && (optionalInit || _isInitialised())) {
       delay(callback, description);
       logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
     } else {
@@ -9876,6 +9914,12 @@ function _preCheck(description /*: string*/, callback /*: () => mixed*/) /*: mix
 }
 function _clearDatabase() {
   return storage.deleteDatabase();
+}
+function _restartAfterAsyncEnable() {
+  logger.log('Adjust SDK has been restarted due to asynchronous enable');
+  if (main_options) {
+    _start(main_options);
+  }
 }
 var Adjust = {
   initSdk: initSdk,
@@ -9901,6 +9945,9 @@ var Adjust = {
   __testonly__: {
     destroy: main_destroy,
     clearDatabase: _clearDatabase
+  },
+  __internal__: {
+    restartAfterAsyncEnable: _restartAfterAsyncEnable
   }
 };
 /* harmony default export */ const main = (Adjust);

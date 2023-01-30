@@ -17,7 +17,7 @@ describe('NetworkWithUrlStrategy', () => {
 
   const networkMock: Network = {
     endpoint: '',
-    request: (path: string, params?: Record<string, string | number | boolean>) => Promise.resolve('all good') as any
+    request: (_: string, __?: Record<string, string | number | boolean>) => Promise.resolve('all good') as any
   }
 
   describe('instantiation', () => {
@@ -63,7 +63,7 @@ describe('NetworkWithUrlStrategy', () => {
       const network = new NetworkWithUrlStrategy(networkMock, { urlStrategy: urlStrategyMock })
       const result = await network.request('/whatever', { foo: 'bar', n: 42 })
 
-      expect(result).toEqual('all good')
+      expect(result).toBe('all good')
       expect(urlStrategyMock.retries).toHaveBeenCalled()
       expect(networkMock.request).toHaveBeenCalledWith('/whatever', { foo: 'bar', n: 42 })
     })

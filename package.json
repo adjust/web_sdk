@@ -1,6 +1,6 @@
 {
   "name": "@adjustcom/adjust-web-sdk",
-  "version": "5.5.0",
+  "version": "5.6.0",
   "description": "This is the guide to the Javascript SDK of Adjust™ for web sites or web apps. You can read more about Adjust™ at [adjust.com].",
   "scripts": {
     "build:demo": "webpack --mode production --config webpack.demo.config.js",
@@ -56,6 +56,7 @@
     "html-webpack-plugin": "^5.5.0",
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
+    "jest-extended": "^3.2.2",
     "jest-localstorage-mock": "^2.4.22",
     "mini-css-extract-plugin": "^2.6.1",
     "npm-run-all": "^4.1.5",

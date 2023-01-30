@@ -48,28 +48,28 @@ describe('request default parameters formation', () => {
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
+          expect(params.trackingEnabled).toBe(true)
 
           navigatorDNT.mockReturnValue(1)
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
+          expect(params.trackingEnabled).toBe(false)
 
           navigatorDNT.mockReturnValue('no')
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
+          expect(params.trackingEnabled).toBe(true)
 
           navigatorDNT.mockReturnValue('yes')
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
+          expect(params.trackingEnabled).toBe(false)
         })
 
     })
@@ -87,28 +87,28 @@ describe('request default parameters formation', () => {
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
+          expect(params.trackingEnabled).toBe(true)
 
           msDNT.mockReturnValue(1)
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
+          expect(params.trackingEnabled).toBe(false)
 
           msDNT.mockReturnValue('no')
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
+          expect(params.trackingEnabled).toBe(true)
 
           msDNT.mockReturnValue('yes')
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
+          expect(params.trackingEnabled).toBe(false)
         })
     })
 
@@ -125,28 +125,28 @@ describe('request default parameters formation', () => {
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
+          expect(params.trackingEnabled).toBe(true)
 
           global.doNotTrack = 1
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
+          expect(params.trackingEnabled).toBe(false)
 
           global.doNotTrack = 'no'
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(true)
+          expect(params.trackingEnabled).toBe(true)
 
           global.doNotTrack = 'yes'
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.trackingEnabled).toEqual(false)
+          expect(params.trackingEnabled).toBe(false)
         })
     })
 
@@ -158,7 +158,7 @@ describe('request default parameters formation', () => {
 
     return defaultParams.default()
       .then(params => {
-        expect(params.platform).toEqual('web')
+        expect(params.platform).toBe('web')
       })
   })
 
@@ -189,7 +189,7 @@ describe('request default parameters formation', () => {
 
       return defaultParams.default()
         .then(params => {
-          expect(params.language).toEqual('sr')
+          expect(params.language).toBe('sr')
           expect(params.country).toBeUndefined()
         })
 
@@ -203,7 +203,7 @@ describe('request default parameters formation', () => {
 
       return defaultParams.default()
         .then(params => {
-          expect(params.language).toEqual('fr')
+          expect(params.language).toBe('fr')
           expect(params.country).toBeUndefined()
           delete global.navigator.userLanguage
         })
@@ -216,7 +216,7 @@ describe('request default parameters formation', () => {
 
       return defaultParams.default()
         .then(params => {
-          expect(params.language).toEqual('en')
+          expect(params.language).toBe('en')
           expect(params.country).toBeUndefined()
         })
 
@@ -230,16 +230,16 @@ describe('request default parameters formation', () => {
 
       return defaultParams.default()
         .then(params => {
-          expect(params.language).toEqual('fr')
-          expect(params.country).toEqual('fr')
+          expect(params.language).toBe('fr')
+          expect(params.country).toBe('fr')
 
           navigatorLanguage.mockReturnValueOnce('en-US')
 
           return defaultParams.default()
         })
         .then(params => {
-          expect(params.language).toEqual('en')
-          expect(params.country).toEqual('us')
+          expect(params.language).toBe('en')
+          expect(params.country).toBe('us')
         })
 
     })
