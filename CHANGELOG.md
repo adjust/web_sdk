@@ -1,4 +1,4 @@
-### Version 5.6.0 (31st January 2023)
+### Version 5.6.0 (30th January 2023)
 #### Added
 - Added a return of Promise from `trackEvent` method.
 
