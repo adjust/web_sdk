@@ -27,27 +27,7 @@ You can check how our SDK can be used in the web app by checking [example app][e
 
 This SDK can be used to track installs, sessions and events. Simply add the Adjust Web SDK to your web app.
 
-Our sdk is exposed under all module definitions, so it works under CommonJS and AMD environments and is also available through global `Adjust` when loaded through CDN.
-
-To lazy <a id="loading-snippet">load the Adjust Web SDK through CDN</a> paste the following snippet into the `<head>` tag:
-```html
-<script type="application/javascript">
-!function(t,e,a,r,n,s,d,l,o,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<l.length;c++)o(t.Adjust,t.Adjust_q,l[c]);i=e.createElement(a),u=e.getElementsByTagName(a)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,0,0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
-</script>
-```
-
-The Adjust Web SDK should be loaded only once per page and it should be initiated once per page load.
-
-When loading the sdk through CDN we suggest using minified version. You can target specific version like `https://cdn.adjust.com/adjust-5.6.0.min.js`, or you can target latest version `https://cdn.adjust.com/adjust-latest.min.js` if you want automatic updates without need to change the target file. The sdk files are cached so they are served as fast as possible, and the cache is refreshed every half an hour. If you want updates immediately make sure to target specific version.
-
-You may want to use [Subresource Integrity (SRI)](sri-mdn) feature to mitigate XSS attacks risk. In this case you could use the loading snippet that enables SRI check instructing browser to validate the script before running it:
-```html
-<script type="application/javascript">
-!function(t,e,a,r,n,s,o,d,l,i,u){t.Adjust=t.Adjust||{},t.Adjust_q=t.Adjust_q||[];for(var c=0;c<d.length;c++)l(t.Adjust,t.Adjust_q,d[c]);i=e.createElement(a),u=e.getElementsByTagName(a)[0],i.async=!0,i.src="https://cdn.adjust.com/adjust-latest.min.js",i.crossOrigin="anonymous",i.integrity=s,i.onload=function(){for(var e=0;e<t.Adjust_q.length;e++)t.Adjust[t.Adjust_q[e][0]].apply(t.Adjust,t.Adjust_q[e][1]);t.Adjust_q=[]},u.parentNode.insertBefore(i,u)}(window,document,"script",0,0,"sha384-BqbTn9xyk5DPznti1ZP8ksxKiOFhKufLBFWm5eNMCnZABFSG1eqQfcu5dsiZJHu5",0,["initSdk","getAttribution","getWebUUID","setReferrer","trackEvent","addGlobalCallbackParameters","addGlobalPartnerParameters","removeGlobalCallbackParameter","removeGlobalPartnerParameter","clearGlobalCallbackParameters","clearGlobalPartnerParameters","switchToOfflineMode","switchBackToOnlineMode","stop","restart","gdprForgetMe","disableThirdPartySharing","initSmartBanner","showSmartBanner","hideSmartBanner"],(function(t,e,a){t[a]=function(){e.push([a,arguments])}}));
-</script>
-```
-
-It's also possible to install our sdk through NPM:
+To install the SDK use npm:
 
 ```
 npm install @adjustcom/adjust-web-sdk --save
