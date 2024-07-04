@@ -13,7 +13,9 @@
     "eslint:recommended",
     "plugin:flowtype/recommended"
   ],
-  "plugins": ["flowtype"],
+  "plugins": [
+    "flowtype"
+  ],
   "globals": {
     "Promise": true,
     "__ADJUST__NAMESPACE": true,
@@ -21,9 +23,10 @@
     "Utils": true
   },
   "rules": {
-    "semi": ["error", "never"],
-    "space-before-function-paren": ["error", "always"],
-    "quotes": ["error", "single"],
+    "quotes": [
+      "error",
+      "single"
+    ],
     "prefer-arrow-callback": "error",
     "prefer-object-spread": "error",
     "flowtype/no-types-missing-file-annotation": "off"
@@ -35,20 +38,17 @@
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended"
       ],
-      "files": ["./src/**/*.ts"],
+      "files": [
+        "./src/**/*.ts"
+      ],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": "./tsconfig.json"
       },
-      "plugins": ["@typescript-eslint"],
+      "plugins": [
+        "@typescript-eslint"
+      ],
       "rules": {
-        "semi": ["error", "never"],
-        "space-before-function-paren": ["error", {
-            "anonymous": "always",
-            "named": "never",
-            "asyncArrow": "always"
-          }
-        ],
         "eol-last": "error",
         "@typescript-eslint/ban-types": "warn",
         "@typescript-eslint/explicit-module-boundary-types": "off",
@@ -56,12 +56,18 @@
       }
     },
     {
-      "extends": ["plugin:jest/style"],
-      "files": ["./src/**/*.spec.*"],
+      "extends": [
+        "plugin:jest/style"
+      ],
+      "files": [
+        "./src/**/*.spec.*"
+      ],
       "env": {
         "jest": true
       },
-      "plugins": ["jest"],
+      "plugins": [
+        "jest"
+      ],
       "rules": {
         "jest/prefer-to-have-length": "off",
         "jest/no-disabled-tests": "error",
