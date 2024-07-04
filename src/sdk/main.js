@@ -250,6 +250,21 @@ function disableThirdPartySharing(): void {
   })
 }
 
+/**  @deprecated */
+function initSmartBanner (): void {
+  Logger.error('function `initSmartBanner` is deprecated');
+}
+
+/**  @deprecated */
+function showSmartBanner (): void {
+  Logger.error('function `showSmartBanner` is deprecated');
+}
+
+/**  @deprecated */
+function hideSmartBanner (): void {
+  Logger.error('function `hideSmartBanner` is deprecated');
+}
+
 /**
  * Handle third party sharing disable
  *
@@ -568,6 +583,9 @@ const Adjust = {
   restart,
   gdprForgetMe,
   disableThirdPartySharing,
+  initSmartBanner,
+  showSmartBanner,
+  hideSmartBanner,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase
