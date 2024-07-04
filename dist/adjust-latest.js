@@ -6826,6 +6826,21 @@ function disableThirdPartySharing() /*: void*/{
   });
 }
 
+/**  @deprecated */
+function initSmartBanner() /*: void*/{
+  logger.error('function `initSmartBanner` is deprecated');
+}
+
+/**  @deprecated */
+function showSmartBanner() /*: void*/{
+  logger.error('function `showSmartBanner` is deprecated');
+}
+
+/**  @deprecated */
+function hideSmartBanner() /*: void*/{
+  logger.error('function `hideSmartBanner` is deprecated');
+}
+
 /**
  * Handle third party sharing disable
  *
@@ -7117,6 +7132,9 @@ var Adjust = {
   restart: restart,
   gdprForgetMe: gdprForgetMe,
   disableThirdPartySharing: disableThirdPartySharing,
+  initSmartBanner: initSmartBanner,
+  showSmartBanner: showSmartBanner,
+  hideSmartBanner: hideSmartBanner,
   __testonly__: {
     destroy: main_destroy,
     clearDatabase: _clearDatabase
