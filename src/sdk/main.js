@@ -6,38 +6,36 @@ import {
   type GlobalParamsT,
   type CustomErrorT,
   type ActivityStateMapT,
-  type SmartBannerOptionsT,
   type AttributionMapT
 } from './types'
 import Config from './config'
 import Storage from './storage/storage'
 import Logger from './logger'
-import {run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy} from './queue'
-import {subscribe, unsubscribe, destroy as pubSubDestroy} from './pub-sub'
-import {watch as sessionWatch, destroy as sessionDestroy} from './session'
-import {start, clear as identityClear, destroy as identityDestroy} from './identity'
-import {add, remove, removeAll, clear as globalParamsClear} from './global-params'
-import {check as attributionCheck, destroy as attributionDestroy} from './attribution'
-import {disable, restore, status} from './disable'
-import {check as gdprForgetCheck, forget, disable as gdprDisable, finish as gdprDisableFinish, destroy as gdprForgetDestroy} from './gdpr-forget-device'
-import {check as sharingDisableCheck, optOut as sharingOptOut, disable as sharingDisable, finish as sharingDisableFinish} from './third-party-sharing'
-import {register as listenersRegister, destroy as listenersDestroy} from './listeners'
-import {delay, flush, destroy as schedulerDestroy} from './scheduler'
+import { run as queueRun, setOffline, clear as queueClear, destroy as queueDestroy } from './queue'
+import { subscribe, unsubscribe, destroy as pubSubDestroy } from './pub-sub'
+import { watch as sessionWatch, destroy as sessionDestroy } from './session'
+import { start, clear as identityClear, destroy as identityDestroy } from './identity'
+import { add, remove, removeAll, clear as globalParamsClear } from './global-params'
+import { check as attributionCheck, destroy as attributionDestroy } from './attribution'
+import { disable, restore, status } from './disable'
+import { check as gdprForgetCheck, forget, disable as gdprDisable, finish as gdprDisableFinish, destroy as gdprForgetDestroy } from './gdpr-forget-device'
+import { check as sharingDisableCheck, optOut as sharingOptOut, disable as sharingDisable, finish as sharingDisableFinish } from './third-party-sharing'
+import { register as listenersRegister, destroy as listenersDestroy } from './listeners'
+import { delay, flush, destroy as schedulerDestroy } from './scheduler'
 import event from './event'
 import sdkClick from './sdk-click'
 import ActivityState from './activity-state'
 import { STORAGE_TYPES } from './constants'
-import { SmartBanner } from './smart-banner/smart-banner'
 
-type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>
+type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT |}>
 
-/**
- * In-memory parameters to be used if restarting
- *
- * @type {Object}
- * @private
- */
-let _options: ?InitOptionsT = null
+  /**
+   * In-memory parameters to be used if restarting
+   *
+   * @type {Object}
+   * @private
+   */
+  let _options: ? InitOptionsT = null
 
 /**
  * Flag to mark id sdk is in starting process
@@ -64,20 +62,13 @@ let _isStarted: boolean = false
 let _isInstalled: boolean = false
 
 /**
- * SmartBanner instance
- *
- * @private
- */
-let _smartBanner: ?SmartBanner = null
-
-/**
  * Initiate the instance with parameters
  *
  * @param {Object} options
  * @param {string} logLevel
  * @param {string} logOutput
  */
-function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
+function initSdk({ logLevel, logOutput, ...options }: InitConfigT = {}): void {
   Logger.setLogLevel(logLevel, logOutput)
 
   if (_isInitialised()) {
@@ -112,7 +103,7 @@ function initSdk ({logLevel, logOutput, ...options}: InitConfigT = {}): void {
  *
  * @returns {AttributionMapT|undefined} current attribution information if available or `undefined` otherwise
  */
-function getAttribution (): ?AttributionMapT {
+function getAttribution(): ?AttributionMapT {
   return _preCheck('get attribution', () => ActivityState.getAttribution())
 }
 
@@ -121,11 +112,11 @@ function getAttribution (): ?AttributionMapT {
  *
  * @returns {string|undefined} `web_uuid` if available or `undefined` otherwise
  */
-function getWebUUID (): ?string {
+function getWebUUID(): ?string {
   return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
 }
 
-function setReferrer (referrer: string) {
+function setReferrer(referrer: string) {
   if (!referrer || typeof referrer !== 'string') {
     Logger.error('You must provide a string referrer')
     return
@@ -143,7 +134,7 @@ function setReferrer (referrer: string) {
  *
  * @param {Object} params
  */
-function trackEvent (params: EventParamsT): Promise<void> {
+function trackEvent(params: EventParamsT): Promise<void> {
   return _internalTrackEvent(params)
 }
 
@@ -152,7 +143,7 @@ function trackEvent (params: EventParamsT): Promise<void> {
  *
  * @param {Array} params
  */
-function addGlobalCallbackParameters (params: Array<GlobalParamsT>): void {
+function addGlobalCallbackParameters(params: Array<GlobalParamsT>): void {
   _preCheck('add global callback parameters', () => add(params, 'callback'))
 }
 
@@ -161,7 +152,7 @@ function addGlobalCallbackParameters (params: Array<GlobalParamsT>): void {
  *
  * @param {Array} params
  */
-function addGlobalPartnerParameters (params: Array<GlobalParamsT>): void {
+function addGlobalPartnerParameters(params: Array<GlobalParamsT>): void {
   _preCheck('add global partner parameters', () => add(params, 'partner'))
 }
 
@@ -170,7 +161,7 @@ function addGlobalPartnerParameters (params: Array<GlobalParamsT>): void {
  *
  * @param {string} key
  */
-function removeGlobalCallbackParameter (key: string): void {
+function removeGlobalCallbackParameter(key: string): void {
   _preCheck('remove global callback parameter', () => remove(key, 'callback'))
 }
 
@@ -179,42 +170,42 @@ function removeGlobalCallbackParameter (key: string): void {
  *
  * @param {string} key
  */
-function removeGlobalPartnerParameter (key: string): void {
+function removeGlobalPartnerParameter(key: string): void {
   _preCheck('remove global partner parameter', () => remove(key, 'partner'))
 }
 
 /**
  * Remove all global callback parameters
  */
-function clearGlobalCallbackParameters (): void {
+function clearGlobalCallbackParameters(): void {
   _preCheck('remove all global callback parameters', () => removeAll('callback'))
 }
 
 /**
  * Remove all global partner parameters
  */
-function clearGlobalPartnerParameters (): void {
+function clearGlobalPartnerParameters(): void {
   _preCheck('remove all global partner parameters', () => removeAll('partner'))
 }
 
 /**
  * Switch offline mode
  */
-function switchToOfflineMode (): void {
+function switchToOfflineMode(): void {
   _preCheck('set offline mode', () => setOffline(true))
 }
 
 /**
  * Switch online mode
  */
-function switchBackToOnlineMode (): void {
+function switchBackToOnlineMode(): void {
   _preCheck('set online mode', () => setOffline(false))
 }
 
 /**
  * Stop SDK
  */
-function stop (): void {
+function stop(): void {
   const done = disable()
 
   if (done && Config.isInitialised()) {
@@ -225,7 +216,7 @@ function stop (): void {
 /**
  * Restart sdk if not GDPR forgotten
  */
-function restart (): void {
+function restart(): void {
   const done = restore()
 
   if (done && _options) {
@@ -236,7 +227,7 @@ function restart (): void {
 /**
  * Disable sdk and send GDPR-Forget-Me request
  */
-function gdprForgetMe (): void {
+function gdprForgetMe(): void {
   let done = forget()
 
   if (!done) {
@@ -253,37 +244,10 @@ function gdprForgetMe (): void {
 /**
  * Disable third party sharing
  */
-function disableThirdPartySharing (): void {
+function disableThirdPartySharing(): void {
   _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
     schedule: true
   })
-}
-
-function initSmartBanner (options: SmartBannerOptionsT): void {
-  if (_smartBanner) {
-    Logger.error('Smart Banner already initialised')
-    return
-  }
-
-  _smartBanner = new SmartBanner(options)
-}
-
-function showSmartBanner (): void {
-  if (!_smartBanner) {
-    Logger.error('Smart Banner is not initialised yet')
-    return
-  }
-
-  _smartBanner.show()
-}
-
-function hideSmartBanner (): void {
-  if (!_smartBanner) {
-    Logger.error('Smart Banner is not initialised yet')
-    return
-  }
-
-  _smartBanner.hide()
 }
 
 /**
@@ -291,7 +255,7 @@ function hideSmartBanner (): void {
  *
  * @private
  */
-function _handleDisableThirdPartySharing (): void {
+function _handleDisableThirdPartySharing(): void {
   let done = sharingOptOut()
 
   if (!done) {
@@ -306,7 +270,7 @@ function _handleDisableThirdPartySharing (): void {
  *
  * @private
  */
-function _handleGdprForgetMe (): void {
+function _handleGdprForgetMe(): void {
   if (status() !== 'paused') {
     return
   }
@@ -326,7 +290,7 @@ function _handleGdprForgetMe (): void {
  *
  * @private
  */
-function _isInitialised (): boolean {
+function _isInitialised(): boolean {
   return _isInitialising || Config.isInitialised()
 }
 
@@ -338,7 +302,7 @@ function _isInitialised (): boolean {
  *
  * @private
  */
-function _pause (): void {
+function _pause(): void {
   _isInitialising = false
   _isStarted = false
 
@@ -352,7 +316,7 @@ function _pause (): void {
  * Shutdown all dependencies
  * @private
  */
-function _shutdown (async): void {
+function _shutdown(async): void {
   if (async) {
     Logger.log('Adjust SDK has been shutdown due to asynchronous disable')
   }
@@ -371,7 +335,7 @@ function _shutdown (async): void {
  *
  * @private
  */
-function _destroy (): void {
+function _destroy(): void {
   _isInstalled = false
 
   _shutdown()
@@ -389,7 +353,7 @@ function _destroy (): void {
  * @returns {Promise|boolean}
  * @private
  */
-function _continue (activityState: ActivityStateMapT): Promise<void> {
+function _continue(activityState: ActivityStateMapT): Promise<void> {
   Logger.log(`Adjust SDK is starting with web_uuid set to ${activityState.uuid}`)
 
   const isInstalled = ActivityState.current.installed
@@ -405,19 +369,19 @@ function _continue (activityState: ActivityStateMapT): Promise<void> {
 
   if (sdkStatus === 'off') {
     _shutdown()
-    return Promise.reject({interrupted: true, message: message('due to complete async disable')})
+    return Promise.reject({ interrupted: true, message: message('due to complete async disable') })
   }
 
   if (sdkStatus === 'paused') {
     _pause()
-    return Promise.reject({interrupted: true, message: message('due to partial async disable')})
+    return Promise.reject({ interrupted: true, message: message('due to partial async disable') })
   }
 
   if (_isStarted) {
-    return Promise.reject({interrupted: true, message: message('due to multiple synchronous start attempt')})
+    return Promise.reject({ interrupted: true, message: message('due to multiple synchronous start attempt') })
   }
 
-  queueRun({cleanUp: true})
+  queueRun({ cleanUp: true })
 
   return sessionWatch()
     .then(() => {
@@ -434,7 +398,7 @@ function _continue (activityState: ActivityStateMapT): Promise<void> {
 /**
  * Handles SDK installed and runs delayed tasks
  */
-function _handleSdkInstalled () {
+function _handleSdkInstalled() {
   _isInstalled = true
 
   flush()
@@ -448,7 +412,7 @@ function _handleSdkInstalled () {
  * @param {Object|Error} error
  * @private
  */
-function _error (error: CustomErrorT | Error) {
+function _error(error: CustomErrorT | Error) {
   if (error.interrupted) {
     Logger.log(error.message)
     return
@@ -483,7 +447,7 @@ function _error (error: CustomErrorT | Error) {
  * @param {Function=} options.attributionCallback
  * @private
  */
-function _start (options: InitOptionsT): void {
+function _start(options: InitOptionsT): void {
   if (status() === 'off') {
     Logger.log('Adjust SDK is disabled, can not start the sdk')
     return
@@ -509,7 +473,7 @@ function _start (options: InitOptionsT): void {
     .catch(_error)
 }
 
-function _internalTrackEvent (params: EventParamsT) {
+function _internalTrackEvent(params: EventParamsT) {
   if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     const reason = 'Adjust SDK can not track event, no storage available'
     Logger.log(reason)
@@ -548,7 +512,7 @@ function _internalTrackEvent (params: EventParamsT) {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck (description: string, callback: () => mixed, {schedule, waitForInitFinished, optionalInit}: {schedule?: boolean, waitForInitFinished?: boolean, optionalInit?: boolean} = {}): mixed {
+function _preCheck(description: string, callback: () => mixed, { schedule, waitForInitFinished, optionalInit }: { schedule?: boolean, waitForInitFinished?: boolean, optionalInit?: boolean } = {}): mixed {
   if (Storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     Logger.log(`Adjust SDK can not ${description}, no storage available`)
     return
@@ -574,11 +538,11 @@ function _preCheck (description: string, callback: () => mixed, {schedule, waitF
   }
 }
 
-function _clearDatabase () {
+function _clearDatabase() {
   return Storage.deleteDatabase()
 }
 
-function _restartAfterAsyncEnable () {
+function _restartAfterAsyncEnable() {
   Logger.log('Adjust SDK has been restarted due to asynchronous enable')
 
   if (_options) {
@@ -604,9 +568,6 @@ const Adjust = {
   restart,
   gdprForgetMe,
   disableThirdPartySharing,
-  initSmartBanner,
-  showSmartBanner,
-  hideSmartBanner,
   __testonly__: {
     destroy: _destroy,
     clearDatabase: _clearDatabase
