@@ -1,4 +1,4 @@
-### Version 5.7.0 (SOME_DAY May 2024)
+### Version 5.7.0 ( DATE )
 #### Added
 
 
@@ -6,7 +6,7 @@
 
 
 #### Changed
-- Outdated Smart Banners removed
+- Outdated Smart Banners removed.
 
 ---
 
