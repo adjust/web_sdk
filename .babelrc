@@ -1,35 +1,22 @@
 {
   "presets": [
     "@babel/preset-flow",
-    [
-      "@babel/preset-env",
-      {
-        "targets": ">0.25%, not dead, ie 11"
-      }
-    ]
+    ["@babel/preset-env", {
+      "targets": ">0.25%, not dead, ie 11"
+    }]
   ],
   "plugins": [
     "@babel/plugin-transform-flow-comments",
-    [
-      "@babel/plugin-transform-runtime",
-      {
-        "version": "7.24.3"
-      }
-    ]
+    ["@babel/plugin-transform-runtime", {"version": "7.24.3"}]
   ],
   "overrides": [
     {
-      "test": [
-        "./src/**/*.ts"
-      ],
+      "test": ["./src/**/*.ts"],
       "presets": [
         "@babel/preset-typescript",
-        [
-          "@babel/preset-env",
-          {
-            "targets": ">0.25%, not dead, ie 11"
-          }
-        ]
+        ["@babel/preset-env", {
+          "targets": ">0.25%, not dead, ie 11"
+        }]
       ]
     }
   ]

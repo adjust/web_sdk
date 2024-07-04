@@ -253,7 +253,7 @@ describe('test session functionality', () => {
       expect(setInterval).toHaveBeenCalledTimes(1)
       expect(activityState.timeSpent).toBe(0)
       expect(activityState.sessionLength).toBe(0)
-      expect(activityState.lastInterval).toEqual(-1)
+      expect(activityState.lastInterval).toBe(-1)
 
       return Utils.flushPromises()
         .then(() => {
@@ -579,7 +579,7 @@ describe('test session functionality', () => {
       expect(clearInterval).toHaveBeenCalledTimes(1)
       expect(activityState.timeSpent).toBe(0)
       expect(activityState.sessionLength).toBe(0)
-      expect(activityState.lastInterval).toEqual(-1)
+      expect(activityState.lastInterval).toBe(-1)
 
       PubSub.publish('session:finished', {adid: 'bla'})
       jest.runOnlyPendingTimers()
