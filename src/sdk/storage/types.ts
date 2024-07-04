@@ -36,4 +36,4 @@ function valueIsRecord(value: StoredValue | Record<string, unknown>): value is R
   return isObject(value)
 }
 
-export { IStorage, KeyRangeCondition, StoredValue, StoredRecord, StoredRecordId, Error, valueIsRecord }
+export { IStorage, KeyRangeCondition, StoredValue, StoredRecord, StoredRecordId, type Error, valueIsRecord }

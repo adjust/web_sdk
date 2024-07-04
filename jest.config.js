@@ -11,6 +11,7 @@ module.exports = {
     '<rootDir>/node_modules/',
     '<rootDir>/src/sdk/__tests__/_setup/_utils.js',
     '<rootDir>/src/sdk/__tests__/_setup/_matchers.js',
+    '<rootDir>/src/sdk/__tests__/_setup/_structuredClone.js',
     '<rootDir>/src/sdk/__tests__/_setup/global.d.ts',
     '<rootDir>/src/sdk/__tests__/main/main.suite.js',
     '<rootDir>/src/sdk/__tests__/storage/storage.suite.js'
@@ -18,6 +19,7 @@ module.exports = {
   setupFiles: [
     'jest-localstorage-mock',
     '<rootDir>/src/sdk/__tests__/_setup/_utils.js',
+    '<rootDir>/src/sdk/__tests__/_setup/_structuredClone.js',
     '<rootDir>/src/sdk/__tests__/_setup/global.d.ts',
   ],
   setupFilesAfterEnv: [
