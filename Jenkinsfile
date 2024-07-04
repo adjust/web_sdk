@@ -2,7 +2,7 @@
 
 pipeline {
   tools {
-    nodejs 'nodejs_14.20.0'
+    nodejs 'nodejs_20.11.1'
   }
   agent {
     node {
