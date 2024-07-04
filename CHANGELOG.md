@@ -1,3 +1,15 @@
+### Version 5.7.0 (SOME_DAY May 2024)
+#### Added
+
+
+#### Fixed
+
+
+#### Changed
+- Outdated Smart Banners removed
+
+---
+
 ### Version 5.6.0 (30th January 2023)
 #### Added
 - Added a return of Promise from `trackEvent` method.
