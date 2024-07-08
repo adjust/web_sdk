@@ -10,10 +10,12 @@ interface Window {
 }
 
 interface IDBError extends Event {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   target: any
 }
 
 interface IDBRequest<T> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onerror: ((this: IDBRequest<T>, ev: IDBError) => any) | null;
 }
 
@@ -35,6 +37,7 @@ interface IDBOpenDBEvent extends Event {
 }
 
 interface IDBOpenDBRequest extends IDBRequest<IDBDatabase> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onsuccess: ((this: IDBOpenDBRequest, ev: IDBOpenDBEvent) => any) | null;
 }
 
@@ -47,5 +50,6 @@ interface OpenIDBCursorEvent extends Event {
 }
 
 interface OpenIDBCursorRequest extends IDBRequest<IDBCursorWithValue | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onsuccess: ((this: OpenIDBCursorRequest, ev: OpenIDBCursorEvent) => any) | null;
 }

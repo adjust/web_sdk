@@ -107,7 +107,7 @@ describe('test for utility methods', () => {
         id: 2, text: 'smor'
       }, {
         id: 3, text: 'trt'
-      }], 'id', 4)).toEqual(-1)
+      }], 'id', 4)).toBe(-1)
     })
   })
 

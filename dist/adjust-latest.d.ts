@@ -371,57 +371,6 @@ declare namespace Adjust {
    * manner as it does for GDPR Forget me.
    */
   function disableThirdPartySharing(): void
-
-  interface SmartBannerOptions {
-
-    /** Web token to initialise Smart Banner */
-    webToken: string;
-
-    /** Optional. Logging level used by SDK instance. By default this param is set to `error`. We highly recommend that
-     * you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
-     * Here are more details about each log level:
-     * - `verbose` - will print detailed messages in case of certain actions
-     * - `info` - will print only basic info messages, warnings and errors
-     * - `warning` - will print only warning and error messages
-     * - `error` - will print only error message
-     * - `none` - won't print anything
-     */
-    logLevel?: LogLevel;
-
-    /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
-     * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
-     * Adjust will store your data in a data center located in the region your have chosen. */
-    dataResidency?: 'EU' | 'TR' | 'US';
-
-    /** Optional. Callback which is called when SmartBanner view is created and shown. */
-    onCreated?: () => any;
-
-    /** Optional. Callback which is called when SmartBanner is being dismissed with a closing button on it. */
-    onDismissed?: () => any;
-  }
-
-  /**
-   * Initiate Smart Banner.
-   *
-   * This method gets Smart Banner data and creates Smart Banner UI.
-   *
-   * @param {SmartBannerOptions} options Options to initiate Smart Banner.
-   *
-   * @example
-   * Adjust.initSmartBanner({
-   *   webToken: 'YOUR_WEB_TOKEN',
-   *   logLevel: 'verbose'
-   * });
-   *
-   * @example
-   * Adjust.initSmartBanner({
-   *   webToken: 'YOUR_WEB_TOKEN',
-   *   logLevel: 'error',
-   *   dataResidency: 'EU',
-   * });
-   */
-  function initSmartBanner(options: SmartBannerOptions): void
-
 }
 
 export default Adjust

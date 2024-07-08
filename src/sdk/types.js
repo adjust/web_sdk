@@ -231,12 +231,6 @@ export type QueueSizeT = {|
   queueSize: number
 |}
 
-export type SmartBannerOptionsT = {|
-  webToken: string,
-  logLevel: 'none' | 'error' | 'warning' | 'info' | 'verbose',
-  dataResidency: 'EU' | 'TR' | 'US',
-|}
-
 export type DefaultParamsT = {|
   ...CreatedAtT,
   ...SentAtT,

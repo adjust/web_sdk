@@ -1,6 +1,6 @@
-import {hyphenToCamelCase} from '../utils'
-import {getItem, setItem, clear} from '../storage'
-import {write, clear as clearLog} from '../log'
+import { hyphenToCamelCase } from '../utils'
+import { getItem, setItem, clear } from '../storage'
+import { write, clear as clearLog } from '../log'
 import Adjust from '../../sdk/main'
 
 const _ui = {}
@@ -10,8 +10,8 @@ let _disabled = false
 let _defaultAppConfig = {}
 let _timeoutId = null
 
-function init (defaultAppConfig) {
-  _defaultAppConfig = {...defaultAppConfig}
+function init(defaultAppConfig) {
+  _defaultAppConfig = { ...defaultAppConfig }
 
   _ui.logTab = document.getElementById('log-tab')
   _ui.logTabContainer = document.getElementById('log-tab-container')
@@ -37,7 +37,7 @@ function init (defaultAppConfig) {
   _ui.resetButton.addEventListener('click', _handleReset, false)
 }
 
-function _handleTab (e) {
+function _handleTab(e) {
   const key = hyphenToCamelCase(e.target.id)
   const tab = _ui[key]
   const container = _ui[key + 'Container']
@@ -55,22 +55,22 @@ function _handleTab (e) {
   _active.container = container
 }
 
-function _getAppConfig (form) {
+function _getAppConfig(form) {
   return Object.keys(form)
     .map(key => [key, form[key].value])
     .filter(([, value]) => value)
-    .reduce((acc, [key, value]) => ({...acc, [key]: value}), {})
+    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
 }
 
-function _reflectConfigInForm (appConfig, form) {
+function _reflectConfigInForm(appConfig, form) {
   Object.keys(form).map(key => form[key].value = appConfig[key] || '')
 }
 
-function _handleClearLog () {
+function _handleClearLog() {
   clearLog()
 }
 
-function _handleSave (e) {
+function _handleSave(e) {
   e.preventDefault()
 
   if (_disabled) {
@@ -91,7 +91,7 @@ function _handleSave (e) {
     _ui.submitButton.classList.remove('loading')
     _ui.submitButton.disabled = false
 
-    _handleTab({target: {id: 'log-tab'}})
+    _handleTab({ target: { id: 'log-tab' } })
     Adjust.__testonly__.destroy()
     Adjust.initSdk({
       ...appConfig,
@@ -100,7 +100,7 @@ function _handleSave (e) {
   })
 }
 
-function _handleRestoreDefaultConfig () {
+function _handleRestoreDefaultConfig() {
   if (_disabled) {
     return
   }
@@ -111,7 +111,7 @@ function _handleRestoreDefaultConfig () {
 
   setItem('appConfig', null)
 
-  const appConfig = {..._defaultAppConfig}
+  const appConfig = { ..._defaultAppConfig }
 
   _reflectConfigInForm(appConfig, _form)
   _setJson(appConfig)
@@ -124,7 +124,7 @@ function _handleRestoreDefaultConfig () {
   })
 }
 
-function _handleReset () {
+function _handleReset() {
   if (_disabled) {
     return
   }
@@ -151,24 +151,17 @@ function _handleReset () {
     })
 }
 
-function _handleAttributionChange (e, result) {
+function _handleAttributionChange(e, result) {
   write('NEW ATTRIBUTION')
   write(JSON.stringify(result, undefined, 2))
 }
 
-function _prepareForm () {
-  const appConfig = getItem('appConfig') || {..._defaultAppConfig}
+function _prepareForm() {
+  const appConfig = getItem('appConfig') || { ..._defaultAppConfig }
 
   Adjust.initSdk({
     ...appConfig,
     attributionCallback: _handleAttributionChange
-  })
-  Adjust.initSmartBanner({
-    ...appConfig,
-    webToken: 'p6o2pnb1zkzk',
-    logLevel: 'verbose',
-    onCreated: () => write('Hey, where is a Smart Banner!'),
-    onDismissed: () => write('Oh, you have dismissed the Smart Banner'),
   })
 
   _form.appToken = _ui.appConfigForm.querySelector('#app-token')
@@ -186,7 +179,7 @@ function _prepareForm () {
   _setJson(appConfig)
 }
 
-function _setJson (appConfig) {
+function _setJson(appConfig) {
   _ui.appConfigJson.textContent = `Adjust.initSdk(${JSON.stringify(appConfig, undefined, 2)})`
 }
 

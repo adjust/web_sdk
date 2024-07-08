@@ -33,7 +33,7 @@ function _handleSave (e) {
   _ui.submitButton.disabled = true
 
   const referrerConfig = {
-    [_form.reffererKey.value]: _form.reffererValue.value
+    [_form.referrerKey.value]: _form.referrerValue.value
   }
 
   _setJson(referrerConfig)
@@ -81,12 +81,12 @@ function _handleToggle (e) {
 function _prepareForm () {
   const referrerConfig = getItem('referrerConfig') || {..._defaultReferrerConfig}
 
-  _form.reffererKey = _ui.referrerConfigForm.querySelector('#refferer-key')
-  _form.reffererValue = _ui.referrerConfigForm.querySelector('#refferer-value')
+  _form.referrerKey = _ui.referrerConfigForm.querySelector('#referrer-key')
+  _form.referrerValue = _ui.referrerConfigForm.querySelector('#referrer-value')
 
   Object.keys(referrerConfig).map(key => {
-    _form.reffererKey.value = key
-    _form.reffererValue.value = referrerConfig[key]
+    _form.referrerKey.value = key
+    _form.referrerValue.value = referrerConfig[key]
   })
 
   _setJson(referrerConfig)
@@ -94,8 +94,8 @@ function _prepareForm () {
 
 function _setJson (referrerConfig) {
   Object.keys(referrerConfig).map(key => {
-    _form.reffererKey.value = key
-    _form.reffererValue.value = referrerConfig[key]
+    _form.referrerKey.value = key
+    _form.referrerValue.value = referrerConfig[key]
   })
 
   _ui.referrerConfigJson.textContent = `Adjust.setReferrer("${_referrerConfigToString(referrerConfig)}")`
