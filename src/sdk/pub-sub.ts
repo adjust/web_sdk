@@ -1,47 +1,33 @@
-// @flow
-import {entries} from './utilities'
+import { entries } from './utilities'
 
-type CallbackT<T> = {|
+type CallbackWithId<T = unknown> = {
   id: string,
-  cb: (string, T) => mixed
-|}
+  cb: (name: string, arg?: T) => unknown
+}
 
 /**
  * List of events with subscribed callbacks
- *
- * @type {Object}
- * @private
  */
-let _list = {}
+let _list: Record<string, Array<CallbackWithId>> = {}
 
 /**
  * Reference to timeout ids so they can be cleared on destroy
- *
- * @type {Array}
- * @private
  */
-let _timeoutIds = []
+let _timeoutIds: Array<ReturnType<typeof setTimeout>> = []
 
 /**
  * Get unique id for the callback to use for unsubscribe
- *
- * @returns {string}
- * @private
  */
-function _getId (): string {
-  return 'id' + Math.random().toString(36).substr(2, 16)
+function _getId(): string {
+  return 'id' + Math.random().toString(36).substring(2, 16)
 }
 
 /**
  * Subscribe to a certain event
- *
- * @param {string} name
- * @param {Function} cb
- * @returns {string}
  */
-function subscribe<T> (name: string, cb: $PropertyType<CallbackT<T>, 'cb'>): string {
+function subscribe<T>(name: string, cb: (name: string, arg: T) => unknown): string {
   const id = _getId()
-  const callback: CallbackT<T> = {id, cb}
+  const callback: CallbackWithId<T> = { id, cb }
 
   if (!_list[name]) {
     _list[name] = []
@@ -54,38 +40,31 @@ function subscribe<T> (name: string, cb: $PropertyType<CallbackT<T>, 'cb'>): str
 
 /**
  * Unsubscribe particular callback from an event
- *
- * @param {string} id
  */
-function unsubscribe (id: string): void {
+function unsubscribe(id: string) {
   if (!id) {
     return
   }
 
   entries(_list)
     .some(([, callbacks]) => callbacks
-      .some(<T>(callback: CallbackT<T>, i: number) => {
+      .some(<T>(callback: CallbackWithId<T>, i: number) => {
         if (callback.id === id) {
           callbacks.splice(i, 1)
-          return true
         }
       }))
 }
 
 /**
  * Publish certain event with optional arguments
- *
- * @param {string} name
- * @param {*} args
- * @returns {Array}
  */
-function publish<T> (name: string, args: T): void {
+function publish<T>(name: string, args?: T): void {
   if (!_list[name]) {
     return
   }
 
   _list[name]
-    .forEach((item: CallbackT<T>) => {
+    .forEach((item: CallbackWithId<T>) => {
       if (typeof item.cb === 'function') {
         _timeoutIds.push(setTimeout(() => item.cb(name, args)))
       }
@@ -95,7 +74,7 @@ function publish<T> (name: string, args: T): void {
 /**
  * Destroy all registered events with their callbacks
  */
-function destroy (): void {
+function destroy(): void {
   _timeoutIds.forEach(clearTimeout)
   _timeoutIds = []
   _list = {}
