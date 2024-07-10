@@ -75,9 +75,11 @@ function start(): Promise<ActivityStateMapT> {
           return activityState
         })
     })
-    .then((activityState: ActivityStateMapT) => {
+    .then((activityState: ActivityStateMapT | null) => {
       if (activityState) {
         publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, activityState.uuid)
+      } else {
+        publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, 'gdpr_forgotten')
       }
       return activityState
     })
