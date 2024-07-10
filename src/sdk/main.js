@@ -130,7 +130,7 @@ function getWebUUID(): ?string {
 /**
  * Returns a promise which resolves when `web_uuid` becomes available
  */
-function waitForWebUUID() {
+function waitForWebUUID(): Promise<string> {
   return _preCheck('get web_uuid', () => ActivityState.waitForWebUUID(), {schedule: false})
 }
 
