@@ -15,6 +15,7 @@ import {persist} from './identity'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Request from './request'
+import { PUB_SUB_EVENTS } from './constants'
 
 /**
  * Http request instance
@@ -92,6 +93,7 @@ function _setAttribution (result: HttpSuccessResponseT): Promise<AttributionStat
   return persist()
     .then(() => {
       publish('attribution:change', attribution)
+      publish(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, attribution)
       Logger.info('Attribution has been updated')
       return {state: 'changed'}
     })
