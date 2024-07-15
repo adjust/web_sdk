@@ -271,6 +271,10 @@ var ENDPOINTS = {
     gdpr: 'https://gdpr.us.adjust.com'
   }
 };
+var PUB_SUB_EVENTS = {
+  WEB_UUID_CREATED: 'activity:web_uuid',
+  ATTRIBUTION_RECEIVED: 'activity:attribution'
+};
 ;// CONCATENATED MODULE: ./src/sdk/utilities.ts
 
 
@@ -1393,10 +1397,93 @@ function timePassed(d1 /*: number*/, d2 /*: number*/) /*: number*/{
   return Math.abs(d2 - d1);
 }
 
+;// CONCATENATED MODULE: ./src/sdk/pub-sub.ts
+
+
+/**
+ * List of events with subscribed callbacks
+ */
+var _list /*: Record<string, Array<CallbackWithId>>*/ = {};
+
+/**
+ * Reference to timeout ids so they can be cleared on destroy
+ */
+var _timeoutIds /*: Array<ReturnType<typeof setTimeout>>*/ = [];
+
+/**
+ * Get unique id for the callback to use for unsubscribe
+ */
+function _getId() /*: string*/{
+  return 'id' + Math.random().toString(36).substring(2, 16);
+}
+
+/**
+ * Subscribe to a certain event
+ */
+function subscribe /*:: <T>*/(name /*: string*/, cb /*: (name: string, arg: T) => unknown*/) /*: string*/{
+  var id = _getId();
+  var callback /*: CallbackWithId<T>*/ = {
+    id: id,
+    cb: cb
+  };
+  if (!_list[name]) {
+    _list[name] = [];
+  }
+  _list[name].push(callback);
+  return id;
+}
+
+/**
+ * Unsubscribe particular callback from an event
+ */
+function unsubscribe(id /*: string*/) {
+  if (!id) {
+    return;
+  }
+  entries(_list).some(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      callbacks = _ref2[1];
+    return callbacks.some(function
+      /*:: <T>*/
+    (callback /*: CallbackWithId<T>*/, i /*: number*/) {
+      if (callback.id === id) {
+        callbacks.splice(i, 1);
+      }
+    });
+  });
+}
+
+/**
+ * Publish certain event with optional arguments
+ */
+function publish /*:: <T>*/(name /*: string*/, args /*: T*/) /*: void*/{
+  if (!_list[name]) {
+    return;
+  }
+  _list[name].forEach(function (item /*: CallbackWithId<T>*/) {
+    if (typeof item.cb === 'function') {
+      _timeoutIds.push(setTimeout(function () {
+        return item.cb(name, args);
+      }));
+    }
+  });
+}
+
+/**
+ * Destroy all registered events with their callbacks
+ */
+function pub_sub_destroy() /*: void*/{
+  _timeoutIds.forEach(clearTimeout);
+  _timeoutIds = [];
+  _list = {};
+}
+
 ;// CONCATENATED MODULE: ./src/sdk/activity-state.js
 
 /*:: // 
 import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonRequestParams } from './types';*/
+
+
 
 
 
@@ -1701,11 +1788,31 @@ function getAttribution() /*: AttributionMapT | null*/{
   }
   return _activityState.attribution;
 }
+function waitForAttribution() /*: Promise<AttributionMapT>*/{
+  if (_activityState.attribution) {
+    return Promise.resolve(_activityState.attribution);
+  }
+  return new Promise(function (resolve) {
+    return subscribe(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, function (_name /*: string*/, attribution /*: AttributionMapT*/) {
+      return resolve(attribution);
+    });
+  });
+}
 function getWebUUID() /*: string*/{
   if (!_started) {
     return null;
   }
   return _activityState.uuid;
+}
+function waitForWebUUID() /*: Promise<string>*/{
+  if (_activityState.uuid) {
+    return Promise.resolve(_activityState.uuid);
+  }
+  return new Promise(function (resolve) {
+    return subscribe(PUB_SUB_EVENTS.WEB_UUID_CREATED, function (_name /*: string*/, webUuid /*: string*/) {
+      return resolve(webUuid);
+    });
+  });
 }
 var ActivityState = {
   get current() {
@@ -1728,114 +1835,11 @@ var ActivityState = {
   updateLastActive: updateLastActive,
   destroy: activity_state_destroy,
   getAttribution: getAttribution,
-  getWebUUID: getWebUUID
+  getWebUUID: getWebUUID,
+  waitForAttribution: waitForAttribution,
+  waitForWebUUID: waitForWebUUID
 };
 /* harmony default export */ const activity_state = (ActivityState);
-;// CONCATENATED MODULE: ./src/sdk/pub-sub.js
-
-
-/*:: type CallbackT<T> = {|
-  id: string,
-  cb: (string, T) => mixed
-|}*/
-/**
- * List of events with subscribed callbacks
- *
- * @type {Object}
- * @private
- */
-var _list = {};
-
-/**
- * Reference to timeout ids so they can be cleared on destroy
- *
- * @type {Array}
- * @private
- */
-var _timeoutIds = [];
-
-/**
- * Get unique id for the callback to use for unsubscribe
- *
- * @returns {string}
- * @private
- */
-function _getId() /*: string*/{
-  return 'id' + Math.random().toString(36).substr(2, 16);
-}
-
-/**
- * Subscribe to a certain event
- *
- * @param {string} name
- * @param {Function} cb
- * @returns {string}
- */
-function subscribe /*:: <T>*/(name /*: string*/, cb /*: $PropertyType<CallbackT<T>, 'cb'>*/) /*: string*/{
-  var id = _getId();
-  var callback /*: CallbackT<T>*/ = {
-    id: id,
-    cb: cb
-  };
-  if (!_list[name]) {
-    _list[name] = [];
-  }
-  _list[name].push(callback);
-  return id;
-}
-
-/**
- * Unsubscribe particular callback from an event
- *
- * @param {string} id
- */
-function unsubscribe(id /*: string*/) /*: void*/{
-  if (!id) {
-    return;
-  }
-  entries(_list).some(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      callbacks = _ref2[1];
-    return callbacks.some(function
-      /*:: <T>*/
-    (callback /*: CallbackT<T>*/, i /*: number*/) {
-      if (callback.id === id) {
-        callbacks.splice(i, 1);
-        return true;
-      }
-    });
-  });
-}
-
-/**
- * Publish certain event with optional arguments
- *
- * @param {string} name
- * @param {*} args
- * @returns {Array}
- */
-function publish /*:: <T>*/(name /*: string*/, args /*: T*/) /*: void*/{
-  if (!_list[name]) {
-    return;
-  }
-  _list[name].forEach(function (item /*: CallbackT<T>*/) {
-    if (typeof item.cb === 'function') {
-      _timeoutIds.push(setTimeout(function () {
-        return item.cb(name, args);
-      }));
-    }
-  });
-}
-
-/**
- * Destroy all registered events with their callbacks
- */
-function pub_sub_destroy() /*: void*/{
-  _timeoutIds.forEach(clearTimeout);
-  _timeoutIds = [];
-  _list = {};
-}
-
 ;// CONCATENATED MODULE: ./src/sdk/storage/quick-storage.ts
 
 
@@ -5050,10 +5054,7 @@ function disable_status() /*: StatusT*/{
   return 'on';
 }
 
-;// CONCATENATED MODULE: ./src/sdk/identity.js
-
-/*:: // 
-import { type ActivityStateMapT } from './types';*/
+;// CONCATENATED MODULE: ./src/sdk/identity.ts
 
 
 
@@ -5061,32 +5062,15 @@ import { type ActivityStateMapT } from './types';*/
 
 
 
-/*:: type InterceptT = {|
-  exists: boolean,
-  stored?: ?ActivityStateMapT
-|}*/
-/**
- * Name of the store used by activityState
- *
- * @type {string}
- * @private
- */
-var identity_storeName = 'activityState';
 
-/**
- * Boolean used in start in order to avoid duplicated activity state
- *
- * @type {boolean}
- * @private
- */
+
+/** Name of the store used by activityState */
+var identity_storeName = StoreName.ActivityState;
+
+/** Boolean used in start in order to avoid duplicated activity state */
 var _starting /*: boolean*/ = false;
 
-/**
- * Generate random  uuid v4
- *
- * @returns {string}
- * @private
- */
+/** Generate random  uuid v4 */
 function _generateUuid() /*: string*/{
   var seed = Date.now();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -5096,13 +5080,7 @@ function _generateUuid() /*: string*/{
   });
 }
 
-/**
- * Inspect stored activity state and check if disable needs to be repeated
- *
- * @param {Object=} stored
- * @returns {Object}
- * @private
- */
+/** Inspect stored activity state and check if disable needs to be repeated */
 function _intercept(stored /*: ActivityStateMapT*/) /*: InterceptT*/{
   if (!stored) {
     return {
@@ -5128,8 +5106,6 @@ function _intercept(stored /*: ActivityStateMapT*/) /*: InterceptT*/{
 
 /**
  * Cache stored activity state into running memory
- *
- * @returns {Promise}
  */
 function start() /*: Promise<ActivityStateMapT>*/{
   if (_starting) {
@@ -5153,25 +5129,23 @@ function start() /*: Promise<ActivityStateMapT>*/{
       _starting = false;
       return activityState;
     });
+  }).then(function (activityState /*: ActivityStateMapT*/) {
+    if (activityState) {
+      publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, activityState.uuid);
+    }
+    return activityState;
   });
 }
 
-/**
- * Check if sdk is running at all (totally disabled or inactive activity state)
- *
- * @returns {boolean}
- * @private
- */
+/** Check if sdk is running at all (totally disabled or inactive activity state) */
 function _isLive() {
   return disable_status() !== 'off' && activity_state.isStarted();
 }
 
 /**
  * Persist changes made directly in activity state and update lastActive flag
- *
- * @returns {Promise}
  */
-function persist() /*: Promise<?ActivityStateMapT>*/{
+function persist() /*: Promise<ActivityStateMapT>*/{
   if (!_isLive()) {
     return Promise.resolve(null);
   }
@@ -5186,8 +5160,6 @@ function persist() /*: Promise<?ActivityStateMapT>*/{
 /**
  * Sync in-memory activityState with the one from store
  * - should be used when change from another tab is possible and critical
- *
- * @returns {Promise}
  */
 function sync() /*: Promise<ActivityStateMapT>*/{
   return storage.getFirst(identity_storeName).then(function (activityState /*: ActivityStateMapT*/) {
@@ -5210,7 +5182,7 @@ function sync() /*: Promise<ActivityStateMapT>*/{
 /**
  * Clear activity state store - set uuid to be unknown
  */
-function clear() /*: void*/{
+function clear() /*: Promise<unknown>*/{
   var newActivityState = {
     uuid: 'unknown'
   };
@@ -5949,6 +5921,7 @@ import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT,
 
 
 
+
 /**
  * Http request instance
  *
@@ -6027,6 +6000,7 @@ function _setAttribution(result /*: HttpSuccessResponseT*/) /*: Promise<Attribut
   });
   return persist().then(function () {
     publish('attribution:change', attribution);
+    publish(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, attribution);
     logger.info('Attribution has been updated');
     return {
       state: 'changed'
@@ -6663,6 +6637,8 @@ function initSdk() /*: void*/{
  * Get user's current attribution information
  *
  * @returns {AttributionMapT|undefined} current attribution information if available or `undefined` otherwise
+ *
+ * @deprecated Use {@link waitForAttribution} instead
  */
 function main_getAttribution() /*: ?AttributionMapT*/{
   return _preCheck('get attribution', function () {
@@ -6671,13 +6647,37 @@ function main_getAttribution() /*: ?AttributionMapT*/{
 }
 
 /**
+ * Returns a promise which resolves when current attribution information becomes available
+ */
+function main_waitForAttribution() /*: Promise<AttributionMapT>*/{
+  return _preCheck('get attribution', function () {
+    return activity_state.waitForAttribution();
+  }, {
+    schedule: false
+  });
+}
+
+/**
  * Get `web_uuid` - a unique ID of user generated per subdomain and per browser
  *
  * @returns {string|undefined} `web_uuid` if available or `undefined` otherwise
+ *
+ * @deprecated Use {@link waitForWebUUID} instead
  */
 function main_getWebUUID() /*: ?string*/{
   return _preCheck('get web_uuid', function () {
     return activity_state.getWebUUID();
+  });
+}
+
+/**
+ * Returns a promise which resolves when `web_uuid` becomes available
+ */
+function main_waitForWebUUID() /*: Promise<string>*/{
+  return _preCheck('get web_uuid', function () {
+    return activity_state.waitForWebUUID();
+  }, {
+    schedule: false
   });
 }
 function setReferrer(referrer /*: string*/) {
@@ -7118,6 +7118,8 @@ var Adjust = {
   initSdk: initSdk,
   getAttribution: main_getAttribution,
   getWebUUID: main_getWebUUID,
+  waitForAttribution: main_waitForAttribution,
+  waitForWebUUID: main_waitForWebUUID,
   setReferrer: setReferrer,
   trackEvent: trackEvent,
   addGlobalCallbackParameters: addGlobalCallbackParameters,

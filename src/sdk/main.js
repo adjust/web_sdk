@@ -102,18 +102,36 @@ function initSdk({ logLevel, logOutput, ...options }: InitConfigT = {}): void {
  * Get user's current attribution information
  *
  * @returns {AttributionMapT|undefined} current attribution information if available or `undefined` otherwise
+ *
+ * @deprecated Use {@link waitForAttribution} instead
  */
 function getAttribution(): ?AttributionMapT {
   return _preCheck('get attribution', () => ActivityState.getAttribution())
 }
 
 /**
+ * Returns a promise which resolves when current attribution information becomes available
+ */
+function waitForAttribution(): Promise<AttributionMapT> {
+  return _preCheck('get attribution', () => ActivityState.waitForAttribution(), {schedule: false})
+}
+
+/**
  * Get `web_uuid` - a unique ID of user generated per subdomain and per browser
  *
  * @returns {string|undefined} `web_uuid` if available or `undefined` otherwise
+ *
+ * @deprecated Use {@link waitForWebUUID} instead
  */
 function getWebUUID(): ?string {
   return _preCheck('get web_uuid', () => ActivityState.getWebUUID())
+}
+
+/**
+ * Returns a promise which resolves when `web_uuid` becomes available
+ */
+function waitForWebUUID(): Promise<string> {
+  return _preCheck('get web_uuid', () => ActivityState.waitForWebUUID(), {schedule: false})
 }
 
 function setReferrer(referrer: string) {
@@ -569,6 +587,8 @@ const Adjust = {
   initSdk,
   getAttribution,
   getWebUUID,
+  waitForAttribution,
+  waitForWebUUID,
   setReferrer,
   trackEvent,
   addGlobalCallbackParameters,

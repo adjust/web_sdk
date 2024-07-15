@@ -206,8 +206,15 @@ declare namespace Adjust {
    *
    * @example
    * const attribution = Adjust.getAttribution();
+   *
+   * @deprecated Use {@link waitForAttribution} instead
    */
   function getAttribution(): Attribution | undefined
+
+  /**
+   * Returns a promise which resolves when current attribution information becomes available
+   */
+  function waitForAttribution(): Promise<AttributionMapT>
 
   /**
    * Get web_uuid - a unique ID of user generated per subdomain and per browser
@@ -216,8 +223,15 @@ declare namespace Adjust {
    *
    * @example
    * const webUuid = Adjust.getWebUUID();
+   *
+   * @deprecated Use {@link waitForWebUUID} instead
    */
   function getWebUUID(): string | undefined
+
+  /**
+   * Returns a promise which resolves when `web_uuid` becomes available
+   */
+  function waitForWebUUID(): Promise<string>
 
   /**
    * Set referrer manually. Please note that `referrer` should be URL-encoded.

@@ -52,3 +52,8 @@ export const ENDPOINTS = {
     gdpr: 'https://gdpr.us.adjust.com'
   }
 }
+
+export const PUB_SUB_EVENTS = {
+  WEB_UUID_CREATED: 'activity:web_uuid',
+  ATTRIBUTION_RECEIVED: 'activity:attribution',
+}

@@ -1,5 +1,9 @@
 import * as ActivityState from '../activity-state'
-import {MINUTE, SECOND} from '../constants'
+import {
+  MINUTE, SECOND,
+  PUB_SUB_EVENTS
+} from '../constants'
+import { publish } from '../pub-sub'
 
 jest.mock('../logger')
 
@@ -16,7 +20,7 @@ describe('activity state functionality', () => {
   beforeEach(() => {
     currentTime = now
     dateNowSpy.mockReturnValue(currentTime)
-    ActivityState.default.init({uuid: 'some-uuid'})
+    ActivityState.default.init({ uuid: 'some-uuid' })
     ActivityState.default.initParams()
   })
 
@@ -32,7 +36,7 @@ describe('activity state functionality', () => {
 
   it('ensures that only copy is returned', () => {
 
-    const currentActivityState = {uuid: '123'}
+    const currentActivityState = { uuid: '123' }
 
     ActivityState.default.current = currentActivityState
 
@@ -41,16 +45,16 @@ describe('activity state functionality', () => {
 
     currentActivityState.bla = 'truc'
 
-    expect(currentActivityState).toEqual({uuid: '123', bla: 'truc'})
-    expect(ActivityState.default.current).toEqual({uuid: '123'})
+    expect(currentActivityState).toEqual({ uuid: '123', bla: 'truc' })
+    expect(ActivityState.default.current).toEqual({ uuid: '123' })
 
   })
 
   it('destroys activity state', () => {
 
-    ActivityState.default.current = {uuid: '123'}
+    ActivityState.default.current = { uuid: '123' }
 
-    expect(ActivityState.default.current).toEqual({uuid: '123'})
+    expect(ActivityState.default.current).toEqual({ uuid: '123' })
 
     ActivityState.default.destroy()
 
@@ -319,36 +323,72 @@ describe('activity state functionality', () => {
 
   describe('getting web-uuid', () => {
 
-    it('returns actual uuid', () => {
-      expect(ActivityState.default.getWebUUID()).toBe('some-uuid')
+    describe('sync getter', () => {
+      it('returns actual uuid', () => {
+        expect(ActivityState.default.getWebUUID()).toBe('some-uuid')
+      })
+
+      it('returns null when ActivityState is not initialised', () => {
+        ActivityState.default.destroy()
+        localStorage.clear()
+
+        expect(ActivityState.default.getWebUUID()).toBeNull()
+      })
     })
 
-    it('returns null when ActivityState is not initialised', () => {
-      ActivityState.default.destroy()
-      localStorage.clear()
+    describe('async waitForWebUUID function', () => {
+      it('resolves when web_uuid cached', async () => {
+        await expect(ActivityState.default.waitForWebUUID()).resolves.toEqual('some-uuid');
+      })
 
-      expect(ActivityState.default.getWebUUID()).toBeNull()
+      it('resolves when receives attribution with pub-sub', async () => {
+        ActivityState.default.destroy()
+        localStorage.clear()
+
+        const webUuidPromise = ActivityState.default.waitForWebUUID();
+
+        publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, 'new_web_uuid');
+
+        await expect(webUuidPromise).resolves.toEqual('new_web_uuid');
+      })
     })
-
   })
 
   describe('getting attribution', () => {
 
-    it('returns null when ActivityState is not initialised', () => {
-      ActivityState.default.destroy()
-      localStorage.clear()
+    describe('sync getter', () => {
+      it('returns null when ActivityState is not initialised', () => {
+        ActivityState.default.destroy()
+        localStorage.clear()
 
-      expect(ActivityState.default.getAttribution()).toBeNull()
+        expect(ActivityState.default.getAttribution()).toBeNull()
+      })
+
+      it('returns null when not attributed', () => {
+        expect(ActivityState.default.getAttribution()).toBeNull()
+      })
+
+      it('returns actual attribution', () => {
+        ActivityState.default.current = { ...ActivityState.default.current, attribution: { adid: 'dummy-adid' } }
+
+        expect(ActivityState.default.getAttribution()).toEqual({ adid: 'dummy-adid' })
+      })
     })
 
-    it('returns null when not attributed', () => {
-      expect(ActivityState.default.getAttribution()).toBeNull()
-    })
+    describe('async waitForAttribution function', () => {
+      it('resolves when attribution cached', async () => {
+        ActivityState.default.current = { ...ActivityState.default.current, attribution: { adid: 'dummy-adid' } }
 
-    it('returns actual attribution', () => {
-      ActivityState.default.current = { ...ActivityState.default.current, attribution: { adid: 'dummy-adid' } }
+        await expect(ActivityState.default.waitForAttribution()).resolves.toEqual({ adid: 'dummy-adid' });
+      })
 
-      expect(ActivityState.default.getAttribution()).toEqual({ adid: 'dummy-adid' })
+      it('resolves when receives attribution with pub-sub', async () => {
+        const attrPromise = ActivityState.default.waitForAttribution();
+
+        publish(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, { adid: 'new-adid' })
+
+        await expect(attrPromise).resolves.toEqual({ adid: 'new-adid' });
+      })
     })
   })
 

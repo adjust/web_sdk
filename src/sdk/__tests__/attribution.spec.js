@@ -6,6 +6,7 @@ import * as Identity from '../identity'
 import * as ActivityState from '../activity-state'
 import * as Logger from '../logger'
 import * as Storage from '../storage/storage'
+import { PUB_SUB_EVENTS } from '../constants'
 
 jest.mock('../http')
 jest.mock('../logger')
@@ -537,7 +538,7 @@ describe('test attribution functionality', () => {
     ActivityState.default.current = {installed: 1}
     http.default.mockResolvedValue(newAttribution)
 
-    expect.assertions(8)
+    expect.assertions(9)
 
     Attribution.check({ask_in: 2000})
     // initiate another attribution call
@@ -555,8 +556,9 @@ describe('test attribution functionality', () => {
         expect(activityState.attribution).toEqual(formatted)
         expect(ActivityState.default.current.attribution).toEqual(formatted)
         expect(Identity.persist).toHaveBeenCalledTimes(3)
-        expect(PubSub.publish).toHaveBeenCalledTimes(1)
+        expect(PubSub.publish).toHaveBeenCalledTimes(2)
         expect(PubSub.publish).toHaveBeenCalledWith('attribution:change', formatted)
+        expect(PubSub.publish).toHaveBeenCalledWith(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, formatted)
       })
 
   })
