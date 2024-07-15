@@ -99,6 +99,26 @@ declare namespace Adjust {
     state: string
   }
 
+  /**
+   * @deprecated
+   */
+  type UrlStartegyLiterals = 'china' | 'india';
+
+  interface UrlStartegy {
+    /** The country or countries of data residence, or the endpoints to which you want to send SDK traffic. */
+    domains: Array<string>;
+
+    /**
+     * Whether the source should prefix a subdomain.
+     */
+    useSubdomains: boolean;
+
+    /**
+     * Whether the domain should be used for data residency.
+     */
+    isDataResidency: boolean;
+  }
+
   interface InitOptions {
 
     /** Required to initialise SDK instance, please make sure to provide valid app token. */
@@ -122,19 +142,31 @@ declare namespace Adjust {
     eventDeduplicationListLimit?: number;
 
     /** Optional. By default all requests go to Adjust's endpoints. You are able to redirect all requests to your custom
-     * endpoint. */
+     * endpoint.
+     *
+     * @deprecated use {@link urlStrategy} property instead
+     */
     customUrl?: string;
 
     /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
      * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
-     * Adjust will store your data in a data center located in the region your have chosen. */
+     * Adjust will store your data in a data center located in the region your have chosen.
+     *
+     * @deprecated use {@link urlStrategy} property instead
+     */
     dataResidency?: 'EU' | 'TR' | 'US';
 
-    /** Optional. The Adjust SDK can use the url strategy setting to prioritise regional endpoints. */
-    urlStrategy?: 'india' | 'china';
+    /** Optional.
+     *
+     * @todo Add link to [Help Center article]() when it's ready.
+     *
+     * The URL strategy feature allows you to set either:
+     * - The country in which Adjust stores your data (data residency).
+     * - The endpoint to which the Adjust SDK sends traffic (URL strategy).
+     */
+    urlStrategy?: UrlStartegyLiterals | UrlStartegy;
 
-    /**
-     * Optional. A custom namespace for SDK data storage. If not set then default one is used.
+    /** Optional. A custom namespace for SDK data storage. If not set then default one is used.
      * It's useful when there are multiple applications on the same domain to allow SDK distinguish storages and don't
      * mix the data up.
      *
@@ -169,8 +201,7 @@ declare namespace Adjust {
      */
     logLevel?: LogLevel;
 
-    /**
-     * Optional. Query selector to define html container if you want to see your logs directly on the screen. This could
+    /** Optional. Query selector to define html container if you want to see your logs directly on the screen. This could
      * be useful when testing on mobile devices.
      *
      * @example
