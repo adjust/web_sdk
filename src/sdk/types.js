@@ -186,12 +186,6 @@ export type InitOptionsT = $ReadOnly<$Shape<{|
   attributionCallback: (string, Object) => mixed
 |}>>
 
-export type BaseParamsListT = $ReadOnlyArray<$Keys<BaseParamsT>>
-
-export type BaseParamsMandatoryListT = $ReadOnlyArray<'appToken' | 'environment'>
-
-export type CustomConfigListT = $ReadOnlyArray<$Keys<CustomConfigT>>
-
 export type CustomErrorT = {|
   name: string,
   message: string,

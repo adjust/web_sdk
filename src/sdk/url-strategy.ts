@@ -44,7 +44,7 @@ function getEndpointPreference(): BaseUrlsMap | EndpointName[] {
   }
 
   if (dataResidency) {
-    return [dataResidency]
+    return [DataResidency[dataResidency]]
   }
 
   if (urlStrategy === UrlStrategy.India) {
