@@ -245,7 +245,7 @@ declare namespace Adjust {
   /**
    * Returns a promise which resolves when current attribution information becomes available
    */
-  function waitForAttribution(): Promise<AttributionMapT>
+  function waitForAttribution(): Promise<Attribution>
 
   /**
    * Get web_uuid - a unique ID of user generated per subdomain and per browser
