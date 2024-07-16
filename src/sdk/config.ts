@@ -1,4 +1,3 @@
-// @flow
 import {
   type BaseParamsT,
   type CustomConfigT,
@@ -7,37 +6,34 @@ import {
   type BaseParamsMandatoryListT,
   type CustomConfigListT
 } from './types'
-import {MINUTE, SECOND, DAY} from './constants'
-import {buildList, reducer} from './utilities'
+import { MINUTE, SECOND, DAY } from './constants'
+import { buildList, reducer } from './utilities'
 import Logger from './logger'
 
-/**
- * Base parameters set by client
- * - app token
- * - environment
- * - default tracker
- * - external device ID
- *
- * @type {Object}
- * @private
- */
-let _baseParams: BaseParamsT = {}
 
-/**
- * Custom config set by client
- * - url override
- * - event deduplication list limit
- *
- * @type {Object}
- * @private
- */
-let _customConfig: CustomConfigT = {}
+/** Base parameters set by client */
+interface BaseParams {
+  appToken: string,
+  environment: 'production' | 'sandbox',
+  defaultTracker: string,
+  externalDeviceId: string
+}
+
+/** Custom config set by client */
+interface CustomConfig {
+  customUrl: string,
+  urlStrategy: 'india' | 'china',
+  dataResidency: 'EU' | 'TR' | 'US',
+  eventDeduplicationListLimit: number,
+  namespace: string
+}
+
+let _baseParams: BaseParams | null = null
+
+let _customConfig: CustomConfig | null = null
 
 /**
  * Mandatory fields to set for sdk initialization
- *
- * @type {string[]}
- * @private
  */
 const _mandatory: BaseParamsMandatoryListT = [
   'appToken',
@@ -46,9 +42,6 @@ const _mandatory: BaseParamsMandatoryListT = [
 
 /**
  * Allowed params to be sent with each request
- *
- * @type {string[]}
- * @private
  */
 const _allowedParams: BaseParamsListT = [
   ..._mandatory,
@@ -58,9 +51,6 @@ const _allowedParams: BaseParamsListT = [
 
 /**
  * Allowed configuration overrides
- *
- * @type {string[]}
- * @private
  */
 const _allowedConfig: CustomConfigListT = [
   'customUrl',
@@ -71,46 +61,23 @@ const _allowedConfig: CustomConfigListT = [
 ]
 
 /**
- * Global configuration object used across the sdk
- *
- * @type {{
- * namespace: string,
- * version: string,
- * sessionWindow: number,
- * sessionTimerWindow: number,
- * requestValidityWindow: number
- * }}
- */
-const _baseConfig = {
-  sessionWindow: 30 * MINUTE,
-  sessionTimerWindow: 60 * SECOND,
-  requestValidityWindow: 28 * DAY
-}
-
-/**
  * Check of configuration has been initialized
- *
- * @returns {boolean}
  */
-function isInitialised (): boolean {
-  return _mandatory.reduce((acc, key) => acc && !!_baseParams[key], true)
+function isInitialised(): boolean {
+  return _mandatory.reduce((acc, key) => acc && (_baseParams && !!_baseParams[key]), true)
 }
 
 /**
  * Get base params set by client
- *
- * @returns {Object}
  */
-function getBaseParams (): BaseParamsT {
-  return {..._baseParams}
+function getBaseParams(): BaseParamsT {
+  return { ..._baseParams }
 }
 
 /**
  * Set base params and custom config for the sdk to run
- *
- * @param {Object} options
  */
-function set (options: InitOptionsT): void {
+function set(options: InitOptionsT): void {
   if (hasMissing(options)) {
     return
   }
@@ -119,10 +86,12 @@ function set (options: InitOptionsT): void {
     .filter(key => !!options[key])
     .map(key => [key, options[key]])
 
+  // @ts-expect-error inferring wrong type
   _baseParams = filteredParams
     .filter(([key]) => _allowedParams.indexOf(key) !== -1)
     .reduce(reducer, {})
 
+  // @ts-expect-error inferring wrong type
   _customConfig = filteredParams
     .filter(([key]) => _allowedConfig.indexOf(key) !== -1)
     .reduce(reducer, {})
@@ -130,21 +99,15 @@ function set (options: InitOptionsT): void {
 
 /**
  * Get custom config set by client
- *
- * @returns {Object}
  */
-function getCustomConfig (): CustomConfigT {
-  return {..._customConfig}
+function getCustomConfig(): CustomConfigT {
+  return { ..._customConfig }
 }
 
 /**
  * Check if there are  missing mandatory parameters
- *
- * @param {Object} params
- * @returns {boolean}
- * @private
  */
-function hasMissing (params: BaseParamsT): boolean {
+function hasMissing(params: BaseParamsT): boolean {
   const missing = _mandatory.filter(value => !params[value])
 
   if (missing.length) {
@@ -158,13 +121,15 @@ function hasMissing (params: BaseParamsT): boolean {
 /**
  * Restore config to its default state
  */
-function destroy (): void {
-  _baseParams = {}
-  _customConfig = {}
+function destroy(): void {
+  _baseParams = null
+  _customConfig = null
 }
 
 const Config = {
-  ..._baseConfig,
+  sessionWindow: 30 * MINUTE,
+  sessionTimerWindow: 60 * SECOND,
+  requestValidityWindow: 28 * DAY,
   set,
   getBaseParams,
   getCustomConfig,
