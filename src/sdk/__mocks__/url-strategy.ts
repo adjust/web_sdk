@@ -15,13 +15,6 @@ export const mockEndpoints = {
   singleEndpoint
 }
 
-export function urlStrategyRetries<T>(
-  sendRequest: (urls: BaseUrlsMap) => Promise<T>,
-  endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = mockEndpoints.endpoints
-) {
-  return urlStrategyModule.urlStrategyRetries(sendRequest, endpoints)
-}
-
 export function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = mockEndpoints.singleEndpoint) {
   return urlStrategyModule.getBaseUrlsIterator(endpoints)
 }
