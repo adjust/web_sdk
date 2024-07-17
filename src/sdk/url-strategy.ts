@@ -1,34 +1,22 @@
 import Config from './config'
 import Logger from './logger'
+import {
+  ENDPOINTS,
+  BASE_URL_PREFIX,
+  GDPR_URL_PREFIX,
+  BASE_URL_NO_SUB_DOMAIN_PREFIX
+} from './constants'
 
 export interface UrlStrategyConfig {
   /** The country or countries of data residence, or the endpoints to which you want to send SDK traffic. */
   domains: Array<string>;
 
-  /**
-   * Whether the source should prefix a subdomain.
-   */
+  /** Whether the source should prefix a subdomain. */
   useSubdomains: boolean;
 
-  /**
-   * Whether the domain should be used for data residency.
-   */
+  /** Whether the domain should be used for data residency. */
   isDataResidency: boolean;
 }
-
-const ENDPOINTS = {
-  default: 'adjust.com',
-  india: 'adjust.net.in',
-  china: 'adjust.world',
-  world: 'adjust.world',
-  EU: 'eu.adjust.com',
-  TR: 'tr.adjust.com',
-  US: 'us.adjust.com',
-}
-
-const BASE_URL_PREFIX = 'https://app.';
-const GDPR_URL_PREFIX = 'https://gdpr.';
-const BASE_URL_NO_SUB_DOMAIN_PREFIX = 'https://';
 
 function getDefaultUrlStrategyConfig(endpoints: Record<Endpoints, string>) {
   return {

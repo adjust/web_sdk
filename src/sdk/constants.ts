@@ -24,6 +24,20 @@ export enum STORAGE_TYPES {
   LOCAL_STORAGE = 'localStorage'
 }
 
+export const ENDPOINTS = {
+  default: 'adjust.com',
+  india: 'adjust.net.in',
+  china: 'adjust.world',
+  world: 'adjust.world',
+  EU: 'eu.adjust.com',
+  TR: 'tr.adjust.com',
+  US: 'us.adjust.com',
+}
+
+export const BASE_URL_PREFIX = 'https://app.';
+export const GDPR_URL_PREFIX = 'https://gdpr.';
+export const BASE_URL_NO_SUB_DOMAIN_PREFIX = 'https://';
+
 export const PUB_SUB_EVENTS = {
   WEB_UUID_CREATED: 'activity:web_uuid',
   ATTRIBUTION_RECEIVED: 'activity:attribution',
