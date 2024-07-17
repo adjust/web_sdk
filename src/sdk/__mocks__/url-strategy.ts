@@ -1,20 +1,44 @@
-import type { BaseUrlsMap, UrlStrategy } from '../url-strategy'
+import { BaseUrlsMap } from "../url-strategy"
 
-const urlStrategyModule = jest.requireActual('../url-strategy')
+type Endpoints = keyof typeof testEndpoints
 
-const testEndpoints = {
-  default: { app: 'app.default', gdpr: '' },
-  india: { app: 'app.india', gdpr: '' },
-  china: { app: 'app.china', gdpr: '' }
+export const testEndpoints = {
+  default: 'default',
+  india: 'india',
+  china: 'china',
+  world: 'world',
+  EU: 'eu',
+  TR: 'tr',
+  US: 'us',
 }
 
-const singleEndpoint = { default: { app: 'app', gdpr: 'gdpr' } }
-
-export const mockEndpoints = {
-  endpoints: testEndpoints,
-  singleEndpoint
+export const singleEndpoint = {
+  default: 'default'
 }
 
-export function getBaseUrlsIterator(endpoints: Partial<Record<UrlStrategy, BaseUrlsMap>> = mockEndpoints.singleEndpoint) {
-  return urlStrategyModule.getBaseUrlsIterator(endpoints)
+export function getBaseUrlsIterator(endpoints: Partial<Record<Endpoints, string>> = singleEndpoint) {
+  const _urls = [] as BaseUrlsMap[]
+
+  for (const i in endpoints) {
+    const urlMap = {
+      app: 'app.' + i,
+      gdpr: 'gdpr.' + i
+    }
+    _urls.push(urlMap)
+  }
+
+  let _counter = 0
+
+  return {
+    next: () => {
+      if (_counter < _urls.length) {
+        return { value: _urls[_counter++], done: false }
+      } else {
+        return { value: undefined, done: true }
+      }
+    },
+    reset: () => {
+      _counter = 0
+    }
+  }
 }
