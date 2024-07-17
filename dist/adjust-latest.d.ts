@@ -104,7 +104,7 @@ declare namespace Adjust {
    */
   type UrlStartegyLiterals = 'china' | 'india';
 
-  interface UrlStartegy {
+  interface UrlStrategyConfig {
     /** The country or countries of data residence, or the endpoints to which you want to send SDK traffic. */
     domains: Array<string>;
 
@@ -164,7 +164,7 @@ declare namespace Adjust {
      * - The country in which Adjust stores your data (data residency).
      * - The endpoint to which the Adjust SDK sends traffic (URL strategy).
      */
-    urlStrategy?: UrlStartegyLiterals | UrlStartegy;
+    urlStrategy?: UrlStartegyLiterals | UrlStrategyConfig;
 
     /** Optional. A custom namespace for SDK data storage. If not set then default one is used.
      * It's useful when there are multiple applications on the same domain to allow SDK distinguish storages and don't
