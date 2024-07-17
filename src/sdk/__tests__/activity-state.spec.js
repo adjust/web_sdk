@@ -338,7 +338,7 @@ describe('activity state functionality', () => {
 
     describe('async waitForWebUUID function', () => {
       it('resolves when web_uuid cached', async () => {
-        await expect(ActivityState.default.waitForWebUUID()).resolves.toEqual('some-uuid');
+        await expect(ActivityState.default.waitForWebUUID()).resolves.toBe('some-uuid');
       })
 
       it('resolves when receives attribution with pub-sub', async () => {
@@ -349,7 +349,7 @@ describe('activity state functionality', () => {
 
         publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, 'new_web_uuid');
 
-        await expect(webUuidPromise).resolves.toEqual('new_web_uuid');
+        await expect(webUuidPromise).resolves.toBe('new_web_uuid');
       })
     })
   })

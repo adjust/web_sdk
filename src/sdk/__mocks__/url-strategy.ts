@@ -1,4 +1,4 @@
-import { BaseUrlsMap } from "../url-strategy"
+import { BaseUrlsMap } from '../url-strategy'
 
 type Endpoints = keyof typeof testEndpoints
 
