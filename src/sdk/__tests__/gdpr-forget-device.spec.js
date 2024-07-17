@@ -24,7 +24,7 @@ function expectRequest () {
   }
 
   const fullConfig = {
-    endpoint: 'gdpr',
+    endpoint: 'gdpr.default',
     ...requestConfig,
     params: {
       attempts: 1,

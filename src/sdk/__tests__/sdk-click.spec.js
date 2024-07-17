@@ -64,7 +64,7 @@ describe('test sdk-click functionality', () => {
     }
 
     const fullConfig = {
-      endpoint: 'app',
+      endpoint: 'app.default',
       ...requestConfig,
       params: {
         attempts: 1,
@@ -113,7 +113,7 @@ describe('test sdk-click functionality', () => {
       }
 
       const fullConfig = {
-        endpoint: 'app',
+        endpoint: 'app.default',
         ...requestConfig,
         params: {
           attempts: 1,

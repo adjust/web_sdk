@@ -379,7 +379,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
-            endpoint: 'app',
+            endpoint: 'app.default',
             url: '/session',
             method: 'POST',
             params: {
@@ -450,7 +450,7 @@ describe('test session functionality', () => {
           jest.advanceTimersByTime(150)
 
           expect(http.default).toHaveBeenCalledWith({
-            endpoint: 'app',
+            endpoint: 'app.default',
             url: '/session',
             method: 'POST',
             params: {
@@ -785,7 +785,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
-            endpoint: 'app',
+            endpoint: 'app.default',
             url: '/session',
             method: 'POST',
             params: {
@@ -857,7 +857,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
-            endpoint: 'app',
+            endpoint: 'app.default',
             url: '/session',
             method: 'POST',
             params: {
@@ -961,7 +961,7 @@ describe('test session functionality', () => {
           jest.runOnlyPendingTimers()
 
           expect(http.default).toHaveBeenCalledWith({
-            endpoint: 'app',
+            endpoint: 'app.default',
             url: '/session',
             method: 'POST',
             params: {
