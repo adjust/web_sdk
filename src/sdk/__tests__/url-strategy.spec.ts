@@ -1,36 +1,29 @@
 import { UrlStrategy, getBaseUrlsIterator, BaseUrlsMap, BaseUrlsIterator, DataResidency } from '../url-strategy'
 import * as Globals from '../globals'
 import * as Logger from '../logger'
+import * as constants from '../constants';
+
+constants.BASE_URL_PREFIX = '';
+constants.GDPR_URL_PREFIX = '';
+constants.BASE_URL_NO_SUB_DOMAIN_PREFIX = '';
 
 jest.mock('../logger')
 
 describe('test url strategy', () => {
   const testEndpoints = {
-    [UrlStrategy.Default]: {
-      app: 'app.default',
-      gdpr: 'gdpr.default'
-    },
-    [UrlStrategy.India]: {
-      app: 'app.india',
-      gdpr: 'gdpr.india'
-    },
-    [UrlStrategy.China]: {
-      app: 'app.china',
-      gdpr: 'gdpr.china'
-    },
-    [DataResidency.EU]: {
-      app: 'app.eu',
-      gdpr: 'gdpr.eu'
-    },
-    [DataResidency.TR]: {
-      app: 'app.tr',
-      gdpr: 'gdpr.tr'
-    },
-    [DataResidency.US]: {
-      app: 'app.us',
-      gdpr: 'gdpr.us'
-    }
+    default: 'default',
+    india: 'india',
+    china: 'china',
+    world: 'world',
+    EU: 'eu',
+    TR: 'tr',
+    US: 'us',
   }
+
+  const getIteratorValue = (endpoint: string) => ({
+    app: constants.BASE_URL_PREFIX + endpoint,
+    gdpr: constants.GDPR_URL_PREFIX + endpoint
+  })
 
   let Config
 
@@ -80,9 +73,8 @@ describe('test url strategy', () => {
     it('returns all values through iteration when default url startegy used', () => {
       const iterator = getBaseUrlsIterator(testEndpoints)
 
-      expect(iterator.next()).toEqual({ value: testEndpoints.default, done: false })
-      expect(iterator.next()).toEqual({ value: testEndpoints.india, done: false })
-      expect(iterator.next()).toEqual({ value: testEndpoints.china, done: false })
+      expect(iterator.next()).toEqual({ value: getIteratorValue(testEndpoints.default), done: false })
+      expect(iterator.next()).toEqual({ value: getIteratorValue(testEndpoints.world), done: false })
       expect(iterator.next()).toEqual({ value: undefined, done: true })
     })
 
@@ -92,8 +84,8 @@ describe('test url strategy', () => {
       const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
       expect(values.length).toBe(2)
-      expect(values[0]).toEqual(testEndpoints.india)
-      expect(values[1]).toEqual(testEndpoints.default)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.india))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.default))
     })
 
     it('prefers Chinese enpoint and does not try reach Indian one when china url strategy set', () => {
@@ -102,8 +94,8 @@ describe('test url strategy', () => {
       const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
       expect(values.length).toBe(2)
-      expect(values[0]).toEqual(testEndpoints.china)
-      expect(values[1]).toEqual(testEndpoints.default)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.china))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.default))
     })
 
     it('does not override custom url', () => {
@@ -119,7 +111,7 @@ describe('test url strategy', () => {
     describe('reset allows to restart iteration', () => {
 
       it('iterates through all endpoints twice in default order', () => {
-        const defaultEndpointsNumber = 3 // number of endpoints to try if default url strategy used
+        const defaultEndpointsNumber = 2 // number of endpoints to try if default url strategy used
 
         const iterator = getBaseUrlsIterator(testEndpoints)
 
@@ -141,21 +133,14 @@ describe('test url strategy', () => {
         iterator.reset()
         const secondIteration = iterateThrough(iterator, 2)
         iterator.reset()
-        const thirdIteration = iterateThrough(iterator, 3)
-        iterator.reset()
 
         expect(firstIteration.length).toBe(1)
         expect(secondIteration.length).toBe(2)
-        expect(thirdIteration.length).toBe(3)
 
-        expect(firstIteration[0]).toEqual(testEndpoints.default)
-        expect(secondIteration[0]).toEqual(testEndpoints.default)
-        expect(thirdIteration[0]).toEqual(testEndpoints.default)
+        expect(firstIteration[0]).toEqual(getIteratorValue(testEndpoints.default))
+        expect(secondIteration[0]).toEqual(getIteratorValue(testEndpoints.default))
 
-        expect(secondIteration[1]).toEqual(testEndpoints.india)
-        expect(thirdIteration[1]).toEqual(testEndpoints.india)
-
-        expect(thirdIteration[2]).toEqual(testEndpoints.china)
+        expect(secondIteration[1]).toEqual(getIteratorValue(testEndpoints.world))
       })
     })
 
@@ -171,7 +156,7 @@ describe('test url strategy', () => {
         const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
         expect(values.length).toBe(1)
-        expect(values[0]).toEqual(testEndpoints[dataResidency])
+        expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
       })
 
       it.each([
@@ -188,7 +173,7 @@ describe('test url strategy', () => {
 
         expect(Logger.default.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
         expect(values.length).toBe(1)
-        expect(values[0]).toEqual(testEndpoints[dataResidency])
+        expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
       })
     })
   })
