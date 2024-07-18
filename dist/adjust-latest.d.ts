@@ -108,15 +108,11 @@ declare namespace Adjust {
     /** The country or countries of data residence, or the endpoints to which you want to send SDK traffic. */
     domains: Array<string>;
 
-    /**
-     * Whether the source should prefix a subdomain.
-     */
+    /** Whether the source should prefix a subdomain. */
     useSubdomains: boolean;
 
-    /**
-     * Whether the domain should be used for data residency.
-     */
-    isDataResidency: boolean;
+    /** Whether the domain should be used for data residency. */
+    isDataResidency?: boolean;
   }
 
   interface InitOptions {

@@ -15,7 +15,7 @@ export interface UrlStrategyConfig {
   useSubdomains: boolean;
 
   /** Whether the domain should be used for data residency. */
-  isDataResidency: boolean;
+  isDataResidency?: boolean;
 }
 
 function getDefaultUrlStrategyConfig(endpoints: Record<Endpoints, string>) {

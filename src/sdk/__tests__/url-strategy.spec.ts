@@ -1,11 +1,18 @@
-import { UrlStrategy, getBaseUrlsIterator, BaseUrlsMap, BaseUrlsIterator, DataResidency } from '../url-strategy'
+import {
+  UrlStrategy,
+  getBaseUrlsIterator,
+  BaseUrlsMap,
+  BaseUrlsIterator,
+  DataResidency,
+  UrlStrategyConfig
+} from '../url-strategy'
 import * as Globals from '../globals'
 import * as Logger from '../logger'
-import * as constants from '../constants';
+import * as Constants from '../constants';
 
-constants.BASE_URL_PREFIX = '';
-constants.GDPR_URL_PREFIX = '';
-constants.BASE_URL_NO_SUB_DOMAIN_PREFIX = '';
+Constants.BASE_URL_PREFIX = 'app.';
+Constants.GDPR_URL_PREFIX = 'gdpr.';
+Constants.BASE_URL_NO_SUB_DOMAIN_PREFIX = '';
 
 jest.mock('../logger')
 
@@ -20,9 +27,10 @@ describe('test url strategy', () => {
     US: 'us',
   }
 
+  // returns an object containing `app` and `gdpr` endpoints
   const getIteratorValue = (endpoint: string) => ({
-    app: constants.BASE_URL_PREFIX + endpoint,
-    gdpr: constants.GDPR_URL_PREFIX + endpoint
+    app: Constants.BASE_URL_PREFIX + endpoint,
+    gdpr: Constants.GDPR_URL_PREFIX + endpoint
   })
 
   let Config
@@ -53,22 +61,22 @@ describe('test url strategy', () => {
     jest.restoreAllMocks()
   })
 
+  const iterateThrough = (iterator: BaseUrlsIterator, iterationsNumber?: number) => {
+    const results: BaseUrlsMap[] = []
+    let current
+    let steps = iterationsNumber === undefined ? -1 : iterationsNumber
+
+    do {
+      current = iterator.next()
+      if (current.value) {
+        results.push(current.value)
+      }
+    } while (!current.done && --steps !== 0)
+
+    return results
+  }
+
   describe('BaseUrlsIterator tests', () => {
-
-    const iterateThrough = (iterator: BaseUrlsIterator, iterationsNumber?: number) => {
-      const results: BaseUrlsMap[] = []
-      let current
-      let steps = iterationsNumber === undefined ? -1 : iterationsNumber
-
-      do {
-        current = iterator.next()
-        if (current.value) {
-          results.push(current.value)
-        }
-      } while (!current.done && --steps !== 0)
-
-      return results
-    }
 
     it('returns all values through iteration when default url startegy used', () => {
       const iterator = getBaseUrlsIterator(testEndpoints)
@@ -144,37 +152,91 @@ describe('test url strategy', () => {
       })
     })
 
-    describe('data residency', () => {
+  })
 
-      it.each([
-        DataResidency.EU,
-        DataResidency.US,
-        DataResidency.TR
-      ])('tries to reach only regional endpoint if data residency set', (dataResidency) => {
-        Config.set({ ...options, dataResidency: dataResidency })
+  describe('Data Residency', () => {
 
-        const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+    it.each([
+      DataResidency.EU,
+      DataResidency.US,
+      DataResidency.TR
+    ])('tries to reach only regional endpoint if data residency set', (dataResidency) => {
+      Config.set({ ...options, dataResidency: dataResidency })
 
-        expect(values.length).toBe(1)
-        expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
-      })
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
-      it.each([
-        [UrlStrategy.China, DataResidency.EU],
-        [UrlStrategy.China, DataResidency.US],
-        [UrlStrategy.China, DataResidency.TR],
-        [UrlStrategy.India, DataResidency.EU],
-        [UrlStrategy.India, DataResidency.US],
-        [UrlStrategy.India, DataResidency.TR]
-      ])('drops url strategy if data residency set', (urlStrategy, dataResidency) => {
-        Config.set({ ...options, urlStrategy: urlStrategy, dataResidency: dataResidency })
+      expect(values.length).toBe(1)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
+    })
 
-        const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+    it.each([
+      [UrlStrategy.China, DataResidency.EU],
+      [UrlStrategy.China, DataResidency.US],
+      [UrlStrategy.China, DataResidency.TR],
+      [UrlStrategy.India, DataResidency.EU],
+      [UrlStrategy.India, DataResidency.US],
+      [UrlStrategy.India, DataResidency.TR]
+    ])('drops url strategy if data residency set', (urlStrategy, dataResidency) => {
+      Config.set({ ...options, urlStrategy: urlStrategy, dataResidency: dataResidency })
 
-        expect(Logger.default.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
-        expect(values.length).toBe(1)
-        expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
-      })
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
+      expect(values.length).toBe(1)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
+    })
+  })
+
+  describe('Set URL Strategy as a list of domains', () => {
+    it('logs a warning and uses default endpoints if passed domain list is not defined', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const urlStrategy: UrlStrategyConfig = { domains: undefined, useSubdomains: true } as any
+      Config.set({ ...options, urlStrategy })
+
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(values.length).toBe(2)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.default))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.world))
+      expect(Logger.default.warn).toHaveBeenCalledWith('Invalid urlStartegy: `domains` should be a non-empty array')
+    })
+
+    it('logs a warning and uses default endpoints if passed domain list is empty', () => {
+      const urlStrategy: UrlStrategyConfig = { domains: [], useSubdomains: true }
+      Config.set({ ...options, urlStrategy })
+
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(values.length).toBe(2)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.default))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.world))
+      expect(Logger.default.warn).toHaveBeenCalledWith('Invalid urlStartegy: `domains` should be a non-empty array')
+    })
+
+    it('uses passed endpoints', () => {
+      const urlStrategy: UrlStrategyConfig = { domains: ['example.com', 'my.domain.org', 'page.de'], useSubdomains: true }
+      Config.set({ ...options, urlStrategy })
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const values = iterateThrough(getBaseUrlsIterator([] as any)) // passing endpoints needed only for backward compatibility
+
+      expect(values.length).toBe(3)
+      expect(values[0]).toEqual(getIteratorValue('example.com'))
+      expect(values[1]).toEqual(getIteratorValue('my.domain.org'))
+      expect(values[2]).toEqual(getIteratorValue('page.de'))
+    })
+
+    it('does not add subdomains when `useSubdomains` is false', () => {
+      const urlStrategy: UrlStrategyConfig = { domains: ['example.com', 'my.domain.org', 'page.de'], useSubdomains: false }
+      Config.set({ ...options, urlStrategy })
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const values = iterateThrough(getBaseUrlsIterator([] as any)) // passing endpoints needed only for backward compatibility
+
+      expect(values.length).toBe(3)
+      expect(values[0]).toEqual({app: 'example.com', gdpr: 'example.com'})
+      expect(values[1]).toEqual({app: 'my.domain.org', gdpr: 'my.domain.org'})
+      expect(values[2]).toEqual({app: 'page.de', gdpr: 'page.de'})
     })
   })
 })
