@@ -6,8 +6,8 @@ import * as Listeners from '../listeners'
 import * as UrlStartegy from '../url-strategy'
 import * as Constants from '../constants'
 
-Constants.BASE_URL_PREFIX = 'app.';
-Constants.GDPR_URL_PREFIX = 'gdpr.';
+Constants.BASE_URL_PREFIX = 'app.'; // eslint-disable-line no-import-assign
+Constants.GDPR_URL_PREFIX = 'gdpr.'; // eslint-disable-line no-import-assign
 
 jest.mock('../http')
 jest.mock('../logger')
