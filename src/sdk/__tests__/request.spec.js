@@ -1414,6 +1414,7 @@ describe('test request functionality', () => {
     // let getBaseUrlsIterator to return pre-created iterator so it's possible to spy iterator methods
     const iterator = jest.requireActual(('../url-strategy')).getBaseUrlsIterator(testEndpoints)
 
+    // returns an object containing `app` and `gdpr` endpoints
     const getIteratorValueFromEndpoint = (domain) => ({
       app: Constants.BASE_URL_PREFIX + domain,
       gdpr: Constants.GDPR_URL_PREFIX + domain
