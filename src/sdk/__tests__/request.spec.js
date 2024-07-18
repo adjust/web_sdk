@@ -6,9 +6,6 @@ import * as Listeners from '../listeners'
 import * as UrlStartegy from '../url-strategy'
 import * as Constants from '../constants'
 
-Constants.BASE_URL_PREFIX = 'app.'; // eslint-disable-line no-import-assign
-Constants.GDPR_URL_PREFIX = 'gdpr.'; // eslint-disable-line no-import-assign
-
 jest.mock('../http')
 jest.mock('../logger')
 jest.mock('../url-strategy')
@@ -1409,6 +1406,9 @@ describe('test request functionality', () => {
   })
 
   describe('url startegy retries functionality', () => {
+    Constants.BASE_URL_PREFIX = 'app.'; // eslint-disable-line no-import-assign
+    Constants.GDPR_URL_PREFIX = 'gdpr.'; // eslint-disable-line no-import-assign
+
     const testEndpoints = jest.requireMock('../url-strategy').testEndpoints
 
     // let getBaseUrlsIterator to return pre-created iterator so it's possible to spy iterator methods
