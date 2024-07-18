@@ -152,14 +152,10 @@ declare namespace Adjust {
      */
     dataResidency?: 'EU' | 'TR' | 'US';
 
-    /** Optional.
-     *
-     * @todo Add link to [Help Center article]() when it's ready.
-     *
-     * The URL strategy feature allows you to set either:
+    /** Optional. The URL strategy feature allows you to set either:
      * - The country in which Adjust stores your data (data residency).
-     * - The endpoint to which the Adjust SDK sends traffic (URL strategy).
-     */
+     * - The endpoint to which the Adjust SDK sends traffic (URL strategy).*/
+    // TODO: place a link to updated docs in this warning, see https://adjustcom.atlassian.net/browse/DSM-3071
     urlStrategy?: UrlStartegyLiterals | UrlStrategyConfig;
 
     /** Optional. A custom namespace for SDK data storage. If not set then default one is used.
