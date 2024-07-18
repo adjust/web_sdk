@@ -234,9 +234,42 @@ describe('test url strategy', () => {
       const values = iterateThrough(getBaseUrlsIterator([] as any)) // passing endpoints needed only for backward compatibility
 
       expect(values.length).toBe(3)
-      expect(values[0]).toEqual({app: 'example.com', gdpr: 'example.com'})
-      expect(values[1]).toEqual({app: 'my.domain.org', gdpr: 'my.domain.org'})
-      expect(values[2]).toEqual({app: 'page.de', gdpr: 'page.de'})
+      expect(values[0]).toEqual({ app: 'example.com', gdpr: 'example.com' })
+      expect(values[1]).toEqual({ app: 'my.domain.org', gdpr: 'my.domain.org' })
+      expect(values[2]).toEqual({ app: 'page.de', gdpr: 'page.de' })
+    })
+  })
+
+  describe('Logs deprecation warnings', () => {
+    it('logs a warning when customUrl is set', () => {
+      Config.set({ ...options, customUrl: 'my.domain.org' })
+
+      iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('customUrl is deprecated, use urlStrategy instead')
+    })
+
+    it.each([
+      DataResidency.EU,
+      DataResidency.US,
+      DataResidency.TR,
+    ])('logs a warning when dataResidency is set', dr => {
+      Config.set({ ...options, dataResidency: dr })
+
+      iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('dataResidency is deprecated, use urlStrategy instead')
+    })
+
+    it.each([
+      UrlStrategy.China,
+      UrlStrategy.India
+    ])('logs a warning when urlStrategy set with a string', urlStrategy => {
+      Config.set({ ...options, urlStrategy: urlStrategy })
+
+      iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('urlStrategy string literals (\'china\' and \'india\') are deprected, use UrlStartegyConfig instead')
     })
   })
 })
