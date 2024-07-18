@@ -4,12 +4,7 @@ type Endpoints = keyof typeof testEndpoints
 
 export const testEndpoints = {
   default: 'default',
-  india: 'india',
-  china: 'china',
   world: 'world',
-  EU: 'eu',
-  TR: 'tr',
-  US: 'us',
 }
 
 export const singleEndpoint = {
