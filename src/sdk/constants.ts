@@ -2,8 +2,12 @@ export const SECOND = 1000
 export const MINUTE = SECOND * 60
 export const HOUR = MINUTE * 60
 export const DAY = HOUR * 24
-export const REASON_GENERAL = 'general'
-export const REASON_GDPR = 'gdpr'
+
+export enum DISABLE_REASONS {
+  REASON_GENERAL = 'general',
+  REASON_GDPR = 'gdpr'
+}
+
 export const HTTP_ERRORS = {
   'TRANSACTION_ERROR': 'XHR transaction failed due to an error',
   'SERVER_MALFORMED_RESPONSE': 'Response from server is malformed',
@@ -14,10 +18,10 @@ export const HTTP_ERRORS = {
   'MISSING_URL': 'Url is not provided'
 }
 
-export const STORAGE_TYPES = {
-  NO_STORAGE: 'noStorage',
-  INDEXED_DB: 'indexedDB',
-  LOCAL_STORAGE: 'localStorage'
+export enum STORAGE_TYPES {
+  NO_STORAGE = 'noStorage',
+  INDEXED_DB = 'indexedDB',
+  LOCAL_STORAGE = 'localStorage'
 }
 
 export const ENDPOINTS = {

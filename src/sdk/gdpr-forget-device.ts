@@ -1,11 +1,10 @@
-// @flow
 import Request from './request'
 import ActivityState from './activity-state'
 import Logger from './logger'
 import Config from './config'
-import {publish} from './pub-sub'
-import {status, disable as sdkDisable, finish as sdkDisableFinish} from './disable'
-import {REASON_GDPR} from './constants'
+import { publish } from './pub-sub'
+import { status, disable as sdkDisable, finish as sdkDisableFinish } from './disable'
+import { DISABLE_REASONS } from './constants'
 
 /**
  * Http request instance
@@ -38,7 +37,7 @@ const _logMessages = {
  * @param {boolean} force
  * @returns {boolean}
  */
-function forget (force?: boolean): boolean {
+function forget(force?: boolean): boolean {
   const sdkStatus = status()
 
   if (!force && sdkStatus !== 'on') {
@@ -52,7 +51,7 @@ function forget (force?: boolean): boolean {
   }
 
   _request.send({
-    params: {...ActivityState.getParams()}
+    params: { ...ActivityState.getParams() }
   }).then(() => {
     publish('sdk:gdpr-forget-me')
   })
@@ -65,8 +64,8 @@ function forget (force?: boolean): boolean {
  *
  * @returns {boolean}
  */
-function disable () {
-  return sdkDisable(REASON_GDPR, true)
+function disable() {
+  return sdkDisable(DISABLE_REASONS.REASON_GDPR, true)
 }
 
 /**
@@ -74,14 +73,14 @@ function disable () {
  *
  * @returns {boolean}
  */
-function finish () {
-  return sdkDisableFinish(REASON_GDPR)
+function finish() {
+  return sdkDisableFinish(DISABLE_REASONS.REASON_GDPR)
 }
 
 /**
  * Check if there is pending GDPR-Forget-Me request
  */
-function check (): void {
+function check(): void {
   if (status() === 'paused') {
     Logger.log(_logMessages.running)
     forget(true)
@@ -91,7 +90,7 @@ function check (): void {
 /**
  * Destroy by clearing running request
  */
-function destroy (): void {
+function destroy(): void {
   _request.clear()
 }
 

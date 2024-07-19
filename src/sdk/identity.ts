@@ -2,7 +2,7 @@ import { type ActivityStateMapT } from './types'
 import Storage from './storage/storage'
 import ActivityState from './activity-state'
 import { reload as reloadPreferences } from './preferences'
-import { PUB_SUB_EVENTS, REASON_GDPR } from './constants'
+import { PUB_SUB_EVENTS, DISABLE_REASONS } from './constants'
 import { isEmpty } from './utilities'
 import { disable, status } from './disable'
 import { publish } from './pub-sub'
@@ -36,7 +36,7 @@ function _intercept(stored: ActivityStateMapT): InterceptT {
   }
 
   if (stored.uuid === 'unknown') {
-    disable({ reason: REASON_GDPR })
+    disable(DISABLE_REASONS.REASON_GDPR)
     ActivityState.destroy()
     return { exists: true, stored: null }
   }
