@@ -10,8 +10,13 @@ import * as Globals from '../globals'
 import * as Logger from '../logger'
 import * as Constants from '../constants';
 
+// @ts-expect-error Value changed just for convenience in tests
 Constants.BASE_URL_PREFIX = 'app.';
+
+// @ts-expect-error Value changed just for convenience in tests
 Constants.GDPR_URL_PREFIX = 'gdpr.';
+
+// @ts-expect-error Value changed just for convenience in tests
 Constants.BASE_URL_NO_SUB_DOMAIN_PREFIX = '';
 
 jest.mock('../logger')
