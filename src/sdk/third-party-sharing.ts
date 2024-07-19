@@ -1,17 +1,13 @@
-// @flow
-import {push} from './queue'
-import {getThirdPartySharing, setThirdPartySharing} from './preferences'
+import { push } from './queue'
+import { getThirdPartySharing, setThirdPartySharing } from './preferences'
 import Config from './config'
 import Logger from './logger'
-import {REASON_GENERAL} from './constants'
+import { DISABLE_REASONS } from './constants'
 
 type ThirdPartySharingStatusT = 'pending' | 'on' | 'off'
 
 /**
  * Log messages used in different scenarios
- *
- * @type {Object}
- * @private
  */
 const _logMessages = {
   running: 'Adjust SDK is running pending third-party sharing opt-out request',
@@ -30,15 +26,12 @@ const _logMessages = {
 
 /**
  * Get the status of the third-party sharing
- *
- * @returns {string}
- * @private
  */
-function _status (): ThirdPartySharingStatusT {
-  const disabled = getThirdPartySharing() || {}
+function _status(): ThirdPartySharingStatusT {
+  const { reason, pending } = getThirdPartySharing() || {}
 
-  if (disabled.reason) {
-    return disabled.pending ? 'pending' : 'off'
+  if (reason) {
+    return pending ? 'pending' : 'off'
   }
 
   return 'on'
@@ -46,12 +39,9 @@ function _status (): ThirdPartySharingStatusT {
 
 /**
  * Request third-party sharing opt-out request
- *
- * @param {boolean} force
- * @returns {boolean}
  */
-function optOut (force?: boolean) {
-  let status = _status()
+function optOut(force?: boolean) {
+  const status = _status()
 
   if (!force && status !== 'on') {
     Logger.log(_logMessages[status])
@@ -73,17 +63,12 @@ function optOut (force?: boolean) {
 
 /**
  * Start or finish thrid-party sharing disable process
- *
- * @param {boolean} pending
- * @param {string} expectedAction
- * @returns {boolean}
- * @private
  */
-function _disable (pending: boolean, expectedAction: 'start' | 'finish'): boolean {
-  const disabled = getThirdPartySharing() || {}
-  const action = expectedAction === 'start' && pending ? 'start': 'finish'
-  const shouldNotStart = expectedAction === 'start' && disabled.reason
-  const shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending
+function _disable(pending: boolean, expectedAction: 'start' | 'finish'): boolean {
+  const { reason: savedReason, pending: savedPending } = getThirdPartySharing() || {}
+  const action = expectedAction === 'start' && pending ? 'start' : 'finish'
+  const shouldNotStart = expectedAction === 'start' && savedReason
+  const shouldNotFinish = expectedAction === 'finish' && savedReason && !savedPending
 
   if (shouldNotStart || shouldNotFinish) {
     Logger.log(_logMessages[action].inProgress)
@@ -93,8 +78,8 @@ function _disable (pending: boolean, expectedAction: 'start' | 'finish'): boolea
   Logger.log(_logMessages[action].done)
 
   setThirdPartySharing({
-    reason: REASON_GENERAL,
-    pending
+    reason: DISABLE_REASONS.REASON_GENERAL,
+    pending: pending
   })
 
   return true
@@ -102,26 +87,22 @@ function _disable (pending: boolean, expectedAction: 'start' | 'finish'): boolea
 
 /**
  * Start the third-party sharing disable process
- *
- * @returns {boolean}
  */
-function disable (): boolean {
+function disable(): boolean {
   return _disable(true, 'start')
 }
 
 /**
  * Finalize the third-party sharing process
- *
- * @returns {boolean}
  */
-function finish () {
+function finish() {
   return _disable(false, 'finish')
 }
 
 /**
  * Check if there s pending third-party sharing opt-out request
  */
-function check (): void {
+function check(): void {
   if (_status() === 'pending') {
     Logger.log(_logMessages.running)
     optOut(true)
