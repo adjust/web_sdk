@@ -20,8 +20,8 @@ const mockGetType  = () => STORAGE_TYPES.NO_STORAGE
 jest.mock('../../storage/storage', () => ({
     init: () => mockInit(),
     getType: () => mockGetType()
-  }
-))
+  })
+)
 
 describe('main entry point - test instance initiation when storage is not available', () => {
 

@@ -27,7 +27,7 @@ const appOptions = {
 function expectRequest (requestConfig, timestamp) {
 
   const fullConfig = {
-    endpoint: 'app',
+    endpoint: 'app.default',
     ...requestConfig,
     params: {
       attempts: 1,

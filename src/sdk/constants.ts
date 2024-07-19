@@ -25,37 +25,18 @@ export enum STORAGE_TYPES {
 }
 
 export const ENDPOINTS = {
-  default: {
-    endpointName: 'Default',
-    app: 'https://app.adjust.com',
-    gdpr: 'https://gdpr.adjust.com'
-  },
-  india: {
-    endpointName: 'Indian',
-    app: 'https://app.adjust.net.in',
-    gdpr: 'https://gdpr.adjust.net.in'
-  },
-  china: {
-    endpointName: 'Chinese',
-    app: 'https://app.adjust.world',
-    gdpr: 'https://gdpr.adjust.world'
-  },
-  EU: {
-    endpointName: 'EU',
-    app: 'https://app.eu.adjust.com',
-    gdpr: 'https://gdpr.eu.adjust.com'
-  },
-  TR: {
-    endpointName: 'TR',
-    app: 'https://app.tr.adjust.com',
-    gdpr: 'https://gdpr.tr.adjust.com'
-  },
-  US: {
-    endpointName: 'US',
-    app: 'https://app.us.adjust.com',
-    gdpr: 'https://gdpr.us.adjust.com'
-  }
+  default: 'adjust.com',
+  india: 'adjust.net.in',
+  china: 'adjust.world',
+  world: 'adjust.world',
+  EU: 'eu.adjust.com',
+  TR: 'tr.adjust.com',
+  US: 'us.adjust.com',
 }
+
+export const BASE_URL_PREFIX = 'https://app.';
+export const GDPR_URL_PREFIX = 'https://gdpr.';
+export const BASE_URL_NO_SUB_DOMAIN_PREFIX = 'https://';
 
 export const PUB_SUB_EVENTS = {
   WEB_UUID_CREATED: 'activity:web_uuid',
