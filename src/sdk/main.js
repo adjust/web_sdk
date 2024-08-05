@@ -19,7 +19,8 @@ import { add, remove, removeAll, clear as globalParamsClear } from './global-par
 import { check as attributionCheck, destroy as attributionDestroy } from './attribution'
 import { disable, restore, status } from './disable'
 import { check as gdprForgetCheck, forget, disable as gdprDisable, finish as gdprDisableFinish, destroy as gdprForgetDestroy } from './gdpr-forget-device'
-import { check as sharingDisableCheck, optOut as sharingOptOut, disable as sharingDisable, finish as sharingDisableFinish } from './third-party-sharing'
+import { runPendingOptOut, optOut as sharingOptOut, disable as sharingDisable, finish as sharingDisableFinish } from './disable-third-party-sharing'
+import { trackThirdPartySharing as trackTPS } from './track-third-party-sharing'
 import { register as listenersRegister, destroy as listenersDestroy } from './listeners'
 import { delay, flush, destroy as schedulerDestroy } from './scheduler'
 import event from './event'
@@ -263,7 +264,14 @@ function gdprForgetMe(): void {
  * Disable third party sharing
  */
 function disableThirdPartySharing(): void {
+  //trackThirdPartySharing({isEnabled: false})
   _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
+    schedule: true
+  })
+}
+
+function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions): void {
+  _preCheck('third-party sharing', () => trackTPS(adjustThirdPartySharing), {
     schedule: true
   })
 }
@@ -394,7 +402,7 @@ function _continue(activityState: ActivityStateMapT): Promise<void> {
   gdprForgetCheck()
 
   if (!isInstalled) {
-    sharingDisableCheck()
+    runPendingOptOut()
   }
 
   const sdkStatus = status()
@@ -423,7 +431,7 @@ function _continue(activityState: ActivityStateMapT): Promise<void> {
 
       if (isInstalled) {
         _handleSdkInstalled()
-        sharingDisableCheck()
+        runPendingOptOut()
       }
     })
 }
@@ -603,6 +611,7 @@ const Adjust = {
   restart,
   gdprForgetMe,
   disableThirdPartySharing,
+  trackThirdPartySharing,
   initSmartBanner,
   showSmartBanner,
   hideSmartBanner,

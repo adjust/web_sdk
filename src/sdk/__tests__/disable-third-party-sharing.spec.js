@@ -1,4 +1,4 @@
-import * as ThirdPartySharing from '../third-party-sharing'
+import * as ThirdPartySharing from '../disable-third-party-sharing'
 import * as Config from '../config'
 import * as Queue from '../queue'
 import * as http from '../http'
@@ -99,7 +99,7 @@ describe('Third-party sharing opt-out functionality', () => {
     expectNotRequest()
 
     Config.default.set(appOptions)
-    ThirdPartySharing.check()
+    ThirdPartySharing.runPendingOptOut()
 
     expect(Logger.default.log).toHaveBeenLastCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
 

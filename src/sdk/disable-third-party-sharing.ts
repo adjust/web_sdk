@@ -40,7 +40,7 @@ function _status(): ThirdPartySharingStatusT {
 /**
  * Request third-party sharing opt-out request
  */
-function optOut(force?: boolean) {
+function optOut(force?: boolean): boolean {
   const status = _status()
 
   if (!force && status !== 'on') {
@@ -62,47 +62,53 @@ function optOut(force?: boolean) {
 }
 
 /**
- * Start or finish thrid-party sharing disable process
+ * Start the third-party sharing disable process
  */
-function _disable(pending: boolean, expectedAction: 'start' | 'finish'): boolean {
-  const { reason: savedReason, pending: savedPending } = getThirdPartySharing() || {}
-  const action = expectedAction === 'start' && pending ? 'start' : 'finish'
-  const shouldNotStart = expectedAction === 'start' && savedReason
-  const shouldNotFinish = expectedAction === 'finish' && savedReason && !savedPending
+function disable(): boolean {
+  const { reason: savedReason } = getThirdPartySharing() || {}
+  const alreadyStarted = !!savedReason
 
-  if (shouldNotStart || shouldNotFinish) {
-    Logger.log(_logMessages[action].inProgress)
+  if (alreadyStarted) {
+    Logger.log(_logMessages['start'].inProgress)
     return false
   }
 
-  Logger.log(_logMessages[action].done)
+  Logger.log(_logMessages['start'].done)
 
   setThirdPartySharing({
     reason: DISABLE_REASONS.REASON_GENERAL,
-    pending: pending
+    pending: true
   })
 
   return true
 }
 
 /**
- * Start the third-party sharing disable process
- */
-function disable(): boolean {
-  return _disable(true, 'start')
-}
-
-/**
  * Finalize the third-party sharing process
  */
 function finish() {
-  return _disable(false, 'finish')
+  const { reason: savedReason, pending: savedPending } = getThirdPartySharing() || {}
+  const shouldNotFinish = savedReason && !savedPending
+
+  if (shouldNotFinish) {
+    Logger.log(_logMessages['finish'].inProgress)
+    return false
+  }
+
+  Logger.log(_logMessages['finish'].done)
+
+  setThirdPartySharing({
+    reason: DISABLE_REASONS.REASON_GENERAL,
+    pending: false
+  })
+
+  return true
 }
 
 /**
  * Check if there s pending third-party sharing opt-out request
  */
-function check(): void {
+function runPendingOptOut(): void {
   if (_status() === 'pending') {
     Logger.log(_logMessages.running)
     optOut(true)
@@ -113,5 +119,5 @@ export {
   optOut,
   disable,
   finish,
-  check
+  runPendingOptOut
 }
