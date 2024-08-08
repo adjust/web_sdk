@@ -19,7 +19,7 @@ import { add, remove, removeAll, clear as globalParamsClear } from './global-par
 import { check as attributionCheck, destroy as attributionDestroy } from './attribution'
 import { disable, restore, status } from './disable'
 import { check as gdprForgetCheck, forget, disable as gdprDisable, finish as gdprDisableFinish, destroy as gdprForgetDestroy } from './gdpr-forget-device'
-import { trackThirdPartySharing as trackTPS } from './track-third-party-sharing'
+import { trackThirdPartySharing as trackTPS, ThirdPartySharing } from './track-third-party-sharing'
 import { register as listenersRegister, destroy as listenersDestroy } from './listeners'
 import { delay, flush, destroy as schedulerDestroy } from './scheduler'
 import event from './event'
@@ -593,6 +593,7 @@ const Adjust = {
   gdprForgetMe,
   disableThirdPartySharing,
   trackThirdPartySharing,
+  ThirdPartySharing,
   initSmartBanner,
   showSmartBanner,
   hideSmartBanner,
