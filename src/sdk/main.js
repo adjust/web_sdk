@@ -19,7 +19,6 @@ import { add, remove, removeAll, clear as globalParamsClear } from './global-par
 import { check as attributionCheck, destroy as attributionDestroy } from './attribution'
 import { disable, restore, status } from './disable'
 import { check as gdprForgetCheck, forget, disable as gdprDisable, finish as gdprDisableFinish, destroy as gdprForgetDestroy } from './gdpr-forget-device'
-import { runPendingOptOut, optOut as sharingOptOut, disable as sharingDisable, finish as sharingDisableFinish } from './disable-third-party-sharing'
 import { trackThirdPartySharing as trackTPS } from './track-third-party-sharing'
 import { register as listenersRegister, destroy as listenersDestroy } from './listeners'
 import { delay, flush, destroy as schedulerDestroy } from './scheduler'
@@ -262,17 +261,20 @@ function gdprForgetMe(): void {
 
 /**
  * Disable third party sharing
+ *
+ * @deprecated Use {@link trackThirdPartySharing} instead
  */
 function disableThirdPartySharing(): void {
-  //trackThirdPartySharing({isEnabled: false})
-  _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
-    schedule: true
-  })
+  trackThirdPartySharing({isEnabled: false})
 }
 
+/**
+ * Disable third party sharing
+ */
 function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions): void {
   _preCheck('third-party sharing', () => trackTPS(adjustThirdPartySharing), {
-    schedule: true
+    schedule: true,
+    optionalInit: true
   })
 }
 
@@ -289,21 +291,6 @@ function showSmartBanner (): void {
 /**  @deprecated */
 function hideSmartBanner (): void {
   Logger.error('function `hideSmartBanner` is deprecated');
-}
-
-/**
- * Handle third party sharing disable
- *
- * @private
- */
-function _handleDisableThirdPartySharing(): void {
-  let done = sharingOptOut()
-
-  if (!done) {
-    return
-  }
-
-  sharingDisable()
 }
 
 /**
@@ -401,10 +388,6 @@ function _continue(activityState: ActivityStateMapT): Promise<void> {
 
   gdprForgetCheck()
 
-  if (!isInstalled) {
-    runPendingOptOut()
-  }
-
   const sdkStatus = status()
   let message = (rest) => `Adjust SDK start has been interrupted ${rest}`
 
@@ -431,7 +414,6 @@ function _continue(activityState: ActivityStateMapT): Promise<void> {
 
       if (isInstalled) {
         _handleSdkInstalled()
-        runPendingOptOut()
       }
     })
 }
@@ -501,7 +483,6 @@ function _start(options: InitOptionsT): void {
   subscribe('sdk:installed', _handleSdkInstalled)
   subscribe('sdk:shutdown', () => _shutdown(true))
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
-  subscribe('sdk:third-party-sharing-opt-out', sharingDisableFinish)
   subscribe('attribution:check', (e, result) => attributionCheck(result))
 
   if (typeof options.attributionCallback === 'function') {

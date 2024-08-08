@@ -263,7 +263,6 @@ function _interceptSuccess (result: HttpSuccessResponseT, url): HttpSuccessRespo
   const isGdprRequest = isRequest(url, 'gdpr_forget_device')
   const isAttributionRequest = isRequest(url, 'attribution')
   const isSessionRequest = isRequest(url, 'session')
-  const isThirdPartySharingOptOutRequest = isRequest(url, 'disable_third_party_sharing')
   const optedOut = result.tracking_state === 'opted_out'
 
   if (!isGdprRequest && optedOut) {
@@ -277,11 +276,6 @@ function _interceptSuccess (result: HttpSuccessResponseT, url): HttpSuccessRespo
 
   if (isSessionRequest) {
     publish('session:finished', result)
-  }
-
-  if (isThirdPartySharingOptOutRequest) {
-    publish('sdk:third-party-sharing-opt-out')
-    return result
   }
 
   return result
