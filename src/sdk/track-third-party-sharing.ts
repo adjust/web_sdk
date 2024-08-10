@@ -2,25 +2,21 @@ import Logger from './logger'
 import { push } from './queue'
 
 export interface ThirdPartySharingOptions {
-  isEnabled: boolean | null;
+  isEnabled: boolean;
   granularOptions: Record<string, Record<string, string>>;
   partnerSharingSettings: Record<string, Record<string, boolean>>;
 }
 
 export class ThirdPartySharing implements ThirdPartySharingOptions {
-  private _isEnabled: boolean | null;
+  private _isEnabled: boolean;
   private _granularOptions: Record<string, Record<string, string>> = {};
   private _partnerSharingSettings: Record<string, Record<string, boolean>> = {};
 
-  constructor(isEnabled?: boolean) {
-    if (isEnabled === null || isEnabled === undefined) {
-      this._isEnabled = null
-    } else {
-      this._isEnabled = isEnabled
-    }
+  constructor(isEnabled: boolean) {
+    this._isEnabled = !!isEnabled
   }
 
-  get isEnabled(): boolean | null {
+  get isEnabled(): boolean {
     return this._isEnabled
   }
 
@@ -64,14 +60,10 @@ export class ThirdPartySharing implements ThirdPartySharingOptions {
 }
 
 export function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions) {
-  let params = {}
-  if (adjustThirdPartySharing.isEnabled !== null || adjustThirdPartySharing.isEnabled !== undefined) {
-    params = { 'sharing': adjustThirdPartySharing.isEnabled ? 'enable' : 'disable' }
-  }
-  params = {
-    ...params,
-    'granular_third_party_sharing_options': adjustThirdPartySharing.granularOptions,
-    'partner_sharing_settings': adjustThirdPartySharing.partnerSharingSettings
+  const params = {
+    sharing: adjustThirdPartySharing.isEnabled ? 'enable' : 'disable',
+    granularThirdPartySharingOptions: adjustThirdPartySharing.granularOptions,
+    partnerSharingSettings: adjustThirdPartySharing.partnerSharingSettings
   }
 
   push({
