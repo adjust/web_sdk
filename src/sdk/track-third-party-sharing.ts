@@ -28,13 +28,13 @@ export class ThirdPartySharing implements ThirdPartySharingOptions {
     return this._partnerSharingSettings
   }
 
-  public addGranularOption({ partnerName, key, value }: { partnerName: string, key: string, value: string }) {
-    if (!partnerName || !key) {
-      Logger.error("Cannot add granular option, partnerName and key are mandatory");
+  public addGranularOption(partnerName: string, key: string, value: string) {
+    if (!partnerName || !key || value === undefined) {
+      Logger.error("Cannot add granular option, partnerName, key and value are mandatory");
       return;
     }
 
-    const pair = { key: value };
+    const pair = { [key]: value };
 
     if (this.granularOptions[partnerName]) {
       this.granularOptions[partnerName] = { ...this.granularOptions[partnerName], ...pair };
@@ -43,16 +43,16 @@ export class ThirdPartySharing implements ThirdPartySharingOptions {
     }
   }
 
-  public addPartnerSharingSetting({ partnerName, key, value }: { partnerName: string, key: string, value: boolean }) {
-    if (!partnerName || !key) {
-      Logger.error("Cannot add partner sharing setting, partnerName and key are mandatory");
+  public addPartnerSharingSetting(partnerName: string, key: string, value: boolean) {
+    if (!partnerName || !key || value === undefined) {
+      Logger.error("Cannot add partner sharing setting, partnerName, key and value are mandatory");
       return;
     }
 
-    const pair = { key: value };
+    const pair = { [key]: value };
 
     if (this.partnerSharingSettings[partnerName]) {
-      this.partnerSharingSettings[partnerName] = { ...this.granularOptions[partnerName], ...pair };
+      this.partnerSharingSettings[partnerName] = { ...this.partnerSharingSettings[partnerName], ...pair };
     } else {
       this.partnerSharingSettings[partnerName] = pair;
     }
