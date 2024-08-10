@@ -88,6 +88,10 @@ function _encodeParam ([key, value]: [string, $Values<ParamsWithAttemptsT>]): st
     encodedValue = encodeURIComponent(JSON.stringify(value) || '')
   }
 
+  if (key === 'granular_third_party_sharing_options' || key === 'partner_sharing_settings') {
+    return [encodedKey, encodedValue].join(encodeURIComponent('='))
+  }
+
   return [encodedKey, encodedValue].join('=')
 }
 
