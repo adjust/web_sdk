@@ -193,7 +193,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     })
 
     it('initiates and prevents running all static methods and track event and runs forget-me request', () => {
-      expect.assertions(40)
+      expect.assertions(39)
 
       AdjustInstance.initSdk(suite.config)
 
@@ -239,7 +239,7 @@ describe('main entry point - test GDPR-Forget-Me when in initially enabled state
     })
 
     it('initiates and prevents running all static methods and track event and runs forget-me request', () => {
-      expect.assertions(40)
+      expect.assertions(39)
 
       AdjustInstance.initSdk(suite.config)
 

@@ -320,7 +320,7 @@ describe('main entry point - test instance initiation when storage is available'
             const requests = Queue.push.mock.calls
 
             expect(requests.length).toBe(2)
-            expect(requests[0][0].url).toBe('/disable_third_party_sharing')
+            expect(requests[0][0].url).toBe('/third_party_sharing')
             expect(requests[1][0].url).toBe('/session')
           })
       })
@@ -342,7 +342,7 @@ describe('main entry point - test instance initiation when storage is available'
 
                 expect(requests.length).toBe(2)
                 expect(requests[0][0].url).toBe('/session')
-                expect(requests[1][0].url).toBe('/disable_third_party_sharing')
+                expect(requests[1][0].url).toBe('/third_party_sharing')
               })
           })
       })
@@ -363,7 +363,7 @@ describe('main entry point - test instance initiation when storage is available'
 
             expect(requests.length).toBe(2)
             expect(requests[0][0].url).toBe('/session')
-            expect(requests[1][0].url).toBe('/disable_third_party_sharing')
+            expect(requests[1][0].url).toBe('/third_party_sharing')
 
             return Utils.flushPromises()
           })
@@ -383,197 +383,10 @@ describe('main entry point - test instance initiation when storage is available'
 
             expect(requests.length).toBe(2)
             expect(requests[0][0].url).toBe('/session')
-            expect(requests[1][0].url).toBe('/disable_third_party_sharing')
+            expect(requests[1][0].url).toBe('/third_party_sharing')
 
             return Utils.flushPromises()
           })
-      })
-
-      describe('test multiple marketing opt-out requests in a row', () => {
-        it('prevents multiple opt-out requests when requesting opt-out multiple times before init', () => {
-          AdjustInstance.disableThirdPartySharing()
-          AdjustInstance.disableThirdPartySharing()
-          AdjustInstance.initSdk(suite.config)
-
-          expect.assertions(8)
-
-          expect(Logger.default.log).toHaveBeenCalledTimes(3)
-          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run third-party sharing opt-out request after initialisation')
-          expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-
-          return Utils.flushPromises()
-            .then(() => {
-              PubSub.publish('sdk:installed')
-              jest.runOnlyPendingTimers()
-
-              const requests = Queue.push.mock.calls
-
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
-              expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toBe('/disable_third_party_sharing')
-              expect(requests[1][0].url).toBe('/session')
-
-              return Utils.flushPromises()
-            })
-        })
-
-        it('prevents multiple opt-out requests when requesting opt-out multiple times synchronously after init', () => {
-          expect.assertions(8)
-
-          AdjustInstance.initSdk(suite.config)
-
-          return Utils.flushPromises()
-            .then(() => {
-
-              AdjustInstance.disableThirdPartySharing()
-              AdjustInstance.disableThirdPartySharing()
-
-              const logCallsCount = Logger.default.log.mock.calls.length
-              expect(Logger.default.log).toHaveBeenNthCalledWith(logCallsCount - 1, 'Running disable third-party sharing is delayed until Adjust SDK is up')
-              expect(Logger.default.log).toHaveBeenNthCalledWith(logCallsCount, 'Running disable third-party sharing is delayed until Adjust SDK is up')
-
-              return Utils.flushPromises()
-                .then(() => {
-                  PubSub.publish('sdk:installed')
-                  jest.runOnlyPendingTimers()
-
-                  const requests = Queue.push.mock.calls
-
-                  expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
-                  expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-                  expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toBe('/session')
-                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
-
-                  return Utils.flushPromises()
-                })
-            })
-        })
-
-        it('prevents multiple opt-out requests when requesting opt-out multiple times synchronously before and after init', () => {
-          AdjustInstance.disableThirdPartySharing()
-          AdjustInstance.initSdk(suite.config)
-
-          return Utils.flushPromises()
-            .then(() => {
-
-              AdjustInstance.disableThirdPartySharing()
-
-              expect.assertions(9)
-
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run third-party sharing opt-out request after initialisation')
-              expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-              expect(Logger.default.log).toHaveBeenCalledWith('Running disable third-party sharing is delayed until Adjust SDK is up')
-
-              return Utils.flushPromises()
-                .then(() => {
-                  PubSub.publish('sdk:installed')
-                  jest.runOnlyPendingTimers()
-
-                  const requests = Queue.push.mock.calls
-
-                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
-                  expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
-                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-                  expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toBe('/disable_third_party_sharing')
-                  expect(requests[1][0].url).toBe('/session')
-
-                  return Utils.flushPromises()
-                })
-            })
-        })
-
-        it('prevents multiple opt-out requests when requesting opt-out multiple times asynchronously before and after init', () => {
-          AdjustInstance.disableThirdPartySharing()
-          AdjustInstance.initSdk(suite.config)
-
-          expect.assertions(7)
-
-          expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK will run third-party sharing opt-out request after initialisation')
-          expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-
-          return Utils.flushPromises()
-            .then(() => {
-              PubSub.publish('sdk:installed')
-              jest.runOnlyPendingTimers()
-
-              AdjustInstance.disableThirdPartySharing()
-
-              const requests = Queue.push.mock.calls
-
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK is running pending third-party sharing opt-out request')
-              expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-              expect(requests.length).toBe(2)
-              expect(requests[0][0].url).toBe('/disable_third_party_sharing')
-              expect(requests[1][0].url).toBe('/session')
-
-              return Utils.flushPromises()
-            })
-        })
-
-        it('prevents multiple opt-out requests when requesting opt-out multiple times synchronously and then asynchronously after init', () => {
-          AdjustInstance.initSdk(suite.config)
-
-          return Utils.flushPromises()
-            .then(() => {
-              expect.assertions(7)
-
-              AdjustInstance.disableThirdPartySharing()
-
-              expect(Logger.default.log).toHaveBeenLastCalledWith('Running disable third-party sharing is delayed until Adjust SDK is up')
-
-              return Utils.flushPromises()
-                .then(() => {
-                  PubSub.publish('sdk:installed')
-                  jest.runOnlyPendingTimers()
-
-                  AdjustInstance.disableThirdPartySharing()
-
-                  const requests = Queue.push.mock.calls
-
-                  expect(Logger.default.log).toHaveBeenCalledWith('Delayed disable third-party sharing task is running now')
-                  expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-                  expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toBe('/session')
-                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
-
-                  return Utils.flushPromises()
-                })
-            })
-        })
-
-        it('prevents multiple opt-out requests when requesting opt-out multiple times asynchronously after init', () => {
-          AdjustInstance.initSdk(suite.config)
-
-          expect.assertions(5)
-
-          return Utils.flushPromises()
-            .then(() => {
-
-              return Utils.flushPromises()
-                .then(() => {
-                  PubSub.publish('sdk:installed')
-                  jest.runOnlyPendingTimers()
-
-                  AdjustInstance.disableThirdPartySharing()
-                  AdjustInstance.disableThirdPartySharing()
-
-                  const requests = Queue.push.mock.calls
-
-                  expect(Logger.default.log).toHaveBeenCalledWith('Third-party sharing opt-out is now started')
-                  expect(Logger.default.log).toHaveBeenCalledWith('Adjust SDK already queued third-party sharing opt-out request')
-                  expect(requests.length).toBe(2)
-                  expect(requests[0][0].url).toBe('/session')
-                  expect(requests[1][0].url).toBe('/disable_third_party_sharing')
-
-                  return Utils.flushPromises()
-                })
-            })
-        })
       })
     })
   })
