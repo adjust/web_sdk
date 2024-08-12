@@ -248,7 +248,7 @@ function _handleToggle(e) {
 }
 
 function _setJson(tpsOptions) {
-  let text = `const options = new ThirdPartySharingOptions(${tpsOptions.isEnabled});\n`
+  let text = `const options = new Adjust.ThirdPartySharingOptions(${tpsOptions.isEnabled});\n`
 
   for (const option of tpsOptions.granularOptions) {
     text += `option.addGranularOption('${option.partnerName}', '${option.key}', '${option.value}')\n`
