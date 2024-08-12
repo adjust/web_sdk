@@ -3,6 +3,9 @@ import {
   ThirdPartySharing
 } from '../track-third-party-sharing';
 import * as Logger from '../logger'
+import * as Queue from '../queue'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 jest.mock('../logger')
 
@@ -10,6 +13,7 @@ describe('third party sharing functionality', () => {
   beforeAll(() => {
     jest.spyOn(Logger.default, 'warn')
     jest.spyOn(Logger.default, 'error')
+    jest.spyOn(Queue, 'push')
   })
 
   afterAll(() => {
@@ -132,4 +136,65 @@ describe('third party sharing functionality', () => {
 
   })
 
+  describe('trackThirdPartySharing', () => {
+    it('attaches isEnabled to request parameters', () => {
+      const options = new ThirdPartySharing(true)
+      trackThirdPartySharing(options)
+
+      expect(Queue.push).toHaveBeenCalledWith({
+        url: "/third_party_sharing",
+        method: 'POST',
+        params: {
+          sharing: 'enable',
+          granularThirdPartySharingOptions: {},
+          partnerSharingSettings: {}
+        }
+      })
+    })
+
+    it('attaches granular options to request parameters', () => {
+      const options = new ThirdPartySharing(true)
+      options.addGranularOption('partner', 'key', 'value')
+      trackThirdPartySharing(options)
+
+      expect(Queue.push).toHaveBeenCalledWith({
+        url: "/third_party_sharing",
+        method: 'POST',
+        params: {
+          sharing: 'enable',
+          granularThirdPartySharingOptions: { partner: { key: "value"} },
+          partnerSharingSettings: {}
+        }
+      })
+    })
+
+    it('attaches partner sharing settings to request parameters', () => {
+      const options = new ThirdPartySharing(true)
+      options.addPartnerSharingSetting('partner', 'key', false)
+      trackThirdPartySharing(options)
+
+      expect(Queue.push).toHaveBeenCalledWith({
+        url: "/third_party_sharing",
+        method: 'POST',
+        params: {
+          sharing: 'enable',
+          granularThirdPartySharingOptions: {},
+          partnerSharingSettings: { partner: { key: false} },
+        }
+      })
+    })
+
+    it.each([
+      [undefined],
+      [null],
+      [''],
+      [[]],
+      [{}],
+      [{ hello: 'hi' }]
+    ])('logs an error message when no options provided', (options) => {
+      trackThirdPartySharing(options as any)
+
+      expect(Logger.default.error).toHaveBeenCalledWith('Can not track third-party sharing without parameters')
+    })
+  })
 })

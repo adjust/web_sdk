@@ -63,6 +63,11 @@ export class ThirdPartySharing implements ThirdPartySharingOptions {
 }
 
 export function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions) {
+  if (!adjustThirdPartySharing || adjustThirdPartySharing.isEnabled === undefined) {
+    Logger.error('Can not track third-party sharing without parameters')
+    return
+  }
+
   const params = {
     sharing: adjustThirdPartySharing.isEnabled ? 'enable' : 'disable',
     granularThirdPartySharingOptions: adjustThirdPartySharing.granularOptions,
