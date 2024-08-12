@@ -13,6 +13,9 @@ export class ThirdPartySharing implements ThirdPartySharingOptions {
   private _partnerSharingSettings: Record<string, Record<string, boolean>> = {};
 
   constructor(isEnabled: boolean) {
+    if (typeof isEnabled !== 'boolean') {
+      Logger.warn(`isEnabled should be boolean, converting ${isEnabled} results ${!!isEnabled}`);
+    }
     this._isEnabled = !!isEnabled
   }
 
