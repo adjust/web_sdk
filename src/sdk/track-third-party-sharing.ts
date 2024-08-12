@@ -30,7 +30,7 @@ export class ThirdPartySharing implements ThirdPartySharingOptions {
 
   public addGranularOption(partnerName: string, key: string, value: string) {
     if (!partnerName || !key || value === undefined) {
-      Logger.error("Cannot add granular option, partnerName, key and value are mandatory");
+      Logger.error('Cannot add granular option, partnerName, key and value are mandatory');
       return;
     }
 
@@ -45,7 +45,7 @@ export class ThirdPartySharing implements ThirdPartySharingOptions {
 
   public addPartnerSharingSetting(partnerName: string, key: string, value: boolean) {
     if (!partnerName || !key || value === undefined) {
-      Logger.error("Cannot add partner sharing setting, partnerName, key and value are mandatory");
+      Logger.error('Cannot add partner sharing setting, partnerName, key and value are mandatory');
       return;
     }
 
