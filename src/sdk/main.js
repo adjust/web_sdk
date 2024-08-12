@@ -269,11 +269,14 @@ function disableThirdPartySharing(): void {
 }
 
 /**
- * Disable third party sharing
+ * Track third party sharing
  */
 function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions): void {
-  _preCheck('third-party sharing', () => trackTPS(adjustThirdPartySharing), {
-    schedule: true,
+  const callback = () => ActivityState.waitForWebUUID() // ensure we have web_uuid to be sent with request
+    .then(() => trackTPS(adjustThirdPartySharing))
+
+  _preCheck('third-party sharing', callback, {
+    schedule: false,
     optionalInit: true
   })
 }
