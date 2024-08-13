@@ -142,7 +142,7 @@ describe('third party sharing functionality', () => {
       trackThirdPartySharing(options)
 
       expect(Queue.push).toHaveBeenCalledWith({
-        url: "/third_party_sharing",
+        url: '/third_party_sharing',
         method: 'POST',
         params: {
           sharing: 'enable',
@@ -158,11 +158,11 @@ describe('third party sharing functionality', () => {
       trackThirdPartySharing(options)
 
       expect(Queue.push).toHaveBeenCalledWith({
-        url: "/third_party_sharing",
+        url: '/third_party_sharing',
         method: 'POST',
         params: {
           sharing: 'enable',
-          granularThirdPartySharingOptions: { partner: { key: "value"} },
+          granularThirdPartySharingOptions: { partner: { key: 'value'} },
           partnerSharingSettings: {}
         }
       })
@@ -174,7 +174,7 @@ describe('third party sharing functionality', () => {
       trackThirdPartySharing(options)
 
       expect(Queue.push).toHaveBeenCalledWith({
-        url: "/third_party_sharing",
+        url: '/third_party_sharing',
         method: 'POST',
         params: {
           sharing: 'enable',
