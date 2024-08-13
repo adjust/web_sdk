@@ -122,9 +122,11 @@ function _initGranularOptions() {
 
   const lastIndex = _tpsOptions.granularOptions.length
   if (_tpsOptions.granularOptions.length > 0) {
+    const options = []
     for (let i = 0; i < _tpsOptions.granularOptions.length; i++) {
-      root.insertBefore(_createOption('granular', i, _tpsOptions.granularOptions[i]), addButton)
+      options.push(_createOption('granular', i, _tpsOptions.granularOptions[i]))
     }
+    addButton.before(...options)
   }
   root.insertBefore(_createOption('granular', lastIndex), addButton)
 
@@ -156,9 +158,11 @@ function _initpartnerSharingSettings() {
 
   const lastIndex = _tpsOptions.partnerSharingSettings.length
   if (_tpsOptions.partnerSharingSettings.length > 0) {
+    const options = []
     for (let i = 0; i < _tpsOptions.partnerSharingSettings.length; i++) {
-      root.insertBefore(_createOption('partner-sharing', i, _tpsOptions.partnerSharingSettings[i]), addButton)
+      options.push(_createOption('partner-sharing', i, _tpsOptions.partnerSharingSettings[i]))
     }
+    addButton.before(...options)
   }
   root.insertBefore(_createOption('partner-sharing', lastIndex), addButton)
 
