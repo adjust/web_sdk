@@ -16,9 +16,9 @@ function init() {
   _ui.enableTPS = document.getElementById('enable-tps')
   _ui.submitButton = _ui.tpsOptionsForm.querySelector('button[type="submit"]')
 
-  _ui.tpsOptionsForm.addEventListener('submit', _handleSave, false)
-  _ui.toggleButton.addEventListener('click', _handleToggle, false)
-  _ui.trackTPSButton.addEventListener('click', _handleTrackTPS, false)
+  _ui.tpsOptionsForm.addEventListener('submit', _handleSave)
+  _ui.toggleButton.addEventListener('click', _handleToggle)
+  _ui.trackTPSButton.addEventListener('click', _handleTrackTPS)
 
   _ui.enableTPS.addEventListener('change', () => {
     _tpsOptions.isEnabled = _ui.enableTPS.checked
