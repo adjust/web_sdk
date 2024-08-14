@@ -1,10 +1,13 @@
 import Adjust from '../../sdk/main'
 import { getItem, setItem } from '../storage'
+import DynamicParams from '../dynamic-params/dynamic-params'
 
 const _ui = {}
 let _tpsOptions = {}
 let _disabled = false
 let _timeoutId = null
+let _granularOptions = null
+let _partnerSharingSettings = null
 
 function init() {
   _tpsOptions = getItem('tpsOptions') || { isEnabled: true, granularOptions: [], partnerSharingSettings: [] }
@@ -26,169 +29,26 @@ function init() {
     _setJson(_tpsOptions)
   })
 
-  _initGranularOptions()
-  _initpartnerSharingSettings()
+  _granularOptions = DynamicParams('tps-granular', ['partnerName', 'key', 'value'], _tpsOptions.granularOptions,
+    () => {
+      _tpsOptions.granularOptions = _granularOptions.query()
+      _setJson(_tpsOptions)
+      setItem('tpsOptions', _tpsOptions)
+    })
+  _granularOptions.init()
+
+  _partnerSharingSettings = DynamicParams('tps-partner-sharing', ['partnerName', 'key', 'value'], _tpsOptions.partnerSharingSettings,
+    () => {
+      _tpsOptions.partnerSharingSettings = _partnerSharingSettings.query()
+      _setJson(_tpsOptions)
+      setItem('tpsOptions', _tpsOptions)
+    })
+  _partnerSharingSettings.init()
 
   _setJson(_tpsOptions)
 }
 
-function _createOptionsMarkup(idPrefix, option, onRemoveClick, onValueChange, ) {
-  const wrapper = document.createElement('div')
-  wrapper.id = idPrefix
-  wrapper.className = 'flex-box-row'
-  wrapper.style.justifyContent = 'space-between'
-  wrapper.style.alignItems = 'center'
-  wrapper.style.gap = '3px'
-
-  const partner = document.createElement('div')
-  partner.className = 'form-row'
-  const partnerLabel = document.createElement('label')
-  partnerLabel.for = `${idPrefix}-partner`
-  partnerLabel.innerText = 'Partner'
-  const partnerInput = document.createElement('input')
-  partnerInput.id = `${idPrefix}-partner`
-  partnerInput.value = option ? option.partnerName : ''
-  partner.append(partnerLabel, partnerInput)
-  wrapper.append(partner)
-
-  const key = document.createElement('div')
-  key.className = 'form-row'
-  const keyLabel = document.createElement('label')
-  keyLabel.for = `${idPrefix}-key`
-  keyLabel.innerText = 'Key'
-  const keyInput = document.createElement('input')
-  keyInput.id = `${idPrefix}-key`
-  keyInput.value = option ? option.key : ''
-  key.append(keyLabel, keyInput)
-  wrapper.append(key)
-
-  const value = document.createElement('div')
-  value.className = 'form-row'
-  const valueLabel = document.createElement('label')
-  valueLabel.for = `${idPrefix}-value`
-  valueLabel.innerText = 'Value'
-  const valueInput = document.createElement('input')
-  valueInput.id = `${idPrefix}-value`
-  valueInput.value = option ? option.value : ''
-  valueInput.addEventListener('change', onValueChange)
-  value.append(valueLabel, valueInput)
-  wrapper.append(value)
-
-  const removeButton = document.createElement('button')
-  removeButton.id = `${idPrefix}-remove`
-  removeButton.innerText = '-'
-  removeButton.addEventListener('click', (e) => { onRemoveClick(e); wrapper.remove(); })
-  wrapper.append(removeButton)
-
-  return wrapper
-}
-
-function _createOption(type, index, option) {
-  const idPrefix = `tps-${type}-${index}`
-
-  const onValueChange = (e) => {
-    if (type === 'granular') {
-      return
-    }
-
-    if (e.target.value !== 'false') {
-      e.target.value = + e.target.value ? 'true' : 'false'
-    }
-  }
-
-  const onRemove = (e) => {
-    e.preventDefault()
-
-    if (!option) {
-      return
-    }
-
-    const predicate = i => !(i.partnerName === option.partnerName && i.key === option.key)
-    if (type === 'granular') {
-      _tpsOptions.granularOptions = _tpsOptions.granularOptions.filter(predicate)
-    } else {
-      _tpsOptions.partnerSharingSettings = _tpsOptions.partnerSharingSettings.filter(predicate)
-    }
-    _setJson(_tpsOptions)
-    setItem('tpsOptions', _tpsOptions)
-  }
-
-  return _createOptionsMarkup(idPrefix, option, onRemove, onValueChange)
-}
-
-function _initGranularOptions() {
-  const root = _ui.tpsOptionsForm.querySelector('#tps-granular')
-  const addButton = _ui.tpsOptionsForm.querySelector('#tps-granular-add')
-
-  const lastIndex = _tpsOptions.granularOptions.length
-  if (_tpsOptions.granularOptions.length > 0) {
-    const options = []
-    for (let i = 0; i < _tpsOptions.granularOptions.length; i++) {
-      options.push(_createOption('granular', i, _tpsOptions.granularOptions[i]))
-    }
-    addButton.before(...options)
-  }
-  root.insertBefore(_createOption('granular', lastIndex), addButton)
-
-  addButton.addEventListener('click', (e) => {
-    e.preventDefault()
-
-    const childrenDivs = Array.from(root.children).filter(i => i.nodeName === 'DIV');
-    const lastOption = childrenDivs[childrenDivs.length - 1]
-    const fields = lastOption.getElementsByTagName('input')
-
-    // do nothing if any of properties has no value
-    if (fields[0].value === '' || fields[1].value === '' || fields[2].value === '') {
-      return;
-    }
-
-    _tpsOptions.granularOptions.push({partnerName: fields[0].value, key: fields[1].value, value: fields[2].value })
-
-    _setJson(_tpsOptions)
-    setItem('tpsOptions', _tpsOptions)
-
-    const lastIndex = +lastOption.id.substring('tps-granular-'.length)
-    root.insertBefore(_createOption('granular', lastIndex + 1), addButton)
-  })
-}
-
-function _initpartnerSharingSettings() {
-  const root = _ui.tpsOptionsForm.querySelector('#tps-partner-sharing')
-  const addButton = _ui.tpsOptionsForm.querySelector('#tps-partner-sharing-add')
-
-  const lastIndex = _tpsOptions.partnerSharingSettings.length
-  if (_tpsOptions.partnerSharingSettings.length > 0) {
-    const options = []
-    for (let i = 0; i < _tpsOptions.partnerSharingSettings.length; i++) {
-      options.push(_createOption('partner-sharing', i, _tpsOptions.partnerSharingSettings[i]))
-    }
-    addButton.before(...options)
-  }
-  root.insertBefore(_createOption('partner-sharing', lastIndex), addButton)
-
-  addButton.addEventListener('click', (e) => {
-    e.preventDefault()
-
-    const childrenDivs = Array.from(root.children).filter(i => i.nodeName === 'DIV');
-    const lastOption = childrenDivs[childrenDivs.length - 1]
-    const fields = lastOption.getElementsByTagName('input')
-
-    // do nothing if any of properties has no value
-    if (fields[0].value === '' || fields[1].value === '' || fields[2].value === '') {
-      return;
-    }
-
-    _tpsOptions.partnerSharingSettings.push({partnerName: fields[0].value, key: fields[1].value, value: fields[2].value })
-
-    _setJson(_tpsOptions)
-    setItem('tpsOptions', _tpsOptions)
-
-    const lastIndex = +lastOption.id.substring('tps-partner-sharing-'.length)
-    root.insertBefore(_createOption('partner-sharing', lastIndex + 1), addButton)
-  })
-}
-
-function trackThirdPartySharing(tpsOptions) {
+function _trackThirdPartySharing(tpsOptions) {
   const options = new Adjust.ThirdPartySharing(tpsOptions.isEnabled)
 
   for (const option of tpsOptions.granularOptions) {
@@ -220,7 +80,7 @@ function _handleSave(e) {
     _ui.submitButton.classList.remove('loading')
     _ui.submitButton.disabled = false
 
-    trackThirdPartySharing(_tpsOptions)
+    _trackThirdPartySharing(_tpsOptions)
   }, 1000)
 }
 
@@ -239,7 +99,7 @@ function _handleTrackTPS() {
     _ui.trackTPSButton.classList.remove('loading')
     _ui.trackTPSButton.disabled = false
 
-    trackThirdPartySharing(_tpsOptions)
+    _trackThirdPartySharing(_tpsOptions)
   }, 1000)
 }
 
@@ -263,8 +123,6 @@ function _setJson(tpsOptions) {
   }
 
   text += 'Adjust.trackThirdPartySharing(options);'
-
-  console.log(text)
 
   _ui.tpsOptionsJson.textContent = text
 }

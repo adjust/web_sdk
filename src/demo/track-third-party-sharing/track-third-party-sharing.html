@@ -8,20 +8,18 @@
     <div class="flex-box-row">
       <form class="flex-one" id="tps-config-form">
         <div class="flex-box-column flex-two">
-          <div class="flex-box-row">
+          <div class="flex-box-row" style="margin-bottom: 10px;">
             <label for="enable-tps">Enable/disable third party sharing</label>
             <input type="checkbox" id="enable-tps" checked />
           </div>
 
-          <fieldset id="tps-granular" class="form-row flex-box-column">
-            <legend>Granular options</legend>
-            <button id="tps-granular-add">+</button>
-          </fieldset>
+          <div id="tps-granular" class="form-row flex-box-column dynamic-params">
+            <h3>Granular options</h3>
+          </div>
 
-          <fieldset id="tps-partner-sharing" class="form-row flex-box-column">
-            <legend>Partner sharing settings</legend>
-            <button id="tps-partner-sharing-add">+</button>
-          </fieldset>
+          <div id="tps-partner-sharing" class="form-row flex-box-column dynamic-params">
+            <h3>Partner sharing settings</h3>
+          </div>
 
         </div>
 
