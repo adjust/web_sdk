@@ -137,6 +137,47 @@ function _objectWithoutProperties(source, excluded) {
   }
   return target;
 }
+;// CONCATENATED MODULE: ./src/sdk/constants.ts
+var SECOND = 1000;
+var MINUTE = SECOND * 60;
+var HOUR = MINUTE * 60;
+var DAY = HOUR * 24;
+var DISABLE_REASONS = /*#__PURE__*/function (DISABLE_REASONS) {
+  DISABLE_REASONS["REASON_GENERAL"] = "general";
+  DISABLE_REASONS["REASON_GDPR"] = "gdpr";
+  return DISABLE_REASONS;
+}({});
+var HTTP_ERRORS = {
+  'TRANSACTION_ERROR': 'XHR transaction failed due to an error',
+  'SERVER_MALFORMED_RESPONSE': 'Response from server is malformed',
+  'SERVER_INTERNAL_ERROR': 'Internal error occurred on the server',
+  'SERVER_CANNOT_PROCESS': 'Server was not able to process the request, probably due to error coming from the client',
+  'NO_CONNECTION': 'No internet connectivity',
+  'SKIP': 'Skipping slower attempt',
+  'MISSING_URL': 'Url is not provided'
+};
+var STORAGE_TYPES = /*#__PURE__*/function (STORAGE_TYPES) {
+  STORAGE_TYPES["NO_STORAGE"] = "noStorage";
+  STORAGE_TYPES["INDEXED_DB"] = "indexedDB";
+  STORAGE_TYPES["LOCAL_STORAGE"] = "localStorage";
+  return STORAGE_TYPES;
+}({});
+var ENDPOINTS = {
+  default: 'adjust.com',
+  india: 'adjust.net.in',
+  china: 'adjust.world',
+  world: 'adjust.world',
+  EU: 'eu.adjust.com',
+  TR: 'tr.adjust.com',
+  US: 'us.adjust.com'
+};
+var BASE_URL_PREFIX = 'https://app.';
+var GDPR_URL_PREFIX = 'https://gdpr.';
+var BASE_URL_NO_SUB_DOMAIN_PREFIX = 'https://';
+var PUB_SUB_EVENTS = {
+  WEB_UUID_CREATED: 'activity:web_uuid',
+  ATTRIBUTION_RECEIVED: 'activity:attribution'
+};
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
@@ -197,84 +238,6 @@ function _nonIterableRest() {
 function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
-
-
-
-
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-}
-;// CONCATENATED MODULE: ./src/sdk/constants.js
-var SECOND = 1000;
-var MINUTE = SECOND * 60;
-var HOUR = MINUTE * 60;
-var DAY = HOUR * 24;
-var REASON_GENERAL = 'general';
-var REASON_GDPR = 'gdpr';
-var HTTP_ERRORS = {
-  'TRANSACTION_ERROR': 'XHR transaction failed due to an error',
-  'SERVER_MALFORMED_RESPONSE': 'Response from server is malformed',
-  'SERVER_INTERNAL_ERROR': 'Internal error occurred on the server',
-  'SERVER_CANNOT_PROCESS': 'Server was not able to process the request, probably due to error coming from the client',
-  'NO_CONNECTION': 'No internet connectivity',
-  'SKIP': 'Skipping slower attempt',
-  'MISSING_URL': 'Url is not provided'
-};
-var STORAGE_TYPES = {
-  NO_STORAGE: 'noStorage',
-  INDEXED_DB: 'indexedDB',
-  LOCAL_STORAGE: 'localStorage'
-};
-var ENDPOINTS = {
-  default: {
-    endpointName: 'Default',
-    app: 'https://app.adjust.com',
-    gdpr: 'https://gdpr.adjust.com'
-  },
-  india: {
-    endpointName: 'Indian',
-    app: 'https://app.adjust.net.in',
-    gdpr: 'https://gdpr.adjust.net.in'
-  },
-  china: {
-    endpointName: 'Chinese',
-    app: 'https://app.adjust.world',
-    gdpr: 'https://gdpr.adjust.world'
-  },
-  EU: {
-    endpointName: 'EU',
-    app: 'https://app.eu.adjust.com',
-    gdpr: 'https://gdpr.eu.adjust.com'
-  },
-  TR: {
-    endpointName: 'TR',
-    app: 'https://app.tr.adjust.com',
-    gdpr: 'https://gdpr.tr.adjust.com'
-  },
-  US: {
-    endpointName: 'US',
-    app: 'https://app.us.adjust.com',
-    gdpr: 'https://gdpr.us.adjust.com'
-  }
-};
-var PUB_SUB_EVENTS = {
-  WEB_UUID_CREATED: 'activity:web_uuid',
-  ATTRIBUTION_RECEIVED: 'activity:attribution'
-};
 ;// CONCATENATED MODULE: ./src/sdk/utilities.ts
 
 
@@ -438,7 +401,7 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.6.0" || 0,
+  version: "5.7.0" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
@@ -586,142 +549,80 @@ var Logger = {
   error: _applyLevel('error', LEVEL_ERROR)
 };
 /* harmony default export */ const logger = (Logger);
-;// CONCATENATED MODULE: ./src/sdk/config.js
-
-
-
-/*:: // 
-import { type BaseParamsT, type CustomConfigT, type InitOptionsT, type BaseParamsListT, type BaseParamsMandatoryListT, type CustomConfigListT } from './types';*/
+;// CONCATENATED MODULE: ./src/sdk/config.ts
 
 
 
 
-/**
- * Base parameters set by client
- * - app token
- * - environment
- * - default tracker
- * - external device ID
- *
- * @type {Object}
- * @private
- */
-var _baseParams /*: BaseParamsT*/ = {};
 
-/**
- * Custom config set by client
- * - url override
- * - event deduplication list limit
- *
- * @type {Object}
- * @private
- */
-var _customConfig /*: CustomConfigT*/ = {};
+/** Base parameters set by client */
 
-/**
- * Mandatory fields to set for sdk initialization
- *
- * @type {string[]}
- * @private
- */
-var _mandatory /*: BaseParamsMandatoryListT*/ = ['appToken', 'environment'];
+/** Custom config set by client */
+/*:: export type InitOptions = BaseParams & CustomConfig & {
+  attributionCallback: (eventName: string, attribution: Attribution) => unknown
+}*/
+var _baseParams /*: BaseParams | null*/ = null;
+var _customConfig /*: CustomConfig | null*/ = null;
 
-/**
- * Allowed params to be sent with each request
- *
- * @type {string[]}
- * @private
- */
-var _allowedParams /*: BaseParamsListT*/ = [].concat(_mandatory, ['defaultTracker', 'externalDeviceId']);
+/** Mandatory fields to set for sdk initialization */
+var _mandatory /*: Array<(keyof MandatoryParams)>*/ = ['appToken', 'environment'];
 
-/**
- * Allowed configuration overrides
- *
- * @type {string[]}
- * @private
- */
-var _allowedConfig /*: CustomConfigListT*/ = ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
+/** Allowed params to be sent with each request */
+var _allowedParams /*: Array<(keyof BaseParams)>*/ = [].concat(_mandatory, ['defaultTracker', 'externalDeviceId']);
 
-/**
- * Global configuration object used across the sdk
- *
- * @type {{
- * namespace: string,
- * version: string,
- * sessionWindow: number,
- * sessionTimerWindow: number,
- * requestValidityWindow: number
- * }}
- */
-var _baseConfig = {
-  sessionWindow: 30 * MINUTE,
-  sessionTimerWindow: 60 * SECOND,
-  requestValidityWindow: 28 * DAY
-};
+/** Allowed configuration overrides */
+var _allowedConfig /*: Array<(keyof CustomConfig)>*/ = ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
 
 /**
  * Check of configuration has been initialized
- *
- * @returns {boolean}
  */
 function isInitialised() /*: boolean*/{
   return _mandatory.reduce(function (acc, key) {
-    return acc && !!_baseParams[key];
+    return acc && !!_baseParams && !!_baseParams[key];
   }, true);
 }
 
 /**
- * Get base params set by client
- *
- * @returns {Object}
- */
-function getBaseParams() /*: BaseParamsT*/{
-  return _objectSpread2({}, _baseParams);
-}
-
-/**
  * Set base params and custom config for the sdk to run
- *
- * @param {Object} options
  */
-function set(options /*: InitOptionsT*/) /*: void*/{
+function set(options /*: InitOptions*/) /*: void*/{
   if (hasMissing(options)) {
     return;
   }
-  var filteredParams = [].concat(_toConsumableArray(_allowedParams), _allowedConfig).filter(function (key) {
+  _baseParams = _allowedParams.filter(function (key) {
     return !!options[key];
   }).map(function (key) {
     return [key, options[key]];
-  });
-  _baseParams = filteredParams.filter(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 1),
-      key = _ref2[0];
-    return _allowedParams.indexOf(key) !== -1;
+  }).reduce(function (acc, item) {
+    return reducer(acc, item);
+  }, {});
+  _customConfig = _allowedConfig.filter(function (key) {
+    return !!options[key];
+  }).map(function (key) {
+    return [key, options[key]];
   }).reduce(reducer, {});
-  _customConfig = filteredParams.filter(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 1),
-      key = _ref4[0];
-    return _allowedConfig.indexOf(key) !== -1;
-  }).reduce(reducer, {});
+}
+
+/**
+ * Get base params set by client
+ */
+function getBaseParams() /*: Partial<BaseParams>*/{
+  return _baseParams ? _objectSpread2({}, _baseParams) // intentionally returns a copy
+  : {};
 }
 
 /**
  * Get custom config set by client
- *
- * @returns {Object}
  */
-function getCustomConfig() /*: CustomConfigT*/{
-  return _objectSpread2({}, _customConfig);
+function getCustomConfig() /*: CustomConfig*/{
+  return _customConfig ? _objectSpread2({}, _customConfig) // intentionally returns a copy
+  : {};
 }
 
 /**
  * Check if there are  missing mandatory parameters
- *
- * @param {Object} params
- * @returns {boolean}
- * @private
  */
-function hasMissing(params /*: BaseParamsT*/) /*: boolean*/{
+function hasMissing(params /*: BaseParams*/) /*: boolean*/{
   var missing = _mandatory.filter(function (value) {
     return !params[value];
   });
@@ -736,18 +637,21 @@ function hasMissing(params /*: BaseParamsT*/) /*: boolean*/{
  * Restore config to its default state
  */
 function destroy() /*: void*/{
-  _baseParams = {};
-  _customConfig = {};
+  _baseParams = null;
+  _customConfig = null;
 }
-var Config = _objectSpread2(_objectSpread2({}, _baseConfig), {}, {
+var Config = {
+  sessionWindow: 30 * MINUTE,
+  sessionTimerWindow: 60 * SECOND,
+  requestValidityWindow: 28 * DAY,
   set: set,
   getBaseParams: getBaseParams,
   getCustomConfig: getCustomConfig,
   isInitialised: isInitialised,
   hasMissing: hasMissing,
   destroy: destroy
-});
-/* harmony default export */ const config = (Config);
+};
+/* harmony default export */ const sdk_config = (Config);
 ;// CONCATENATED MODULE: ./src/sdk/storage/scheme.ts
 
 
@@ -907,7 +811,7 @@ var _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
       keys: {
         reason: {
           key: 'r',
-          values: _defineProperty({}, REASON_GENERAL, 1)
+          values: _defineProperty({}, DISABLE_REASONS.REASON_GENERAL, 1)
         },
         pending: {
           key: 'p',
@@ -923,7 +827,7 @@ var _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
       keys: {
         reason: {
           key: 'r',
-          values: _defineProperty(_defineProperty({}, REASON_GENERAL, 1), REASON_GDPR, 2)
+          values: _defineProperty(_defineProperty({}, DISABLE_REASONS.REASON_GENERAL, 1), DISABLE_REASONS.REASON_GDPR, 2)
         },
         pending: {
           key: 'p',
@@ -1618,7 +1522,7 @@ function _getTimeSpent() /*: number*/{
  */
 function _getSessionLength() /*: number*/{
   var lastActive = _activityState.lastActive;
-  var withinWindow = timePassed(lastActive, Date.now()) < config.sessionWindow;
+  var withinWindow = timePassed(lastActive, Date.now()) < sdk_config.sessionWindow;
   var withOffset = _active || !_active && withinWindow;
   return (_activityState.sessionLength || 0) + (withOffset ? _getOffset() : 0);
 }
@@ -1985,39 +1889,21 @@ var QuickStorage = /*#__PURE__*/function () {
   }]);
 }();
 /* harmony default export */ const quick_storage = (new QuickStorage());
-;// CONCATENATED MODULE: ./src/sdk/preferences.js
+;// CONCATENATED MODULE: ./src/sdk/preferences.ts
 
 
 
 
-
-/*:: type SdkDisabledT = {|
-  reason: REASON_GENERAL | REASON_GDPR,
-  pending: boolean
-|}*/
-/*:: type ThirdPartySharingDisabledT = {|
-  reason: REASON_GENERAL,
-  pending: boolean
-|}*/
-/*:: type PreferencesT = {|
-  thirdPartySharingDisabled?: ?ThirdPartySharingDisabledT,
-  sdkDisabled?: ?SdkDisabledT
-|}*/
 /**
  * Name of the store used by preferences
- *
- * @type {string}
- * @private
  */
 var _storeName /*: string*/ = storage_scheme.preferences.name;
 
 /**
  * Local reference to be used for recovering preserved state
- *
- * @type {Object}
- * @private
  */
-var _preferences /*: ?PreferencesT*/ = _getPreferences();
+var _preferences /*: PreferencesT | null*/ = null;
+_preferences = _getPreferences();
 
 /**
  * Get preferences stored in the localStorage
@@ -2025,7 +1911,7 @@ var _preferences /*: ?PreferencesT*/ = _getPreferences();
  * @returns {Object}
  * @private
  */
-function _getPreferences() /*: ?PreferencesT*/{
+function _getPreferences() /*: PreferencesT | null*/{
   if (!_preferences) {
     _setPreferences();
   }
@@ -2046,9 +1932,9 @@ function _setPreferences() /*: void*/{
  *
  * @returns {Object|null}
  */
-function getDisabled() /*: ?SdkDisabledT*/{
+function getDisabled() /*: SdkDisabledT | null*/{
   var preferences = _getPreferences();
-  return preferences ? preferences.sdkDisabled : null;
+  return preferences && preferences.sdkDisabled || null;
 }
 
 /**
@@ -2056,35 +1942,10 @@ function getDisabled() /*: ?SdkDisabledT*/{
  *
  * @param {Object|null} value
  */
-function setDisabled(value /*: ?SdkDisabledT*/) /*: void*/{
+function setDisabled(value /*: SdkDisabledT | null*/) /*: void*/{
   var sdkDisabled = value ? _objectSpread2({}, value) : null;
   quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
     sdkDisabled: sdkDisabled
-  });
-  _setPreferences();
-}
-
-/**
- * Get current third-party-sharing disabled state
- *
- * @returns {Object}
- * @private
- */
-function getThirdPartySharing() /*: ?ThirdPartySharingDisabledT*/{
-  var preferences = _getPreferences();
-  return preferences ? preferences.thirdPartySharingDisabled : null;
-}
-
-/**
- * Set current third-party-sharing disabled state
- *
- * @param {Object=} value
- * @private
- */
-function setThirdPartySharing(value /*: ?ThirdPartySharingDisabledT*/) /*: void*/{
-  var thirdPartySharingDisabled = value ? _objectSpread2({}, value) : null;
-  quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
-    thirdPartySharingDisabled: thirdPartySharingDisabled
   });
   _setPreferences();
 }
@@ -2094,7 +1955,7 @@ function setThirdPartySharing(value /*: ?ThirdPartySharingDisabledT*/) /*: void*
  */
 function reload() /*: void*/{
   var stored /*: PreferencesT*/ = quick_storage.stores[_storeName] || {};
-  var sdkDisabled /*: ?SdkDisabledT*/ = (_preferences || {}).sdkDisabled || null;
+  var sdkDisabled /*: SdkDisabledT | null*/ = (_preferences || {}).sdkDisabled || null;
   if (stored.sdkDisabled && !sdkDisabled) {
     publish('sdk:shutdown');
   }
@@ -2105,7 +1966,7 @@ function reload() /*: void*/{
  * Recover preferences from memory if storage was lost
  */
 function recover() /*: void*/{
-  var stored /*: ?PreferencesT*/ = quick_storage.stores[_storeName];
+  var stored /*: PreferencesT*/ = quick_storage.stores[_storeName];
   if (!stored) {
     quick_storage.stores[_storeName] = _objectSpread2({}, _preferences);
   }
@@ -2931,6 +2792,27 @@ _defineProperty(IndexedDBWrapper, "dbValidationName", 'validate-db-openable');
  */
 _defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
 
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
+
+
+
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
 ;// CONCATENATED MODULE: ./src/sdk/storage/localstorage.ts
 
 
@@ -3928,6 +3810,9 @@ function _encodeParam(_ref3 /*:: */) /*: string*/{
   if (isObject(value)) {
     encodedValue = encodeURIComponent(JSON.stringify(value) || '');
   }
+  if (key === 'granular_third_party_sharing_options' || key === 'partner_sharing_settings') {
+    return [encodedKey, encodedValue].join(encodeURIComponent('='));
+  }
   return [encodedKey, encodedValue].join('=');
 }
 
@@ -3961,7 +3846,7 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
       return "_".concat($1.toLowerCase());
     });
   };
-  var allParams = entries(_objectSpread2(_objectSpread2(_objectSpread2({}, config.getBaseParams()), defaultParams), params)).map(function (_ref5 /*:: */) {
+  var allParams = entries(_objectSpread2(_objectSpread2(_objectSpread2({}, sdk_config.getBaseParams()), defaultParams), params)).map(function (_ref5 /*:: */) {
     var _ref6 = _slicedToArray(_ref5 /*:: */, 2),
       key = _ref6[0],
       value = _ref6[1];
@@ -4125,7 +4010,6 @@ function _interceptSuccess(result /*: HttpSuccessResponseT*/, url) /*: HttpSucce
   var isGdprRequest = isRequest(url, 'gdpr_forget_device');
   var isAttributionRequest = isRequest(url, 'attribution');
   var isSessionRequest = isRequest(url, 'session');
-  var isThirdPartySharingOptOutRequest = isRequest(url, 'disable_third_party_sharing');
   var optedOut = result.tracking_state === 'opted_out';
   if (!isGdprRequest && optedOut) {
     publish('sdk:gdpr-forget-me');
@@ -4136,10 +4020,6 @@ function _interceptSuccess(result /*: HttpSuccessResponseT*/, url) /*: HttpSucce
   }
   if (isSessionRequest) {
     publish('session:finished', result);
-  }
-  if (isThirdPartySharingOptOutRequest) {
-    publish('sdk:third-party-sharing-opt-out');
-    return result;
   }
   return result;
 }
@@ -4332,11 +4212,82 @@ function listeners_destroy() /*: void*/{
   off(window, 'offline', _handleOffline);
 }
 
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createForOfIteratorHelper.js
+
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+  if (!it) {
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return {
+            done: true
+          };
+          return {
+            done: false,
+            value: o[i++]
+          };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F
+      };
+    }
+    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = it.call(o);
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it["return"] != null) it["return"]();
+      } finally {
+        if (didErr) throw err;
+      }
+    }
+  };
+}
 ;// CONCATENATED MODULE: ./src/sdk/url-strategy.ts
 
 
 
 
+
+/*:: export interface UrlStrategyConfig {
+  /** The country or countries of data residence, or the endpoints to which you want to send SDK traffic. *-/
+  domains: Array<string>;
+
+  /** Whether the source should prefix a subdomain. *-/
+  useSubdomains: boolean;
+
+  /** Whether the domain should be used for data residency. *-/
+  isDataResidency?: boolean;
+}*/
+function getDefaultUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) {
+  return {
+    domains: [endpoints.default, endpoints.world],
+    useSubdomains: true,
+    isDataResidency: false
+  };
+}
 var UrlStrategy = /*#__PURE__*/function (UrlStrategy) {
   UrlStrategy["Default"] = "default";
   UrlStrategy["India"] = "india";
@@ -4354,53 +4305,111 @@ function incorrectOptionIgnoredMessage(higherPriority /*: string*/, lowerPriorit
 }
 
 /**
- * Returns a map of base URLs or a list of endpoint names depending on SDK configuration
+ * In case if deprecated parameters or no urlStrategy provided returns the most appropriate UrlStrategyConfig,
+ * and `null` otherwise
  */
-function getEndpointPreference() /*: BaseUrlsMap | EndpointName[]*/{
-  var _Config$getCustomConf = config.getCustomConfig(),
+function transfromDeprecatedParamsToUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig | null*/{
+  var _Config$getCustomConf = sdk_config.getCustomConfig(),
     customUrl = _Config$getCustomConf.customUrl,
     urlStrategy = _Config$getCustomConf.urlStrategy,
     dataResidency = _Config$getCustomConf.dataResidency;
   if (customUrl) {
     // If custom URL is set then send all requests there
+    logger.warn('customUrl is deprecated, use urlStrategy instead');
     if (dataResidency || urlStrategy) {
       incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy');
     }
     return {
-      app: customUrl,
-      gdpr: customUrl
+      domains: [customUrl],
+      useSubdomains: false,
+      isDataResidency: false
     };
   }
   if (dataResidency && urlStrategy) {
     incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy');
   }
   if (dataResidency) {
-    return [dataResidency];
+    logger.warn('dataResidency is deprecated, use urlStrategy instead');
+    return {
+      domains: [endpoints[dataResidency]],
+      useSubdomains: true,
+      isDataResidency: true
+    };
   }
-  if (urlStrategy === UrlStrategy.India) {
-    return [UrlStrategy.India, UrlStrategy.Default];
+  if (typeof urlStrategy === 'string') {
+    logger.warn('urlStrategy string literals (\'china\' and \'india\') are deprected, use UrlStartegyConfig instead');
+    if (urlStrategy === UrlStrategy.India) {
+      return {
+        domains: [endpoints.india, endpoints.default],
+        useSubdomains: true,
+        isDataResidency: false
+      };
+    }
+    if (urlStrategy === UrlStrategy.China) {
+      return {
+        domains: [endpoints.china, endpoints.default],
+        useSubdomains: true,
+        isDataResidency: false
+      };
+    }
   }
-  if (urlStrategy === UrlStrategy.China) {
-    return [UrlStrategy.China, UrlStrategy.Default];
+  if (!urlStrategy) {
+    return getDefaultUrlStrategyConfig(endpoints);
   }
-  return [UrlStrategy.Default, UrlStrategy.India, UrlStrategy.China];
+  return null;
 }
-var endpointMap /*: Record<UrlStrategy | DataResidency, BaseUrlsMap>*/ = _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty({}, UrlStrategy.Default, ENDPOINTS.default), UrlStrategy.India, ENDPOINTS.india), UrlStrategy.China, ENDPOINTS.china), DataResidency.EU, ENDPOINTS.EU), DataResidency.TR, ENDPOINTS.TR), DataResidency.US, ENDPOINTS.US);
-function getPreferredUrls(endpoints /*: Partial<Record<UrlStrategy, BaseUrlsMap>>*/) /*: BaseUrlsMap[]*/{
-  var preference = getEndpointPreference();
-  if (!Array.isArray(preference)) {
-    return [preference];
-  } else {
-    var res = preference.map(function (strategy) {
-      return endpoints[strategy] || null;
-    }).filter(function (i) {
-      return /*: i is BaseUrlsMap*/!!i;
-    });
-    return res;
+
+/**
+ * Checks if passed UrlStrategyConfig is valid and returns it, returns `DEFAULT_URL_STRATEGY_CONFIG` otherwise
+ */
+function validateUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig*/{
+  var _Config$getCustomConf2 = sdk_config.getCustomConfig(),
+    urlStrategy = _Config$getCustomConf2.urlStrategy;
+  if (urlStrategy && _typeof(urlStrategy) === 'object') {
+    var config = urlStrategy;
+    if (!config.domains || !Array.isArray(config.domains) || config.domains.length < 1) {
+      logger.warn('Invalid urlStartegy: `domains` should be a non-empty array');
+      return getDefaultUrlStrategyConfig(endpoints);
+    }
+    return {
+      domains: config.domains,
+      useSubdomains: !!config.useSubdomains,
+      isDataResidency: !!config.isDataResidency
+    };
   }
+  return getDefaultUrlStrategyConfig(endpoints);
+}
+function getUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig*/{
+  return transfromDeprecatedParamsToUrlStrategyConfig(endpoints) || validateUrlStrategyConfig(endpoints);
+}
+function getPreferredUrls(endpoints /*: Record<Endpoints, string>*/) /*: BaseUrlsMap[]*/{
+  var urlStrategyConfig /*: UrlStrategyConfig*/ = getUrlStrategyConfig(endpoints);
+  var urls = [];
+
+  //if (urlStrategyConfig.isDataResidency) { }
+  var _iterator = _createForOfIteratorHelper(urlStrategyConfig.domains),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var domain = _step.value;
+      var map = urlStrategyConfig.useSubdomains ? {
+        app: "".concat(BASE_URL_PREFIX).concat(domain),
+        gdpr: "".concat(GDPR_URL_PREFIX).concat(domain)
+      } : {
+        app: "".concat(BASE_URL_NO_SUB_DOMAIN_PREFIX).concat(domain),
+        gdpr: "".concat(BASE_URL_NO_SUB_DOMAIN_PREFIX).concat(domain)
+      };
+      urls.push(map);
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return urls;
 }
 function getBaseUrlsIterator() /*: BaseUrlsIterator*/{
-  var endpoints /*: Partial<Record<UrlStrategy | DataResidency, BaseUrlsMap>>*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : endpointMap;
+  var endpoints /*: Record<Endpoints, string>*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ENDPOINTS;
   var _urls = getPreferredUrls(endpoints);
   var _counter = 0;
   return {
@@ -4920,17 +4929,10 @@ var Request = function Request() {
   };
 };
 /* harmony default export */ const request = (Request);
-;// CONCATENATED MODULE: ./src/sdk/disable.js
+;// CONCATENATED MODULE: ./src/sdk/disable.ts
 
 
 
-/*:: type StatusT = 'on' | 'off' | 'paused'*/
-/*:: type ReasonT = REASON_GDPR | REASON_GENERAL*/
-/*:: type PendingT = boolean*/
-/*:: type ReasonMapT = {|
-  reason: ReasonT,
-  pending: PendingT
-|}*/
 /**
  * Get the disable action name depending on the reason
  *
@@ -4939,7 +4941,7 @@ var Request = function Request() {
  * @private
  */
 var _disableReason = function _disableReason(reason /*: ReasonT*/) {
-  return reason === REASON_GDPR ? 'GDPR disable' : 'disable';
+  return reason === DISABLE_REASONS.REASON_GDPR ? 'GDPR disable' : 'disable';
 };
 
 /**
@@ -4974,17 +4976,19 @@ var _logMessages = function _logMessages(reason /*: ReasonT*/) {
 function _disable(_ref /*:: */, expectedAction /*: 'start' | 'finish'*/) /*: boolean*/{
   var reason = _ref /*:: */.reason,
     pending = _ref /*:: */.pending;
-  var disabled = getDisabled() || {};
-  var action = expectedAction === 'start' && disabled.pending ? 'start' : 'finish';
-  var shouldNotStart = expectedAction === 'start' && disabled.reason;
-  var shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending;
+  var _ref2 = getDisabled() || {},
+    savedReason = _ref2.reason,
+    savedPending = _ref2.pending;
+  var action = expectedAction === 'start' && savedPending ? 'start' : 'finish';
+  var shouldNotStart = expectedAction === 'start' && savedReason;
+  var shouldNotFinish = expectedAction === 'finish' && savedReason && !savedPending;
   if (shouldNotStart || shouldNotFinish) {
-    logger.log(_logMessages(disabled.reason)[action].inProgress);
+    logger.log(_logMessages(savedReason)[action].inProgress);
     return false;
   }
   logger.log(_logMessages(reason)[action].done);
   setDisabled({
-    reason: reason || REASON_GENERAL,
+    reason: reason || DISABLE_REASONS.REASON_GENERAL,
     pending: pending
   });
   return true;
@@ -4997,11 +5001,11 @@ function _disable(_ref /*:: */, expectedAction /*: 'start' | 'finish'*/) /*: boo
  * @param {boolean} pending
  * @private
  */
-function disable(reason /*: ?ReasonT*/) /*: boolean*/{
-  var pending /*: ?PendingT*/ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+function disable(reason /*: ReasonT*/) /*: boolean*/{
+  var pending = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   return _disable({
     reason: reason,
-    pending: pending || false
+    pending: pending
   }, 'start');
 }
 
@@ -5022,12 +5026,13 @@ function finish(reason /*: ReasonT*/) /*: boolean*/{
  * Enable sdk if not GDPR forgotten
  */
 function restore() /*: boolean*/{
-  var disabled = getDisabled() || {};
-  if (disabled.reason === REASON_GDPR) {
+  var _ref3 = getDisabled() || {},
+    reason = _ref3.reason;
+  if (reason === DISABLE_REASONS.REASON_GDPR) {
     logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled');
     return false;
   }
-  if (!disabled.reason) {
+  if (!reason) {
     logger.log('Adjust SDK is already enabled');
     return false;
   }
@@ -5045,10 +5050,12 @@ function restore() /*: boolean*/{
  * @returns {string}
  */
 function disable_status() /*: StatusT*/{
-  var disabled = getDisabled() || {};
-  if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
+  var _ref4 = getDisabled() || {},
+    reason = _ref4.reason,
+    pending = _ref4.pending;
+  if (reason === DISABLE_REASONS.REASON_GENERAL || reason === DISABLE_REASONS.REASON_GDPR && !pending) {
     return 'off';
-  } else if (disabled.reason === REASON_GDPR && disabled.pending) {
+  } else if (reason === DISABLE_REASONS.REASON_GDPR && pending) {
     return 'paused';
   }
   return 'on';
@@ -5088,9 +5095,7 @@ function _intercept(stored /*: ActivityStateMapT*/) /*: InterceptT*/{
     };
   }
   if (stored.uuid === 'unknown') {
-    disable({
-      reason: REASON_GDPR
-    });
+    disable(DISABLE_REASONS.REASON_GDPR);
     activity_state.destroy();
     return {
       exists: true,
@@ -5129,9 +5134,11 @@ function start() /*: Promise<ActivityStateMapT>*/{
       _starting = false;
       return activityState;
     });
-  }).then(function (activityState /*: ActivityStateMapT*/) {
+  }).then(function (activityState /*: ActivityStateMapT | null*/) {
     if (activityState) {
       publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, activityState.uuid);
+    } else {
+      publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, 'gdpr_forgotten');
     }
     return activityState;
   });
@@ -5472,7 +5479,7 @@ function setOffline(state /*: boolean*/) /*: void*/{
  * @returns {Promise}
  */
 function _cleanUp() /*: Promise<mixed>*/{
-  var upperBound = Date.now() - config.requestValidityWindow;
+  var upperBound = Date.now() - sdk_config.requestValidityWindow;
   return storage.deleteBulk(queue_storeName, upperBound, 'upperBound');
 }
 
@@ -5845,7 +5852,7 @@ function _startTimer() /*: void*/{
   _idInterval = setInterval(function () {
     activity_state.updateSessionOffset();
     return persist();
-  }, config.sessionTimerWindow);
+  }, sdk_config.sessionTimerWindow);
 }
 
 /**
@@ -5902,7 +5909,7 @@ function _checkSession() /*: Promise<mixed>*/{
   var lastInterval = activityState.lastInterval;
   var isEnqueued = activityState.sessionCount > 0;
   var currentWindow = lastInterval * SECOND;
-  if (!isEnqueued || isEnqueued && currentWindow >= config.sessionWindow) {
+  if (!isEnqueued || isEnqueued && currentWindow >= sdk_config.sessionWindow) {
     return _trackSession();
   }
   publish('attribution:check');
@@ -6060,7 +6067,7 @@ function attribution_destroy() /*: void*/{
   attribution_request.clear();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.js
+;// CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.ts
 
 
 
@@ -6107,7 +6114,7 @@ function forget(force /*: boolean*/) /*: boolean*/{
     logger.log(gdpr_forget_device_logMessages[sdkStatus]);
     return false;
   }
-  if (!config.isInitialised()) {
+  if (!sdk_config.isInitialised()) {
     logger.log(gdpr_forget_device_logMessages.pending);
     return true;
   }
@@ -6125,7 +6132,7 @@ function forget(force /*: boolean*/) /*: boolean*/{
  * @returns {boolean}
  */
 function gdpr_forget_device_disable() {
-  return disable(REASON_GDPR, true);
+  return disable(DISABLE_REASONS.REASON_GDPR, true);
 }
 
 /**
@@ -6134,7 +6141,7 @@ function gdpr_forget_device_disable() {
  * @returns {boolean}
  */
 function gdpr_forget_device_finish() {
-  return finish(REASON_GDPR);
+  return finish(DISABLE_REASONS.REASON_GDPR);
 }
 
 /**
@@ -6154,124 +6161,89 @@ function gdpr_forget_device_destroy() /*: void*/{
   gdpr_forget_device_request.clear();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/third-party-sharing.js
+;// CONCATENATED MODULE: ./src/sdk/track-third-party-sharing.ts
 
 
 
 
 
-/*:: type ThirdPartySharingStatusT = 'pending' | 'on' | 'off'*/
-/**
- * Log messages used in different scenarios
- *
- * @type {Object}
- * @private
- */
-var third_party_sharing_logMessages = {
-  running: 'Adjust SDK is running pending third-party sharing opt-out request',
-  delayed: 'Adjust SDK will run third-party sharing opt-out request after initialisation',
-  pending: 'Adjust SDK already queued third-party sharing opt-out request',
-  off: 'Third-party sharing opt-out is already done',
-  start: {
-    inProgress: 'Third-party sharing opt-out has already started',
-    done: 'Third-party sharing opt-out is now started'
-  },
-  finish: {
-    inProgress: 'Third-party sharing opt-out has already finished',
-    done: 'Third-party sharing opt-out is now finished'
+
+/*:: export interface ThirdPartySharingOptions {
+  isEnabled: boolean;
+  granularOptions: Record<string, Record<string, string>>;
+  partnerSharingSettings: Record<string, Record<string, boolean>>;
+}*/
+var ThirdPartySharing = /*#__PURE__*/function () {
+  function ThirdPartySharing(isEnabled /*: boolean*/) {
+    _classCallCheck(this, ThirdPartySharing);
+    _defineProperty(this, "_granularOptions", {});
+    _defineProperty(this, "_partnerSharingSettings", {});
+    if (typeof isEnabled !== 'boolean') {
+      logger.warn("isEnabled should be boolean, converting ".concat(isEnabled, " results ").concat(!!isEnabled));
+    }
+    this._isEnabled = !!isEnabled;
   }
-};
-
-/**
- * Get the status of the third-party sharing
- *
- * @returns {string}
- * @private
- */
-function _status() /*: ThirdPartySharingStatusT*/{
-  var disabled = getThirdPartySharing() || {};
-  if (disabled.reason) {
-    return disabled.pending ? 'pending' : 'off';
+  return _createClass(ThirdPartySharing, [{
+    key: "isEnabled",
+    get: function get() /*: boolean*/{
+      return this._isEnabled;
+    }
+  }, {
+    key: "granularOptions",
+    get: function get() /*: Record<string, Record<string, string>>*/{
+      return this._granularOptions;
+    }
+  }, {
+    key: "partnerSharingSettings",
+    get: function get() /*: Record<string, Record<string, boolean>>*/{
+      return this._partnerSharingSettings;
+    }
+  }, {
+    key: "addGranularOption",
+    value: function addGranularOption(partnerName /*: string*/, key /*: string*/, value /*: string*/) {
+      if (!partnerName || !key || value === undefined) {
+        logger.error('Cannot add granular option, partnerName, key and value are mandatory');
+        return;
+      }
+      var pair = _defineProperty({}, key, value);
+      if (this.granularOptions[partnerName]) {
+        this.granularOptions[partnerName] = _objectSpread2(_objectSpread2({}, this.granularOptions[partnerName]), pair);
+      } else {
+        this.granularOptions[partnerName] = pair;
+      }
+    }
+  }, {
+    key: "addPartnerSharingSetting",
+    value: function addPartnerSharingSetting(partnerName /*: string*/, key /*: string*/, value /*: boolean*/) {
+      if (!partnerName || !key || value === undefined) {
+        logger.error('Cannot add partner sharing setting, partnerName, key and value are mandatory');
+        return;
+      }
+      var pair = _defineProperty({}, key, value);
+      if (this.partnerSharingSettings[partnerName]) {
+        this.partnerSharingSettings[partnerName] = _objectSpread2(_objectSpread2({}, this.partnerSharingSettings[partnerName]), pair);
+      } else {
+        this.partnerSharingSettings[partnerName] = pair;
+      }
+    }
+  }]);
+}();
+function trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOptions*/) {
+  if (!adjustThirdPartySharing || adjustThirdPartySharing.isEnabled === undefined) {
+    logger.error('Can not track third-party sharing without parameters');
+    return;
   }
-  return 'on';
-}
-
-/**
- * Request third-party sharing opt-out request
- *
- * @param {boolean} force
- * @returns {boolean}
- */
-function optOut(force /*: boolean*/) {
-  var status = _status();
-  if (!force && status !== 'on') {
-    logger.log(third_party_sharing_logMessages[status]);
-    return false;
-  }
-  if (!config.isInitialised()) {
-    logger.log(third_party_sharing_logMessages.delayed);
-    return true;
-  }
+  var params = {
+    sharing: adjustThirdPartySharing.isEnabled ? 'enable' : 'disable',
+    granularThirdPartySharingOptions: adjustThirdPartySharing.granularOptions,
+    partnerSharingSettings: adjustThirdPartySharing.partnerSharingSettings
+  };
   push({
-    url: '/disable_third_party_sharing',
-    method: 'POST'
+    url: '/third_party_sharing',
+    method: 'POST',
+    params: params
   });
-  return true;
 }
-
-/**
- * Start or finish thrid-party sharing disable process
- *
- * @param {boolean} pending
- * @param {string} expectedAction
- * @returns {boolean}
- * @private
- */
-function third_party_sharing_disable(pending /*: boolean*/, expectedAction /*: 'start' | 'finish'*/) /*: boolean*/{
-  var disabled = getThirdPartySharing() || {};
-  var action = expectedAction === 'start' && pending ? 'start' : 'finish';
-  var shouldNotStart = expectedAction === 'start' && disabled.reason;
-  var shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending;
-  if (shouldNotStart || shouldNotFinish) {
-    logger.log(third_party_sharing_logMessages[action].inProgress);
-    return false;
-  }
-  logger.log(third_party_sharing_logMessages[action].done);
-  setThirdPartySharing({
-    reason: REASON_GENERAL,
-    pending: pending
-  });
-  return true;
-}
-
-/**
- * Start the third-party sharing disable process
- *
- * @returns {boolean}
- */
-function sdk_third_party_sharing_disable() /*: boolean*/{
-  return third_party_sharing_disable(true, 'start');
-}
-
-/**
- * Finalize the third-party sharing process
- *
- * @returns {boolean}
- */
-function third_party_sharing_finish() {
-  return third_party_sharing_disable(false, 'finish');
-}
-
-/**
- * Check if there s pending third-party sharing opt-out request
- */
-function third_party_sharing_check() /*: void*/{
-  if (_status() === 'pending') {
-    logger.log(third_party_sharing_logMessages.running);
-    optOut(true);
-  }
-}
-
 ;// CONCATENATED MODULE: ./src/sdk/scheduler.js
 
 /*:: type TaskT = {|
@@ -6422,7 +6394,7 @@ function _getEventDeduplicationIds() /*: Promise<Array<string>>*/{
  * @private
  */
 function _pushEventDeduplicationId(id /*: string*/) /*: Promise<number>*/{
-  var customLimit = config.getCustomConfig().eventDeduplicationListLimit;
+  var customLimit = sdk_config.getCustomConfig().eventDeduplicationListLimit;
   var limit = customLimit > 0 ? customLimit : DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT;
   return storage.count(event_storeName).then(function (count) {
     var chain = Promise.resolve();
@@ -6618,7 +6590,7 @@ function initSdk() /*: void*/{
     logger.error('You already initiated your instance');
     return;
   }
-  if (config.hasMissing(options)) {
+  if (sdk_config.hasMissing(options)) {
     return;
   }
   _isInitialising = true;
@@ -6788,7 +6760,7 @@ function switchBackToOnlineMode() /*: void*/{
  */
 function stop() /*: void*/{
   var done = disable();
-  if (done && config.isInitialised()) {
+  if (done && sdk_config.isInitialised()) {
     _shutdown();
   }
 }
@@ -6812,17 +6784,35 @@ function gdprForgetMe() /*: void*/{
     return;
   }
   done = gdpr_forget_device_disable();
-  if (done && config.isInitialised()) {
+  if (done && sdk_config.isInitialised()) {
     _pause();
   }
 }
 
 /**
  * Disable third party sharing
+ *
+ * @deprecated Use {@link trackThirdPartySharing} instead
  */
 function disableThirdPartySharing() /*: void*/{
-  _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
-    schedule: true
+  main_trackThirdPartySharing({
+    isEnabled: false
+  });
+}
+
+/**
+ * Track third party sharing
+ */
+function main_trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOptions*/) /*: void*/{
+  var callback = function callback() {
+    return activity_state.waitForWebUUID() // ensure we have web_uuid to be sent with request
+    .then(function () {
+      return trackThirdPartySharing(adjustThirdPartySharing);
+    });
+  };
+  _preCheck('third-party sharing', callback, {
+    schedule: false,
+    optionalInit: true
   });
 }
 
@@ -6839,19 +6829,6 @@ function showSmartBanner() /*: void*/{
 /**  @deprecated */
 function hideSmartBanner() /*: void*/{
   logger.error('function `hideSmartBanner` is deprecated');
-}
-
-/**
- * Handle third party sharing disable
- *
- * @private
- */
-function _handleDisableThirdPartySharing() /*: void*/{
-  var done = optOut();
-  if (!done) {
-    return;
-  }
-  sdk_third_party_sharing_disable();
 }
 
 /**
@@ -6873,7 +6850,7 @@ function _handleGdprForgetMe() /*: void*/{
  * @private
  */
 function _isInitialised() /*: boolean*/{
-  return _isInitialising || config.isInitialised();
+  return _isInitialising || sdk_config.isInitialised();
 }
 
 /**
@@ -6906,7 +6883,7 @@ function _shutdown(async) /*: void*/{
   identity_destroy();
   listeners_destroy();
   storage.destroy();
-  config.destroy();
+  sdk_config.destroy();
 }
 
 /**
@@ -6933,9 +6910,6 @@ function main_continue(activityState /*: ActivityStateMapT*/) /*: Promise<void>*
   logger.log("Adjust SDK is starting with web_uuid set to ".concat(activityState.uuid));
   var isInstalled = activity_state.current.installed;
   gdpr_forget_device_check();
-  if (!isInstalled) {
-    third_party_sharing_check();
-  }
   var sdkStatus = disable_status();
   var message = function message(rest) {
     return "Adjust SDK start has been interrupted ".concat(rest);
@@ -6968,7 +6942,6 @@ function main_continue(activityState /*: ActivityStateMapT*/) /*: Promise<void>*
     _isStarted = true;
     if (isInstalled) {
       _handleSdkInstalled();
-      third_party_sharing_check();
     }
   });
 }
@@ -7026,14 +6999,13 @@ function _start(options /*: InitOptionsT*/) /*: void*/{
     logger.log('Adjust SDK is disabled, can not start the sdk');
     return;
   }
-  config.set(options);
+  sdk_config.set(options);
   register();
   subscribe('sdk:installed', _handleSdkInstalled);
   subscribe('sdk:shutdown', function () {
     return _shutdown(true);
   });
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe);
-  subscribe('sdk:third-party-sharing-opt-out', third_party_sharing_finish);
   subscribe('attribution:check', function (e, result) {
     return check(result);
   });
@@ -7134,6 +7106,8 @@ var Adjust = {
   restart: restart,
   gdprForgetMe: gdprForgetMe,
   disableThirdPartySharing: disableThirdPartySharing,
+  trackThirdPartySharing: main_trackThirdPartySharing,
+  ThirdPartySharing: ThirdPartySharing,
   initSmartBanner: initSmartBanner,
   showSmartBanner: showSmartBanner,
   hideSmartBanner: hideSmartBanner,
