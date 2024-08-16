@@ -1,4 +1,4 @@
-import { REASON_GDPR, REASON_GENERAL } from '../constants'
+import { DISABLE_REASONS } from '../constants'
 import { StoredValue } from './types'
 
 /**
@@ -208,7 +208,7 @@ const _preferencesScheme: StoreOptionsOptionalKey = {
         reason: {
           key: 'r',
           values: {
-            [REASON_GENERAL]: 1
+            [DISABLE_REASONS.REASON_GENERAL]: 1
           }
         },
         pending: {
@@ -226,8 +226,8 @@ const _preferencesScheme: StoreOptionsOptionalKey = {
         reason: {
           key: 'r',
           values: {
-            [REASON_GENERAL]: 1,
-            [REASON_GDPR]: 2
+            [DISABLE_REASONS.REASON_GENERAL]: 1,
+            [DISABLE_REASONS.REASON_GDPR]: 2
           }
         },
         pending: {

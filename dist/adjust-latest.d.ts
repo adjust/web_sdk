@@ -99,6 +99,33 @@ declare namespace Adjust {
     state: string
   }
 
+  /**
+   * @deprecated
+   */
+  type UrlStartegyLiterals = 'china' | 'india';
+
+  interface UrlStrategyConfig {
+    /** The country or countries of data residence, or the endpoints to which you want to send SDK traffic. */
+    domains: Array<string>;
+
+    /** Whether the source should prefix a subdomain. */
+    useSubdomains: boolean;
+
+    /** Whether the domain should be used for data residency. */
+    isDataResidency?: boolean;
+  }
+
+  interface ThirdPartySharingOptions {
+    isEnabled: boolean;
+    granularOptions: Record<string, Record<string, string>>;
+    partnerSharingSettings: Record<string, Record<string, boolean>>;
+  }
+
+  class ThirdPartySharing implements ThirdPartySharingOptions {
+    public addGranularOption(partnerName: string, key: string, value: string)
+    public addPartnerSharingSetting(partnerName: string, key: string, value: boolean)
+  }
+
   interface InitOptions {
 
     /** Required to initialise SDK instance, please make sure to provide valid app token. */
@@ -122,19 +149,26 @@ declare namespace Adjust {
     eventDeduplicationListLimit?: number;
 
     /** Optional. By default all requests go to Adjust's endpoints. You are able to redirect all requests to your custom
-     * endpoint. */
+     * endpoint.
+     *
+     * @deprecated use {@link urlStrategy} property instead
+     */
     customUrl?: string;
 
     /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
      * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
-     * Adjust will store your data in a data center located in the region your have chosen. */
+     * Adjust will store your data in a data center located in the region your have chosen.
+     *
+     * @deprecated use {@link urlStrategy} property instead
+     */
     dataResidency?: 'EU' | 'TR' | 'US';
 
-    /** Optional. The Adjust SDK can use the url strategy setting to prioritise regional endpoints. */
-    urlStrategy?: 'india' | 'china';
+    /** Optional. The URL strategy feature allows you to set either:
+     * - The country in which Adjust stores your data (data residency).
+     * - The endpoint to which the Adjust SDK sends traffic (URL strategy).*/
+    urlStrategy?: UrlStartegyLiterals | UrlStrategyConfig;
 
-    /**
-     * Optional. A custom namespace for SDK data storage. If not set then default one is used.
+    /** Optional. A custom namespace for SDK data storage. If not set then default one is used.
      * It's useful when there are multiple applications on the same domain to allow SDK distinguish storages and don't
      * mix the data up.
      *
@@ -169,8 +203,7 @@ declare namespace Adjust {
      */
     logLevel?: LogLevel;
 
-    /**
-     * Optional. Query selector to define html container if you want to see your logs directly on the screen. This could
+    /** Optional. Query selector to define html container if you want to see your logs directly on the screen. This could
      * be useful when testing on mobile devices.
      *
      * @example
@@ -206,8 +239,15 @@ declare namespace Adjust {
    *
    * @example
    * const attribution = Adjust.getAttribution();
+   *
+   * @deprecated Use {@link waitForAttribution} instead
    */
   function getAttribution(): Attribution | undefined
+
+  /**
+   * Returns a promise which resolves when current attribution information becomes available
+   */
+  function waitForAttribution(): Promise<Attribution>
 
   /**
    * Get web_uuid - a unique ID of user generated per subdomain and per browser
@@ -216,8 +256,15 @@ declare namespace Adjust {
    *
    * @example
    * const webUuid = Adjust.getWebUUID();
+   *
+   * @deprecated Use {@link waitForWebUUID} instead
    */
   function getWebUUID(): string | undefined
+
+  /**
+   * Returns a promise which resolves when `web_uuid` becomes available
+   */
+  function waitForWebUUID(): Promise<string>
 
   /**
    * Set referrer manually. Please note that `referrer` should be URL-encoded.
@@ -369,59 +416,15 @@ declare namespace Adjust {
    *
    * Marketing Opt-out, which is disabling third-party sharing ability. This method will notify our backed in the same
    * manner as it does for GDPR Forget me.
+   *
+   * @deprecated Use {@link trackThirdPartySharing} instead
    */
   function disableThirdPartySharing(): void
 
-  interface SmartBannerOptions {
-
-    /** Web token to initialise Smart Banner */
-    webToken: string;
-
-    /** Optional. Logging level used by SDK instance. By default this param is set to `error`. We highly recommend that
-     * you use `verbose` when testing in order to see precise logs and to make sure integration is done properly.
-     * Here are more details about each log level:
-     * - `verbose` - will print detailed messages in case of certain actions
-     * - `info` - will print only basic info messages, warnings and errors
-     * - `warning` - will print only warning and error messages
-     * - `error` - will print only error message
-     * - `none` - won't print anything
-     */
-    logLevel?: LogLevel;
-
-    /** Optional. The data residency feature allows you to choose the country in which Adjust will store your data. This
-     * is useful if you are operating in a country with strict privacy requirements. When you set up data residency,
-     * Adjust will store your data in a data center located in the region your have chosen. */
-    dataResidency?: 'EU' | 'TR' | 'US';
-
-    /** Optional. Callback which is called when SmartBanner view is created and shown. */
-    onCreated?: () => any;
-
-    /** Optional. Callback which is called when SmartBanner is being dismissed with a closing button on it. */
-    onDismissed?: () => any;
-  }
-
   /**
-   * Initiate Smart Banner.
-   *
-   * This method gets Smart Banner data and creates Smart Banner UI.
-   *
-   * @param {SmartBannerOptions} options Options to initiate Smart Banner.
-   *
-   * @example
-   * Adjust.initSmartBanner({
-   *   webToken: 'YOUR_WEB_TOKEN',
-   *   logLevel: 'verbose'
-   * });
-   *
-   * @example
-   * Adjust.initSmartBanner({
-   *   webToken: 'YOUR_WEB_TOKEN',
-   *   logLevel: 'error',
-   *   dataResidency: 'EU',
-   * });
+   * Track third party sharing
    */
-  function initSmartBanner(options: SmartBannerOptions): void
-
+  function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions): void
 }
 
 export default Adjust

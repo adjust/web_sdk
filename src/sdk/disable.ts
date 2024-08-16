@@ -1,15 +1,13 @@
-// @flow
-import {REASON_GDPR, REASON_GENERAL} from './constants'
-import {getDisabled, setDisabled} from './preferences'
+import { DISABLE_REASONS } from './constants'
+import { getDisabled, setDisabled } from './preferences'
 import Logger from './logger'
 
 type StatusT = 'on' | 'off' | 'paused'
-type ReasonT = REASON_GDPR | REASON_GENERAL
-type PendingT = boolean
-type ReasonMapT = {|
-  reason: ReasonT,
-  pending: PendingT
-|}
+type ReasonT = DISABLE_REASONS
+type ReasonMapT = {
+  reason?: ReasonT,
+  pending: boolean
+}
 
 /**
  * Get the disable action name depending on the reason
@@ -18,7 +16,7 @@ type ReasonMapT = {|
  * @returns {string}
  * @private
  */
-const _disableReason = (reason: ReasonT) => reason === REASON_GDPR ? 'GDPR disable' : 'disable'
+const _disableReason = (reason?: ReasonT) => reason === DISABLE_REASONS.REASON_GDPR ? 'GDPR disable' : 'disable'
 
 /**
  * Get log messages depending on the disable reason
@@ -27,7 +25,7 @@ const _disableReason = (reason: ReasonT) => reason === REASON_GDPR ? 'GDPR disab
  * @returns {Object}
  * @private
  */
-const _logMessages = (reason: ReasonT) => ({
+const _logMessages = (reason?: ReasonT) => ({
   start: {
     inProgress: `Adjust SDK ${_disableReason(reason)} process has already started`,
     done: `Adjust SDK ${_disableReason(reason)} process is now started`
@@ -47,21 +45,21 @@ const _logMessages = (reason: ReasonT) => ({
  * @returns {boolean}
  * @private
  */
-function _disable ({reason, pending}: ReasonMapT, expectedAction: 'start' | 'finish'): boolean {
-  const disabled = getDisabled() || {}
-  const action = expectedAction === 'start' && disabled.pending ? 'start': 'finish'
-  const shouldNotStart = expectedAction === 'start' && disabled.reason
-  const shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending
+function _disable({ reason, pending }: ReasonMapT, expectedAction: 'start' | 'finish'): boolean {
+  const { reason: savedReason, pending: savedPending } = getDisabled() || {}
+  const action = expectedAction === 'start' && savedPending ? 'start' : 'finish'
+  const shouldNotStart = expectedAction === 'start' && savedReason
+  const shouldNotFinish = expectedAction === 'finish' && savedReason && !savedPending
 
   if (shouldNotStart || shouldNotFinish) {
-    Logger.log(_logMessages(disabled.reason)[action].inProgress)
+    Logger.log(_logMessages(savedReason)[action].inProgress)
     return false
   }
 
   Logger.log(_logMessages(reason)[action].done)
 
   setDisabled({
-    reason: reason || REASON_GENERAL,
+    reason: reason || DISABLE_REASONS.REASON_GENERAL,
     pending
   })
 
@@ -75,8 +73,8 @@ function _disable ({reason, pending}: ReasonMapT, expectedAction: 'start' | 'fin
  * @param {boolean} pending
  * @private
  */
-function disable (reason: ?ReasonT, pending: ?PendingT = false): boolean {
-  return _disable({reason, pending: pending || false}, 'start')
+function disable(reason?: ReasonT, pending = false): boolean {
+  return _disable({ reason, pending }, 'start')
 }
 
 /**
@@ -85,22 +83,22 @@ function disable (reason: ?ReasonT, pending: ?PendingT = false): boolean {
  * @param {string} reason
  * @returns {boolean}
  */
-function finish (reason: ReasonT): boolean {
-  return _disable({reason, pending: false}, 'finish')
+function finish(reason: ReasonT): boolean {
+  return _disable({ reason, pending: false }, 'finish')
 }
 
 /**
  * Enable sdk if not GDPR forgotten
  */
-function restore (): boolean {
-  const disabled = getDisabled() || {}
+function restore(): boolean {
+  const { reason } = getDisabled() || {}
 
-  if (disabled.reason === REASON_GDPR) {
+  if (reason === DISABLE_REASONS.REASON_GDPR) {
     Logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled')
     return false
   }
 
-  if (!disabled.reason) {
+  if (!reason) {
     Logger.log('Adjust SDK is already enabled')
     return false
   }
@@ -120,12 +118,12 @@ function restore (): boolean {
  *
  * @returns {string}
  */
-function status (): StatusT {
-  const disabled = getDisabled() || {}
+function status(): StatusT {
+  const { reason, pending } = getDisabled() || {}
 
-  if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
+  if (reason === DISABLE_REASONS.REASON_GENERAL || reason === DISABLE_REASONS.REASON_GDPR && !pending) {
     return 'off'
-  } else if (disabled.reason === REASON_GDPR && disabled.pending) {
+  } else if (reason === DISABLE_REASONS.REASON_GDPR && pending) {
     return 'paused'
   }
 

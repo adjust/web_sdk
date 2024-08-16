@@ -6,9 +6,8 @@
     }]
   ],
   "plugins": [
-    "es6-promise",
     "@babel/plugin-transform-flow-comments",
-    ["@babel/plugin-transform-runtime", {"version": "7.18.10"}]
+    ["@babel/plugin-transform-runtime", {"version": "7.24.3"}]
   ],
   "overrides": [
     {
@@ -18,9 +17,6 @@
         ["@babel/preset-env", {
           "targets": ">0.25%, not dead, ie 11"
         }]
-      ],
-      "plugins": [
-        "@babel/plugin-proposal-class-properties"
       ]
     }
   ]

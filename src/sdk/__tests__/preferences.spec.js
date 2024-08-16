@@ -20,35 +20,22 @@ describe('activity state functionality', () => {
       jest.spyOn(PubSub, 'publish')
 
       expect(Preferences.getDisabled()).toBeNull()
-      expect(Preferences.getThirdPartySharing()).toBeNull()
 
       Preferences.setDisabled({reason: 'gdpr', pending: false})
-      Preferences.setThirdPartySharing({reason: 'general', pending: false})
 
       expect(Preferences.getDisabled()).toEqual({
         reason: 'gdpr',
-        pending: false
-      })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
         pending: false
       })
 
       Preferences.setDisabled(null)
-      Preferences.setThirdPartySharing(null)
 
       expect(Preferences.getDisabled()).toBeNull()
-      expect(Preferences.getThirdPartySharing()).toBeNull()
 
       Preferences.setDisabled({reason: 'gdpr', pending: true})
-      Preferences.setThirdPartySharing({reason: 'general', pending: true})
 
       expect(Preferences.getDisabled()).toEqual({
         reason: 'gdpr',
-        pending: true
-      })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
         pending: true
       })
     })
@@ -62,31 +49,21 @@ describe('activity state functionality', () => {
       jest.spyOn(PubSub, 'publish')
 
       QuickStorage.default.stores[storeName] = {
-        sdkDisabled: {reason: 'general', pending: false},
-        thirdPartySharingDisabled: {reason: 'general', pending: true}
+        sdkDisabled: {reason: 'general', pending: false}
       }
 
       expect(Preferences.getDisabled()).toEqual({
         reason: 'general',
         pending: false
-      })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
-        pending: true
       })
 
       QuickStorage.default.stores[storeName] = {
-        sdkDisabled: {reason: 'gdpr', pending: false},
-        thirdPartySharingDisabled: {reason: 'general', pending: false}
+        sdkDisabled: {reason: 'gdpr', pending: false}
       }
 
       expect(Preferences.getDisabled()).toEqual({
         reason: 'general',
         pending: false
-      })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
-        pending: true
       })
 
       Preferences.reload()
@@ -96,17 +73,11 @@ describe('activity state functionality', () => {
         reason: 'gdpr',
         pending: false
       })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
-        pending: false
-      })
 
       Preferences.setDisabled(null)
-      Preferences.setThirdPartySharing(null)
 
       QuickStorage.default.stores[storeName] = {
-        sdkDisabled: {reason: 'gdpr', pending: true},
-        thirdPartySharingDisabled: {reason: 'general', pending: true}
+        sdkDisabled: {reason: 'gdpr', pending: true}
       }
 
       Preferences.reload()
@@ -114,10 +85,6 @@ describe('activity state functionality', () => {
       expect(PubSub.publish).toHaveBeenCalledWith('sdk:shutdown')
       expect(Preferences.getDisabled()).toEqual({
         reason: 'gdpr',
-        pending: true
-      })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
         pending: true
       })
     })
@@ -128,11 +95,9 @@ describe('activity state functionality', () => {
       const Preferences = require('../preferences')
 
       Preferences.setDisabled({reason: 'gdpr', pending: false})
-      Preferences.setThirdPartySharing({reason: 'general', pending: true})
 
       expect(QuickStorage.default.stores[storeName]).toEqual({
         sdkDisabled: {reason: 'gdpr', pending: false},
-        thirdPartySharingDisabled: {reason: 'general', pending: true}
       })
 
       localStorage.clear()
@@ -140,10 +105,6 @@ describe('activity state functionality', () => {
       expect(Preferences.getDisabled()).toEqual({
         reason: 'gdpr',
         pending: false
-      })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
-        pending: true
       })
       expect(QuickStorage.default.stores[storeName]).toBeNull()
 
@@ -153,13 +114,8 @@ describe('activity state functionality', () => {
         reason: 'gdpr',
         pending: false
       })
-      expect(Preferences.getThirdPartySharing()).toEqual({
-        reason: 'general',
-        pending: true
-      })
       expect(QuickStorage.default.stores[storeName]).toEqual({
         sdkDisabled: {reason: 'gdpr', pending: false},
-        thirdPartySharingDisabled: {reason: 'general', pending: true}
       })
     })
   })

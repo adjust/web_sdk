@@ -1,0 +1,20 @@
+.dynamic-params {
+  h3 {
+    font-weight: normal;
+    color: $fontColor;
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .form-row-group {
+    margin-bottom: 10px;
+    align-items: end;
+    justify-content: space-between;
+    gap: 3px;
+  }
+
+  button {
+    padding: 5px 10px;
+    margin-left: 5px;
+  }
+}

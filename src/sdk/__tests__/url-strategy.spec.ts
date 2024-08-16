@@ -1,36 +1,42 @@
-import { UrlStrategy, getBaseUrlsIterator, BaseUrlsMap, BaseUrlsIterator, DataResidency } from '../url-strategy'
+import {
+  UrlStrategy,
+  getBaseUrlsIterator,
+  BaseUrlsMap,
+  BaseUrlsIterator,
+  DataResidency,
+  UrlStrategyConfig
+} from '../url-strategy'
 import * as Globals from '../globals'
 import * as Logger from '../logger'
+import * as Constants from '../constants';
+
+// @ts-expect-error Value changed just for convenience in tests
+Constants.BASE_URL_PREFIX = 'app.';
+
+// @ts-expect-error Value changed just for convenience in tests
+Constants.GDPR_URL_PREFIX = 'gdpr.';
+
+// @ts-expect-error Value changed just for convenience in tests
+Constants.BASE_URL_NO_SUB_DOMAIN_PREFIX = '';
 
 jest.mock('../logger')
 
 describe('test url strategy', () => {
   const testEndpoints = {
-    [UrlStrategy.Default]: {
-      app: 'app.default',
-      gdpr: 'gdpr.default'
-    },
-    [UrlStrategy.India]: {
-      app: 'app.india',
-      gdpr: 'gdpr.india'
-    },
-    [UrlStrategy.China]: {
-      app: 'app.china',
-      gdpr: 'gdpr.china'
-    },
-    [DataResidency.EU]: {
-      app: 'app.eu',
-      gdpr: 'gdpr.eu'
-    },
-    [DataResidency.TR]: {
-      app: 'app.tr',
-      gdpr: 'gdpr.tr'
-    },
-    [DataResidency.US]: {
-      app: 'app.us',
-      gdpr: 'gdpr.us'
-    }
+    default: 'default',
+    india: 'india',
+    china: 'china',
+    world: 'world',
+    EU: 'eu',
+    TR: 'tr',
+    US: 'us',
   }
+
+  // returns an object containing `app` and `gdpr` endpoints
+  const getIteratorValue = (endpoint: string) => ({
+    app: Constants.BASE_URL_PREFIX + endpoint,
+    gdpr: Constants.GDPR_URL_PREFIX + endpoint
+  })
 
   let Config
 
@@ -60,29 +66,28 @@ describe('test url strategy', () => {
     jest.restoreAllMocks()
   })
 
+  const iterateThrough = (iterator: BaseUrlsIterator, iterationsNumber?: number) => {
+    const results: BaseUrlsMap[] = []
+    let current
+    let steps = iterationsNumber === undefined ? -1 : iterationsNumber
+
+    do {
+      current = iterator.next()
+      if (current.value) {
+        results.push(current.value)
+      }
+    } while (!current.done && --steps !== 0)
+
+    return results
+  }
+
   describe('BaseUrlsIterator tests', () => {
-
-    const iterateThrough = (iterator: BaseUrlsIterator, iterationsNumber?: number) => {
-      const results: BaseUrlsMap[] = []
-      let current
-      let steps = iterationsNumber === undefined ? -1 : iterationsNumber
-
-      do {
-        current = iterator.next()
-        if (current.value) {
-          results.push(current.value)
-        }
-      } while (!current.done && --steps !== 0)
-
-      return results
-    }
 
     it('returns all values through iteration when default url startegy used', () => {
       const iterator = getBaseUrlsIterator(testEndpoints)
 
-      expect(iterator.next()).toEqual({ value: testEndpoints.default, done: false })
-      expect(iterator.next()).toEqual({ value: testEndpoints.india, done: false })
-      expect(iterator.next()).toEqual({ value: testEndpoints.china, done: false })
+      expect(iterator.next()).toEqual({ value: getIteratorValue(testEndpoints.default), done: false })
+      expect(iterator.next()).toEqual({ value: getIteratorValue(testEndpoints.world), done: false })
       expect(iterator.next()).toEqual({ value: undefined, done: true })
     })
 
@@ -92,8 +97,8 @@ describe('test url strategy', () => {
       const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
       expect(values.length).toBe(2)
-      expect(values[0]).toEqual(testEndpoints.india)
-      expect(values[1]).toEqual(testEndpoints.default)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.india))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.default))
     })
 
     it('prefers Chinese enpoint and does not try reach Indian one when china url strategy set', () => {
@@ -102,8 +107,8 @@ describe('test url strategy', () => {
       const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
       expect(values.length).toBe(2)
-      expect(values[0]).toEqual(testEndpoints.china)
-      expect(values[1]).toEqual(testEndpoints.default)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.china))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.default))
     })
 
     it('does not override custom url', () => {
@@ -119,7 +124,7 @@ describe('test url strategy', () => {
     describe('reset allows to restart iteration', () => {
 
       it('iterates through all endpoints twice in default order', () => {
-        const defaultEndpointsNumber = 3 // number of endpoints to try if default url strategy used
+        const defaultEndpointsNumber = 2 // number of endpoints to try if default url strategy used
 
         const iterator = getBaseUrlsIterator(testEndpoints)
 
@@ -141,55 +146,135 @@ describe('test url strategy', () => {
         iterator.reset()
         const secondIteration = iterateThrough(iterator, 2)
         iterator.reset()
-        const thirdIteration = iterateThrough(iterator, 3)
-        iterator.reset()
 
         expect(firstIteration.length).toBe(1)
         expect(secondIteration.length).toBe(2)
-        expect(thirdIteration.length).toBe(3)
 
-        expect(firstIteration[0]).toEqual(testEndpoints.default)
-        expect(secondIteration[0]).toEqual(testEndpoints.default)
-        expect(thirdIteration[0]).toEqual(testEndpoints.default)
+        expect(firstIteration[0]).toEqual(getIteratorValue(testEndpoints.default))
+        expect(secondIteration[0]).toEqual(getIteratorValue(testEndpoints.default))
 
-        expect(secondIteration[1]).toEqual(testEndpoints.india)
-        expect(thirdIteration[1]).toEqual(testEndpoints.india)
-
-        expect(thirdIteration[2]).toEqual(testEndpoints.china)
+        expect(secondIteration[1]).toEqual(getIteratorValue(testEndpoints.world))
       })
     })
 
-    describe('data residency', () => {
+  })
 
-      it.each([
-        DataResidency.EU,
-        DataResidency.US,
-        DataResidency.TR
-      ])('tries to reach only regional endpoint if data residency set', (dataResidency) => {
-        Config.set({ ...options, dataResidency: dataResidency })
+  describe('Data Residency', () => {
 
-        const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+    it.each([
+      DataResidency.EU,
+      DataResidency.US,
+      DataResidency.TR
+    ])('tries to reach only regional endpoint if data residency set', (dataResidency) => {
+      Config.set({ ...options, dataResidency: dataResidency })
 
-        expect(values.length).toBe(1)
-        expect(values[0]).toEqual(testEndpoints[dataResidency])
-      })
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
 
-      it.each([
-        [UrlStrategy.China, DataResidency.EU],
-        [UrlStrategy.China, DataResidency.US],
-        [UrlStrategy.China, DataResidency.TR],
-        [UrlStrategy.India, DataResidency.EU],
-        [UrlStrategy.India, DataResidency.US],
-        [UrlStrategy.India, DataResidency.TR]
-      ])('drops url strategy if data residency set', (urlStrategy, dataResidency) => {
-        Config.set({ ...options, urlStrategy: urlStrategy, dataResidency: dataResidency })
+      expect(values.length).toBe(1)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
+    })
 
-        const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+    it.each([
+      [UrlStrategy.China, DataResidency.EU],
+      [UrlStrategy.China, DataResidency.US],
+      [UrlStrategy.China, DataResidency.TR],
+      [UrlStrategy.India, DataResidency.EU],
+      [UrlStrategy.India, DataResidency.US],
+      [UrlStrategy.India, DataResidency.TR]
+    ])('drops url strategy if data residency set', (urlStrategy, dataResidency) => {
+      Config.set({ ...options, urlStrategy: urlStrategy, dataResidency: dataResidency })
 
-        expect(Logger.default.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
-        expect(values.length).toBe(1)
-        expect(values[0]).toEqual(testEndpoints[dataResidency])
-      })
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('Both dataResidency and urlStrategy are set in config, urlStrategy will be ignored')
+      expect(values.length).toBe(1)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints[dataResidency]))
+    })
+  })
+
+  describe('Set URL Strategy as a list of domains', () => {
+    it('logs a warning and uses default endpoints if passed domain list is not defined', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const urlStrategy: UrlStrategyConfig = { domains: undefined, useSubdomains: true } as any
+      Config.set({ ...options, urlStrategy })
+
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(values.length).toBe(2)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.default))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.world))
+      expect(Logger.default.warn).toHaveBeenCalledWith('Invalid urlStartegy: `domains` should be a non-empty array')
+    })
+
+    it('logs a warning and uses default endpoints if passed domain list is empty', () => {
+      const urlStrategy: UrlStrategyConfig = { domains: [], useSubdomains: true }
+      Config.set({ ...options, urlStrategy })
+
+      const values = iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(values.length).toBe(2)
+      expect(values[0]).toEqual(getIteratorValue(testEndpoints.default))
+      expect(values[1]).toEqual(getIteratorValue(testEndpoints.world))
+      expect(Logger.default.warn).toHaveBeenCalledWith('Invalid urlStartegy: `domains` should be a non-empty array')
+    })
+
+    it('uses passed endpoints', () => {
+      const urlStrategy: UrlStrategyConfig = { domains: ['example.com', 'my.domain.org', 'page.de'], useSubdomains: true }
+      Config.set({ ...options, urlStrategy })
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const values = iterateThrough(getBaseUrlsIterator([] as any)) // passing endpoints needed only for backward compatibility
+
+      expect(values.length).toBe(3)
+      expect(values[0]).toEqual(getIteratorValue('example.com'))
+      expect(values[1]).toEqual(getIteratorValue('my.domain.org'))
+      expect(values[2]).toEqual(getIteratorValue('page.de'))
+    })
+
+    it('does not add subdomains when `useSubdomains` is false', () => {
+      const urlStrategy: UrlStrategyConfig = { domains: ['example.com', 'my.domain.org', 'page.de'], useSubdomains: false }
+      Config.set({ ...options, urlStrategy })
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const values = iterateThrough(getBaseUrlsIterator([] as any)) // passing endpoints needed only for backward compatibility
+
+      expect(values.length).toBe(3)
+      expect(values[0]).toEqual({ app: 'example.com', gdpr: 'example.com' })
+      expect(values[1]).toEqual({ app: 'my.domain.org', gdpr: 'my.domain.org' })
+      expect(values[2]).toEqual({ app: 'page.de', gdpr: 'page.de' })
+    })
+  })
+
+  describe('Logs deprecation warnings', () => {
+    it('logs a warning when customUrl is set', () => {
+      Config.set({ ...options, customUrl: 'my.domain.org' })
+
+      iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('customUrl is deprecated, use urlStrategy instead')
+    })
+
+    it.each([
+      DataResidency.EU,
+      DataResidency.US,
+      DataResidency.TR,
+    ])('logs a warning when dataResidency is set', dr => {
+      Config.set({ ...options, dataResidency: dr })
+
+      iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('dataResidency is deprecated, use urlStrategy instead')
+    })
+
+    it.each([
+      UrlStrategy.China,
+      UrlStrategy.India
+    ])('logs a warning when urlStrategy set with a string', urlStrategy => {
+      Config.set({ ...options, urlStrategy: urlStrategy })
+
+      iterateThrough(getBaseUrlsIterator(testEndpoints))
+
+      expect(Logger.default.warn).toHaveBeenCalledWith('urlStrategy string literals (\'china\' and \'india\') are deprected, use UrlStartegyConfig instead')
     })
   })
 })

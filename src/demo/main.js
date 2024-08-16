@@ -12,7 +12,7 @@ import switchBackToOnlineModeInit from './switch-back-to-online-mode/switch-back
 import stopInit from './stop/stop'
 import restartInit from './restart/restart'
 import gdprForgetMeInit from './gdpr-forget-me/gdpr-forget-me'
-import disableThirdPartySharingInit from './disable-third-party-sharing/disable-third-party-sharing'
+import trackThirdPartySharingInit from './track-third-party-sharing/track-third-party-sharing'
 import getWebUUID from './get-web-uuid/get-web-uuid'
 import getAttribution from './get-attribution/get-attribution'
 import setReferrer from './set-referrer/set-referrer'
@@ -32,7 +32,7 @@ function init (defaultAppConfig, defaultEventConfig) {
   stopInit()
   restartInit()
   gdprForgetMeInit()
-  disableThirdPartySharingInit()
+  trackThirdPartySharingInit()
   getWebUUID()
   getAttribution()
   setReferrer()

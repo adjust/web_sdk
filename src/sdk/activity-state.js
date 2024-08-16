@@ -5,11 +5,13 @@ import {
   type AttributionMapT,
   type CommonRequestParams
 } from './types'
-import {SECOND} from './constants'
-import {timePassed} from './time'
-import {isRequest} from './utilities'
+import { SECOND } from './constants'
+import { timePassed } from './time'
+import { isRequest } from './utilities'
 import Config from './config'
 import Logger from './logger'
+import { subscribe } from './pub-sub'
+import { PUB_SUB_EVENTS } from './constants'
 
 /**
  * Reference to the activity state
@@ -41,8 +43,8 @@ let _active: boolean = false
  *
  * @returns {Object}
  */
-function currentGetter (): ActivityStateMapT {
-  return _started ? {..._activityState} : {}
+function currentGetter(): ActivityStateMapT {
+  return _started ? { ..._activityState } : {}
 }
 
 /**
@@ -50,8 +52,8 @@ function currentGetter (): ActivityStateMapT {
  *
  * @param {Object} params
  */
-function currentSetter (params: ActivityStateMapT = {}) {
-  _activityState = _started ? {...params} : {}
+function currentSetter(params: ActivityStateMapT = {}) {
+  _activityState = _started ? { ...params } : {}
 }
 
 /**
@@ -59,7 +61,7 @@ function currentSetter (params: ActivityStateMapT = {}) {
  *
  * @param {Object} params
  */
-function init (params: ActivityStateMapT) {
+function init(params: ActivityStateMapT) {
   _started = true
   currentSetter(params)
 }
@@ -69,7 +71,7 @@ function init (params: ActivityStateMapT) {
  *
  * @returns {boolean}
  */
-function isStarted () {
+function isStarted() {
   return _started
 }
 
@@ -78,7 +80,7 @@ function isStarted () {
  *
  * @private
  */
-function updateLastActive (): void {
+function updateLastActive(): void {
   if (!_started) {
     return
   }
@@ -93,21 +95,21 @@ function updateLastActive (): void {
  * @param {Object} params
  * @private
  */
-function _update (params: ActivityStateMapT): void {
-  _activityState = {..._activityState, ...params}
+function _update(params: ActivityStateMapT): void {
+  _activityState = { ..._activityState, ...params }
 }
 
 /**
  * Set active flag to true when going foreground
  */
-function toForeground (): void {
+function toForeground(): void {
   _active = true
 }
 
 /**
  * Set active flag to false when going background
  */
-function toBackground (): void {
+function toBackground(): void {
   _active = false
 }
 
@@ -117,7 +119,7 @@ function toBackground (): void {
  * @returns {number}
  * @private
  */
-function _getOffset (): number {
+function _getOffset(): number {
   const lastActive = _activityState.lastActive
   return Math.round(timePassed(lastActive, Date.now()) / SECOND)
 }
@@ -128,7 +130,7 @@ function _getOffset (): number {
  * @returns {number}
  * @private
  */
-function _getTimeSpent (): number {
+function _getTimeSpent(): number {
   return (_activityState.timeSpent || 0) + (_active ? _getOffset() : 0)
 }
 
@@ -138,7 +140,7 @@ function _getTimeSpent (): number {
  * @returns {number}
  * @private
  */
-function _getSessionLength (): number {
+function _getSessionLength(): number {
   const lastActive = _activityState.lastActive
   const withinWindow = timePassed(lastActive, Date.now()) < Config.sessionWindow
   const withOffset = _active || !_active && withinWindow
@@ -152,7 +154,7 @@ function _getSessionLength (): number {
  * @returns {number}
  * @private
  */
-function _getSessionCount (): number {
+function _getSessionCount(): number {
   return _activityState.sessionCount || 0
 }
 
@@ -162,7 +164,7 @@ function _getSessionCount (): number {
  * @returns {number}
  * @private
  */
-function _getEventCount (): number {
+function _getEventCount(): number {
   return _activityState.eventCount || 0
 }
 
@@ -172,7 +174,7 @@ function _getEventCount (): number {
  * @returns {number}
  * @private
  */
-function _getLastInterval (): number {
+function _getLastInterval(): number {
   const lastActive = _activityState.lastActive
 
   if (lastActive) {
@@ -185,7 +187,7 @@ function _getLastInterval (): number {
 /**
  * Initiate session params and go to foreground
  */
-function initParams (): void {
+function initParams(): void {
   updateSessionOffset()
   toForeground()
 }
@@ -195,7 +197,7 @@ function initParams (): void {
  *
  * @returns {Object}
  */
-function getParams (url?: UrlT): ?CommonRequestParams {
+function getParams(url?: UrlT): ?CommonRequestParams {
   if (!_started) {
     return null
   }
@@ -222,7 +224,7 @@ function getParams (url?: UrlT): ?CommonRequestParams {
  * @param {string} url
  * @param {boolean=false} auto
  */
-function updateParams (url: string, auto?: boolean): void {
+function updateParams(url: string, auto?: boolean): void {
   if (!_started) {
     return
   }
@@ -249,7 +251,7 @@ function updateParams (url: string, auto?: boolean): void {
 /**
  * Update installed flag - first session has been finished
  */
-function updateInstalled (): void {
+function updateInstalled(): void {
   if (!_started) {
     return
   }
@@ -258,13 +260,13 @@ function updateInstalled (): void {
     return
   }
 
-  _update({installed: true})
+  _update({ installed: true })
 }
 
 /**
  * Update session params which depend on the time offset since last measure point
  */
-function updateSessionOffset (): void {
+function updateSessionOffset(): void {
   if (!_started) {
     return
   }
@@ -272,45 +274,45 @@ function updateSessionOffset (): void {
   const timeSpent = _getTimeSpent()
   const sessionLength = _getSessionLength()
 
-  _update({timeSpent, sessionLength})
+  _update({ timeSpent, sessionLength })
   updateLastActive()
 }
 
 /**
  * Update session length
  */
-function updateSessionLength (): void {
+function updateSessionLength(): void {
   if (!_started) {
     return
   }
 
   const sessionLength = _getSessionLength()
 
-  _update({sessionLength})
+  _update({ sessionLength })
   updateLastActive()
 }
 
 /**
  * Reset time spent and session length to zero
  */
-function resetSessionOffset (): void {
+function resetSessionOffset(): void {
   if (!_started) {
     return
   }
 
-  _update({timeSpent: 0, sessionLength: 0})
+  _update({ timeSpent: 0, sessionLength: 0 })
 }
 
 /**
  * Destroy current activity state
  */
-function destroy (): void {
+function destroy(): void {
   _activityState = {}
   _started = false
   _active = false
 }
 
-function getAttribution (): AttributionMapT | null {
+function getAttribution(): AttributionMapT | null {
   if (!_started) {
     return null
   }
@@ -323,7 +325,17 @@ function getAttribution (): AttributionMapT | null {
   return _activityState.attribution
 }
 
-function getWebUUID (): string {
+function waitForAttribution(): Promise<AttributionMapT> {
+  if (_activityState.attribution) {
+    return Promise.resolve(_activityState.attribution)
+  }
+
+  return new Promise(resolve =>
+    subscribe(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, (_name: string, attribution: AttributionMapT) => resolve(attribution))
+  )
+}
+
+function getWebUUID(): string {
   if (!_started) {
     return null
   }
@@ -331,9 +343,19 @@ function getWebUUID (): string {
   return _activityState.uuid
 }
 
+function waitForWebUUID(): Promise<string> {
+  if (_activityState.uuid) {
+    return Promise.resolve(_activityState.uuid)
+  }
+
+  return new Promise(resolve =>
+    subscribe(PUB_SUB_EVENTS.WEB_UUID_CREATED, (_name: string, webUuid: string) => resolve(webUuid))
+  )
+}
+
 const ActivityState = {
-  get current () { return currentGetter() },
-  set current (value) { currentSetter(value) },
+  get current() { return currentGetter() },
+  set current(value) { currentSetter(value) },
   init,
   isStarted,
   toForeground,
@@ -348,7 +370,9 @@ const ActivityState = {
   updateLastActive,
   destroy,
   getAttribution,
-  getWebUUID
+  getWebUUID,
+  waitForAttribution,
+  waitForWebUUID
 }
 
 export default ActivityState

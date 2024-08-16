@@ -9,1732 +9,11 @@
 		root["Adjust"] = factory();
 })(self, () => {
 return /******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
-
-/***/ 841:
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(81);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(667);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__);
-// Imports
-
-
-
-var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(529), __webpack_require__.b);
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, ".adjust-smart-banner__AEqYlWgPonspKfseFq2N{height:76px}@media(min-width: 428px){.adjust-smart-banner__AEqYlWgPonspKfseFq2N{height:0}}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq{position:fixed;left:0;right:0;z-index:10000000}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq.adjust-smart-banner__jOV7BvlxDT7ATfbLPh3j{top:0}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq.adjust-smart-banner__XmomYv1VVQYz0lEtn9Q2{bottom:0}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK{margin:0 auto;max-width:428px;background:#fff}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI{display:flex;align-items:center;padding:10px 8px 10px 4px}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI .adjust-smart-banner__VFuxsD_KzqNSxQecFmao{width:32px;height:32px;border:none;background:url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");background-repeat:no-repeat;background-position:center center;background-size:8px 8px,auto;cursor:pointer}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI .adjust-smart-banner__hqvH8Y5fwbegVLKnoYv_{width:56px;height:56px;overflow:hidden;background-color:#6e7492;border-radius:8px}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI .adjust-smart-banner__hqvH8Y5fwbegVLKnoYv_ .adjust-smart-banner__Ll9XMTDiX4Drgeydp0Oc{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#353a52;font-weight:bold;font-size:23px;font-family:ArialMt,Arial,sans-serif;line-height:32px;background-color:#e0e2ec}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI .adjust-smart-banner__hqvH8Y5fwbegVLKnoYv_ .adjust-smart-banner__VYRfEif2Ph2_984rXQy8{width:100%}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI .adjust-smart-banner__I8xX0C5dUcR53pY0aEys{flex:1 1 0%;min-height:0;min-width:0;margin:0 12px}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI .adjust-smart-banner__JJLdp2l7YvnsUXudojWA{overflow:hidden;text-overflow:ellipsis}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI h4{margin:5px 0 8px;color:#353a52;font-family:Arial-BoldMT,ArialMt,Arial,sans-serif;font-size:12px;font-weight:bold;line-height:16px;white-space:nowrap}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI p{margin:8px 0 7px;color:#353a52;font-family:ArialMt,Arial,sans-serif;font-size:9px;line-height:11px;max-height:22px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.adjust-smart-banner__NVk5vwju_4kdaKzGWJPq .adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK .adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI .adjust-smart-banner__risKVvV3T0vjKiSTR9l0{color:#6e7492;background:#f9fafc;border:1px solid #cdd0e0;border-radius:4px;border-color:#6e7492;box-shadow:inset 0px -1px 0px 0px #e0e2ec;padding:4px 6.5px;display:inline-block;vertical-align:middle;text-align:center;font-family:ArialMt,Arial,sans-serif;font-size:12px;font-weight:500;line-height:16px;cursor:pointer;text-decoration:none}", ""]);
-// Exports
-___CSS_LOADER_EXPORT___.locals = {
-	"bannerContainer": "adjust-smart-banner__AEqYlWgPonspKfseFq2N",
-	"banner": "adjust-smart-banner__NVk5vwju_4kdaKzGWJPq",
-	"stickyToTop": "adjust-smart-banner__jOV7BvlxDT7ATfbLPh3j",
-	"stickyToBottom": "adjust-smart-banner__XmomYv1VVQYz0lEtn9Q2",
-	"bannerBody": "adjust-smart-banner__eXKzWnRDn4RWUiSSeVYK",
-	"content": "adjust-smart-banner__r3JnN_RNhpzArrmKQ8jI",
-	"dismiss": "adjust-smart-banner__VFuxsD_KzqNSxQecFmao",
-	"appIcon": "adjust-smart-banner__hqvH8Y5fwbegVLKnoYv_",
-	"placeholder": "adjust-smart-banner__Ll9XMTDiX4Drgeydp0Oc",
-	"image": "adjust-smart-banner__VYRfEif2Ph2_984rXQy8",
-	"textContainer": "adjust-smart-banner__I8xX0C5dUcR53pY0aEys",
-	"bannerText": "adjust-smart-banner__JJLdp2l7YvnsUXudojWA",
-	"action": "adjust-smart-banner__risKVvV3T0vjKiSTR9l0"
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ 645:
-/***/ ((module) => {
-
-"use strict";
-
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-*/
-module.exports = function (cssWithMappingToString) {
-  var list = []; // return the list of modules as css string
-
-  list.toString = function toString() {
-    return this.map(function (item) {
-      var content = "";
-      var needLayer = typeof item[5] !== "undefined";
-
-      if (item[4]) {
-        content += "@supports (".concat(item[4], ") {");
-      }
-
-      if (item[2]) {
-        content += "@media ".concat(item[2], " {");
-      }
-
-      if (needLayer) {
-        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
-      }
-
-      content += cssWithMappingToString(item);
-
-      if (needLayer) {
-        content += "}";
-      }
-
-      if (item[2]) {
-        content += "}";
-      }
-
-      if (item[4]) {
-        content += "}";
-      }
-
-      return content;
-    }).join("");
-  }; // import a list of modules into the list
-
-
-  list.i = function i(modules, media, dedupe, supports, layer) {
-    if (typeof modules === "string") {
-      modules = [[null, modules, undefined]];
-    }
-
-    var alreadyImportedModules = {};
-
-    if (dedupe) {
-      for (var k = 0; k < this.length; k++) {
-        var id = this[k][0];
-
-        if (id != null) {
-          alreadyImportedModules[id] = true;
-        }
-      }
-    }
-
-    for (var _k = 0; _k < modules.length; _k++) {
-      var item = [].concat(modules[_k]);
-
-      if (dedupe && alreadyImportedModules[item[0]]) {
-        continue;
-      }
-
-      if (typeof layer !== "undefined") {
-        if (typeof item[5] === "undefined") {
-          item[5] = layer;
-        } else {
-          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
-          item[5] = layer;
-        }
-      }
-
-      if (media) {
-        if (!item[2]) {
-          item[2] = media;
-        } else {
-          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
-          item[2] = media;
-        }
-      }
-
-      if (supports) {
-        if (!item[4]) {
-          item[4] = "".concat(supports);
-        } else {
-          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
-          item[4] = supports;
-        }
-      }
-
-      list.push(item);
-    }
-  };
-
-  return list;
-};
-
-/***/ }),
-
-/***/ 667:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function (url, options) {
-  if (!options) {
-    options = {};
-  }
-
-  if (!url) {
-    return url;
-  }
-
-  url = String(url.__esModule ? url.default : url); // If url is already wrapped in quotes, remove them
-
-  if (/^['"].*['"]$/.test(url)) {
-    url = url.slice(1, -1);
-  }
-
-  if (options.hash) {
-    url += options.hash;
-  } // Should url be wrapped?
-  // See https://drafts.csswg.org/css-values-3/#urls
-
-
-  if (/["'() \t\n]|(%20)/.test(url) || options.needQuotes) {
-    return "\"".concat(url.replace(/"/g, '\\"').replace(/\n/g, "\\n"), "\"");
-  }
-
-  return url;
-};
-
-/***/ }),
-
-/***/ 81:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function (i) {
-  return i[1];
-};
-
-/***/ }),
-
-/***/ 702:
-/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
-
-/*!
- * @overview es6-promise - a tiny implementation of Promises/A+.
- * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
- * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   v4.2.8+1e68dce6
- */
-
-(function (global, factory) {
-	 true ? module.exports = factory() :
-	0;
-}(this, (function () { 'use strict';
-
-function objectOrFunction(x) {
-  var type = typeof x;
-  return x !== null && (type === 'object' || type === 'function');
-}
-
-function isFunction(x) {
-  return typeof x === 'function';
-}
-
-
-
-var _isArray = void 0;
-if (Array.isArray) {
-  _isArray = Array.isArray;
-} else {
-  _isArray = function (x) {
-    return Object.prototype.toString.call(x) === '[object Array]';
-  };
-}
-
-var isArray = _isArray;
-
-var len = 0;
-var vertxNext = void 0;
-var customSchedulerFn = void 0;
-
-var asap = function asap(callback, arg) {
-  queue[len] = callback;
-  queue[len + 1] = arg;
-  len += 2;
-  if (len === 2) {
-    // If len is 2, that means that we need to schedule an async flush.
-    // If additional callbacks are queued before the queue is flushed, they
-    // will be processed by this flush that we are scheduling.
-    if (customSchedulerFn) {
-      customSchedulerFn(flush);
-    } else {
-      scheduleFlush();
-    }
-  }
-};
-
-function setScheduler(scheduleFn) {
-  customSchedulerFn = scheduleFn;
-}
-
-function setAsap(asapFn) {
-  asap = asapFn;
-}
-
-var browserWindow = typeof window !== 'undefined' ? window : undefined;
-var browserGlobal = browserWindow || {};
-var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
-
-// test for web worker but not in IE10
-var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
-
-// node
-function useNextTick() {
-  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
-  // see https://github.com/cujojs/when/issues/410 for details
-  return function () {
-    return process.nextTick(flush);
-  };
-}
-
-// vertx
-function useVertxTimer() {
-  if (typeof vertxNext !== 'undefined') {
-    return function () {
-      vertxNext(flush);
-    };
-  }
-
-  return useSetTimeout();
-}
-
-function useMutationObserver() {
-  var iterations = 0;
-  var observer = new BrowserMutationObserver(flush);
-  var node = document.createTextNode('');
-  observer.observe(node, { characterData: true });
-
-  return function () {
-    node.data = iterations = ++iterations % 2;
-  };
-}
-
-// web worker
-function useMessageChannel() {
-  var channel = new MessageChannel();
-  channel.port1.onmessage = flush;
-  return function () {
-    return channel.port2.postMessage(0);
-  };
-}
-
-function useSetTimeout() {
-  // Store setTimeout reference so es6-promise will be unaffected by
-  // other code modifying setTimeout (like sinon.useFakeTimers())
-  var globalSetTimeout = setTimeout;
-  return function () {
-    return globalSetTimeout(flush, 1);
-  };
-}
-
-var queue = new Array(1000);
-function flush() {
-  for (var i = 0; i < len; i += 2) {
-    var callback = queue[i];
-    var arg = queue[i + 1];
-
-    callback(arg);
-
-    queue[i] = undefined;
-    queue[i + 1] = undefined;
-  }
-
-  len = 0;
-}
-
-function attemptVertx() {
-  try {
-    var vertx = Function('return this')().require('vertx');
-    vertxNext = vertx.runOnLoop || vertx.runOnContext;
-    return useVertxTimer();
-  } catch (e) {
-    return useSetTimeout();
-  }
-}
-
-var scheduleFlush = void 0;
-// Decide what async method to use to triggering processing of queued callbacks:
-if (isNode) {
-  scheduleFlush = useNextTick();
-} else if (BrowserMutationObserver) {
-  scheduleFlush = useMutationObserver();
-} else if (isWorker) {
-  scheduleFlush = useMessageChannel();
-} else if (browserWindow === undefined && "function" === 'function') {
-  scheduleFlush = attemptVertx();
-} else {
-  scheduleFlush = useSetTimeout();
-}
-
-function then(onFulfillment, onRejection) {
-  var parent = this;
-
-  var child = new this.constructor(noop);
-
-  if (child[PROMISE_ID] === undefined) {
-    makePromise(child);
-  }
-
-  var _state = parent._state;
-
-
-  if (_state) {
-    var callback = arguments[_state - 1];
-    asap(function () {
-      return invokeCallback(_state, child, callback, parent._result);
-    });
-  } else {
-    subscribe(parent, child, onFulfillment, onRejection);
-  }
-
-  return child;
-}
-
-/**
-  `Promise.resolve` returns a promise that will become resolved with the
-  passed `value`. It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    resolve(1);
-  });
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.resolve(1);
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  @method resolve
-  @static
-  @param {Any} value value that the returned promise will be resolved with
-  Useful for tooling.
-  @return {Promise} a promise that will become fulfilled with the given
-  `value`
-*/
-function resolve$1(object) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (object && typeof object === 'object' && object.constructor === Constructor) {
-    return object;
-  }
-
-  var promise = new Constructor(noop);
-  resolve(promise, object);
-  return promise;
-}
-
-var PROMISE_ID = Math.random().toString(36).substring(2);
-
-function noop() {}
-
-var PENDING = void 0;
-var FULFILLED = 1;
-var REJECTED = 2;
-
-function selfFulfillment() {
-  return new TypeError("You cannot resolve a promise with itself");
-}
-
-function cannotReturnOwn() {
-  return new TypeError('A promises callback cannot return that same promise.');
-}
-
-function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
-  try {
-    then$$1.call(value, fulfillmentHandler, rejectionHandler);
-  } catch (e) {
-    return e;
-  }
-}
-
-function handleForeignThenable(promise, thenable, then$$1) {
-  asap(function (promise) {
-    var sealed = false;
-    var error = tryThen(then$$1, thenable, function (value) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-      if (thenable !== value) {
-        resolve(promise, value);
-      } else {
-        fulfill(promise, value);
-      }
-    }, function (reason) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-
-      reject(promise, reason);
-    }, 'Settle: ' + (promise._label || ' unknown promise'));
-
-    if (!sealed && error) {
-      sealed = true;
-      reject(promise, error);
-    }
-  }, promise);
-}
-
-function handleOwnThenable(promise, thenable) {
-  if (thenable._state === FULFILLED) {
-    fulfill(promise, thenable._result);
-  } else if (thenable._state === REJECTED) {
-    reject(promise, thenable._result);
-  } else {
-    subscribe(thenable, undefined, function (value) {
-      return resolve(promise, value);
-    }, function (reason) {
-      return reject(promise, reason);
-    });
-  }
-}
-
-function handleMaybeThenable(promise, maybeThenable, then$$1) {
-  if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
-    handleOwnThenable(promise, maybeThenable);
-  } else {
-    if (then$$1 === undefined) {
-      fulfill(promise, maybeThenable);
-    } else if (isFunction(then$$1)) {
-      handleForeignThenable(promise, maybeThenable, then$$1);
-    } else {
-      fulfill(promise, maybeThenable);
-    }
-  }
-}
-
-function resolve(promise, value) {
-  if (promise === value) {
-    reject(promise, selfFulfillment());
-  } else if (objectOrFunction(value)) {
-    var then$$1 = void 0;
-    try {
-      then$$1 = value.then;
-    } catch (error) {
-      reject(promise, error);
-      return;
-    }
-    handleMaybeThenable(promise, value, then$$1);
-  } else {
-    fulfill(promise, value);
-  }
-}
-
-function publishRejection(promise) {
-  if (promise._onerror) {
-    promise._onerror(promise._result);
-  }
-
-  publish(promise);
-}
-
-function fulfill(promise, value) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-
-  promise._result = value;
-  promise._state = FULFILLED;
-
-  if (promise._subscribers.length !== 0) {
-    asap(publish, promise);
-  }
-}
-
-function reject(promise, reason) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-  promise._state = REJECTED;
-  promise._result = reason;
-
-  asap(publishRejection, promise);
-}
-
-function subscribe(parent, child, onFulfillment, onRejection) {
-  var _subscribers = parent._subscribers;
-  var length = _subscribers.length;
-
-
-  parent._onerror = null;
-
-  _subscribers[length] = child;
-  _subscribers[length + FULFILLED] = onFulfillment;
-  _subscribers[length + REJECTED] = onRejection;
-
-  if (length === 0 && parent._state) {
-    asap(publish, parent);
-  }
-}
-
-function publish(promise) {
-  var subscribers = promise._subscribers;
-  var settled = promise._state;
-
-  if (subscribers.length === 0) {
-    return;
-  }
-
-  var child = void 0,
-      callback = void 0,
-      detail = promise._result;
-
-  for (var i = 0; i < subscribers.length; i += 3) {
-    child = subscribers[i];
-    callback = subscribers[i + settled];
-
-    if (child) {
-      invokeCallback(settled, child, callback, detail);
-    } else {
-      callback(detail);
-    }
-  }
-
-  promise._subscribers.length = 0;
-}
-
-function invokeCallback(settled, promise, callback, detail) {
-  var hasCallback = isFunction(callback),
-      value = void 0,
-      error = void 0,
-      succeeded = true;
-
-  if (hasCallback) {
-    try {
-      value = callback(detail);
-    } catch (e) {
-      succeeded = false;
-      error = e;
-    }
-
-    if (promise === value) {
-      reject(promise, cannotReturnOwn());
-      return;
-    }
-  } else {
-    value = detail;
-  }
-
-  if (promise._state !== PENDING) {
-    // noop
-  } else if (hasCallback && succeeded) {
-    resolve(promise, value);
-  } else if (succeeded === false) {
-    reject(promise, error);
-  } else if (settled === FULFILLED) {
-    fulfill(promise, value);
-  } else if (settled === REJECTED) {
-    reject(promise, value);
-  }
-}
-
-function initializePromise(promise, resolver) {
-  try {
-    resolver(function resolvePromise(value) {
-      resolve(promise, value);
-    }, function rejectPromise(reason) {
-      reject(promise, reason);
-    });
-  } catch (e) {
-    reject(promise, e);
-  }
-}
-
-var id = 0;
-function nextId() {
-  return id++;
-}
-
-function makePromise(promise) {
-  promise[PROMISE_ID] = id++;
-  promise._state = undefined;
-  promise._result = undefined;
-  promise._subscribers = [];
-}
-
-function validationError() {
-  return new Error('Array Methods must be provided an Array');
-}
-
-var Enumerator = function () {
-  function Enumerator(Constructor, input) {
-    this._instanceConstructor = Constructor;
-    this.promise = new Constructor(noop);
-
-    if (!this.promise[PROMISE_ID]) {
-      makePromise(this.promise);
-    }
-
-    if (isArray(input)) {
-      this.length = input.length;
-      this._remaining = input.length;
-
-      this._result = new Array(this.length);
-
-      if (this.length === 0) {
-        fulfill(this.promise, this._result);
-      } else {
-        this.length = this.length || 0;
-        this._enumerate(input);
-        if (this._remaining === 0) {
-          fulfill(this.promise, this._result);
-        }
-      }
-    } else {
-      reject(this.promise, validationError());
-    }
-  }
-
-  Enumerator.prototype._enumerate = function _enumerate(input) {
-    for (var i = 0; this._state === PENDING && i < input.length; i++) {
-      this._eachEntry(input[i], i);
-    }
-  };
-
-  Enumerator.prototype._eachEntry = function _eachEntry(entry, i) {
-    var c = this._instanceConstructor;
-    var resolve$$1 = c.resolve;
-
-
-    if (resolve$$1 === resolve$1) {
-      var _then = void 0;
-      var error = void 0;
-      var didError = false;
-      try {
-        _then = entry.then;
-      } catch (e) {
-        didError = true;
-        error = e;
-      }
-
-      if (_then === then && entry._state !== PENDING) {
-        this._settledAt(entry._state, i, entry._result);
-      } else if (typeof _then !== 'function') {
-        this._remaining--;
-        this._result[i] = entry;
-      } else if (c === Promise$1) {
-        var promise = new c(noop);
-        if (didError) {
-          reject(promise, error);
-        } else {
-          handleMaybeThenable(promise, entry, _then);
-        }
-        this._willSettleAt(promise, i);
-      } else {
-        this._willSettleAt(new c(function (resolve$$1) {
-          return resolve$$1(entry);
-        }), i);
-      }
-    } else {
-      this._willSettleAt(resolve$$1(entry), i);
-    }
-  };
-
-  Enumerator.prototype._settledAt = function _settledAt(state, i, value) {
-    var promise = this.promise;
-
-
-    if (promise._state === PENDING) {
-      this._remaining--;
-
-      if (state === REJECTED) {
-        reject(promise, value);
-      } else {
-        this._result[i] = value;
-      }
-    }
-
-    if (this._remaining === 0) {
-      fulfill(promise, this._result);
-    }
-  };
-
-  Enumerator.prototype._willSettleAt = function _willSettleAt(promise, i) {
-    var enumerator = this;
-
-    subscribe(promise, undefined, function (value) {
-      return enumerator._settledAt(FULFILLED, i, value);
-    }, function (reason) {
-      return enumerator._settledAt(REJECTED, i, reason);
-    });
-  };
-
-  return Enumerator;
-}();
-
-/**
-  `Promise.all` accepts an array of promises, and returns a new promise which
-  is fulfilled with an array of fulfillment values for the passed promises, or
-  rejected with the reason of the first passed promise to be rejected. It casts all
-  elements of the passed iterable to promises as it runs this algorithm.
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = resolve(2);
-  let promise3 = resolve(3);
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // The array here would be [ 1, 2, 3 ];
-  });
-  ```
-
-  If any of the `promises` given to `all` are rejected, the first promise
-  that is rejected will be given as an argument to the returned promises's
-  rejection handler. For example:
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = reject(new Error("2"));
-  let promise3 = reject(new Error("3"));
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // Code here never runs because there are rejected promises!
-  }, function(error) {
-    // error.message === "2"
-  });
-  ```
-
-  @method all
-  @static
-  @param {Array} entries array of promises
-  @param {String} label optional string for labeling the promise.
-  Useful for tooling.
-  @return {Promise} promise that is fulfilled when all `promises` have been
-  fulfilled, or rejected if any of them become rejected.
-  @static
-*/
-function all(entries) {
-  return new Enumerator(this, entries).promise;
-}
-
-/**
-  `Promise.race` returns a new promise which is settled in the same way as the
-  first passed promise to settle.
-
-  Example:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 2');
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // result === 'promise 2' because it was resolved before promise1
-    // was resolved.
-  });
-  ```
-
-  `Promise.race` is deterministic in that only the state of the first
-  settled promise matters. For example, even if other promises given to the
-  `promises` array argument are resolved, but the first settled promise has
-  become rejected before the other promises became fulfilled, the returned
-  promise will become rejected:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      reject(new Error('promise 2'));
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // Code here never runs
-  }, function(reason){
-    // reason.message === 'promise 2' because promise 2 became rejected before
-    // promise 1 became fulfilled
-  });
-  ```
-
-  An example real-world use case is implementing timeouts:
-
-  ```javascript
-  Promise.race([ajax('foo.json'), timeout(5000)])
-  ```
-
-  @method race
-  @static
-  @param {Array} promises array of promises to observe
-  Useful for tooling.
-  @return {Promise} a promise which settles in the same way as the first passed
-  promise to settle.
-*/
-function race(entries) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (!isArray(entries)) {
-    return new Constructor(function (_, reject) {
-      return reject(new TypeError('You must pass an array to race.'));
-    });
-  } else {
-    return new Constructor(function (resolve, reject) {
-      var length = entries.length;
-      for (var i = 0; i < length; i++) {
-        Constructor.resolve(entries[i]).then(resolve, reject);
-      }
-    });
-  }
-}
-
-/**
-  `Promise.reject` returns a promise rejected with the passed `reason`.
-  It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    reject(new Error('WHOOPS'));
-  });
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.reject(new Error('WHOOPS'));
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  @method reject
-  @static
-  @param {Any} reason value that the returned promise will be rejected with.
-  Useful for tooling.
-  @return {Promise} a promise rejected with the given `reason`.
-*/
-function reject$1(reason) {
-  /*jshint validthis:true */
-  var Constructor = this;
-  var promise = new Constructor(noop);
-  reject(promise, reason);
-  return promise;
-}
-
-function needsResolver() {
-  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-}
-
-function needsNew() {
-  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-}
-
-/**
-  Promise objects represent the eventual result of an asynchronous operation. The
-  primary way of interacting with a promise is through its `then` method, which
-  registers callbacks to receive either a promise's eventual value or the reason
-  why the promise cannot be fulfilled.
-
-  Terminology
-  -----------
-
-  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
-  - `thenable` is an object or function that defines a `then` method.
-  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
-  - `exception` is a value that is thrown using the throw statement.
-  - `reason` is a value that indicates why a promise was rejected.
-  - `settled` the final resting state of a promise, fulfilled or rejected.
-
-  A promise can be in one of three states: pending, fulfilled, or rejected.
-
-  Promises that are fulfilled have a fulfillment value and are in the fulfilled
-  state.  Promises that are rejected have a rejection reason and are in the
-  rejected state.  A fulfillment value is never a thenable.
-
-  Promises can also be said to *resolve* a value.  If this value is also a
-  promise, then the original promise's settled state will match the value's
-  settled state.  So a promise that *resolves* a promise that rejects will
-  itself reject, and a promise that *resolves* a promise that fulfills will
-  itself fulfill.
-
-
-  Basic Usage:
-  ------------
-
-  ```js
-  let promise = new Promise(function(resolve, reject) {
-    // on success
-    resolve(value);
-
-    // on failure
-    reject(reason);
-  });
-
-  promise.then(function(value) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Advanced Usage:
-  ---------------
-
-  Promises shine when abstracting away asynchronous interactions such as
-  `XMLHttpRequest`s.
-
-  ```js
-  function getJSON(url) {
-    return new Promise(function(resolve, reject){
-      let xhr = new XMLHttpRequest();
-
-      xhr.open('GET', url);
-      xhr.onreadystatechange = handler;
-      xhr.responseType = 'json';
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
-          } else {
-            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
-          }
-        }
-      };
-    });
-  }
-
-  getJSON('/posts.json').then(function(json) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Unlike callbacks, promises are great composable primitives.
-
-  ```js
-  Promise.all([
-    getJSON('/posts'),
-    getJSON('/comments')
-  ]).then(function(values){
-    values[0] // => postsJSON
-    values[1] // => commentsJSON
-
-    return values;
-  });
-  ```
-
-  @class Promise
-  @param {Function} resolver
-  Useful for tooling.
-  @constructor
-*/
-
-var Promise$1 = function () {
-  function Promise(resolver) {
-    this[PROMISE_ID] = nextId();
-    this._result = this._state = undefined;
-    this._subscribers = [];
-
-    if (noop !== resolver) {
-      typeof resolver !== 'function' && needsResolver();
-      this instanceof Promise ? initializePromise(this, resolver) : needsNew();
-    }
-  }
-
-  /**
-  The primary way of interacting with a promise is through its `then` method,
-  which registers callbacks to receive either a promise's eventual value or the
-  reason why the promise cannot be fulfilled.
-   ```js
-  findUser().then(function(user){
-    // user is available
-  }, function(reason){
-    // user is unavailable, and you are given the reason why
-  });
-  ```
-   Chaining
-  --------
-   The return value of `then` is itself a promise.  This second, 'downstream'
-  promise is resolved with the return value of the first promise's fulfillment
-  or rejection handler, or rejected if the handler throws an exception.
-   ```js
-  findUser().then(function (user) {
-    return user.name;
-  }, function (reason) {
-    return 'default name';
-  }).then(function (userName) {
-    // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-    // will be `'default name'`
-  });
-   findUser().then(function (user) {
-    throw new Error('Found user, but still unhappy');
-  }, function (reason) {
-    throw new Error('`findUser` rejected and we're unhappy');
-  }).then(function (value) {
-    // never reached
-  }, function (reason) {
-    // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-    // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-  });
-  ```
-  If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-   ```js
-  findUser().then(function (user) {
-    throw new PedagogicalException('Upstream error');
-  }).then(function (value) {
-    // never reached
-  }).then(function (value) {
-    // never reached
-  }, function (reason) {
-    // The `PedgagocialException` is propagated all the way down to here
-  });
-  ```
-   Assimilation
-  ------------
-   Sometimes the value you want to propagate to a downstream promise can only be
-  retrieved asynchronously. This can be achieved by returning a promise in the
-  fulfillment or rejection handler. The downstream promise will then be pending
-  until the returned promise is settled. This is called *assimilation*.
-   ```js
-  findUser().then(function (user) {
-    return findCommentsByAuthor(user);
-  }).then(function (comments) {
-    // The user's comments are now available
-  });
-  ```
-   If the assimliated promise rejects, then the downstream promise will also reject.
-   ```js
-  findUser().then(function (user) {
-    return findCommentsByAuthor(user);
-  }).then(function (comments) {
-    // If `findCommentsByAuthor` fulfills, we'll have the value here
-  }, function (reason) {
-    // If `findCommentsByAuthor` rejects, we'll have the reason here
-  });
-  ```
-   Simple Example
-  --------------
-   Synchronous Example
-   ```javascript
-  let result;
-   try {
-    result = findResult();
-    // success
-  } catch(reason) {
-    // failure
-  }
-  ```
-   Errback Example
-   ```js
-  findResult(function(result, err){
-    if (err) {
-      // failure
-    } else {
-      // success
-    }
-  });
-  ```
-   Promise Example;
-   ```javascript
-  findResult().then(function(result){
-    // success
-  }, function(reason){
-    // failure
-  });
-  ```
-   Advanced Example
-  --------------
-   Synchronous Example
-   ```javascript
-  let author, books;
-   try {
-    author = findAuthor();
-    books  = findBooksByAuthor(author);
-    // success
-  } catch(reason) {
-    // failure
-  }
-  ```
-   Errback Example
-   ```js
-   function foundBooks(books) {
-   }
-   function failure(reason) {
-   }
-   findAuthor(function(author, err){
-    if (err) {
-      failure(err);
-      // failure
-    } else {
-      try {
-        findBoooksByAuthor(author, function(books, err) {
-          if (err) {
-            failure(err);
-          } else {
-            try {
-              foundBooks(books);
-            } catch(reason) {
-              failure(reason);
-            }
-          }
-        });
-      } catch(error) {
-        failure(err);
-      }
-      // success
-    }
-  });
-  ```
-   Promise Example;
-   ```javascript
-  findAuthor().
-    then(findBooksByAuthor).
-    then(function(books){
-      // found books
-  }).catch(function(reason){
-    // something went wrong
-  });
-  ```
-   @method then
-  @param {Function} onFulfilled
-  @param {Function} onRejected
-  Useful for tooling.
-  @return {Promise}
-  */
-
-  /**
-  `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-  as the catch block of a try/catch statement.
-  ```js
-  function findAuthor(){
-  throw new Error('couldn't find that author');
-  }
-  // synchronous
-  try {
-  findAuthor();
-  } catch(reason) {
-  // something went wrong
-  }
-  // async with promises
-  findAuthor().catch(function(reason){
-  // something went wrong
-  });
-  ```
-  @method catch
-  @param {Function} onRejection
-  Useful for tooling.
-  @return {Promise}
-  */
-
-
-  Promise.prototype.catch = function _catch(onRejection) {
-    return this.then(null, onRejection);
-  };
-
-  /**
-    `finally` will be invoked regardless of the promise's fate just as native
-    try/catch/finally behaves
-  
-    Synchronous example:
-  
-    ```js
-    findAuthor() {
-      if (Math.random() > 0.5) {
-        throw new Error();
-      }
-      return new Author();
-    }
-  
-    try {
-      return findAuthor(); // succeed or fail
-    } catch(error) {
-      return findOtherAuther();
-    } finally {
-      // always runs
-      // doesn't affect the return value
-    }
-    ```
-  
-    Asynchronous example:
-  
-    ```js
-    findAuthor().catch(function(reason){
-      return findOtherAuther();
-    }).finally(function(){
-      // author was either found, or not
-    });
-    ```
-  
-    @method finally
-    @param {Function} callback
-    @return {Promise}
-  */
-
-
-  Promise.prototype.finally = function _finally(callback) {
-    var promise = this;
-    var constructor = promise.constructor;
-
-    if (isFunction(callback)) {
-      return promise.then(function (value) {
-        return constructor.resolve(callback()).then(function () {
-          return value;
-        });
-      }, function (reason) {
-        return constructor.resolve(callback()).then(function () {
-          throw reason;
-        });
-      });
-    }
-
-    return promise.then(callback, callback);
-  };
-
-  return Promise;
-}();
-
-Promise$1.prototype.then = then;
-Promise$1.all = all;
-Promise$1.race = race;
-Promise$1.resolve = resolve$1;
-Promise$1.reject = reject$1;
-Promise$1._setScheduler = setScheduler;
-Promise$1._setAsap = setAsap;
-Promise$1._asap = asap;
-
-/*global self*/
-function polyfill() {
-  var local = void 0;
-
-  if (typeof __webpack_require__.g !== 'undefined') {
-    local = __webpack_require__.g;
-  } else if (typeof self !== 'undefined') {
-    local = self;
-  } else {
-    try {
-      local = Function('return this')();
-    } catch (e) {
-      throw new Error('polyfill failed because global object is unavailable in this environment');
-    }
-  }
-
-  var P = local.Promise;
-
-  if (P) {
-    var promiseToString = null;
-    try {
-      promiseToString = Object.prototype.toString.call(P.resolve());
-    } catch (e) {
-      // silently ignored
-    }
-
-    if (promiseToString === '[object Promise]' && !P.cast) {
-      return;
-    }
-  }
-
-  local.Promise = Promise$1;
-}
-
-// Strange compat..
-Promise$1.polyfill = polyfill;
-Promise$1.Promise = Promise$1;
-
-return Promise$1;
-
-})));
-
-
-
-//# sourceMappingURL=es6-promise.map
-
-
-/***/ }),
-
-/***/ 379:
-/***/ ((module) => {
-
-"use strict";
-
-
-var stylesInDOM = [];
-
-function getIndexByIdentifier(identifier) {
-  var result = -1;
-
-  for (var i = 0; i < stylesInDOM.length; i++) {
-    if (stylesInDOM[i].identifier === identifier) {
-      result = i;
-      break;
-    }
-  }
-
-  return result;
-}
-
-function modulesToDom(list, options) {
-  var idCountMap = {};
-  var identifiers = [];
-
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    var id = options.base ? item[0] + options.base : item[0];
-    var count = idCountMap[id] || 0;
-    var identifier = "".concat(id, " ").concat(count);
-    idCountMap[id] = count + 1;
-    var indexByIdentifier = getIndexByIdentifier(identifier);
-    var obj = {
-      css: item[1],
-      media: item[2],
-      sourceMap: item[3],
-      supports: item[4],
-      layer: item[5]
-    };
-
-    if (indexByIdentifier !== -1) {
-      stylesInDOM[indexByIdentifier].references++;
-      stylesInDOM[indexByIdentifier].updater(obj);
-    } else {
-      var updater = addElementStyle(obj, options);
-      options.byIndex = i;
-      stylesInDOM.splice(i, 0, {
-        identifier: identifier,
-        updater: updater,
-        references: 1
-      });
-    }
-
-    identifiers.push(identifier);
-  }
-
-  return identifiers;
-}
-
-function addElementStyle(obj, options) {
-  var api = options.domAPI(options);
-  api.update(obj);
-
-  var updater = function updater(newObj) {
-    if (newObj) {
-      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
-        return;
-      }
-
-      api.update(obj = newObj);
-    } else {
-      api.remove();
-    }
-  };
-
-  return updater;
-}
-
-module.exports = function (list, options) {
-  options = options || {};
-  list = list || [];
-  var lastIdentifiers = modulesToDom(list, options);
-  return function update(newList) {
-    newList = newList || [];
-
-    for (var i = 0; i < lastIdentifiers.length; i++) {
-      var identifier = lastIdentifiers[i];
-      var index = getIndexByIdentifier(identifier);
-      stylesInDOM[index].references--;
-    }
-
-    var newLastIdentifiers = modulesToDom(newList, options);
-
-    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
-      var _identifier = lastIdentifiers[_i];
-
-      var _index = getIndexByIdentifier(_identifier);
-
-      if (stylesInDOM[_index].references === 0) {
-        stylesInDOM[_index].updater();
-
-        stylesInDOM.splice(_index, 1);
-      }
-    }
-
-    lastIdentifiers = newLastIdentifiers;
-  };
-};
-
-/***/ }),
-
-/***/ 569:
-/***/ ((module) => {
-
-"use strict";
-
-
-var memo = {};
-/* istanbul ignore next  */
-
-function getTarget(target) {
-  if (typeof memo[target] === "undefined") {
-    var styleTarget = document.querySelector(target); // Special case to return head of iframe instead of iframe itself
-
-    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
-      try {
-        // This will throw an exception if access to iframe is blocked
-        // due to cross-origin restrictions
-        styleTarget = styleTarget.contentDocument.head;
-      } catch (e) {
-        // istanbul ignore next
-        styleTarget = null;
-      }
-    }
-
-    memo[target] = styleTarget;
-  }
-
-  return memo[target];
-}
-/* istanbul ignore next  */
-
-
-function insertBySelector(insert, style) {
-  var target = getTarget(insert);
-
-  if (!target) {
-    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
-  }
-
-  target.appendChild(style);
-}
-
-module.exports = insertBySelector;
-
-/***/ }),
-
-/***/ 216:
-/***/ ((module) => {
-
-"use strict";
-
-
-/* istanbul ignore next  */
-function insertStyleElement(options) {
-  var element = document.createElement("style");
-  options.setAttributes(element, options.attributes);
-  options.insert(element, options.options);
-  return element;
-}
-
-module.exports = insertStyleElement;
-
-/***/ }),
-
-/***/ 565:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-/* istanbul ignore next  */
-function setAttributesWithoutAttributes(styleElement) {
-  var nonce =  true ? __webpack_require__.nc : 0;
-
-  if (nonce) {
-    styleElement.setAttribute("nonce", nonce);
-  }
-}
-
-module.exports = setAttributesWithoutAttributes;
-
-/***/ }),
-
-/***/ 795:
-/***/ ((module) => {
-
-"use strict";
-
-
-/* istanbul ignore next  */
-function apply(styleElement, options, obj) {
-  var css = "";
-
-  if (obj.supports) {
-    css += "@supports (".concat(obj.supports, ") {");
-  }
-
-  if (obj.media) {
-    css += "@media ".concat(obj.media, " {");
-  }
-
-  var needLayer = typeof obj.layer !== "undefined";
-
-  if (needLayer) {
-    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
-  }
-
-  css += obj.css;
-
-  if (needLayer) {
-    css += "}";
-  }
-
-  if (obj.media) {
-    css += "}";
-  }
-
-  if (obj.supports) {
-    css += "}";
-  }
-
-  var sourceMap = obj.sourceMap;
-
-  if (sourceMap && typeof btoa !== "undefined") {
-    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
-  } // For old IE
-
-  /* istanbul ignore if  */
-
-
-  options.styleTagTransform(css, styleElement, options.options);
-}
-
-function removeStyleElement(styleElement) {
-  // istanbul ignore if
-  if (styleElement.parentNode === null) {
-    return false;
-  }
-
-  styleElement.parentNode.removeChild(styleElement);
-}
-/* istanbul ignore next  */
-
-
-function domAPI(options) {
-  var styleElement = options.insertStyleElement(options);
-  return {
-    update: function update(obj) {
-      apply(styleElement, options, obj);
-    },
-    remove: function remove() {
-      removeStyleElement(styleElement);
-    }
-  };
-}
-
-module.exports = domAPI;
-
-/***/ }),
-
-/***/ 589:
-/***/ ((module) => {
-
-"use strict";
-
-
-/* istanbul ignore next  */
-function styleTagTransform(css, styleElement) {
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css;
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild);
-    }
-
-    styleElement.appendChild(document.createTextNode(css));
-  }
-}
-
-module.exports = styleTagTransform;
-
-/***/ }),
-
-/***/ 529:
-/***/ ((module) => {
-
-"use strict";
-module.exports = "data:image/svg+xml;utf8,    <svg xmlns=%27http://www.w3.org/2000/svg%27 version=%271.1%27 preserveAspectRatio=%27none%27 viewBox=%270 0 16 16%27>      <path d=%27M1 0 L0 1 L15 16 L16 15 L1 0%27 fill=%27%236e7492%27/>      <path d=%27M16 1 L16 1 L1 16 L0 15 L15 0%27 fill=%27%236e7492%27/>    </svg>";
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	"use strict";
+/******/ 	// The require scope
+/******/ 	var __webpack_require__ = {};
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -1747,68 +26,52 @@ module.exports = "data:image/svg+xml;utf8,    <svg xmlns=%27http://www.w3.org/20
 /******/ 		};
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/global */
-/******/ 	(() => {
-/******/ 		__webpack_require__.g = (function() {
-/******/ 			if (typeof globalThis === 'object') return globalThis;
-/******/ 			try {
-/******/ 				return this || new Function('return this')();
-/******/ 			} catch (e) {
-/******/ 				if (typeof window === 'object') return window;
-/******/ 			}
-/******/ 		})();
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/jsonp chunk loading */
-/******/ 	(() => {
-/******/ 		__webpack_require__.b = document.baseURI || self.location.href;
-/******/ 		
-/******/ 		// object to store loaded and loading chunks
-/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
-/******/ 		var installedChunks = {
-/******/ 			91: 0,
-/******/ 			57: 0
-/******/ 		};
-/******/ 		
-/******/ 		// no chunk on demand loading
-/******/ 		
-/******/ 		// no prefetching
-/******/ 		
-/******/ 		// no preloaded
-/******/ 		
-/******/ 		// no HMR
-/******/ 		
-/******/ 		// no HMR manifest
-/******/ 		
-/******/ 		// no on chunks loaded
-/******/ 		
-/******/ 		// no jsonp function
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/nonce */
-/******/ 	(() => {
-/******/ 		__webpack_require__.nc = undefined;
-/******/ 	})();
-/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
   "default": () => (/* binding */ main)
 });
 
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
+
+function toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
+
+
+function toPropertyKey(t) {
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : i + "";
+}
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+
 function _defineProperty(obj, key, value) {
+  key = toPropertyKey(key);
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value: value,
@@ -1823,26 +86,26 @@ function _defineProperty(obj, key, value) {
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
+function ownKeys(e, r) {
+  var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    enumerableOnly && (symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    })), keys.push.apply(keys, symbols);
+    var o = Object.getOwnPropertySymbols(e);
+    r && (o = o.filter(function (r) {
+      return Object.getOwnPropertyDescriptor(e, r).enumerable;
+    })), t.push.apply(t, o);
   }
-  return keys;
+  return t;
 }
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = null != arguments[i] ? arguments[i] : {};
-    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
-      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+function _objectSpread2(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {};
+    r % 2 ? ownKeys(Object(t), !0).forEach(function (r) {
+      _defineProperty(e, r, t[r]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) {
+      Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
     });
   }
-  return target;
+  return e;
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 function _objectWithoutPropertiesLoose(source, excluded) {
@@ -1874,41 +137,83 @@ function _objectWithoutProperties(source, excluded) {
   }
   return target;
 }
+;// CONCATENATED MODULE: ./src/sdk/constants.ts
+var SECOND = 1000;
+var MINUTE = SECOND * 60;
+var HOUR = MINUTE * 60;
+var DAY = HOUR * 24;
+var DISABLE_REASONS = /*#__PURE__*/function (DISABLE_REASONS) {
+  DISABLE_REASONS["REASON_GENERAL"] = "general";
+  DISABLE_REASONS["REASON_GDPR"] = "gdpr";
+  return DISABLE_REASONS;
+}({});
+var HTTP_ERRORS = {
+  'TRANSACTION_ERROR': 'XHR transaction failed due to an error',
+  'SERVER_MALFORMED_RESPONSE': 'Response from server is malformed',
+  'SERVER_INTERNAL_ERROR': 'Internal error occurred on the server',
+  'SERVER_CANNOT_PROCESS': 'Server was not able to process the request, probably due to error coming from the client',
+  'NO_CONNECTION': 'No internet connectivity',
+  'SKIP': 'Skipping slower attempt',
+  'MISSING_URL': 'Url is not provided'
+};
+var STORAGE_TYPES = /*#__PURE__*/function (STORAGE_TYPES) {
+  STORAGE_TYPES["NO_STORAGE"] = "noStorage";
+  STORAGE_TYPES["INDEXED_DB"] = "indexedDB";
+  STORAGE_TYPES["LOCAL_STORAGE"] = "localStorage";
+  return STORAGE_TYPES;
+}({});
+var ENDPOINTS = {
+  default: 'adjust.com',
+  india: 'adjust.net.in',
+  china: 'adjust.world',
+  world: 'adjust.world',
+  EU: 'eu.adjust.com',
+  TR: 'tr.adjust.com',
+  US: 'us.adjust.com'
+};
+var BASE_URL_PREFIX = 'https://app.';
+var GDPR_URL_PREFIX = 'https://gdpr.';
+var BASE_URL_NO_SUB_DOMAIN_PREFIX = 'https://';
+var PUB_SUB_EVENTS = {
+  WEB_UUID_CREATED: 'activity:web_uuid',
+  ATTRIBUTION_RECEIVED: 'activity:attribution'
+};
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
-function _iterableToArrayLimit(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-  if (_i == null) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _s, _e;
-  try {
-    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
     try {
-      if (!_n && _i["return"] != null) _i["return"]();
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+    } catch (r) {
+      o = !0, n = r;
     } finally {
-      if (_d) throw _e;
+      try {
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
+      } finally {
+        if (o) throw n;
+      }
     }
+    return a;
   }
-  return _arr;
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
 function _arrayLikeToArray(arr, len) {
   if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
   return arr2;
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
@@ -1932,90 +237,6 @@ function _nonIterableRest() {
 
 function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
-
-
-
-
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-}
-;// CONCATENATED MODULE: ./src/sdk/constants.js
-var SECOND = 1000;
-var MINUTE = SECOND * 60;
-var HOUR = MINUTE * 60;
-var DAY = HOUR * 24;
-var REASON_GENERAL = 'general';
-var REASON_GDPR = 'gdpr';
-var HTTP_ERRORS = {
-  'TRANSACTION_ERROR': 'XHR transaction failed due to an error',
-  'SERVER_MALFORMED_RESPONSE': 'Response from server is malformed',
-  'SERVER_INTERNAL_ERROR': 'Internal error occurred on the server',
-  'SERVER_CANNOT_PROCESS': 'Server was not able to process the request, probably due to error coming from the client',
-  'NO_CONNECTION': 'No internet connectivity',
-  'SKIP': 'Skipping slower attempt',
-  'MISSING_URL': 'Url is not provided'
-};
-var STORAGE_TYPES = {
-  NO_STORAGE: 'noStorage',
-  INDEXED_DB: 'indexedDB',
-  LOCAL_STORAGE: 'localStorage'
-};
-var ENDPOINTS = {
-  default: {
-    endpointName: 'Default',
-    app: 'https://app.adjust.com',
-    gdpr: 'https://gdpr.adjust.com'
-  },
-  india: {
-    endpointName: 'Indian',
-    app: 'https://app.adjust.net.in',
-    gdpr: 'https://gdpr.adjust.net.in'
-  },
-  china: {
-    endpointName: 'Chinese',
-    app: 'https://app.adjust.world',
-    gdpr: 'https://gdpr.adjust.world'
-  },
-  EU: {
-    endpointName: 'EU',
-    app: 'https://app.eu.adjust.com',
-    gdpr: 'https://gdpr.eu.adjust.com'
-  },
-  TR: {
-    endpointName: 'TR',
-    app: 'https://app.tr.adjust.com',
-    gdpr: 'https://gdpr.tr.adjust.com'
-  },
-  US: {
-    endpointName: 'US',
-    app: 'https://app.us.adjust.com',
-    gdpr: 'https://gdpr.us.adjust.com'
-  }
-};
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
 }
 ;// CONCATENATED MODULE: ./src/sdk/utilities.ts
 
@@ -2180,13 +401,12 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.6.0" || 0,
+  version: "5.7.0" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
 ;// CONCATENATED MODULE: ./src/sdk/logger.js
 
-var _levels2;
 
 
 /*:: import { type LogOptionsT } from './types';*/
@@ -2208,7 +428,7 @@ var LEVEL_VERBOSE = 'verbose';
  * @type {Object}
  * @private
  */
-var _levels = (_levels2 = {}, _defineProperty(_levels2, LEVEL_NONE, -1), _defineProperty(_levels2, LEVEL_ERROR, 0), _defineProperty(_levels2, LEVEL_WARNING, 1), _defineProperty(_levels2, LEVEL_INFO, 2), _defineProperty(_levels2, LEVEL_VERBOSE, 3), _levels2);
+var _levels = _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty({}, LEVEL_NONE, -1), LEVEL_ERROR, 0), LEVEL_WARNING, 1), LEVEL_INFO, 2), LEVEL_VERBOSE, 3);
 
 /**
  * Spaces placed after log level tag in console to align messages.
@@ -2329,142 +549,80 @@ var Logger = {
   error: _applyLevel('error', LEVEL_ERROR)
 };
 /* harmony default export */ const logger = (Logger);
-;// CONCATENATED MODULE: ./src/sdk/config.js
-
-
-
-/*:: // 
-import { type BaseParamsT, type CustomConfigT, type InitOptionsT, type BaseParamsListT, type BaseParamsMandatoryListT, type CustomConfigListT } from './types';*/
+;// CONCATENATED MODULE: ./src/sdk/config.ts
 
 
 
 
-/**
- * Base parameters set by client
- * - app token
- * - environment
- * - default tracker
- * - external device ID
- *
- * @type {Object}
- * @private
- */
-var _baseParams /*: BaseParamsT*/ = {};
 
-/**
- * Custom config set by client
- * - url override
- * - event deduplication list limit
- *
- * @type {Object}
- * @private
- */
-var _customConfig /*: CustomConfigT*/ = {};
+/** Base parameters set by client */
 
-/**
- * Mandatory fields to set for sdk initialization
- *
- * @type {string[]}
- * @private
- */
-var _mandatory /*: BaseParamsMandatoryListT*/ = ['appToken', 'environment'];
+/** Custom config set by client */
+/*:: export type InitOptions = BaseParams & CustomConfig & {
+  attributionCallback: (eventName: string, attribution: Attribution) => unknown
+}*/
+var _baseParams /*: BaseParams | null*/ = null;
+var _customConfig /*: CustomConfig | null*/ = null;
 
-/**
- * Allowed params to be sent with each request
- *
- * @type {string[]}
- * @private
- */
-var _allowedParams /*: BaseParamsListT*/ = [].concat(_mandatory, ['defaultTracker', 'externalDeviceId']);
+/** Mandatory fields to set for sdk initialization */
+var _mandatory /*: Array<(keyof MandatoryParams)>*/ = ['appToken', 'environment'];
 
-/**
- * Allowed configuration overrides
- *
- * @type {string[]}
- * @private
- */
-var _allowedConfig /*: CustomConfigListT*/ = ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
+/** Allowed params to be sent with each request */
+var _allowedParams /*: Array<(keyof BaseParams)>*/ = [].concat(_mandatory, ['defaultTracker', 'externalDeviceId']);
 
-/**
- * Global configuration object used across the sdk
- *
- * @type {{
- * namespace: string,
- * version: string,
- * sessionWindow: number,
- * sessionTimerWindow: number,
- * requestValidityWindow: number
- * }}
- */
-var _baseConfig = {
-  sessionWindow: 30 * MINUTE,
-  sessionTimerWindow: 60 * SECOND,
-  requestValidityWindow: 28 * DAY
-};
+/** Allowed configuration overrides */
+var _allowedConfig /*: Array<(keyof CustomConfig)>*/ = ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
 
 /**
  * Check of configuration has been initialized
- *
- * @returns {boolean}
  */
 function isInitialised() /*: boolean*/{
   return _mandatory.reduce(function (acc, key) {
-    return acc && !!_baseParams[key];
+    return acc && !!_baseParams && !!_baseParams[key];
   }, true);
 }
 
 /**
- * Get base params set by client
- *
- * @returns {Object}
- */
-function getBaseParams() /*: BaseParamsT*/{
-  return _objectSpread2({}, _baseParams);
-}
-
-/**
  * Set base params and custom config for the sdk to run
- *
- * @param {Object} options
  */
-function set(options /*: InitOptionsT*/) /*: void*/{
+function set(options /*: InitOptions*/) /*: void*/{
   if (hasMissing(options)) {
     return;
   }
-  var filteredParams = [].concat(_toConsumableArray(_allowedParams), _allowedConfig).filter(function (key) {
+  _baseParams = _allowedParams.filter(function (key) {
     return !!options[key];
   }).map(function (key) {
     return [key, options[key]];
-  });
-  _baseParams = filteredParams.filter(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 1),
-      key = _ref2[0];
-    return _allowedParams.indexOf(key) !== -1;
+  }).reduce(function (acc, item) {
+    return reducer(acc, item);
+  }, {});
+  _customConfig = _allowedConfig.filter(function (key) {
+    return !!options[key];
+  }).map(function (key) {
+    return [key, options[key]];
   }).reduce(reducer, {});
-  _customConfig = filteredParams.filter(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 1),
-      key = _ref4[0];
-    return _allowedConfig.indexOf(key) !== -1;
-  }).reduce(reducer, {});
+}
+
+/**
+ * Get base params set by client
+ */
+function getBaseParams() /*: Partial<BaseParams>*/{
+  return _baseParams ? _objectSpread2({}, _baseParams) // intentionally returns a copy
+  : {};
 }
 
 /**
  * Get custom config set by client
- *
- * @returns {Object}
  */
-function getCustomConfig() /*: CustomConfigT*/{
-  return _objectSpread2({}, _customConfig);
+function getCustomConfig() /*: CustomConfig*/{
+  return _customConfig ? _objectSpread2({}, _customConfig) // intentionally returns a copy
+  : {};
 }
 
 /**
  * Check if there are  missing mandatory parameters
- *
- * @param {Object} params
- * @returns {boolean}
- * @private
  */
-function hasMissing(params /*: BaseParamsT*/) /*: boolean*/{
+function hasMissing(params /*: BaseParams*/) /*: boolean*/{
   var missing = _mandatory.filter(function (value) {
     return !params[value];
   });
@@ -2479,44 +637,58 @@ function hasMissing(params /*: BaseParamsT*/) /*: boolean*/{
  * Restore config to its default state
  */
 function destroy() /*: void*/{
-  _baseParams = {};
-  _customConfig = {};
+  _baseParams = null;
+  _customConfig = null;
 }
-var Config = _objectSpread2(_objectSpread2({}, _baseConfig), {}, {
+var Config = {
+  sessionWindow: 30 * MINUTE,
+  sessionTimerWindow: 60 * SECOND,
+  requestValidityWindow: 28 * DAY,
   set: set,
   getBaseParams: getBaseParams,
   getCustomConfig: getCustomConfig,
   isInitialised: isInitialised,
   hasMissing: hasMissing,
   destroy: destroy
-});
-/* harmony default export */ const config = (Config);
+};
+/* harmony default export */ const sdk_config = (Config);
 ;// CONCATENATED MODULE: ./src/sdk/storage/scheme.ts
 
-var _values2;
 
-var StoreName;
-(function (StoreName) {
+
+/**
+ * Field with predefined values
+ */
+
+/**
+ * Field containing a nested one
+ */
+
+/**
+ * Composite key, stored as a field because of IE doesn't support composite keys feature
+ */
+var StoreName = /*#__PURE__*/function (StoreName) {
   StoreName["Queue"] = "queue";
   StoreName["ActivityState"] = "activityState";
   StoreName["GlobalParams"] = "globalParams";
   StoreName["EventDeduplication"] = "eventDeduplication";
-})(StoreName || (StoreName = {}));
-var PreferencesStoreName;
-(function (PreferencesStoreName) {
+  return StoreName;
+}(StoreName || {});
+var PreferencesStoreName = /*#__PURE__*/function (PreferencesStoreName) {
   PreferencesStoreName["Preferences"] = "preferences";
-})(PreferencesStoreName || (PreferencesStoreName = {}));
-var ShortStoreName;
-(function (ShortStoreName) {
+  return PreferencesStoreName;
+}(PreferencesStoreName || {});
+var ShortStoreName = /*#__PURE__*/function (ShortStoreName) {
   ShortStoreName["Queue"] = "q";
   ShortStoreName["ActivityState"] = "as";
   ShortStoreName["GlobalParams"] = "gp";
   ShortStoreName["EventDeduplication"] = "ed";
-})(ShortStoreName || (ShortStoreName = {}));
-var ShortPreferencesStoreName;
-(function (ShortPreferencesStoreName) {
+  return ShortStoreName;
+}(ShortStoreName || {});
+var ShortPreferencesStoreName = /*#__PURE__*/function (ShortPreferencesStoreName) {
   ShortPreferencesStoreName["Preferences"] = "p";
-})(ShortPreferencesStoreName || (ShortPreferencesStoreName = {}));
+  return ShortPreferencesStoreName;
+}(ShortPreferencesStoreName || {});
 var _queueScheme /*: StoreOptions*/ = {
   keyPath: 'timestamp',
   autoIncrement: false,
@@ -2639,7 +811,7 @@ var _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
       keys: {
         reason: {
           key: 'r',
-          values: _defineProperty({}, REASON_GENERAL, 1)
+          values: _defineProperty({}, DISABLE_REASONS.REASON_GENERAL, 1)
         },
         pending: {
           key: 'p',
@@ -2655,7 +827,7 @@ var _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
       keys: {
         reason: {
           key: 'r',
-          values: (_values2 = {}, _defineProperty(_values2, REASON_GENERAL, 1), _defineProperty(_values2, REASON_GDPR, 2), _values2)
+          values: _defineProperty(_defineProperty({}, DISABLE_REASONS.REASON_GENERAL, 1), DISABLE_REASONS.REASON_GDPR, 2)
         },
         pending: {
           key: 'p',
@@ -2886,13 +1058,12 @@ var StoreNamesAndConfigs = _getStoreNames();
   }
 });
 ;// CONCATENATED MODULE: ./src/sdk/storage/types.ts
-var _Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
-var KeyRangeCondition;
-(function (KeyRangeCondition) {
+var KeyRangeCondition = /*#__PURE__*/function (KeyRangeCondition) {
   KeyRangeCondition["LowerBound"] = "lowerBound";
   KeyRangeCondition["UpperBound"] = "upperBound";
-})(KeyRangeCondition || (KeyRangeCondition = {}));
+  return KeyRangeCondition;
+}(KeyRangeCondition || {});
 function valueIsRecord(value /*: StoredValue | Record<string, unknown>*/) /*: value is Record<string, unknown>*/{
   return isObject(value);
 }
@@ -2905,11 +1076,11 @@ function valueIsRecord(value /*: StoredValue | Record<string, unknown>*/) /*: va
 
 
 
-var Direction;
-(function (Direction) {
+var Direction = /*#__PURE__*/function (Direction) {
   Direction["right"] = "right";
   Direction["left"] = "left";
-})(Direction || (Direction = {}));
+  return Direction;
+}(Direction || {});
 /**
  * Get value from the map if available
  */
@@ -2932,6 +1103,10 @@ function _convert(storeName /*: StoreNameType*/, dir /*: Direction*/, key /*: st
   var valuesMap = isPredefinedValuesField(scheme) ? scheme.values : null;
   return [encodedKey, _getValue(valuesMap, value)];
 }
+
+/**
+ * Convert record by defined direction and scheme
+ */
 
 /**
  * Convert record by defined direction and scheme
@@ -3016,13 +1191,14 @@ function _classCallCheck(instance, Constructor) {
   }
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
+
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
     descriptor.configurable = true;
     if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
+    Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
   }
 }
 function _createClass(Constructor, protoProps, staticProps) {
@@ -3034,7 +1210,6 @@ function _createClass(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 ;// CONCATENATED MODULE: ./src/sdk/time.js
-
 /**
  * Prepend zero to be used in certain format
  *
@@ -3126,10 +1301,93 @@ function timePassed(d1 /*: number*/, d2 /*: number*/) /*: number*/{
   return Math.abs(d2 - d1);
 }
 
+;// CONCATENATED MODULE: ./src/sdk/pub-sub.ts
+
+
+/**
+ * List of events with subscribed callbacks
+ */
+var _list /*: Record<string, Array<CallbackWithId>>*/ = {};
+
+/**
+ * Reference to timeout ids so they can be cleared on destroy
+ */
+var _timeoutIds /*: Array<ReturnType<typeof setTimeout>>*/ = [];
+
+/**
+ * Get unique id for the callback to use for unsubscribe
+ */
+function _getId() /*: string*/{
+  return 'id' + Math.random().toString(36).substring(2, 16);
+}
+
+/**
+ * Subscribe to a certain event
+ */
+function subscribe /*:: <T>*/(name /*: string*/, cb /*: (name: string, arg: T) => unknown*/) /*: string*/{
+  var id = _getId();
+  var callback /*: CallbackWithId<T>*/ = {
+    id: id,
+    cb: cb
+  };
+  if (!_list[name]) {
+    _list[name] = [];
+  }
+  _list[name].push(callback);
+  return id;
+}
+
+/**
+ * Unsubscribe particular callback from an event
+ */
+function unsubscribe(id /*: string*/) {
+  if (!id) {
+    return;
+  }
+  entries(_list).some(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      callbacks = _ref2[1];
+    return callbacks.some(function
+      /*:: <T>*/
+    (callback /*: CallbackWithId<T>*/, i /*: number*/) {
+      if (callback.id === id) {
+        callbacks.splice(i, 1);
+      }
+    });
+  });
+}
+
+/**
+ * Publish certain event with optional arguments
+ */
+function publish /*:: <T>*/(name /*: string*/, args /*: T*/) /*: void*/{
+  if (!_list[name]) {
+    return;
+  }
+  _list[name].forEach(function (item /*: CallbackWithId<T>*/) {
+    if (typeof item.cb === 'function') {
+      _timeoutIds.push(setTimeout(function () {
+        return item.cb(name, args);
+      }));
+    }
+  });
+}
+
+/**
+ * Destroy all registered events with their callbacks
+ */
+function pub_sub_destroy() /*: void*/{
+  _timeoutIds.forEach(clearTimeout);
+  _timeoutIds = [];
+  _list = {};
+}
+
 ;// CONCATENATED MODULE: ./src/sdk/activity-state.js
 
 /*:: // 
 import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonRequestParams } from './types';*/
+
+
 
 
 
@@ -3264,7 +1522,7 @@ function _getTimeSpent() /*: number*/{
  */
 function _getSessionLength() /*: number*/{
   var lastActive = _activityState.lastActive;
-  var withinWindow = timePassed(lastActive, Date.now()) < config.sessionWindow;
+  var withinWindow = timePassed(lastActive, Date.now()) < sdk_config.sessionWindow;
   var withOffset = _active || !_active && withinWindow;
   return (_activityState.sessionLength || 0) + (withOffset ? _getOffset() : 0);
 }
@@ -3434,11 +1692,31 @@ function getAttribution() /*: AttributionMapT | null*/{
   }
   return _activityState.attribution;
 }
+function waitForAttribution() /*: Promise<AttributionMapT>*/{
+  if (_activityState.attribution) {
+    return Promise.resolve(_activityState.attribution);
+  }
+  return new Promise(function (resolve) {
+    return subscribe(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, function (_name /*: string*/, attribution /*: AttributionMapT*/) {
+      return resolve(attribution);
+    });
+  });
+}
 function getWebUUID() /*: string*/{
   if (!_started) {
     return null;
   }
   return _activityState.uuid;
+}
+function waitForWebUUID() /*: Promise<string>*/{
+  if (_activityState.uuid) {
+    return Promise.resolve(_activityState.uuid);
+  }
+  return new Promise(function (resolve) {
+    return subscribe(PUB_SUB_EVENTS.WEB_UUID_CREATED, function (_name /*: string*/, webUuid /*: string*/) {
+      return resolve(webUuid);
+    });
+  });
 }
 var ActivityState = {
   get current() {
@@ -3461,114 +1739,11 @@ var ActivityState = {
   updateLastActive: updateLastActive,
   destroy: activity_state_destroy,
   getAttribution: getAttribution,
-  getWebUUID: getWebUUID
+  getWebUUID: getWebUUID,
+  waitForAttribution: waitForAttribution,
+  waitForWebUUID: waitForWebUUID
 };
 /* harmony default export */ const activity_state = (ActivityState);
-;// CONCATENATED MODULE: ./src/sdk/pub-sub.js
-
-
-/*:: type CallbackT<T> = {|
-  id: string,
-  cb: (string, T) => mixed
-|}*/
-/**
- * List of events with subscribed callbacks
- *
- * @type {Object}
- * @private
- */
-var _list = {};
-
-/**
- * Reference to timeout ids so they can be cleared on destroy
- *
- * @type {Array}
- * @private
- */
-var _timeoutIds = [];
-
-/**
- * Get unique id for the callback to use for unsubscribe
- *
- * @returns {string}
- * @private
- */
-function _getId() /*: string*/{
-  return 'id' + Math.random().toString(36).substr(2, 16);
-}
-
-/**
- * Subscribe to a certain event
- *
- * @param {string} name
- * @param {Function} cb
- * @returns {string}
- */
-function subscribe /*:: <T>*/(name /*: string*/, cb /*: $PropertyType<CallbackT<T>, 'cb'>*/) /*: string*/{
-  var id = _getId();
-  var callback /*: CallbackT<T>*/ = {
-    id: id,
-    cb: cb
-  };
-  if (!_list[name]) {
-    _list[name] = [];
-  }
-  _list[name].push(callback);
-  return id;
-}
-
-/**
- * Unsubscribe particular callback from an event
- *
- * @param {string} id
- */
-function unsubscribe(id /*: string*/) /*: void*/{
-  if (!id) {
-    return;
-  }
-  entries(_list).some(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      callbacks = _ref2[1];
-    return callbacks.some(function
-      /*:: <T>*/
-    (callback /*: CallbackT<T>*/, i /*: number*/) {
-      if (callback.id === id) {
-        callbacks.splice(i, 1);
-        return true;
-      }
-    });
-  });
-}
-
-/**
- * Publish certain event with optional arguments
- *
- * @param {string} name
- * @param {*} args
- * @returns {Array}
- */
-function publish /*:: <T>*/(name /*: string*/, args /*: T*/) /*: void*/{
-  if (!_list[name]) {
-    return;
-  }
-  _list[name].forEach(function (item /*: CallbackT<T>*/) {
-    if (typeof item.cb === 'function') {
-      _timeoutIds.push(setTimeout(function () {
-        return item.cb(name, args);
-      }));
-    }
-  });
-}
-
-/**
- * Destroy all registered events with their callbacks
- */
-function pub_sub_destroy() /*: void*/{
-  _timeoutIds.forEach(clearTimeout);
-  _timeoutIds = [];
-  _list = {};
-}
-
 ;// CONCATENATED MODULE: ./src/sdk/storage/quick-storage.ts
 
 
@@ -3584,7 +1759,7 @@ var InMemoryStorage = /*#__PURE__*/function () {
     _classCallCheck(this, InMemoryStorage);
     _defineProperty(this, "items", {});
   }
-  _createClass(InMemoryStorage, [{
+  return _createClass(InMemoryStorage, [{
     key: "getItem",
     value: function getItem(key /*: string*/) /*: string | null*/{
       return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null;
@@ -3600,7 +1775,6 @@ var InMemoryStorage = /*#__PURE__*/function () {
       this.items[key] = value;
     }
   }]);
-  return InMemoryStorage;
 }();
 var QuickStorage = /*#__PURE__*/function () {
   function QuickStorage() {
@@ -3609,8 +1783,6 @@ var QuickStorage = /*#__PURE__*/function () {
     _defineProperty(this, "defaultName", globals.namespace);
     _defineProperty(this, "storageName", this.defaultName);
     _defineProperty(this, "storeNames", scheme_map.storeNames.left);
-    _defineProperty(this, "storesMap", void 0);
-    _defineProperty(this, "storage", void 0);
     this.storesMap = {};
     if (isLocalStorageSupported()) {
       this.storage = window.localStorage;
@@ -3636,7 +1808,7 @@ var QuickStorage = /*#__PURE__*/function () {
   /**
    * Sets custom name to use in data keys and updates existing keys in localStorage
    */
-  _createClass(QuickStorage, [{
+  return _createClass(QuickStorage, [{
     key: "read",
     value:
     /**
@@ -3706,7 +1878,6 @@ var QuickStorage = /*#__PURE__*/function () {
           _this3.storage.setItem("".concat(newName, ".").concat(key), rawData); // Put data into a new store
         }
       });
-
       this.deleteData(true);
       this.storageName = newName;
     }
@@ -3716,42 +1887,23 @@ var QuickStorage = /*#__PURE__*/function () {
       return this.storesMap;
     }
   }]);
-  return QuickStorage;
 }();
 /* harmony default export */ const quick_storage = (new QuickStorage());
-;// CONCATENATED MODULE: ./src/sdk/preferences.js
+;// CONCATENATED MODULE: ./src/sdk/preferences.ts
 
 
 
 
-
-/*:: type SdkDisabledT = {|
-  reason: REASON_GENERAL | REASON_GDPR,
-  pending: boolean
-|}*/
-/*:: type ThirdPartySharingDisabledT = {|
-  reason: REASON_GENERAL,
-  pending: boolean
-|}*/
-/*:: type PreferencesT = {|
-  thirdPartySharingDisabled?: ?ThirdPartySharingDisabledT,
-  sdkDisabled?: ?SdkDisabledT
-|}*/
 /**
  * Name of the store used by preferences
- *
- * @type {string}
- * @private
  */
 var _storeName /*: string*/ = storage_scheme.preferences.name;
 
 /**
  * Local reference to be used for recovering preserved state
- *
- * @type {Object}
- * @private
  */
-var _preferences /*: ?PreferencesT*/ = _getPreferences();
+var _preferences /*: PreferencesT | null*/ = null;
+_preferences = _getPreferences();
 
 /**
  * Get preferences stored in the localStorage
@@ -3759,7 +1911,7 @@ var _preferences /*: ?PreferencesT*/ = _getPreferences();
  * @returns {Object}
  * @private
  */
-function _getPreferences() /*: ?PreferencesT*/{
+function _getPreferences() /*: PreferencesT | null*/{
   if (!_preferences) {
     _setPreferences();
   }
@@ -3780,9 +1932,9 @@ function _setPreferences() /*: void*/{
  *
  * @returns {Object|null}
  */
-function getDisabled() /*: ?SdkDisabledT*/{
+function getDisabled() /*: SdkDisabledT | null*/{
   var preferences = _getPreferences();
-  return preferences ? preferences.sdkDisabled : null;
+  return preferences && preferences.sdkDisabled || null;
 }
 
 /**
@@ -3790,35 +1942,10 @@ function getDisabled() /*: ?SdkDisabledT*/{
  *
  * @param {Object|null} value
  */
-function setDisabled(value /*: ?SdkDisabledT*/) /*: void*/{
+function setDisabled(value /*: SdkDisabledT | null*/) /*: void*/{
   var sdkDisabled = value ? _objectSpread2({}, value) : null;
   quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
     sdkDisabled: sdkDisabled
-  });
-  _setPreferences();
-}
-
-/**
- * Get current third-party-sharing disabled state
- *
- * @returns {Object}
- * @private
- */
-function getThirdPartySharing() /*: ?ThirdPartySharingDisabledT*/{
-  var preferences = _getPreferences();
-  return preferences ? preferences.thirdPartySharingDisabled : null;
-}
-
-/**
- * Set current third-party-sharing disabled state
- *
- * @param {Object=} value
- * @private
- */
-function setThirdPartySharing(value /*: ?ThirdPartySharingDisabledT*/) /*: void*/{
-  var thirdPartySharingDisabled = value ? _objectSpread2({}, value) : null;
-  quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
-    thirdPartySharingDisabled: thirdPartySharingDisabled
   });
   _setPreferences();
 }
@@ -3828,7 +1955,7 @@ function setThirdPartySharing(value /*: ?ThirdPartySharingDisabledT*/) /*: void*
  */
 function reload() /*: void*/{
   var stored /*: PreferencesT*/ = quick_storage.stores[_storeName] || {};
-  var sdkDisabled /*: ?SdkDisabledT*/ = (_preferences || {}).sdkDisabled || null;
+  var sdkDisabled /*: SdkDisabledT | null*/ = (_preferences || {}).sdkDisabled || null;
   if (stored.sdkDisabled && !sdkDisabled) {
     publish('sdk:shutdown');
   }
@@ -3839,7 +1966,7 @@ function reload() /*: void*/{
  * Recover preferences from memory if storage was lost
  */
 function recover() /*: void*/{
-  var stored /*: ?PreferencesT*/ = quick_storage.stores[_storeName];
+  var stored /*: PreferencesT*/ = quick_storage.stores[_storeName];
   if (!stored) {
     quick_storage.stores[_storeName] = _objectSpread2({}, _preferences);
   }
@@ -3851,7 +1978,6 @@ function recover() /*: void*/{
 
 
 
-var indexeddb_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
 
 
@@ -3862,27 +1988,26 @@ var indexeddb_Promise = typeof Promise === 'undefined' ? (__webpack_require__(70
 
 
 
-var Action;
-(function (Action) {
+var Action = /*#__PURE__*/function (Action) {
   Action["add"] = "add";
   Action["put"] = "put";
   Action["get"] = "get";
   Action["list"] = "list";
   Action["clear"] = "clear";
   Action["delete"] = "delete";
-})(Action || (Action = {}));
-var AccessMode;
-(function (AccessMode) {
+  return Action;
+}(Action || {});
+var AccessMode = /*#__PURE__*/function (AccessMode) {
   AccessMode["readonly"] = "readonly";
   AccessMode["readwrite"] = "readwrite";
-})(AccessMode || (AccessMode = {}));
+  return AccessMode;
+}(AccessMode || {});
 var IndexedDBWrapper = /*#__PURE__*/function () {
   function IndexedDBWrapper() {
     _classCallCheck(this, IndexedDBWrapper);
     _defineProperty(this, "dbDefaultName", globals.namespace);
     _defineProperty(this, "dbName", this.dbDefaultName);
     _defineProperty(this, "dbVersion", 1);
-    _defineProperty(this, "idbFactory", void 0);
     _defineProperty(this, "indexedDbConnection", null);
     _defineProperty(this, "notSupportedError", {
       name: 'IDBNotSupported',
@@ -3906,14 +2031,14 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
   /**
    * Sets custom name if provided and migrates database
    */
-  _createClass(IndexedDBWrapper, [{
+  return _createClass(IndexedDBWrapper, [{
     key: "setCustomName",
     value: function setCustomName(customName /*: string*/) /*: Promise<void>*/{
       if (customName && customName.length > 0) {
         this.dbName = "".concat(globals.namespace, "-").concat(customName);
         return this.migrateDb(this.dbDefaultName, this.dbName);
       }
-      return indexeddb_Promise.resolve();
+      return Promise.resolve();
     }
 
     /**
@@ -3928,9 +2053,9 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
       var _this = this;
       return IndexedDBWrapper.isSupported().then(function (supported) {
         if (!supported) {
-          return indexeddb_Promise.reject(_this.notSupportedError);
+          return Promise.reject(_this.notSupportedError);
         } else {
-          return new indexeddb_Promise(function (resolve, reject) {
+          return new Promise(function (resolve, reject) {
             var request = _this.idbFactory.open(name, version);
             if (upgradeCallback) {
               request.onupgradeneeded = function (event) {
@@ -3958,7 +2083,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
     key: "databaseExists",
     value: function databaseExists(name /*: string*/) /*: Promise<boolean>*/{
       var _this2 = this;
-      return new indexeddb_Promise(function (resolve /*: (result: boolean) => void*/) {
+      return new Promise(function (resolve /*: (result: boolean) => void*/) {
         var existed = true;
         _this2.openDatabase(name, function () {
           existed = false;
@@ -4014,7 +2139,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
       // Run clone operations one by one
       return cloneStorePromises.reduce(function (previousTask, currentTask) {
         return previousTask.then(currentTask);
-      }, indexeddb_Promise.resolve());
+      }, Promise.resolve());
     }
 
     /**
@@ -4029,7 +2154,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
       return this.databaseExists(defaultName).then(function (defaultExists) {
         if (defaultExists) {
           // Migration hadn't finished yet
-          return indexeddb_Promise.all([_this4.openDatabase(defaultName, _this4.handleUpgradeNeeded, _this4.dbVersion),
+          return Promise.all([_this4.openDatabase(defaultName, _this4.handleUpgradeNeeded, _this4.dbVersion),
           // Open the default database, migrate version if needed
           _this4.openDatabase(customName, _this4.handleUpgradeNeeded, _this4.dbVersion) // Open or create a new database, migrate version if needed
           ]).then(function (_ref) {
@@ -4109,7 +2234,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
     value: function open() /*: Promise<{ success: boolean }>*/{
       var _this5 = this;
       if (this.indexedDbConnection) {
-        return indexeddb_Promise.resolve({
+        return Promise.resolve({
           success: true
         });
       }
@@ -4192,7 +2317,6 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
       if (action === Action.clear || !target) {
         return null; // No target needed when we clear the whole store
       }
-
       var composite = this.getCompositeKeys(options);
       var needObjectTarget = [Action.add, Action.put].indexOf(action) !== -1;
       if (needObjectTarget) {
@@ -4239,7 +2363,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
         _ref8$mode = _ref8 /*:: */.mode,
         mode = _ref8$mode === void 0 ? AccessMode.readonly : _ref8$mode;
       return this.open().then(function () {
-        return new indexeddb_Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           if (!_this6.indexedDbConnection) {
             reject(_this6.noConnectionError);
           } else {
@@ -4282,13 +2406,13 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
         _ref9$mode = _ref9 /*:: */.mode,
         mode = _ref9$mode === void 0 ? AccessMode.readwrite : _ref9$mode;
       if (!target || target && !target.length) {
-        return indexeddb_Promise.reject({
+        return Promise.reject({
           name: 'NoTargetDefined',
           message: "No array provided to perform ".concat(action, " bulk operation into \"").concat(storeName, "\" store")
         });
       }
       return this.open().then(function () {
-        return new indexeddb_Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           if (!_this7.indexedDbConnection) {
             reject(_this7.noConnectionError);
           } else {
@@ -4340,7 +2464,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
         _ref10$mode = _ref10 /*:: */.mode,
         mode = _ref10$mode === void 0 ? AccessMode.readonly : _ref10$mode;
       return this.open().then(function () {
-        return new indexeddb_Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           if (!_this8.indexedDbConnection) {
             reject(_this8.noConnectionError);
           } else {
@@ -4382,7 +2506,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
     key: "deleteDatabaseByName",
     value: function deleteDatabaseByName(dbName /*: string*/) /*: Promise<void>*/{
       var _this9 = this;
-      return new indexeddb_Promise(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         var request = _this9.idbFactory.deleteDatabase(dbName);
         request.onerror = function (error) {
           return _this9.overrideError(reject, error);
@@ -4542,7 +2666,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
     value: function count(storeName /*: ShortStoreName*/) /*: Promise<number>*/{
       var _this11 = this;
       return this.open().then(function () {
-        return new indexeddb_Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           if (!_this11.indexedDbConnection) {
             reject(_this11.noConnectionError);
           } else {
@@ -4602,14 +2726,10 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
     key: "tryOpen",
     value:
     /**
-     * Cached promise of IndexedDB validation
-     */
-
-    /**
      * Tries to open a temporary database
      */
     function tryOpen(db /*: IDBFactory*/) /*: Promise<boolean>*/{
-      return new indexeddb_Promise(function (resolve) {
+      return new Promise(function (resolve) {
         try {
           var request = db.open(IndexedDBWrapper.dbValidationName);
           request.onsuccess = function () {
@@ -4636,7 +2756,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
         return IndexedDBWrapper.isSupportedPromise;
       } else {
         var notSupportedMessage = 'IndexedDB is not supported in this browser';
-        IndexedDBWrapper.isSupportedPromise = new indexeddb_Promise(function (resolve) {
+        IndexedDBWrapper.isSupportedPromise = new Promise(function (resolve) {
           var indexedDB = IndexedDBWrapper.getIndexedDB();
           var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
           if (!indexedDB || iOS) {
@@ -4665,11 +2785,34 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
       return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
     }
   }]);
-  return IndexedDBWrapper;
 }();
 _defineProperty(IndexedDBWrapper, "dbValidationName", 'validate-db-openable');
+/**
+ * Cached promise of IndexedDB validation
+ */
 _defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
 
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
+
+
+
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
 ;// CONCATENATED MODULE: ./src/sdk/storage/localstorage.ts
 
 
@@ -4677,7 +2820,6 @@ _defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
 
 
 
-var localstorage_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
 
 
@@ -4691,7 +2833,7 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
   function LocalStorageWrapper() {
     _classCallCheck(this, LocalStorageWrapper);
   }
-  _createClass(LocalStorageWrapper, [{
+  return _createClass(LocalStorageWrapper, [{
     key: "open",
     value:
     /**
@@ -4776,9 +2918,9 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
       var options = scheme_map.right[convertStoreName(storeName, Direction.right)];
       return this.open().then(function (open) {
         if (open.status === 'error') {
-          return localstorage_Promise.reject(open.error);
+          return Promise.reject(open.error);
         }
-        return new localstorage_Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           var items /*: Array<StoredRecord>*/ = quick_storage.stores[storeName];
           var keys = _this.getKeys(storeName);
           var lastId = (items[items.length - 1] || {})[options.keyPath] || 0;
@@ -4848,8 +2990,7 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
         return composite.map(function (key) {
           return target[key];
         }).filter(function (value) {
-          return (/*: value is StoredValue*/!valueIsRecord(value)
-          );
+          return /*: value is StoredValue*/!valueIsRecord(value);
         });
       }
       return target[options.keyPath];
@@ -4865,9 +3006,9 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
       var firstOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       return this.open().then(function (open) {
         if (open.status === 'error') {
-          return localstorage_Promise.reject(open.error);
+          return Promise.reject(open.error);
         }
-        return new localstorage_Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           var value = quick_storage.stores[storeName];
           if (value instanceof Array) {
             resolve(firstOnly ? [value[0]] : _this2.sort(value, _this2.getKeys(storeName)));
@@ -5137,10 +3278,10 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
     value: function count(storeName /*: ShortStoreName*/) /*: Promise<number>*/{
       return this.open().then(function (open) {
         if (open.status === 'error') {
-          return localstorage_Promise.reject(open.error);
+          return Promise.reject(open.error);
         }
         var records = quick_storage.stores[storeName];
-        return localstorage_Promise.resolve(records instanceof Array ? records.length : 1);
+        return Promise.resolve(records instanceof Array ? records.length : 1);
       });
     }
 
@@ -5152,9 +3293,9 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
     value: function clear(storeName /*: ShortStoreName*/) /*: Promise<void>*/{
       return this.open().then(function (open) {
         if (open.status === 'error') {
-          return localstorage_Promise.reject(open.error);
+          return Promise.reject(open.error);
         }
-        return new localstorage_Promise(function (resolve) {
+        return new Promise(function (resolve) {
           quick_storage.stores[storeName] = [];
           resolve();
         });
@@ -5178,17 +3319,13 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
     key: "isSupported",
     value:
     /**
-     * Cached promise of LocalStorage validation
-     */
-
-    /**
      * Check if LocalStorage is supported in the current browser
      */
     function isSupported() /*: Promise<boolean>*/{
       if (LocalStorageWrapper.isSupportedPromise) {
         return LocalStorageWrapper.isSupportedPromise;
       } else {
-        LocalStorageWrapper.isSupportedPromise = new localstorage_Promise(function (resolve /*: (value: boolean) => void*/) {
+        LocalStorageWrapper.isSupportedPromise = new Promise(function (resolve /*: (value: boolean) => void*/) {
           var supported = isLocalStorageSupported();
           if (!supported) {
             logger.warn('LocalStorage is not supported in this browser');
@@ -5199,14 +3336,15 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
       return LocalStorageWrapper.isSupportedPromise;
     }
   }]);
-  return LocalStorageWrapper;
 }();
+/**
+ * Cached promise of LocalStorage validation
+ */
 _defineProperty(LocalStorageWrapper, "isSupportedPromise", null);
 
 ;// CONCATENATED MODULE: ./src/sdk/storage/storage.ts
 
 
-var storage_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 
 
 
@@ -5214,12 +3352,14 @@ var storage_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702)
 
 
 
-var StorageType;
-(function (StorageType) {
+
+// eslint-disable-line @typescript-eslint/no-explicit-any
+var StorageType = function (StorageType) {
   StorageType[StorageType["noStorage"] = STORAGE_TYPES.NO_STORAGE] = "noStorage";
   StorageType[StorageType["indexedDB"] = STORAGE_TYPES.INDEXED_DB] = "indexedDB";
   StorageType[StorageType["localStorage"] = STORAGE_TYPES.LOCAL_STORAGE] = "localStorage";
-})(StorageType || (StorageType = {}));
+  return StorageType;
+}(StorageType || {});
 /**
  * Methods to extend
  */
@@ -5265,7 +3405,7 @@ function _getItem(storage /*: IStorage*/, storeName /*: ShortStoreName*/, target
   return storage.getItem(storeName, convertValues(storeName, Direction.left, target)).then(function (record) {
     return convertRecord(storeName, Direction.right, record);
   }).catch(function (error) {
-    return storage_Promise.reject(decodeErrorMessage(storeName, error));
+    return Promise.reject(decodeErrorMessage(storeName, error));
   });
 }
 
@@ -5286,7 +3426,7 @@ function _addItem(storage /*: IStorage*/, storeName /*: ShortStoreName*/, record
   return storage.addItem(storeName, convertedRecord).then(function (target) {
     return convertValues(storeName, Direction.right, target);
   }).catch(function (error) {
-    return storage_Promise.reject(decodeErrorMessage(storeName, error));
+    return Promise.reject(decodeErrorMessage(storeName, error));
   });
 }
 
@@ -5300,7 +3440,7 @@ function _addBulk(storage /*: IStorage*/, storeName /*: ShortStoreName*/, record
       return convertValues(storeName, Direction.right, target);
     });
   }).catch(function (error) {
-    return storage_Promise.reject(decodeErrorMessage(storeName, error));
+    return Promise.reject(decodeErrorMessage(storeName, error));
   });
 }
 
@@ -5420,7 +3560,7 @@ function storage_init(dbName /*: string*/) /*: Promise<Storage>*/{
   if (_initializationPromise !== null) {
     return _initializationPromise;
   } else {
-    _initializationPromise = storage_Promise.all([IndexedDBWrapper.isSupported(), LocalStorageWrapper.isSupported()]).then(function (_ref4) {
+    _initializationPromise = Promise.all([IndexedDBWrapper.isSupported(), LocalStorageWrapper.isSupported()]).then(function (_ref4) {
       var _ref5 = _slicedToArray(_ref4, 2),
         idbSupported = _ref5[0],
         lsSupported = _ref5[1];
@@ -5434,12 +3574,12 @@ function storage_init(dbName /*: string*/) /*: Promise<Storage>*/{
       } else if (lsSupported) {
         type = StorageType.localStorage;
         storage = new LocalStorageWrapper();
-        return storage_Promise.resolve(storage);
+        return Promise.resolve(storage);
       } else {
         logger.error('There is no storage available, app will run with minimum set of features');
         type = StorageType.noStorage;
         storage = null;
-        return storage_Promise.resolve(storage);
+        return Promise.resolve(storage);
       }
     }).then(function () {
       return {
@@ -5457,7 +3597,6 @@ function storage_init(dbName /*: string*/) /*: Promise<Storage>*/{
 ;// CONCATENATED MODULE: ./src/sdk/default-params.js
 
 
-var default_params_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type NavigatorT, type CreatedAtT, type SentAtT, type WebUuidT, type TrackEnabledT, type PlatformT, type LanguageT, type MachineTypeT, type QueueSizeT, type DefaultParamsT } from './types';*/
 
@@ -5589,7 +3728,6 @@ function defaultParams() /*: Promise<DefaultParamsT>*/{
 ;// CONCATENATED MODULE: ./src/sdk/http.js
 
 
-var http_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type UrlT, type DefaultParamsT, type HttpSuccessResponseT, type HttpErrorResponseT, type HttpRequestParamsT, type ErrorCodeT } from './types';*/
 
@@ -5672,6 +3810,9 @@ function _encodeParam(_ref3 /*:: */) /*: string*/{
   if (isObject(value)) {
     encodedValue = encodeURIComponent(JSON.stringify(value) || '');
   }
+  if (key === 'granular_third_party_sharing_options' || key === 'partner_sharing_settings') {
+    return [encodedKey, encodedValue].join(encodeURIComponent('='));
+  }
   return [encodedKey, encodedValue].join('=');
 }
 
@@ -5705,7 +3846,7 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
       return "_".concat($1.toLowerCase());
     });
   };
-  var allParams = entries(_objectSpread2(_objectSpread2(_objectSpread2({}, config.getBaseParams()), defaultParams), params)).map(function (_ref5 /*:: */) {
+  var allParams = entries(_objectSpread2(_objectSpread2(_objectSpread2({}, sdk_config.getBaseParams()), defaultParams), params)).map(function (_ref5 /*:: */) {
     var _ref6 = _slicedToArray(_ref5 /*:: */, 2),
       key = _ref6[0],
       value = _ref6[1];
@@ -5819,7 +3960,7 @@ function _buildXhr(_ref15 /*:: */, defaultParams /*: DefaultParamsT*/) /*: Promi
     }, defaultParams),
     fullUrl = _prepareUrlAndParams2.fullUrl,
     encodedParams = _prepareUrlAndParams2.encodedParams;
-  return new http_Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest();
     xhr.open(method, fullUrl, true);
     _prepareHeaders(xhr, method);
@@ -5869,7 +4010,6 @@ function _interceptSuccess(result /*: HttpSuccessResponseT*/, url) /*: HttpSucce
   var isGdprRequest = isRequest(url, 'gdpr_forget_device');
   var isAttributionRequest = isRequest(url, 'attribution');
   var isSessionRequest = isRequest(url, 'session');
-  var isThirdPartySharingOptOutRequest = isRequest(url, 'disable_third_party_sharing');
   var optedOut = result.tracking_state === 'opted_out';
   if (!isGdprRequest && optedOut) {
     publish('sdk:gdpr-forget-me');
@@ -5880,10 +4020,6 @@ function _interceptSuccess(result /*: HttpSuccessResponseT*/, url) /*: HttpSucce
   }
   if (isSessionRequest) {
     publish('session:finished', result);
-  }
-  if (isThirdPartySharingOptOutRequest) {
-    publish('sdk:third-party-sharing-opt-out');
-    return result;
   }
   return result;
 }
@@ -6076,77 +4212,204 @@ function listeners_destroy() /*: void*/{
   off(window, 'offline', _handleOffline);
 }
 
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createForOfIteratorHelper.js
+
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+  if (!it) {
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return {
+            done: true
+          };
+          return {
+            done: false,
+            value: o[i++]
+          };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F
+      };
+    }
+    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = it.call(o);
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it["return"] != null) it["return"]();
+      } finally {
+        if (didErr) throw err;
+      }
+    }
+  };
+}
 ;// CONCATENATED MODULE: ./src/sdk/url-strategy.ts
 
-var _endpointMap;
 
 
 
-var UrlStrategy;
-(function (UrlStrategy) {
+
+/*:: export interface UrlStrategyConfig {
+  /** The country or countries of data residence, or the endpoints to which you want to send SDK traffic. *-/
+  domains: Array<string>;
+
+  /** Whether the source should prefix a subdomain. *-/
+  useSubdomains: boolean;
+
+  /** Whether the domain should be used for data residency. *-/
+  isDataResidency?: boolean;
+}*/
+function getDefaultUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) {
+  return {
+    domains: [endpoints.default, endpoints.world],
+    useSubdomains: true,
+    isDataResidency: false
+  };
+}
+var UrlStrategy = /*#__PURE__*/function (UrlStrategy) {
   UrlStrategy["Default"] = "default";
   UrlStrategy["India"] = "india";
   UrlStrategy["China"] = "china";
-})(UrlStrategy || (UrlStrategy = {}));
-var DataResidency;
-(function (DataResidency) {
+  return UrlStrategy;
+}(UrlStrategy || {});
+var DataResidency = /*#__PURE__*/function (DataResidency) {
   DataResidency["EU"] = "EU";
   DataResidency["TR"] = "TR";
   DataResidency["US"] = "US";
-})(DataResidency || (DataResidency = {}));
+  return DataResidency;
+}(DataResidency || {});
 function incorrectOptionIgnoredMessage(higherPriority /*: string*/, lowerPriority /*: string*/) {
   logger.warn("Both ".concat(higherPriority, " and ").concat(lowerPriority, " are set in config, ").concat(lowerPriority, " will be ignored"));
 }
 
 /**
- * Returns a map of base URLs or a list of endpoint names depending on SDK configuration
+ * In case if deprecated parameters or no urlStrategy provided returns the most appropriate UrlStrategyConfig,
+ * and `null` otherwise
  */
-function getEndpointPreference() /*: BaseUrlsMap | EndpointName[]*/{
-  var _Config$getCustomConf = config.getCustomConfig(),
+function transfromDeprecatedParamsToUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig | null*/{
+  var _Config$getCustomConf = sdk_config.getCustomConfig(),
     customUrl = _Config$getCustomConf.customUrl,
     urlStrategy = _Config$getCustomConf.urlStrategy,
     dataResidency = _Config$getCustomConf.dataResidency;
   if (customUrl) {
     // If custom URL is set then send all requests there
+    logger.warn('customUrl is deprecated, use urlStrategy instead');
     if (dataResidency || urlStrategy) {
       incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy');
     }
     return {
-      app: customUrl,
-      gdpr: customUrl
+      domains: [customUrl],
+      useSubdomains: false,
+      isDataResidency: false
     };
   }
   if (dataResidency && urlStrategy) {
     incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy');
   }
   if (dataResidency) {
-    return [dataResidency];
+    logger.warn('dataResidency is deprecated, use urlStrategy instead');
+    return {
+      domains: [endpoints[dataResidency]],
+      useSubdomains: true,
+      isDataResidency: true
+    };
   }
-  if (urlStrategy === UrlStrategy.India) {
-    return [UrlStrategy.India, UrlStrategy.Default];
+  if (typeof urlStrategy === 'string') {
+    logger.warn('urlStrategy string literals (\'china\' and \'india\') are deprected, use UrlStartegyConfig instead');
+    if (urlStrategy === UrlStrategy.India) {
+      return {
+        domains: [endpoints.india, endpoints.default],
+        useSubdomains: true,
+        isDataResidency: false
+      };
+    }
+    if (urlStrategy === UrlStrategy.China) {
+      return {
+        domains: [endpoints.china, endpoints.default],
+        useSubdomains: true,
+        isDataResidency: false
+      };
+    }
   }
-  if (urlStrategy === UrlStrategy.China) {
-    return [UrlStrategy.China, UrlStrategy.Default];
+  if (!urlStrategy) {
+    return getDefaultUrlStrategyConfig(endpoints);
   }
-  return [UrlStrategy.Default, UrlStrategy.India, UrlStrategy.China];
+  return null;
 }
-var endpointMap /*: Record<UrlStrategy | DataResidency, BaseUrlsMap>*/ = (_endpointMap = {}, _defineProperty(_endpointMap, UrlStrategy.Default, ENDPOINTS["default"]), _defineProperty(_endpointMap, UrlStrategy.India, ENDPOINTS.india), _defineProperty(_endpointMap, UrlStrategy.China, ENDPOINTS.china), _defineProperty(_endpointMap, DataResidency.EU, ENDPOINTS.EU), _defineProperty(_endpointMap, DataResidency.TR, ENDPOINTS.TR), _defineProperty(_endpointMap, DataResidency.US, ENDPOINTS.US), _endpointMap);
-function getPreferredUrls(endpoints /*: Partial<Record<UrlStrategy, BaseUrlsMap>>*/) /*: BaseUrlsMap[]*/{
-  var preference = getEndpointPreference();
-  if (!Array.isArray(preference)) {
-    return [preference];
-  } else {
-    var res = preference.map(function (strategy) {
-      return endpoints[strategy] || null;
-    }).filter(function (i) {
-      return (/*: i is BaseUrlsMap*/!!i
-      );
-    });
-    return res;
+
+/**
+ * Checks if passed UrlStrategyConfig is valid and returns it, returns `DEFAULT_URL_STRATEGY_CONFIG` otherwise
+ */
+function validateUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig*/{
+  var _Config$getCustomConf2 = sdk_config.getCustomConfig(),
+    urlStrategy = _Config$getCustomConf2.urlStrategy;
+  if (urlStrategy && _typeof(urlStrategy) === 'object') {
+    var config = urlStrategy;
+    if (!config.domains || !Array.isArray(config.domains) || config.domains.length < 1) {
+      logger.warn('Invalid urlStartegy: `domains` should be a non-empty array');
+      return getDefaultUrlStrategyConfig(endpoints);
+    }
+    return {
+      domains: config.domains,
+      useSubdomains: !!config.useSubdomains,
+      isDataResidency: !!config.isDataResidency
+    };
   }
+  return getDefaultUrlStrategyConfig(endpoints);
+}
+function getUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig*/{
+  return transfromDeprecatedParamsToUrlStrategyConfig(endpoints) || validateUrlStrategyConfig(endpoints);
+}
+function getPreferredUrls(endpoints /*: Record<Endpoints, string>*/) /*: BaseUrlsMap[]*/{
+  var urlStrategyConfig /*: UrlStrategyConfig*/ = getUrlStrategyConfig(endpoints);
+  var urls = [];
+
+  //if (urlStrategyConfig.isDataResidency) { }
+  var _iterator = _createForOfIteratorHelper(urlStrategyConfig.domains),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var domain = _step.value;
+      var map = urlStrategyConfig.useSubdomains ? {
+        app: "".concat(BASE_URL_PREFIX).concat(domain),
+        gdpr: "".concat(GDPR_URL_PREFIX).concat(domain)
+      } : {
+        app: "".concat(BASE_URL_NO_SUB_DOMAIN_PREFIX).concat(domain),
+        gdpr: "".concat(BASE_URL_NO_SUB_DOMAIN_PREFIX).concat(domain)
+      };
+      urls.push(map);
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return urls;
 }
 function getBaseUrlsIterator() /*: BaseUrlsIterator*/{
-  var endpoints /*: Partial<Record<UrlStrategy | DataResidency, BaseUrlsMap>>*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : endpointMap;
+  var endpoints /*: Record<Endpoints, string>*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ENDPOINTS;
   var _urls = getPreferredUrls(endpoints);
   var _counter = 0;
   return {
@@ -6172,7 +4435,6 @@ function getBaseUrlsIterator() /*: BaseUrlsIterator*/{
 ;// CONCATENATED MODULE: ./src/sdk/request.js
 
 
-var request_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpContinueCbT, type BackOffStrategyT, type WaitT, type UrlT, type MethodT, type RequestParamsT, type HttpRequestParamsT } from './types';*/
 
@@ -6413,21 +4675,21 @@ var Request = function Request() {
     }
     _wait = wait ? _prepareWait(wait) : _wait;
     if (_skip(wait)) {
-      return request_Promise.resolve({
+      return Promise.resolve({
         status: 'error',
         action: 'CONTINUE',
         response: '',
-        message: HTTP_ERRORS.SKIP,
+        message: HTTP_ERRORS['SKIP'],
         code: 'SKIP'
       });
     }
     if (!_url) {
       logger.error('You must define url for the request to be sent');
-      return request_Promise.reject({
+      return Promise.reject({
         status: 'error',
         action: 'CONTINUE',
         response: '',
-        message: HTTP_ERRORS.MISSING_URL,
+        message: HTTP_ERRORS['MISSING_URL'],
         code: 'MISSING_URL'
       });
     }
@@ -6457,7 +4719,7 @@ var Request = function Request() {
     }
     _attempts.connection += 1;
     logger.log("No internet connectivity, trying request ".concat(options.url, " in ").concat(NO_CONNECTION_WAIT, "ms"));
-    return new request_Promise(function (resolve) {
+    return new Promise(function (resolve) {
       _timeoutId = setTimeout(function () {
         resolve(_preRequest(options));
       }, NO_CONNECTION_WAIT);
@@ -6472,7 +4734,7 @@ var Request = function Request() {
    * @private
    */
   function _request(options /*: HttpRequestParamsT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-    return new request_Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       _timeoutId = setTimeout(function () {
         _startAt = null;
         var filteredParams = entries(options.params).filter(function (_ref4) {
@@ -6667,18 +4929,10 @@ var Request = function Request() {
   };
 };
 /* harmony default export */ const request = (Request);
-;// CONCATENATED MODULE: ./src/sdk/disable.js
+;// CONCATENATED MODULE: ./src/sdk/disable.ts
 
 
 
-
-/*:: type StatusT = 'on' | 'off' | 'paused'*/
-/*:: type ReasonT = REASON_GDPR | REASON_GENERAL*/
-/*:: type PendingT = boolean*/
-/*:: type ReasonMapT = {|
-  reason: ReasonT,
-  pending: PendingT
-|}*/
 /**
  * Get the disable action name depending on the reason
  *
@@ -6687,7 +4941,7 @@ var Request = function Request() {
  * @private
  */
 var _disableReason = function _disableReason(reason /*: ReasonT*/) {
-  return reason === REASON_GDPR ? 'GDPR disable' : 'disable';
+  return reason === DISABLE_REASONS.REASON_GDPR ? 'GDPR disable' : 'disable';
 };
 
 /**
@@ -6722,17 +4976,19 @@ var _logMessages = function _logMessages(reason /*: ReasonT*/) {
 function _disable(_ref /*:: */, expectedAction /*: 'start' | 'finish'*/) /*: boolean*/{
   var reason = _ref /*:: */.reason,
     pending = _ref /*:: */.pending;
-  var disabled = getDisabled() || {};
-  var action = expectedAction === 'start' && disabled.pending ? 'start' : 'finish';
-  var shouldNotStart = expectedAction === 'start' && disabled.reason;
-  var shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending;
+  var _ref2 = getDisabled() || {},
+    savedReason = _ref2.reason,
+    savedPending = _ref2.pending;
+  var action = expectedAction === 'start' && savedPending ? 'start' : 'finish';
+  var shouldNotStart = expectedAction === 'start' && savedReason;
+  var shouldNotFinish = expectedAction === 'finish' && savedReason && !savedPending;
   if (shouldNotStart || shouldNotFinish) {
-    logger.log(_logMessages(disabled.reason)[action].inProgress);
+    logger.log(_logMessages(savedReason)[action].inProgress);
     return false;
   }
   logger.log(_logMessages(reason)[action].done);
   setDisabled({
-    reason: reason || REASON_GENERAL,
+    reason: reason || DISABLE_REASONS.REASON_GENERAL,
     pending: pending
   });
   return true;
@@ -6745,11 +5001,11 @@ function _disable(_ref /*:: */, expectedAction /*: 'start' | 'finish'*/) /*: boo
  * @param {boolean} pending
  * @private
  */
-function disable(reason /*: ?ReasonT*/) /*: boolean*/{
-  var pending /*: ?PendingT*/ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+function disable(reason /*: ReasonT*/) /*: boolean*/{
+  var pending = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   return _disable({
     reason: reason,
-    pending: pending || false
+    pending: pending
   }, 'start');
 }
 
@@ -6770,12 +5026,13 @@ function finish(reason /*: ReasonT*/) /*: boolean*/{
  * Enable sdk if not GDPR forgotten
  */
 function restore() /*: boolean*/{
-  var disabled = getDisabled() || {};
-  if (disabled.reason === REASON_GDPR) {
+  var _ref3 = getDisabled() || {},
+    reason = _ref3.reason;
+  if (reason === DISABLE_REASONS.REASON_GDPR) {
     logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled');
     return false;
   }
-  if (!disabled.reason) {
+  if (!reason) {
     logger.log('Adjust SDK is already enabled');
     return false;
   }
@@ -6793,20 +5050,18 @@ function restore() /*: boolean*/{
  * @returns {string}
  */
 function disable_status() /*: StatusT*/{
-  var disabled = getDisabled() || {};
-  if (disabled.reason === REASON_GENERAL || disabled.reason === REASON_GDPR && !disabled.pending) {
+  var _ref4 = getDisabled() || {},
+    reason = _ref4.reason,
+    pending = _ref4.pending;
+  if (reason === DISABLE_REASONS.REASON_GENERAL || reason === DISABLE_REASONS.REASON_GDPR && !pending) {
     return 'off';
-  } else if (disabled.reason === REASON_GDPR && disabled.pending) {
+  } else if (reason === DISABLE_REASONS.REASON_GDPR && pending) {
     return 'paused';
   }
   return 'on';
 }
 
-;// CONCATENATED MODULE: ./src/sdk/identity.js
-
-var identity_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-/*:: // 
-import { type ActivityStateMapT } from './types';*/
+;// CONCATENATED MODULE: ./src/sdk/identity.ts
 
 
 
@@ -6814,32 +5069,15 @@ import { type ActivityStateMapT } from './types';*/
 
 
 
-/*:: type InterceptT = {|
-  exists: boolean,
-  stored?: ?ActivityStateMapT
-|}*/
-/**
- * Name of the store used by activityState
- *
- * @type {string}
- * @private
- */
-var identity_storeName = 'activityState';
 
-/**
- * Boolean used in start in order to avoid duplicated activity state
- *
- * @type {boolean}
- * @private
- */
+
+/** Name of the store used by activityState */
+var identity_storeName = StoreName.ActivityState;
+
+/** Boolean used in start in order to avoid duplicated activity state */
 var _starting /*: boolean*/ = false;
 
-/**
- * Generate random  uuid v4
- *
- * @returns {string}
- * @private
- */
+/** Generate random  uuid v4 */
 function _generateUuid() /*: string*/{
   var seed = Date.now();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -6849,13 +5087,7 @@ function _generateUuid() /*: string*/{
   });
 }
 
-/**
- * Inspect stored activity state and check if disable needs to be repeated
- *
- * @param {Object=} stored
- * @returns {Object}
- * @private
- */
+/** Inspect stored activity state and check if disable needs to be repeated */
 function _intercept(stored /*: ActivityStateMapT*/) /*: InterceptT*/{
   if (!stored) {
     return {
@@ -6863,9 +5095,7 @@ function _intercept(stored /*: ActivityStateMapT*/) /*: InterceptT*/{
     };
   }
   if (stored.uuid === 'unknown') {
-    disable({
-      reason: REASON_GDPR
-    });
+    disable(DISABLE_REASONS.REASON_GDPR);
     activity_state.destroy();
     return {
       exists: true,
@@ -6881,12 +5111,10 @@ function _intercept(stored /*: ActivityStateMapT*/) /*: InterceptT*/{
 
 /**
  * Cache stored activity state into running memory
- *
- * @returns {Promise}
  */
 function start() /*: Promise<ActivityStateMapT>*/{
   if (_starting) {
-    return identity_Promise.reject({
+    return Promise.reject({
       interrupted: true,
       message: 'Adjust SDK start already in progress'
     });
@@ -6906,27 +5134,27 @@ function start() /*: Promise<ActivityStateMapT>*/{
       _starting = false;
       return activityState;
     });
+  }).then(function (activityState /*: ActivityStateMapT | null*/) {
+    if (activityState) {
+      publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, activityState.uuid);
+    } else {
+      publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, 'gdpr_forgotten');
+    }
+    return activityState;
   });
 }
 
-/**
- * Check if sdk is running at all (totally disabled or inactive activity state)
- *
- * @returns {boolean}
- * @private
- */
+/** Check if sdk is running at all (totally disabled or inactive activity state) */
 function _isLive() {
   return disable_status() !== 'off' && activity_state.isStarted();
 }
 
 /**
  * Persist changes made directly in activity state and update lastActive flag
- *
- * @returns {Promise}
  */
-function persist() /*: Promise<?ActivityStateMapT>*/{
+function persist() /*: Promise<ActivityStateMapT>*/{
   if (!_isLive()) {
-    return identity_Promise.resolve(null);
+    return Promise.resolve(null);
   }
   var activityState = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
     lastActive: Date.now()
@@ -6939,8 +5167,6 @@ function persist() /*: Promise<?ActivityStateMapT>*/{
 /**
  * Sync in-memory activityState with the one from store
  * - should be used when change from another tab is possible and critical
- *
- * @returns {Promise}
  */
 function sync() /*: Promise<ActivityStateMapT>*/{
   return storage.getFirst(identity_storeName).then(function (activityState /*: ActivityStateMapT*/) {
@@ -6963,7 +5189,7 @@ function sync() /*: Promise<ActivityStateMapT>*/{
 /**
  * Clear activity state store - set uuid to be unknown
  */
-function clear() /*: void*/{
+function clear() /*: Promise<unknown>*/{
   var newActivityState = {
     uuid: 'unknown'
   };
@@ -6983,7 +5209,6 @@ function identity_destroy() /*: void*/{
 ;// CONCATENATED MODULE: ./src/sdk/queue.js
 
 
-var queue_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type WaitT, type UrlT, type MethodT, type RequestParamsT, type ActivityStateMapT } from './types';*/
 
@@ -7171,7 +5396,7 @@ function _prepareToSend() /*: Promise<mixed>*/{
   var noPending = !url && !method && !params;
   if (_isOffline && !firstSession || noPending) {
     _current.running = false;
-    return queue_Promise.resolve({});
+    return Promise.resolve({});
   }
   return _request.send({
     url: url,
@@ -7209,10 +5434,10 @@ function run() /*: Promise<mixed>*/{
     cleanUp = _ref7.cleanUp,
     wait = _ref7.wait;
   if (_current.running) {
-    return queue_Promise.resolve({});
+    return Promise.resolve({});
   }
   _current.running = true;
-  var chain = queue_Promise.resolve({});
+  var chain = Promise.resolve({});
   if (cleanUp) {
     chain = chain.then(_cleanUp);
   }
@@ -7254,7 +5479,7 @@ function setOffline(state /*: boolean*/) /*: void*/{
  * @returns {Promise}
  */
 function _cleanUp() /*: Promise<mixed>*/{
-  var upperBound = Date.now() - config.requestValidityWindow;
+  var upperBound = Date.now() - sdk_config.requestValidityWindow;
   return storage.deleteBulk(queue_storeName, upperBound, 'upperBound');
 }
 
@@ -7287,7 +5512,6 @@ function queue_destroy() /*: void*/{
 
 ;// CONCATENATED MODULE: ./src/sdk/global-params.js
 
-var global_params_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type GlobalParamsT, type GlobalParamsMapT } from './types';*/
 
@@ -7339,7 +5563,7 @@ function _omitType(params) /*: Array<GlobalParamsT>*/{
  * @returns {Promise}
  */
 function get() /*: Promise<GlobalParamsMapT>*/{
-  return global_params_Promise.all([storage.filterBy(global_params_storeName, 'callback'), storage.filterBy(global_params_storeName, 'partner')]).then(function (_ref2) {
+  return Promise.all([storage.filterBy(global_params_storeName, 'callback'), storage.filterBy(global_params_storeName, 'partner')]).then(function (_ref2) {
     var _ref3 = _slicedToArray(_ref2, 2),
       callbackParams = _ref3[0],
       partnerParams = _ref3[1];
@@ -7360,7 +5584,7 @@ function get() /*: Promise<GlobalParamsMapT>*/{
 function add(params /*: Array<GlobalParamsT>*/, type /*: TypeT*/) /*: void | Promise<KeysArrayT>*/{
   if (type === undefined) {
     logger.error(_error.long);
-    return global_params_Promise.reject({
+    return Promise.reject({
       message: _error.short
     });
   }
@@ -7373,7 +5597,7 @@ function add(params /*: Array<GlobalParamsT>*/, type /*: TypeT*/) /*: void | Pro
       type: type
     };
   });
-  return global_params_Promise.all([storage.filterBy(global_params_storeName, type), storage.addBulk(global_params_storeName, prepared, true)]).then(function (_ref4) {
+  return Promise.all([storage.filterBy(global_params_storeName, type), storage.addBulk(global_params_storeName, prepared, true)]).then(function (_ref4) {
     var _ref5 = _slicedToArray(_ref4, 2),
       oldParams = _ref5[0],
       newParams = _ref5[1];
@@ -7402,7 +5626,7 @@ function add(params /*: Array<GlobalParamsT>*/, type /*: TypeT*/) /*: void | Pro
 function remove(key /*: string*/, type /*: TypeT*/) /*: void | Promise<KeysT>*/{
   if (type === undefined) {
     logger.error(_error.long);
-    return global_params_Promise.reject({
+    return Promise.reject({
       message: _error.short
     });
   }
@@ -7420,7 +5644,7 @@ function remove(key /*: string*/, type /*: TypeT*/) /*: void | Promise<KeysT>*/{
 function removeAll(type /*: TypeT*/) /*: void | Promise<KeysArrayT>*/{
   if (type === undefined) {
     logger.error(_error.long);
-    return global_params_Promise.reject({
+    return Promise.reject({
       message: _error.short
     });
   }
@@ -7438,7 +5662,6 @@ function global_params_clear() /*: void*/{
 }
 
 ;// CONCATENATED MODULE: ./src/sdk/session.js
-var session_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type DocumentT, type HttpSuccessResponseT, type HttpErrorResponseT, type GlobalParamsMapT, type SessionRequestParamsT } from './types';*/
 
@@ -7506,7 +5729,7 @@ var documentExt = (document /*: DocumentT*/);
 function watch() /*: Promise<mixed>*/{
   _pva = getVisibilityApiAccess();
   if (_running) {
-    return session_Promise.reject({
+    return Promise.reject({
       interrupted: true,
       message: 'Session watch already initiated'
     });
@@ -7518,7 +5741,7 @@ function watch() /*: Promise<mixed>*/{
   }
   if (_pva && documentExt[_pva.hidden]) {
     logger.log('Session request attempt canceled because the tab is still hidden');
-    return session_Promise.resolve({});
+    return Promise.resolve({});
   }
   activity_state.initParams();
   return _checkSession();
@@ -7629,7 +5852,7 @@ function _startTimer() /*: void*/{
   _idInterval = setInterval(function () {
     activity_state.updateSessionOffset();
     return persist();
-  }, config.sessionTimerWindow);
+  }, sdk_config.sessionTimerWindow);
 }
 
 /**
@@ -7686,7 +5909,7 @@ function _checkSession() /*: Promise<mixed>*/{
   var lastInterval = activityState.lastInterval;
   var isEnqueued = activityState.sessionCount > 0;
   var currentWindow = lastInterval * SECOND;
-  if (!isEnqueued || isEnqueued && currentWindow >= config.sessionWindow) {
+  if (!isEnqueued || isEnqueued && currentWindow >= sdk_config.sessionWindow) {
     return _trackSession();
   }
   publish('attribution:check');
@@ -7696,9 +5919,9 @@ function _checkSession() /*: Promise<mixed>*/{
 ;// CONCATENATED MODULE: ./src/sdk/attribution.js
 
 
-var attribution_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type HttpRetryCbT, type AttributionStateT, type AttributionWhiteListT, type ActivityStateMapT, type AttributionMapT } from './types';*/
+
 
 
 
@@ -7768,7 +5991,7 @@ function _isValid(_ref2 /*:: */) /*: boolean*/{
  */
 function _setAttribution(result /*: HttpSuccessResponseT*/) /*: Promise<AttributionStateT>*/{
   if (isEmpty(result) || !_isValid(result) || _isSame(result)) {
-    return attribution_Promise.resolve({
+    return Promise.resolve({
       state: 'same'
     });
   }
@@ -7784,6 +6007,7 @@ function _setAttribution(result /*: HttpSuccessResponseT*/) /*: Promise<Attribut
   });
   return persist().then(function () {
     publish('attribution:change', attribution);
+    publish(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, attribution);
     logger.info('Attribution has been updated');
     return {
       state: 'changed'
@@ -7803,7 +6027,7 @@ function _setAttribution(result /*: HttpSuccessResponseT*/) /*: Promise<Attribut
 function attribution_continue(result /*: HttpSuccessResponseT | HttpErrorResponseT*/, finish /*: HttpFinishCbT*/, retry /*: HttpRetryCbT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT | AttributionStateT>*/{
   if (!result || result && result.status === 'error') {
     finish();
-    return attribution_Promise.resolve({
+    return Promise.resolve({
       state: 'unknown'
     });
   }
@@ -7824,7 +6048,7 @@ function check(sessionResult /*: HttpSuccessResponseT*/) /*: Promise<?ActivitySt
   var activityState = activity_state.current;
   var askIn = (sessionResult || {}).ask_in;
   if (!askIn && (activityState.attribution || !activityState.installed)) {
-    return attribution_Promise.resolve(activityState);
+    return Promise.resolve(activityState);
   }
   attribution_request.send({
     params: _objectSpread2({
@@ -7843,7 +6067,7 @@ function attribution_destroy() /*: void*/{
   attribution_request.clear();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.js
+;// CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.ts
 
 
 
@@ -7890,7 +6114,7 @@ function forget(force /*: boolean*/) /*: boolean*/{
     logger.log(gdpr_forget_device_logMessages[sdkStatus]);
     return false;
   }
-  if (!config.isInitialised()) {
+  if (!sdk_config.isInitialised()) {
     logger.log(gdpr_forget_device_logMessages.pending);
     return true;
   }
@@ -7908,7 +6132,7 @@ function forget(force /*: boolean*/) /*: boolean*/{
  * @returns {boolean}
  */
 function gdpr_forget_device_disable() {
-  return disable(REASON_GDPR, true);
+  return disable(DISABLE_REASONS.REASON_GDPR, true);
 }
 
 /**
@@ -7917,7 +6141,7 @@ function gdpr_forget_device_disable() {
  * @returns {boolean}
  */
 function gdpr_forget_device_finish() {
-  return finish(REASON_GDPR);
+  return finish(DISABLE_REASONS.REASON_GDPR);
 }
 
 /**
@@ -7937,127 +6161,90 @@ function gdpr_forget_device_destroy() /*: void*/{
   gdpr_forget_device_request.clear();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/third-party-sharing.js
+;// CONCATENATED MODULE: ./src/sdk/track-third-party-sharing.ts
 
 
 
 
 
 
-/*:: type ThirdPartySharingStatusT = 'pending' | 'on' | 'off'*/
-/**
- * Log messages used in different scenarios
- *
- * @type {Object}
- * @private
- */
-var third_party_sharing_logMessages = {
-  running: 'Adjust SDK is running pending third-party sharing opt-out request',
-  delayed: 'Adjust SDK will run third-party sharing opt-out request after initialisation',
-  pending: 'Adjust SDK already queued third-party sharing opt-out request',
-  off: 'Third-party sharing opt-out is already done',
-  start: {
-    inProgress: 'Third-party sharing opt-out has already started',
-    done: 'Third-party sharing opt-out is now started'
-  },
-  finish: {
-    inProgress: 'Third-party sharing opt-out has already finished',
-    done: 'Third-party sharing opt-out is now finished'
+/*:: export interface ThirdPartySharingOptions {
+  isEnabled: boolean;
+  granularOptions: Record<string, Record<string, string>>;
+  partnerSharingSettings: Record<string, Record<string, boolean>>;
+}*/
+var ThirdPartySharing = /*#__PURE__*/function () {
+  function ThirdPartySharing(isEnabled /*: boolean*/) {
+    _classCallCheck(this, ThirdPartySharing);
+    _defineProperty(this, "_granularOptions", {});
+    _defineProperty(this, "_partnerSharingSettings", {});
+    if (typeof isEnabled !== 'boolean') {
+      logger.warn("isEnabled should be boolean, converting ".concat(isEnabled, " results ").concat(!!isEnabled));
+    }
+    this._isEnabled = !!isEnabled;
   }
-};
-
-/**
- * Get the status of the third-party sharing
- *
- * @returns {string}
- * @private
- */
-function _status() /*: ThirdPartySharingStatusT*/{
-  var disabled = getThirdPartySharing() || {};
-  if (disabled.reason) {
-    return disabled.pending ? 'pending' : 'off';
+  return _createClass(ThirdPartySharing, [{
+    key: "isEnabled",
+    get: function get() /*: boolean*/{
+      return this._isEnabled;
+    }
+  }, {
+    key: "granularOptions",
+    get: function get() /*: Record<string, Record<string, string>>*/{
+      return this._granularOptions;
+    }
+  }, {
+    key: "partnerSharingSettings",
+    get: function get() /*: Record<string, Record<string, boolean>>*/{
+      return this._partnerSharingSettings;
+    }
+  }, {
+    key: "addGranularOption",
+    value: function addGranularOption(partnerName /*: string*/, key /*: string*/, value /*: string*/) {
+      if (!partnerName || !key || value === undefined) {
+        logger.error('Cannot add granular option, partnerName, key and value are mandatory');
+        return;
+      }
+      var pair = _defineProperty({}, key, value);
+      if (this.granularOptions[partnerName]) {
+        this.granularOptions[partnerName] = _objectSpread2(_objectSpread2({}, this.granularOptions[partnerName]), pair);
+      } else {
+        this.granularOptions[partnerName] = pair;
+      }
+    }
+  }, {
+    key: "addPartnerSharingSetting",
+    value: function addPartnerSharingSetting(partnerName /*: string*/, key /*: string*/, value /*: boolean*/) {
+      if (!partnerName || !key || value === undefined) {
+        logger.error('Cannot add partner sharing setting, partnerName, key and value are mandatory');
+        return;
+      }
+      var pair = _defineProperty({}, key, value);
+      if (this.partnerSharingSettings[partnerName]) {
+        this.partnerSharingSettings[partnerName] = _objectSpread2(_objectSpread2({}, this.partnerSharingSettings[partnerName]), pair);
+      } else {
+        this.partnerSharingSettings[partnerName] = pair;
+      }
+    }
+  }]);
+}();
+function trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOptions*/) {
+  if (!adjustThirdPartySharing || adjustThirdPartySharing.isEnabled === undefined) {
+    logger.error('Can not track third-party sharing without parameters');
+    return;
   }
-  return 'on';
-}
-
-/**
- * Request third-party sharing opt-out request
- *
- * @param {boolean} force
- * @returns {boolean}
- */
-function optOut(force /*: boolean*/) {
-  var status = _status();
-  if (!force && status !== 'on') {
-    logger.log(third_party_sharing_logMessages[status]);
-    return false;
-  }
-  if (!config.isInitialised()) {
-    logger.log(third_party_sharing_logMessages.delayed);
-    return true;
-  }
+  var params = {
+    sharing: adjustThirdPartySharing.isEnabled ? 'enable' : 'disable',
+    granularThirdPartySharingOptions: adjustThirdPartySharing.granularOptions,
+    partnerSharingSettings: adjustThirdPartySharing.partnerSharingSettings
+  };
   push({
-    url: '/disable_third_party_sharing',
-    method: 'POST'
+    url: '/third_party_sharing',
+    method: 'POST',
+    params: params
   });
-  return true;
 }
-
-/**
- * Start or finish thrid-party sharing disable process
- *
- * @param {boolean} pending
- * @param {string} expectedAction
- * @returns {boolean}
- * @private
- */
-function third_party_sharing_disable(pending /*: boolean*/, expectedAction /*: 'start' | 'finish'*/) /*: boolean*/{
-  var disabled = getThirdPartySharing() || {};
-  var action = expectedAction === 'start' && pending ? 'start' : 'finish';
-  var shouldNotStart = expectedAction === 'start' && disabled.reason;
-  var shouldNotFinish = expectedAction === 'finish' && disabled.reason && !disabled.pending;
-  if (shouldNotStart || shouldNotFinish) {
-    logger.log(third_party_sharing_logMessages[action].inProgress);
-    return false;
-  }
-  logger.log(third_party_sharing_logMessages[action].done);
-  setThirdPartySharing({
-    reason: REASON_GENERAL,
-    pending: pending
-  });
-  return true;
-}
-
-/**
- * Start the third-party sharing disable process
- *
- * @returns {boolean}
- */
-function sdk_third_party_sharing_disable() /*: boolean*/{
-  return third_party_sharing_disable(true, 'start');
-}
-
-/**
- * Finalize the third-party sharing process
- *
- * @returns {boolean}
- */
-function third_party_sharing_finish() {
-  return third_party_sharing_disable(false, 'finish');
-}
-
-/**
- * Check if there s pending third-party sharing opt-out request
- */
-function third_party_sharing_check() /*: void*/{
-  if (_status() === 'pending') {
-    logger.log(third_party_sharing_logMessages.running);
-    optOut(true);
-  }
-}
-
 ;// CONCATENATED MODULE: ./src/sdk/scheduler.js
-
 
 /*:: type TaskT = {|
   method: (timestamp?: number) => mixed,
@@ -8108,7 +6295,6 @@ function scheduler_destroy() /*: void*/{
 
 ;// CONCATENATED MODULE: ./src/sdk/event.js
 
-var event_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
 import { type EventParamsT, type EventRequestParamsT, type GlobalParamsMapT, type GlobalKeyValueParamsT } from './types';*/
 
@@ -8208,10 +6394,10 @@ function _getEventDeduplicationIds() /*: Promise<Array<string>>*/{
  * @private
  */
 function _pushEventDeduplicationId(id /*: string*/) /*: Promise<number>*/{
-  var customLimit = config.getCustomConfig().eventDeduplicationListLimit;
+  var customLimit = sdk_config.getCustomConfig().eventDeduplicationListLimit;
   var limit = customLimit > 0 ? customLimit : DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT;
   return storage.count(event_storeName).then(function (count) {
-    var chain = event_Promise.resolve();
+    var chain = Promise.resolve();
     if (count >= limit) {
       var removeLength = count - limit + 1;
       logger.log("Event deduplication list limit has been reached. Oldest ids are about to be removed (".concat(removeLength, " of them)"));
@@ -8237,10 +6423,10 @@ function _pushEventDeduplicationId(id /*: string*/) /*: Promise<number>*/{
  */
 function _checkEventDeduplicationId(id /*: string*/) /*: Promise<?number>*/{
   if (!id) {
-    return event_Promise.resolve();
+    return Promise.resolve();
   }
   return _getEventDeduplicationIds().then(function (list) {
-    return list.indexOf(id) === -1 ? _pushEventDeduplicationId(id) : event_Promise.reject({
+    return list.indexOf(id) === -1 ? _pushEventDeduplicationId(id) : Promise.reject({
       message: "Event won't be tracked, since it was previously tracked with the same deduplication id ".concat(id)
     });
   });
@@ -8257,7 +6443,7 @@ function event_event(params /*: EventParamsT*/, timestamp /*: number*/) /*: Prom
   if (!params || params && (isEmpty(params) || !params.eventToken)) {
     var reason = 'You must provide event token in order to track event';
     logger.error(reason);
-    return event_Promise.reject(reason);
+    return Promise.reject(reason);
   }
   return _checkEventDeduplicationId(params.deduplicationId).then(get).then(function (globalParams) {
     return push({
@@ -8271,7 +6457,7 @@ function event_event(params /*: EventParamsT*/, timestamp /*: number*/) /*: Prom
     if (error && error.message) {
       logger.error(error.message);
     }
-    return event_Promise.reject(error);
+    return Promise.reject(error);
   });
 }
 ;// CONCATENATED MODULE: ./src/sdk/sdk-click.js
@@ -8330,1045 +6516,12 @@ function sdkClick(manualReferrer /*: string*/, timestamp /*: number*/) /*: void*
     });
   }
 }
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/detect-os.ts
-/**
- * Operation systems
- */
-var DeviceOS;
-
-/**
- * Returns one of android, ios, windows, windows-phone or undefined for another OS.
- */
-(function (DeviceOS) {
-  DeviceOS["Android"] = "android";
-  DeviceOS["iOS"] = "ios";
-  DeviceOS["WindowsPC"] = "windows";
-  DeviceOS["WindowsPhone"] = "windows-phone";
-})(DeviceOS || (DeviceOS = {}));
-function getDeviceOS() /*: Maybe<DeviceOS>*/{
-  var _navigator, _navigator$userAgent;
-  var userAgent = (_navigator = navigator) === null || _navigator === void 0 ? void 0 : (_navigator$userAgent = _navigator.userAgent) === null || _navigator$userAgent === void 0 ? void 0 : _navigator$userAgent.toLowerCase();
-  if (!userAgent || userAgent.length < 1) {
-    return undefined;
-  }
-  if (/ipad|iphone|ipod/.test(userAgent)) {
-    return DeviceOS.iOS;
-  }
-
-  // Checking Windows first because Lumia devices could have for example
-  // "Mozilla/5.0 (Windows Mobile 10; Android 8.0.0; Microsoft; Lumia 950XL) ..." user agent
-  if (userAgent.includes('windows')) {
-    if (/phone|mobile/.test(userAgent)) {
-      return DeviceOS.WindowsPhone;
-    }
-    return DeviceOS.WindowsPC;
-  }
-  if (userAgent.includes('android')) {
-    return DeviceOS.Android;
-  }
-  return undefined;
-}
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/utilities.ts
-/**
- * Wraps JSON.parse() with try-catch.
- * Returns parsed object if successfully parsed and null otherwise.
- */
-function parseJson(str /*: string | null*/) /*: any*/{
-  if (!str) {
-    return null;
-  }
-  try {
-    return JSON.parse(str);
-  } catch (error) {
-    return null;
-  }
-}
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/storage/local-storage.ts
-
-
-
-var LocalStorage = /*#__PURE__*/function () {
-  function LocalStorage() {
-    var storageName /*: string*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'adjust-smart-banner';
-    _classCallCheck(this, LocalStorage);
-    this.storageName /*:: */ = storageName /*:: */;
-  }
-  _createClass(LocalStorage, [{
-    key: "setItem",
-    value: function setItem(key /*: string*/, value /*: any*/) /*: void*/{
-      localStorage.setItem("".concat(this.storageName, ".").concat(key), JSON.stringify(value));
-    }
-  }, {
-    key: "getItem",
-    value: function getItem(key /*: string*/) /*: any | null*/{
-      var value = localStorage.getItem("".concat(this.storageName, ".").concat(key));
-      return parseJson(value);
-    }
-  }, {
-    key: "removeItem",
-    value: function removeItem(key /*: string*/) /*: void*/{
-      localStorage.removeItem("".concat(this.storageName, ".").concat(key));
-    }
-  }]);
-  return LocalStorage;
-}();
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/storage/in-memory-storage.ts
-
-
-
-var in_memory_storage_InMemoryStorage = /*#__PURE__*/function () {
-  function InMemoryStorage() {
-    _classCallCheck(this, InMemoryStorage);
-    _defineProperty(this, "items", {});
-  }
-  _createClass(InMemoryStorage, [{
-    key: "setItem",
-    value: function setItem(key /*: string*/, value /*: any*/) /*: void*/{
-      this.items[key] = value;
-    }
-  }, {
-    key: "getItem",
-    value: function getItem(key /*: string*/) /*: any | null*/{
-      return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null;
-    }
-  }, {
-    key: "removeItem",
-    value: function removeItem(key /*: string*/) /*: void*/{
-      delete this.items[key];
-    }
-  }]);
-  return InMemoryStorage;
-}();
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/storage/factory.ts
-
-
-
-
-
-var StorageFactory = /*#__PURE__*/function () {
-  function StorageFactory() {
-    _classCallCheck(this, StorageFactory);
-  }
-  _createClass(StorageFactory, null, [{
-    key: "isLocalStorageSupported",
-    value: function isLocalStorageSupported() /*: boolean*/{
-      try {
-        var uid = new Date().toString();
-        var storage = window.localStorage;
-        storage.setItem(uid, uid);
-        var result = storage.getItem(uid) === uid;
-        storage.removeItem(uid);
-        var support = !!(result && storage);
-        return support;
-      } catch (e) {
-        return false;
-      }
-    }
-  }, {
-    key: "createStorage",
-    value: function createStorage() /*: Storage*/{
-      if (this.isLocalStorageSupported()) {
-        return new LocalStorage();
-      }
-      return new in_memory_storage_InMemoryStorage();
-    }
-  }]);
-  return StorageFactory;
-}();
-
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/api.ts
-var api_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-
-var Position;
-(function (Position) {
-  Position["Top"] = "top";
-  Position["Bottom"] = "bottom";
-})(Position || (Position = {}));
-/*:: export interface SmartBannerData {
-  appId: string;
-  appName: string;
-  position: Position;
-  imageUrl?: string;
-  header: string;
-  description: string;
-  buttonText: string;
-  dismissInterval: number;
-  trackerToken: string;
-  deeplinkPath?: string;
-}*/
-/**
- * Ensures response contains general info: title, description, button_label and tracker_token and converts response
- * to SmartBannerData
- */
-function validate(response /*: Partial<SmartBannerResponse>*/) /*: SmartBannerData | null*/{
-  var title = response.title,
-    description = response.description,
-    button_label = response.button_label,
-    tracker_token = response.tracker_token;
-  if (title && description && button_label && tracker_token) {
-    var _response$app, _response$app2;
-    return {
-      appId: ((_response$app = response.app) === null || _response$app === void 0 ? void 0 : _response$app.default_store_app_id) || '',
-      appName: ((_response$app2 = response.app) === null || _response$app2 === void 0 ? void 0 : _response$app2.name) || '',
-      position: response.position || Position.Bottom,
-      imageUrl: response.image_url,
-      header: title,
-      description: description,
-      buttonText: button_label,
-      trackerToken: tracker_token,
-      deeplinkPath: response.deeplink_path,
-      dismissInterval: 24 * 60 * 60 * 1000 // 1 day in millis before show banner next time
-    };
-  }
-
-  return null;
-}
-function fetchSmartBannerData(webToken /*: string*/, deviceOs /*: DeviceOS*/, network /*: Network*/) /*: Promise<SmartBannerData | null>*/{
-  var path = '/smart_banner';
-  return network.request(path, {
-    'app_web_token': webToken
-  }).then(function (banners) {
-    var banner = banners.find(function (item) {
-      return item.platform === deviceOs;
-    });
-    if (!banner) {
-      return null;
-    }
-    return validate(banner);
-  }).catch(function (error) {
-    logger.error('Network error occurred during loading Smart Banner: ' + JSON.stringify(error));
-    return null;
-  });
-}
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
-var injectStylesIntoStyleTag = __webpack_require__(379);
-var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleDomAPI.js
-var styleDomAPI = __webpack_require__(795);
-var styleDomAPI_default = /*#__PURE__*/__webpack_require__.n(styleDomAPI);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertBySelector.js
-var insertBySelector = __webpack_require__(569);
-var insertBySelector_default = /*#__PURE__*/__webpack_require__.n(insertBySelector);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js
-var setAttributesWithoutAttributes = __webpack_require__(565);
-var setAttributesWithoutAttributes_default = /*#__PURE__*/__webpack_require__.n(setAttributesWithoutAttributes);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertStyleElement.js
-var insertStyleElement = __webpack_require__(216);
-var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleElement);
-// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
-var styleTagTransform = __webpack_require__(589);
-var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/sass-loader/dist/cjs.js!./src/sdk/smart-banner/assets/styles.module.scss
-var styles_module = __webpack_require__(841);
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/assets/styles.module.scss
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (styleTagTransform_default());
-options.setAttributes = (setAttributesWithoutAttributes_default());
-
-      options.insert = insertBySelector_default().bind(null, "head");
-    
-options.domAPI = (styleDomAPI_default());
-options.insertStyleElement = (insertStyleElement_default());
-
-var update = injectStylesIntoStyleTag_default()(styles_module/* default */.Z, options);
-
-
-
-
-       /* harmony default export */ const assets_styles_module = (styles_module/* default */.Z && styles_module/* default.locals */.Z.locals ? styles_module/* default.locals */.Z.locals : undefined);
-
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/assets/template.ts
-
-/* harmony default export */ const template = (function (positionStyle /*: string*/, header /*: string*/, description /*: string*/, buttonText /*: string*/, href /*: string*/) {
-  return "\n  <div class=\"".concat(assets_styles_module.banner, " ").concat(positionStyle, "\">\n    <div class=\"").concat(assets_styles_module.bannerBody, "\">\n      <div class=\"").concat(assets_styles_module.content, "\">\n        <button class=\"").concat(assets_styles_module.dismiss, "\"></button>\n        <div class=\"").concat(assets_styles_module.appIcon, "\">\n          <div class=\"").concat(assets_styles_module.placeholder, "\"></div>\n          <img class=\"").concat(assets_styles_module.image, "\" alt=\"").concat(header, "\">\n        </div>\n        <div class=\"").concat(assets_styles_module.textContainer, "\">\n          <h4 class=\"").concat(assets_styles_module.bannerText, "\">").concat(header, "</h4>\n          <p class=\"").concat(assets_styles_module.bannerText, "\">").concat(description, "</p>\n        </div>\n        <a class=\"").concat(assets_styles_module.action, "\" href=").concat(href, ">").concat(buttonText, "</a>\n      </div>\n    </div>\n  </div>");
-});
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/view/app-icon.ts
-
-
-
-var app_icon_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-var AppIcon = /*#__PURE__*/function () {
-  function AppIcon(bannerData /*: AppIconData*/, image /*: HTMLImageElement*/, placeholder /*: HTMLElement*/) {
-    _classCallCheck(this, AppIcon);
-    _defineProperty(this, "appTraceUrl", function (appId /*: string*/) {
-      return "https://www.apptrace.com/api/app/".concat(appId, "/artwork_url_small");
-    });
-    _defineProperty(this, "appName", void 0);
-    _defineProperty(this, "image", void 0);
-    _defineProperty(this, "placeholder", void 0);
-    this.image = image;
-    this.placeholder = placeholder;
-    this.appName = bannerData.appName;
-    var sources = this.getSources(bannerData);
-    this.showImage(sources);
-  }
-  _createClass(AppIcon, [{
-    key: "getSources",
-    value: function getSources(bannerData /*: AppIconData*/) /*: string[]*/{
-      var sourcesArray /*: string[]*/ = [];
-      if (bannerData.imageUrl) {
-        sourcesArray.push(bannerData.imageUrl);
-      }
-      sourcesArray.push(this.appTraceUrl(bannerData.appId));
-      return sourcesArray;
-    }
-  }, {
-    key: "showImage",
-    value: function showImage(sources /*: string[]*/) /*: Promise<void>*/{
-      var _this = this;
-      var imageLoadingPromise = sources.reduce(function (acc, url) {
-        return acc.catch(function () {
-          return _this.loadImage(url, _this.image);
-        });
-      }, app_icon_Promise.reject());
-      return imageLoadingPromise.then(function () {
-        _this.placeholder.remove();
-      }).catch(function () {
-        _this.image.remove();
-        _this.placeholder.innerText = _this.appName.length ? _this.appName[0].toUpperCase() : '';
-      });
-    }
-  }, {
-    key: "loadImage",
-    value: function loadImage(url /*: string*/, image /*: HTMLImageElement*/) {
-      return new app_icon_Promise(function (resolve, reject) {
-        image.onload = resolve;
-        image.onerror = reject;
-        image.src = url;
-      });
-    }
-  }]);
-  return AppIcon;
-}();
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/view/smart-banner-view.ts
-
-
-
-
-
-
-
-var SmartBannerView = /*#__PURE__*/function () {
-  function SmartBannerView(data /*: SmartBannerData*/, onDismiss /*: () => void*/, endpoint /*: string*/) {
-    _classCallCheck(this, SmartBannerView);
-    _defineProperty(this, "parent", document.body);
-    _defineProperty(this, "banner", void 0);
-    _defineProperty(this, "dismissButton", null);
-    _defineProperty(this, "onDismiss", void 0);
-    this.onDismiss = onDismiss;
-    this.render(data, endpoint);
-  }
-  _createClass(SmartBannerView, [{
-    key: "render",
-    value: function render(bannerData /*: SmartBannerData*/, endpoint /*: string*/) {
-      this.banner = document.createElement('div');
-      this.banner.setAttribute('class', assets_styles_module.bannerContainer);
-      var positionStyle = bannerData.position === Position.Top ? assets_styles_module.stickyToTop : assets_styles_module.stickyToBottom;
-      var query = bannerData.deeplinkPath ? "?deeplink=".concat(encodeURIComponent(bannerData.deeplinkPath)) : '';
-      var href = "".concat(endpoint, "/").concat(bannerData.trackerToken).concat(query);
-      this.banner.innerHTML = template(positionStyle, bannerData.header, bannerData.description, bannerData.buttonText, href);
-      if (bannerData.position === Position.Top) {
-        this.parent.insertBefore(this.banner, this.parent.firstChild);
-      } else {
-        this.parent.appendChild(this.banner);
-      }
-      this.dismissButton = this.getElemByClass(assets_styles_module.dismiss);
-      if (this.dismissButton) {
-        this.dismissButton.addEventListener('click', this.onDismiss);
-      }
-      var appIconPlaceholder = this.getElemByClass(assets_styles_module.placeholder);
-      var appIconImage = this.getElemByClass(assets_styles_module.image);
-      if (appIconImage && appIconPlaceholder) {
-        new AppIcon(bannerData, appIconImage, appIconPlaceholder);
-      }
-    }
-  }, {
-    key: "show",
-    value: function show() {
-      this.banner.hidden = false;
-    }
-  }, {
-    key: "hide",
-    value: function hide() {
-      this.banner.hidden = true;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.removeDismissButtonHandler();
-      this.banner.remove();
-    }
-  }, {
-    key: "removeDismissButtonHandler",
-    value: function removeDismissButtonHandler() {
-      if (this.dismissButton && this.onDismiss) {
-        this.dismissButton.removeEventListener('click', this.onDismiss);
-        this.dismissButton = null;
-      }
-    }
-  }, {
-    key: "getElemByClass",
-    value: function getElemByClass /*:: <T extends Element>*/(classNames /*: string*/) /*: T | null*/{
-      if (this.banner) {
-        var elements = this.banner.getElementsByClassName(classNames);
-        return elements.length > 0 ? elements[0] : null;
-      }
-      return null;
-    }
-  }]);
-  return SmartBannerView;
-}();
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/errors.ts
-/*:: export interface NetworkError {
-  status: number;
-  message: string;
-}*/
-var NoConnectionError /*: NetworkError*/ = {
-  status: 0,
-  message: 'No internet connectivity'
-};
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/xhr-network.ts
-
-
-
-var xhr_network_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-
-
-
-/** Sends HTTP GET request using XMLHttpRequest */
-var XhrNetwork = /*#__PURE__*/function () {
-  function XhrNetwork(origin /*: string*/) {
-    _classCallCheck(this, XhrNetwork);
-    this.origin /*:: ?*/ = origin /*:: ?*/;
-  }
-  _createClass(XhrNetwork, [{
-    key: "endpoint",
-    get: function get() /*: string*/{
-      if (!this.origin) {
-        throw Error('XhrNetwork: Origin not defined');
-      }
-      return this.origin;
-    },
-    set: function set(value /*: string*/) {
-      this.origin = value;
-    }
-
-    /**
-     * Creates an XMLHttpRequest object and sends a GET request with provided encoded URL
-     * @param url encoded URL
-     */
-  }, {
-    key: "xhr",
-    value: function xhr /*:: <T>*/(url /*: string*/) /*: Promise<T>*/{
-      return new xhr_network_Promise(function (resolve, reject /*: (err: NetworkError) => void*/) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url);
-        var headers = [['Client-SDK', "js".concat(globals.version)], ['Content-Type', 'application/json']];
-        headers.forEach(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 2),
-            key = _ref2[0],
-            value = _ref2[1];
-          xhr.setRequestHeader(key, value);
-        });
-        xhr.onerror = function () {
-          return reject(NoConnectionError);
-        };
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState !== 4) {
-            return;
-          }
-          var okStatus = xhr.status >= 200 && xhr.status < 300;
-          var json = parseJson(xhr.responseText);
-          if (xhr.status === 0) {
-            reject(NoConnectionError);
-          } else {
-            if (okStatus) {
-              resolve(json);
-            } else {
-              reject({
-                status: xhr.status,
-                message: json || xhr.responseText || ''
-              });
-            }
-          }
-        };
-        xhr.send();
-      });
-    }
-  }, {
-    key: "encodeParams",
-    value: function encodeParams(params /*: Record<string, Primitive>*/) /*: string*/{
-      return Object.keys(params).map(function (key) {
-        return [encodeURIComponent(key), encodeURIComponent(params[key])].join('=');
-      }).join('&');
-    }
-  }, {
-    key: "request",
-    value: function request /*:: <T>*/(path /*: string*/, params /*: Record<string, Primitive>*/) /*: Promise<T>*/{
-      var encodedParams = params ? "?".concat(this.encodeParams(params)) : '';
-      return this.xhr("".concat(this.endpoint).concat(path).concat(encodedParams));
-    }
-  }]);
-  return XhrNetwork;
-}();
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-  return _setPrototypeOf(o, p);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/inherits.js
-
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  Object.defineProperty(subClass, "prototype", {
-    writable: false
-  });
-  if (superClass) _setPrototypeOf(subClass, superClass);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
-function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/isNativeReflectConstruct.js
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js
-
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized(self);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createSuper.js
-
-
-
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn(this, result);
-  };
-}
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/network.ts
-
-
-var network_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-/*:: export interface Network {
-  endpoint: string;
-  request: <T>(path: string, params?: Record<string, string | number | boolean>) => Promise<T>;
-}*/
-var NetworkDecorator = /*#__PURE__*/function () {
-  function NetworkDecorator(network /*: Network*/) {
-    _classCallCheck(this, NetworkDecorator);
-    this.network /*:: */ = network /*:: */;
-  }
-  _createClass(NetworkDecorator, [{
-    key: "endpoint",
-    get: function get() /*: string*/{
-      return this.network.endpoint;
-    },
-    set: function set(value /*: string*/) {
-      this.network.endpoint = value;
-    }
-  }, {
-    key: "request",
-    value: function request /*:: <T>*/(path /*: string*/, params /*: Record<string, string | number | boolean>*/) /*: Promise<T>*/{
-      return this.network.request(path, params);
-    }
-  }]);
-  return NetworkDecorator;
-}();
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/url-strategy.ts
-
-
-
-var url_strategy_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-
-
-/*:: export type BaseUrlsMap = {
-  endpointName: string;
-  app: string;
-  gdpr: string;
-}*/
-var url_strategy_UrlStrategy = /*#__PURE__*/function () {
-  function UrlStrategy(preferredUrls /*: () => BaseUrlsMap[]*/) {
-    _classCallCheck(this, UrlStrategy);
-    this.preferredUrls /*:: */ = preferredUrls /*:: */;
-  }
-
-  /**
-   * Gets the list of preferred endpoints and wraps `sendRequest` function with iterative retries until available
-   * endpoint found or another error occurred.
-   */
-  _createClass(UrlStrategy, [{
-    key: "retries",
-    value: function retries /*:: <T>*/(sendRequest /*: (urls: BaseUrlsMap) => Promise<T>*/) /*: Promise<T>*/{
-      var _this = this;
-      var attempt = 0;
-      var trySendRequest = function trySendRequest() /*: Promise<T>*/{
-        var preferredUrls = _this.preferredUrls();
-        if (!preferredUrls || preferredUrls.length === 0) {
-          logger.error(UrlStrategy.NoPreferredUrlsDefinedError.message);
-          throw UrlStrategy.NoPreferredUrlsDefinedError;
-        }
-        var urlsMap = preferredUrls[attempt++];
-        return sendRequest(urlsMap).catch(function (reason /*: NetworkError*/) {
-          if (reason === NoConnectionError) {
-            logger.log("Failed to connect ".concat(urlsMap.endpointName, " endpoint"));
-            if (attempt < preferredUrls.length) {
-              logger.log("Trying ".concat(preferredUrls[attempt].endpointName, " one"));
-              return trySendRequest(); // Trying next endpoint
-            }
-          }
-
-          // Another error occurred or we ran out of attempts, re-throw
-          throw reason;
-        });
-      };
-      return trySendRequest();
-    }
-  }]);
-  return UrlStrategy;
-}();
-_defineProperty(url_strategy_UrlStrategy, "NoPreferredUrlsDefinedError", new ReferenceError('UrlStrategy: No preferred URL defined'));
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/blocked-url-bypass.ts
-
-
-var BlockedUrlBypass;
-(function (_BlockedUrlBypass) {
-  var _endpoints;
-  var Default = _BlockedUrlBypass.Default = 'default';
-  var India = _BlockedUrlBypass.India = 'india';
-  var China = _BlockedUrlBypass.China = 'china';
-  /*:: */
-  var endpoints /*:: */ = (_endpoints = {}, _defineProperty(_endpoints, BlockedUrlBypass.Default, ENDPOINTS["default"]), _defineProperty(_endpoints, BlockedUrlBypass.India, ENDPOINTS.india), _defineProperty(_endpoints, BlockedUrlBypass.China, ENDPOINTS.china), _endpoints);
-  var getPreferredUrlsWithOption = function getPreferredUrlsWithOption(endpoints /*:: */, option /*:: */) {
-    if (option === BlockedUrlBypass.India) {
-      return [endpoints[BlockedUrlBypass.India], endpoints[BlockedUrlBypass.Default]];
-    }
-    if (option === BlockedUrlBypass.China) {
-      return [endpoints[BlockedUrlBypass.China], endpoints[BlockedUrlBypass.Default]];
-    }
-    return [endpoints[BlockedUrlBypass.Default], endpoints[BlockedUrlBypass.India], endpoints[BlockedUrlBypass.China]];
-  };
-  function preferredUrlsGetter(option /*:: */) {
-    var endpointsMap /*:: */ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : endpoints;
-    return function () {
-      return getPreferredUrlsWithOption(endpointsMap, option);
-    };
-  }
-  _BlockedUrlBypass.preferredUrlsGetter = preferredUrlsGetter;
-})(BlockedUrlBypass || (BlockedUrlBypass = {}));
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/custom-url.ts
-var CustomUrl;
-(function (_CustomUrl) {
-  var getPreferredUrlsWithOption = function getPreferredUrlsWithOption(customUrl /*:: */) {
-    return [{
-      endpointName: "Custom (".concat(customUrl, ")"),
-      app: customUrl,
-      gdpr: customUrl
-    }];
-  };
-  function preferredUrlsGetter(customUrl /*:: */) {
-    return function () {
-      return getPreferredUrlsWithOption(customUrl);
-    };
-  }
-  _CustomUrl.preferredUrlsGetter = preferredUrlsGetter;
-})(CustomUrl || (CustomUrl = {}));
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/data-residency.ts
-
-
-var data_residency_DataResidency;
-(function (_DataResidency) {
-  var _endpoints;
-  var EU = _DataResidency.EU = 'EU';
-  var TR = _DataResidency.TR = 'TR';
-  var US = _DataResidency.US = 'US';
-  /*:: */
-  var endpoints /*:: */ = (_endpoints = {}, _defineProperty(_endpoints, data_residency_DataResidency.EU, ENDPOINTS.EU), _defineProperty(_endpoints, data_residency_DataResidency.TR, ENDPOINTS.TR), _defineProperty(_endpoints, data_residency_DataResidency.US, ENDPOINTS.US), _endpoints);
-  var getPreferredUrlsWithOption = function getPreferredUrlsWithOption(endpoints /*:: */, option /*:: */) {
-    return [endpoints[option]];
-  };
-  function preferredUrlsGetter(option /*:: */) {
-    var endpointsMap /*:: */ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : endpoints;
-    return function () {
-      return getPreferredUrlsWithOption(endpointsMap, option);
-    };
-  }
-  _DataResidency.preferredUrlsGetter = preferredUrlsGetter;
-})(data_residency_DataResidency || (data_residency_DataResidency = {}));
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-strategy/url-strategy-factory.ts
-
-
-
-
-
-/*:: export type UrlStrategyConfig = {
-  customUrl: string;
-  urlStrategy?: never;
-  dataResidency?: never;
-} | {
-  customUrl?: never;
-  dataResidency: DataResidency.Region;
-  urlStrategy?: never;
-} | {
-  customUrl?: never;
-  dataResidency?: never;
-  urlStrategy?: BlockedUrlBypass.Strategy;
-}*/
-var UrlStrategyFactory;
-(function (_UrlStrategyFactory) {
-  var incorrectOptionIgnoredMessage = function incorrectOptionIgnoredMessage(higherPriority /*:: */, lowerPriority /*:: */) {
-    logger.warn("Both ".concat(higherPriority, " and ").concat(lowerPriority, " are set in config, ").concat(lowerPriority, " will be ignored"));
-  };
-  function create(config /*:: */) /*:: */{
-    var customUrl = config.customUrl,
-      dataResidency = config.dataResidency,
-      urlStrategy = config.urlStrategy;
-    if (customUrl) {
-      if (dataResidency || urlStrategy) {
-        incorrectOptionIgnoredMessage('customUrl', dataResidency ? 'dataResidency' : 'urlStrategy');
-      }
-      return new url_strategy_UrlStrategy(CustomUrl.preferredUrlsGetter(customUrl));
-    } else if (dataResidency) {
-      if (urlStrategy) {
-        incorrectOptionIgnoredMessage('dataResidency', 'urlStrategy');
-      }
-      return new url_strategy_UrlStrategy(data_residency_DataResidency.preferredUrlsGetter(dataResidency));
-    } else {
-      return new url_strategy_UrlStrategy(BlockedUrlBypass.preferredUrlsGetter(urlStrategy));
-    }
-  }
-  _UrlStrategyFactory.create = create;
-})(UrlStrategyFactory || (UrlStrategyFactory = {}));
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/network/url-startegy-network.ts
-
-
-
-
-
-
-var url_startegy_network_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-
-
-
-var NetworkWithUrlStrategy = /*#__PURE__*/function (_NetworkDecorator) {
-  _inherits(NetworkWithUrlStrategy, _NetworkDecorator);
-  var _super = _createSuper(NetworkWithUrlStrategy);
-  function NetworkWithUrlStrategy(network /*: Network*/, _ref /*:: */) {
-    var _this;
-    var urlStrategy = _ref /*:: */.urlStrategy,
-      urlStrategyConfig = _ref /*:: */.urlStrategyConfig;
-    _classCallCheck(this, NetworkWithUrlStrategy);
-    _this = _super.call(this, network);
-    _defineProperty(_assertThisInitialized(_this), "lastSuccessfulEndpoint", void 0);
-    _defineProperty(_assertThisInitialized(_this), "urlStrategy", void 0);
-    _this.urlStrategy = urlStrategy || UrlStrategyFactory.create(urlStrategyConfig);
-    return _this;
-  }
-
-  /**
-   * Returns last succesfull endpoint or default (`https://app.adjust.com`) one
-   */
-  _createClass(NetworkWithUrlStrategy, [{
-    key: "endpoint",
-    get: function get() /*: string*/{
-      return this.lastSuccessfulEndpoint || NetworkWithUrlStrategy.DEFAULT_ENDPOINT;
-    }
-
-    /**
-     * Sends a request to provided path choosing origin with UrlStrategy and caches used origin if it was successfully
-     * reached
-     *
-     * @param path
-     * @param params non-encoded parameters of the request
-     */
-  }, {
-    key: "request",
-    value: function request /*:: <T>*/(path /*: string*/, params /*: Record<string, string | number | boolean>*/) /*: Promise<T>*/{
-      var _this2 = this;
-      return this.urlStrategy.retries(function (baseUrlsMap) {
-        _this2.network.endpoint = baseUrlsMap.app;
-        return _this2.network.request(path, params).then(function (result /*: T*/) {
-          _this2.lastSuccessfulEndpoint = baseUrlsMap.app;
-          return result;
-        }).catch(function (err /*: NetworkError*/) {
-          _this2.lastSuccessfulEndpoint = undefined;
-          throw err;
-        });
-      });
-    }
-  }]);
-  return NetworkWithUrlStrategy;
-}(NetworkDecorator);
-_defineProperty(NetworkWithUrlStrategy, "DEFAULT_ENDPOINT", ENDPOINTS["default"].app);
-(function (_NetworkWithUrlStrategy) {
-  /*:: */
-})(NetworkWithUrlStrategy || (NetworkWithUrlStrategy = {}));
-;// CONCATENATED MODULE: ./src/sdk/smart-banner/smart-banner.ts
-
-
-
-var smart_banner_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
-
-
-
-
-
-
-
-/**
- * Adjust Web SDK Smart Banner
- */
-var SmartBanner = /*#__PURE__*/function () {
-  function SmartBanner(_ref /*:: */, network /*: Network*/) {
-    var webToken = _ref /*:: */.webToken,
-      _ref$logLevel = _ref /*:: */.logLevel,
-      logLevel = _ref$logLevel === void 0 ? 'error' : _ref$logLevel,
-      dataResidency = _ref /*:: */.dataResidency,
-      onCreated = _ref /*:: */.onCreated,
-      onDismissed = _ref /*:: */.onDismissed;
-    _classCallCheck(this, SmartBanner);
-    _defineProperty(this, "STORAGE_KEY_DISMISSED", 'closed');
-    _defineProperty(this, "network", void 0);
-    _defineProperty(this, "storage", void 0);
-    _defineProperty(this, "timer", null);
-    _defineProperty(this, "dataFetchPromise", void 0);
-    _defineProperty(this, "banner", void 0);
-    _defineProperty(this, "onCreated", void 0);
-    _defineProperty(this, "onDismissed", void 0);
-    this.onCreated = onCreated;
-    this.onDismissed = onDismissed;
-    logger.setLogLevel(logLevel);
-    var config = dataResidency ? {
-      dataResidency: dataResidency
-    } : {};
-    this.network = network || new NetworkWithUrlStrategy(new XhrNetwork(), {
-      urlStrategyConfig: config
-    });
-    this.storage = StorageFactory.createStorage();
-    this.init(webToken);
-  }
-
-  /**
-   * Initiate Smart Banner
-   *
-   * @param webToken token used to get data from backend
-   */
-  _createClass(SmartBanner, [{
-    key: "init",
-    value: function init(webToken /*: string*/) {
-      var _this = this;
-      if (this.banner) {
-        logger.error('Smart Banner already exists');
-        return;
-      }
-      if (this.dataFetchPromise) {
-        logger.error('Smart Banner is initialising already');
-        return;
-      }
-      var deviceOs = getDeviceOS();
-      if (!deviceOs) {
-        logger.log('This platform is not one of the targeting ones, Smart Banner will not be shown');
-        return;
-      }
-      this.dataFetchPromise = fetchSmartBannerData(webToken, deviceOs, this.network);
-      this.dataFetchPromise.then(function (bannerData) {
-        _this.dataFetchPromise = null;
-        if (!bannerData) {
-          logger.log("No Smart Banners for ".concat(deviceOs, " platform found"));
-          return;
-        }
-        var whenToShow = _this.getDateToShowAgain(bannerData.dismissInterval);
-        if (Date.now() < whenToShow) {
-          logger.log('Smart Banner was dismissed');
-          _this.scheduleCreation(webToken, whenToShow);
-          return;
-        }
-        logger.log('Creating Smart Banner');
-        _this.banner = new SmartBannerView(bannerData, function () {
-          return _this.dismiss(webToken, bannerData.dismissInterval);
-        }, _this.network.endpoint);
-        logger.log('Smart Banner created');
-        if (_this.onCreated) {
-          _this.onCreated();
-        }
-      });
-    }
-
-    /**
-     * Show Smart Banner
-     */
-  }, {
-    key: "show",
-    value: function show() /*: void*/{
-      var _this2 = this;
-      if (this.banner) {
-        this.banner.show();
-        return;
-      }
-      if (this.dataFetchPromise) {
-        logger.log('Smart Banner will be shown after initialisation finished');
-        this.dataFetchPromise.then(function () {
-          logger.log('Initialisation finished, showing Smart Banner');
-          _this2.show();
-        });
-        return;
-      }
-      logger.error('There is no Smart Banner to show, have you called initialisation?');
-    }
-
-    /**
-     * Hide Smart Banner
-     */
-  }, {
-    key: "hide",
-    value: function hide() /*: void*/{
-      var _this3 = this;
-      if (this.banner) {
-        this.banner.hide();
-        return;
-      }
-      if (this.dataFetchPromise) {
-        logger.log('Smart Banner will be hidden after initialisation finished');
-        this.dataFetchPromise.then(function () {
-          logger.log('Initialisation finished, hiding Smart Banner');
-          _this3.hide();
-        });
-        return;
-      }
-      logger.error('There is no Smart Banner to hide, have you called initialisation?');
-    }
-
-    /**
-     * Removes Smart Banner from DOM
-     */
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.banner) {
-        this.banner.destroy();
-        this.banner = null;
-        logger.log('Smart Banner removed');
-      } else {
-        logger.error('There is no Smart Banner to remove');
-      }
-    }
-
-    /**
-     * Schedules next Smart Banner show and removes banner from DOM
-     */
-  }, {
-    key: "dismiss",
-    value: function dismiss(webToken /*: string*/, dismissInterval /*: number*/) {
-      logger.log('Smart Banner dismissed');
-      this.storage.setItem(this.STORAGE_KEY_DISMISSED, Date.now());
-      var whenToShow = this.getDateToShowAgain(dismissInterval);
-      this.scheduleCreation(webToken, whenToShow);
-      this.destroy();
-      if (this.onDismissed) {
-        this.onDismissed();
-      }
-    }
-
-    /**
-     * Sets a timeout to schedule next Smart Banner show
-     */
-  }, {
-    key: "scheduleCreation",
-    value: function scheduleCreation(webToken /*: string*/, when /*: number*/) {
-      var _this4 = this;
-      if (this.timer) {
-        logger.log('Clearing previously scheduled creation of Smart Banner');
-        clearTimeout(this.timer);
-        this.timer = null;
-      }
-      var delay = when - Date.now();
-      this.timer = setTimeout(function () {
-        _this4.timer = null;
-        _this4.init(webToken);
-      }, delay);
-      logger.log('Smart Banner creation scheduled on ' + new Date(when));
-    }
-
-    /**
-     * Returns date when Smart Banner should be shown again
-     */
-  }, {
-    key: "getDateToShowAgain",
-    value: function getDateToShowAgain(dismissInterval /*: number*/) /*: number*/{
-      var dismissedDate = this.storage.getItem(this.STORAGE_KEY_DISMISSED);
-      if (!dismissedDate || typeof dismissedDate !== 'number') {
-        return Date.now();
-      }
-      return dismissedDate + dismissInterval;
-    }
-  }]);
-  return SmartBanner;
-}();
 ;// CONCATENATED MODULE: ./src/sdk/main.js
 
 
 var _excluded = ["logLevel", "logOutput"];
-var main_Promise = typeof Promise === 'undefined' ? (__webpack_require__(702).Promise) : Promise;
 /*:: // 
-import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type SmartBannerOptionsT, type AttributionMapT } from './types';*/
+import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type AttributionMapT } from './types';*/
 
 
 
@@ -9387,15 +6540,14 @@ import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalPara
 
 
 
-
-/*:: type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT|}>*/
+/*:: type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT |}>*/
 /**
  * In-memory parameters to be used if restarting
  *
  * @type {Object}
  * @private
  */
-var main_options /*: ?InitOptionsT*/ = null;
+var main_options /*: ? InitOptionsT*/ = null;
 
 /**
  * Flag to mark id sdk is in starting process
@@ -9422,13 +6574,6 @@ var _isStarted /*: boolean*/ = false;
 var _isInstalled /*: boolean*/ = false;
 
 /**
- * SmartBanner instance
- *
- * @private
- */
-var _smartBanner /*: ?SmartBanner*/ = null;
-
-/**
  * Initiate the instance with parameters
  *
  * @param {Object} options
@@ -9445,7 +6590,7 @@ function initSdk() /*: void*/{
     logger.error('You already initiated your instance');
     return;
   }
-  if (config.hasMissing(options)) {
+  if (sdk_config.hasMissing(options)) {
     return;
   }
   _isInitialising = true;
@@ -9464,6 +6609,8 @@ function initSdk() /*: void*/{
  * Get user's current attribution information
  *
  * @returns {AttributionMapT|undefined} current attribution information if available or `undefined` otherwise
+ *
+ * @deprecated Use {@link waitForAttribution} instead
  */
 function main_getAttribution() /*: ?AttributionMapT*/{
   return _preCheck('get attribution', function () {
@@ -9472,13 +6619,37 @@ function main_getAttribution() /*: ?AttributionMapT*/{
 }
 
 /**
+ * Returns a promise which resolves when current attribution information becomes available
+ */
+function main_waitForAttribution() /*: Promise<AttributionMapT>*/{
+  return _preCheck('get attribution', function () {
+    return activity_state.waitForAttribution();
+  }, {
+    schedule: false
+  });
+}
+
+/**
  * Get `web_uuid` - a unique ID of user generated per subdomain and per browser
  *
  * @returns {string|undefined} `web_uuid` if available or `undefined` otherwise
+ *
+ * @deprecated Use {@link waitForWebUUID} instead
  */
 function main_getWebUUID() /*: ?string*/{
   return _preCheck('get web_uuid', function () {
     return activity_state.getWebUUID();
+  });
+}
+
+/**
+ * Returns a promise which resolves when `web_uuid` becomes available
+ */
+function main_waitForWebUUID() /*: Promise<string>*/{
+  return _preCheck('get web_uuid', function () {
+    return activity_state.waitForWebUUID();
+  }, {
+    schedule: false
   });
 }
 function setReferrer(referrer /*: string*/) {
@@ -9589,7 +6760,7 @@ function switchBackToOnlineMode() /*: void*/{
  */
 function stop() /*: void*/{
   var done = disable();
-  if (done && config.isInitialised()) {
+  if (done && sdk_config.isInitialised()) {
     _shutdown();
   }
 }
@@ -9613,52 +6784,51 @@ function gdprForgetMe() /*: void*/{
     return;
   }
   done = gdpr_forget_device_disable();
-  if (done && config.isInitialised()) {
+  if (done && sdk_config.isInitialised()) {
     _pause();
   }
 }
 
 /**
  * Disable third party sharing
+ *
+ * @deprecated Use {@link trackThirdPartySharing} instead
  */
 function disableThirdPartySharing() /*: void*/{
-  _preCheck('disable third-party sharing', _handleDisableThirdPartySharing, {
-    schedule: true
+  main_trackThirdPartySharing({
+    isEnabled: false
   });
-}
-function initSmartBanner(options /*: SmartBannerOptionsT*/) /*: void*/{
-  if (_smartBanner) {
-    logger.error('Smart Banner already initialised');
-    return;
-  }
-  _smartBanner = new SmartBanner(options);
-}
-function showSmartBanner() /*: void*/{
-  if (!_smartBanner) {
-    logger.error('Smart Banner is not initialised yet');
-    return;
-  }
-  _smartBanner.show();
-}
-function hideSmartBanner() /*: void*/{
-  if (!_smartBanner) {
-    logger.error('Smart Banner is not initialised yet');
-    return;
-  }
-  _smartBanner.hide();
 }
 
 /**
- * Handle third party sharing disable
- *
- * @private
+ * Track third party sharing
  */
-function _handleDisableThirdPartySharing() /*: void*/{
-  var done = optOut();
-  if (!done) {
-    return;
-  }
-  sdk_third_party_sharing_disable();
+function main_trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOptions*/) /*: void*/{
+  var callback = function callback() {
+    return activity_state.waitForWebUUID() // ensure we have web_uuid to be sent with request
+    .then(function () {
+      return trackThirdPartySharing(adjustThirdPartySharing);
+    });
+  };
+  _preCheck('third-party sharing', callback, {
+    schedule: false,
+    optionalInit: true
+  });
+}
+
+/**  @deprecated */
+function initSmartBanner() /*: void*/{
+  logger.error('function `initSmartBanner` is deprecated');
+}
+
+/**  @deprecated */
+function showSmartBanner() /*: void*/{
+  logger.error('function `showSmartBanner` is deprecated');
+}
+
+/**  @deprecated */
+function hideSmartBanner() /*: void*/{
+  logger.error('function `hideSmartBanner` is deprecated');
 }
 
 /**
@@ -9671,7 +6841,7 @@ function _handleGdprForgetMe() /*: void*/{
     return;
   }
   gdpr_forget_device_finish();
-  main_Promise.all([clear(), global_params_clear(), queue_clear()]).then(main_destroy);
+  Promise.all([clear(), global_params_clear(), queue_clear()]).then(main_destroy);
 }
 
 /**
@@ -9680,7 +6850,7 @@ function _handleGdprForgetMe() /*: void*/{
  * @private
  */
 function _isInitialised() /*: boolean*/{
-  return _isInitialising || config.isInitialised();
+  return _isInitialising || sdk_config.isInitialised();
 }
 
 /**
@@ -9713,7 +6883,7 @@ function _shutdown(async) /*: void*/{
   identity_destroy();
   listeners_destroy();
   storage.destroy();
-  config.destroy();
+  sdk_config.destroy();
 }
 
 /**
@@ -9740,29 +6910,26 @@ function main_continue(activityState /*: ActivityStateMapT*/) /*: Promise<void>*
   logger.log("Adjust SDK is starting with web_uuid set to ".concat(activityState.uuid));
   var isInstalled = activity_state.current.installed;
   gdpr_forget_device_check();
-  if (!isInstalled) {
-    third_party_sharing_check();
-  }
   var sdkStatus = disable_status();
   var message = function message(rest) {
     return "Adjust SDK start has been interrupted ".concat(rest);
   };
   if (sdkStatus === 'off') {
     _shutdown();
-    return main_Promise.reject({
+    return Promise.reject({
       interrupted: true,
       message: message('due to complete async disable')
     });
   }
   if (sdkStatus === 'paused') {
     _pause();
-    return main_Promise.reject({
+    return Promise.reject({
       interrupted: true,
       message: message('due to partial async disable')
     });
   }
   if (_isStarted) {
-    return main_Promise.reject({
+    return Promise.reject({
       interrupted: true,
       message: message('due to multiple synchronous start attempt')
     });
@@ -9775,7 +6942,6 @@ function main_continue(activityState /*: ActivityStateMapT*/) /*: Promise<void>*
     _isStarted = true;
     if (isInstalled) {
       _handleSdkInstalled();
-      third_party_sharing_check();
     }
   });
 }
@@ -9833,14 +6999,13 @@ function _start(options /*: InitOptionsT*/) /*: void*/{
     logger.log('Adjust SDK is disabled, can not start the sdk');
     return;
   }
-  config.set(options);
+  sdk_config.set(options);
   register();
   subscribe('sdk:installed', _handleSdkInstalled);
   subscribe('sdk:shutdown', function () {
     return _shutdown(true);
   });
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe);
-  subscribe('sdk:third-party-sharing-opt-out', third_party_sharing_finish);
   subscribe('attribution:check', function (e, result) {
     return check(result);
   });
@@ -9853,19 +7018,19 @@ function _internalTrackEvent(params /*: EventParamsT*/) {
   if (storage.getType() === STORAGE_TYPES.NO_STORAGE) {
     var reason = 'Adjust SDK can not track event, no storage available';
     logger.log(reason);
-    return main_Promise.reject(reason);
+    return Promise.reject(reason);
   }
   if (disable_status() !== 'on') {
     var _reason = 'Adjust SDK is disabled, can not track event';
     logger.log(_reason);
-    return main_Promise.reject(_reason);
+    return Promise.reject(_reason);
   }
   if (!_isInitialised()) {
     var _reason2 = 'Adjust SDK can not track event, sdk instance is not initialized';
     logger.error(_reason2);
-    return main_Promise.reject(_reason2);
+    return Promise.reject(_reason2);
   }
-  return new main_Promise(function (resolve) {
+  return new Promise(function (resolve) {
     var _callback = function _callback(timestamp) {
       return resolve(event_event(params, timestamp));
     };
@@ -9925,6 +7090,8 @@ var Adjust = {
   initSdk: initSdk,
   getAttribution: main_getAttribution,
   getWebUUID: main_getWebUUID,
+  waitForAttribution: main_waitForAttribution,
+  waitForWebUUID: main_waitForWebUUID,
   setReferrer: setReferrer,
   trackEvent: trackEvent,
   addGlobalCallbackParameters: addGlobalCallbackParameters,
@@ -9939,6 +7106,8 @@ var Adjust = {
   restart: restart,
   gdprForgetMe: gdprForgetMe,
   disableThirdPartySharing: disableThirdPartySharing,
+  trackThirdPartySharing: main_trackThirdPartySharing,
+  ThirdPartySharing: ThirdPartySharing,
   initSmartBanner: initSmartBanner,
   showSmartBanner: showSmartBanner,
   hideSmartBanner: hideSmartBanner,
@@ -9951,8 +7120,6 @@ var Adjust = {
   }
 };
 /* harmony default export */ const main = (Adjust);
-})();
-
 __webpack_exports__ = __webpack_exports__["default"];
 /******/ 	return __webpack_exports__;
 /******/ })()

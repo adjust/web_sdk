@@ -784,27 +784,5 @@ describe('perform api requests', () => {
           mockXHR.onreadystatechange()
         })
     })
-
-    it('broadcasts third-party-sharing-opt-out event when this request is finished', () => {
-
-      prepare({message: 'bla'})
-
-      expect.assertions(2)
-
-      http.default({
-        endpoint: 'app',
-        url: '/disable_third_party_sharing'
-      }).then(result => {
-        expect(result).toEqual({
-          status: 'success'
-        })
-        expect(PubSub.publish).toHaveBeenCalledWith('sdk:third-party-sharing-opt-out')
-      })
-
-      return Utils.flushPromises()
-        .then(() => {
-          mockXHR.onreadystatechange()
-        })
-    })
   })
 })

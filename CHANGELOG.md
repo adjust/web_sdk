@@ -1,3 +1,15 @@
+### Version 5.7.0 (16th August 2024)
+#### Added
+- Added asynchronous function `waitForWebUUID`, returning a Promise which resolves when `web_uuid` becomes available.
+- Added asynchronous function `waitForAttribution`, returning a Promise which resolves when attribution data received from Adjust Backend.
+
+#### Changed
+- [UrlStrategy reworked](https://dev.adjust.com/en/sdk/web/features/privacy#url-strategy).
+- [Third Party Sharing reworked](https://dev.adjust.com/en/sdk/web/features/privacy).
+- Outdated Smart Banners removed.
+
+---
+
 ### Version 5.6.0 (30th January 2023)
 #### Added
 - Added a return of Promise from `trackEvent` method.

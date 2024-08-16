@@ -1,0 +1,32 @@
+<div class="action-block">
+  <div class="action-wrap flex-box-row">
+    <button id="track-tps-button" class="action flex-one">Track Third Party Sharing</button>
+    <button type="button" id="tps-side-form-toggle" class="form-toggle flex-auto">...</button>
+  </div>
+
+  <div class="side-form fixed" id="track-tps">
+    <div class="flex-box-row">
+      <form class="flex-one" id="tps-config-form">
+        <div class="flex-box-column flex-two">
+          <div class="flex-box-row" style="margin-bottom: 10px;">
+            <label for="enable-tps">Enable/disable third party sharing</label>
+            <input type="checkbox" id="enable-tps" checked />
+          </div>
+
+          <div id="tps-granular" class="form-row flex-box-column dynamic-params">
+            <h3>Granular options</h3>
+          </div>
+
+          <div id="tps-partner-sharing" class="form-row flex-box-column dynamic-params">
+            <h3>Partner sharing settings</h3>
+          </div>
+
+        </div>
+
+        <button type="submit">Save and Run</button>
+      </form>
+
+      <pre class="flex-one config" id="tps-config-json"></pre>
+    </div>
+  </div>
+</div>

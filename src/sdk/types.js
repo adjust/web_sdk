@@ -186,12 +186,6 @@ export type InitOptionsT = $ReadOnly<$Shape<{|
   attributionCallback: (string, Object) => mixed
 |}>>
 
-export type BaseParamsListT = $ReadOnlyArray<$Keys<BaseParamsT>>
-
-export type BaseParamsMandatoryListT = $ReadOnlyArray<'appToken' | 'environment'>
-
-export type CustomConfigListT = $ReadOnlyArray<$Keys<CustomConfigT>>
-
 export type CustomErrorT = {|
   name: string,
   message: string,
@@ -229,12 +223,6 @@ export type MachineTypeT = {|
 
 export type QueueSizeT = {|
   queueSize: number
-|}
-
-export type SmartBannerOptionsT = {|
-  webToken: string,
-  logLevel: 'none' | 'error' | 'warning' | 'info' | 'verbose',
-  dataResidency: 'EU' | 'TR' | 'US',
 |}
 
 export type DefaultParamsT = {|
