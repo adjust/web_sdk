@@ -55,7 +55,6 @@ function transfromDeprecatedParamsToUrlStrategyConfig(endpoints: Record<Endpoint
   const { customUrl, urlStrategy, dataResidency } = Config.getCustomConfig()
 
   if (customUrl) { // If custom URL is set then send all requests there
-    // TODO: place a link to updated docs in this warning, see https://adjustcom.atlassian.net/browse/DSM-3071
     Logger.warn('customUrl is deprecated, use urlStrategy instead')
 
     if (dataResidency || urlStrategy) {
@@ -70,15 +69,12 @@ function transfromDeprecatedParamsToUrlStrategyConfig(endpoints: Record<Endpoint
   }
 
   if (dataResidency) {
-    // TODO: place a link to updated docs in this warning, see https://adjustcom.atlassian.net/browse/DSM-3071
     Logger.warn('dataResidency is deprecated, use urlStrategy instead')
 
     return { domains: [endpoints[dataResidency]], useSubdomains: true, isDataResidency: true }
   }
 
   if (typeof urlStrategy === 'string') {
-
-    // TODO: place a link to updated docs in this warning, see https://adjustcom.atlassian.net/browse/DSM-3071
     Logger.warn('urlStrategy string literals (\'china\' and \'india\') are deprected, use UrlStartegyConfig instead')
 
     if (urlStrategy === UrlStrategy.India) {
