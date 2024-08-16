@@ -115,6 +115,17 @@ declare namespace Adjust {
     isDataResidency?: boolean;
   }
 
+  interface ThirdPartySharingOptions {
+    isEnabled: boolean;
+    granularOptions: Record<string, Record<string, string>>;
+    partnerSharingSettings: Record<string, Record<string, boolean>>;
+  }
+
+  class ThirdPartySharing implements ThirdPartySharingOptions {
+    public addGranularOption(partnerName: string, key: string, value: string)
+    public addPartnerSharingSetting(partnerName: string, key: string, value: boolean)
+  }
+
   interface InitOptions {
 
     /** Required to initialise SDK instance, please make sure to provide valid app token. */
@@ -155,7 +166,6 @@ declare namespace Adjust {
     /** Optional. The URL strategy feature allows you to set either:
      * - The country in which Adjust stores your data (data residency).
      * - The endpoint to which the Adjust SDK sends traffic (URL strategy).*/
-    // TODO: place a link to updated docs in this warning, see https://adjustcom.atlassian.net/browse/DSM-3071
     urlStrategy?: UrlStartegyLiterals | UrlStrategyConfig;
 
     /** Optional. A custom namespace for SDK data storage. If not set then default one is used.
@@ -406,8 +416,15 @@ declare namespace Adjust {
    *
    * Marketing Opt-out, which is disabling third-party sharing ability. This method will notify our backed in the same
    * manner as it does for GDPR Forget me.
+   *
+   * @deprecated Use {@link trackThirdPartySharing} instead
    */
   function disableThirdPartySharing(): void
+
+  /**
+   * Track third party sharing
+   */
+  function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions): void
 }
 
 export default Adjust

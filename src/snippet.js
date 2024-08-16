@@ -55,6 +55,7 @@
     'restart',
     'gdprForgetMe',
     'disableThirdPartySharing',
+    'trackThirdPartySharing',
     'initSmartBanner',
     'showSmartBanner',
     'hideSmartBanner',
