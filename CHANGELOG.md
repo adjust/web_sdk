@@ -1,3 +1,9 @@
+### Version 5.7.1 (20th September 2024)
+#### Fixed
+- Type definitions for ThirdPartySharing.
+
+---
+
 ### Version 5.7.0 (16th August 2024)
 #### Added
 - Added asynchronous function `waitForWebUUID`, returning a Promise which resolves when `web_uuid` becomes available.
