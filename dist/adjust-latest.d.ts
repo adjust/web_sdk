@@ -122,8 +122,18 @@ declare namespace Adjust {
   }
 
   class ThirdPartySharing implements ThirdPartySharingOptions {
-    public addGranularOption(partnerName: string, key: string, value: string)
-    public addPartnerSharingSetting(partnerName: string, key: string, value: boolean)
+    private _isEnabled;
+    private _granularOptions;
+    private _partnerSharingSettings;
+
+    constructor(isEnabled: boolean);
+
+    get isEnabled(): boolean;
+    get granularOptions(): Record<string, Record<string, string>>;
+    get partnerSharingSettings(): Record<string, Record<string, boolean>>;
+
+    addGranularOption(partnerName: string, key: string, value: string): void;
+    addPartnerSharingSetting(partnerName: string, key: string, value: boolean): void;
   }
 
   interface InitOptions {
