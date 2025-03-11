@@ -61,6 +61,8 @@ let _isStarted: boolean = false
  */
 let _isInstalled: boolean = false
 
+let _installationCallbackId: string = null
+
 /**
  * Initiate the instance with parameters
  *
@@ -429,7 +431,7 @@ function _handleSdkInstalled() {
 
   flush()
 
-  unsubscribe('sdk:installed')
+  unsubscribe(_installationCallbackId)
 }
 
 /**
@@ -483,7 +485,7 @@ function _start(options: InitOptionsT): void {
 
   listenersRegister()
 
-  subscribe('sdk:installed', _handleSdkInstalled)
+  _installationCallbackId = subscribe('sdk:installed', _handleSdkInstalled)
   subscribe('sdk:shutdown', () => _shutdown(true))
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe)
   subscribe('attribution:check', (e, result) => attributionCheck(result))

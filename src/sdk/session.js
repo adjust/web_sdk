@@ -195,9 +195,9 @@ function _handleSessionRequestFinish (e: string, result: HttpSuccessResponseT | 
   }
 
   ActivityState.updateInstalled()
-  publish('sdk:installed')
 
   return persist()
+    .then(() => publish('sdk:installed'))
 }
 
 /**
