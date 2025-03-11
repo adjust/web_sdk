@@ -5291,7 +5291,9 @@ function _continue(result /*: HttpSuccessResponseT | HttpErrorResponseT*/, finis
   return storage.getFirst(queue_storeName).then(function (pending) {
     return pending ? storage.deleteItem(queue_storeName, pending.timestamp) : null;
   }).then(function () {
-    finish();
+    var _result$response;
+    var isError = result.status === 'error' || ((_result$response = result.response) === null || _result$response === void 0 ? void 0 : _result$response.error);
+    finish(isError);
     _current.running = false;
     return run({
       wait: wait
