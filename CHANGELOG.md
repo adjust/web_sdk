@@ -1,3 +1,10 @@
+### Version 5.7.2 (11th March 2025)
+#### Fixed
+- Fixed an issue with update `installed` flag in SDK data when `setReferrer` method called.
+- Fixed an issue where failed network requests were not indicated.
+
+---
+
 ### Version 5.7.1 (20th September 2024)
 #### Fixed
 - Type definitions for ThirdPartySharing.

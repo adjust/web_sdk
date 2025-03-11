@@ -91,7 +91,8 @@ function _continue (result: HttpSuccessResponseT | HttpErrorResponseT, finish: H
   return Storage.getFirst(_storeName)
     .then(pending => pending ? Storage.deleteItem(_storeName, pending.timestamp) : null)
     .then(() => {
-      finish()
+      const isError = result.status === 'error' || result.response?.error
+      finish(isError)
       _current.running = false
       return run({wait})
     })

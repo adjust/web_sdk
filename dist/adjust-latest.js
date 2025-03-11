@@ -401,7 +401,7 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.7.0" || 0,
+  version: "5.7.2" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
@@ -5291,7 +5291,9 @@ function _continue(result /*: HttpSuccessResponseT | HttpErrorResponseT*/, finis
   return storage.getFirst(queue_storeName).then(function (pending) {
     return pending ? storage.deleteItem(queue_storeName, pending.timestamp) : null;
   }).then(function () {
-    finish();
+    var _result$response;
+    var isError = result.status === 'error' || ((_result$response = result.response) === null || _result$response === void 0 ? void 0 : _result$response.error);
+    finish(isError);
     _current.running = false;
     return run({
       wait: wait
@@ -5836,8 +5838,9 @@ function _handleSessionRequestFinish(e /*: string*/, result /*: HttpSuccessRespo
     return;
   }
   activity_state.updateInstalled();
-  publish('sdk:installed');
-  return persist();
+  return persist().then(function () {
+    return publish('sdk:installed');
+  });
 }
 
 /**
@@ -6572,6 +6575,7 @@ var _isStarted /*: boolean*/ = false;
  * @private
  */
 var _isInstalled /*: boolean*/ = false;
+var _installationCallbackId /*: string*/ = null;
 
 /**
  * Initiate the instance with parameters
@@ -6952,7 +6956,7 @@ function main_continue(activityState /*: ActivityStateMapT*/) /*: Promise<void>*
 function _handleSdkInstalled() {
   _isInstalled = true;
   flush();
-  unsubscribe('sdk:installed');
+  unsubscribe(_installationCallbackId);
 }
 
 /**
@@ -7001,7 +7005,7 @@ function _start(options /*: InitOptionsT*/) /*: void*/{
   }
   sdk_config.set(options);
   register();
-  subscribe('sdk:installed', _handleSdkInstalled);
+  _installationCallbackId = subscribe('sdk:installed', _handleSdkInstalled);
   subscribe('sdk:shutdown', function () {
     return _shutdown(true);
   });
