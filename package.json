@@ -13,10 +13,10 @@
     "lint": "eslint ./src --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
     "test": "TZ=UTC jest",
-    "test:watch": "TZ=UTC jest --watchAll",
     "test:coverage": "TZ=UTC jest --coverage",
-    "test:all": "npm-run-all test lint flow",
-    "flow": "flow status --quiet",
+    "test:ci": "TZ=UTC jest",
+    "test:all": "npm-run-all test:ci lint types:validate",
+    "types:validate": "flow status --quiet && tsc",
     "prepublishOnly": "npm run test:all"
   },
   "main": "dist/adjust-latest.js",
