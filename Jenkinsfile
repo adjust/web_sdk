@@ -11,10 +11,15 @@ pipeline {
   }
   stages {
     stage('Setup') {
-      steps {
-        sh "npm install"
+      when {
+        branch "master"
       }
-     }
+
+      steps {
+        sh "npm ci"
+      }
+    }
+
     stage('Build Production') {
       when {
         branch "master"
