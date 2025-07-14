@@ -2,7 +2,6 @@ name: Inspections
 
 on:
   pull_request:
-    branches: [staging]
 
 jobs:
   inspections:
