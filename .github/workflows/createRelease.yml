@@ -1,0 +1,80 @@
+name: Create Github release
+
+on:
+  push:
+    branches:
+      - master
+    paths: ['./VERSION']
+
+jobs:
+  variables:
+    name: Read VERSION
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.read-file.outputs.version }}
+      changelog: ${{ steps.prepare-changelog.outputs.changelog }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read VERSION file
+        id: read-file
+        run: |
+          echo "version=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Prepare changelog
+        id: prepare-changelog
+        run: |
+          read_changelog() {
+            CHANGELOG_FILE="./CHANGELOG.md"
+
+            change_log_found=false
+            while IFS='' read -r line || [[ -n "$line" ]]; do
+
+            # If it is reading change log for the version
+            if $change_log_found; then
+
+              # If it reads end of change log for the version
+              if [[ "$line" == "---" ]]; then
+                break
+
+              # Append the line
+              else
+                echo "$line"
+              fi
+
+            # If it didn't find changelog for the version
+            else
+
+              # If it is the first line of change log for the version
+              if [[ "$line" =~ "### Version ${{ steps.read-file.outputs.version }}" ]]; then
+                change_log_found=true
+              fi
+            fi
+            done < $CHANGELOG_FILE
+          }
+          changes=$(read_changelog)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$changes" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  prepare-release:
+    name: Publish Github release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [variables]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Push tag
+        run: |
+          git config --local user.name github-actions[bot]
+          git config --local user.email github-actions[bot]@users.noreply.github.com
+          git tag -a ${{ needs.variables.outputs.version }} -m "Version ${{ needs.variables.outputs.version }}"
+          git push origin tag ${{ needs.variables.outputs.version }}
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.variables.outputs.version }}
+          name: Version ${{ needs.variables.outputs.version }}
+          draft: true
+          body: ${{ needs.variables.outputs.changelog }}
+          artifacts: "dist/*"

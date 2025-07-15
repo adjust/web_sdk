@@ -17,7 +17,7 @@
     "test:ci": "TZ=UTC jest",
     "test:all": "npm-run-all test:ci lint types:validate",
     "types:validate": "flow status --quiet && tsc",
-    "prepublishOnly": "npm run test:all"
+    "publish:sync-repos": "git fetch --all && git push public origin/master:refs/remotes/public/v$npm_package_version"
   },
   "main": "dist/adjust-latest.js",
   "types": "dist/adjust-latest.d.ts",
