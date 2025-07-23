@@ -68,8 +68,8 @@ jobs:
         run: |
           git config --local user.name github-actions[bot]
           git config --local user.email github-actions[bot]@users.noreply.github.com
-          git tag -a ${{ needs.variables.outputs.version }} -m "Version ${{ needs.variables.outputs.version }}"
-          git push origin tag ${{ needs.variables.outputs.version }}
+          git tag -a v${{ needs.variables.outputs.version }} -m "Version ${{ needs.variables.outputs.version }}"
+          git push origin tag v${{ needs.variables.outputs.version }}
 
       - uses: ncipollo/release-action@v1
         with:
