@@ -9,6 +9,7 @@ on:
 jobs:
   variables:
     name: Read VERSION
+    if: github.repository == 'adjust/web_sdk'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.read-file.outputs.version }}
@@ -58,6 +59,7 @@ jobs:
 
   prepare-release:
     name: Publish Github release
+    if: github.repository == 'adjust/web_sdk'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -74,7 +76,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{ needs.variables.outputs.version }}
-          name: Version ${{ needs.variables.outputs.version }}
           draft: true
+          name: Version ${{ needs.variables.outputs.version }}
           body: ${{ needs.variables.outputs.changelog }}
           artifacts: "dist/*"

@@ -1,4 +1,4 @@
-name: Create bump version pull request
+name: Create new version pull request
 
 on:
   push:
@@ -11,6 +11,7 @@ permissions:
 jobs:
   create-pull-requesst:
     name: Create pull request
+    if: github.repository == 'adjust/web_sdk'
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
