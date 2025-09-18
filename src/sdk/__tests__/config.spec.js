@@ -31,7 +31,7 @@ describe('test global config', () => {
         expect(Config.default.getBaseParams()).toEqual({})
         expect(Config.default.getCustomConfig()).toEqual({})
 
-        Config.default.set({appToken: 'bla'})
+        Config.default.set({ appToken: 'bla' })
 
         expect(Logger.default.error).toHaveBeenCalledWith('You must define environment')
         expect(Config.default.isInitialised()).toBeFalsy()
@@ -143,6 +143,82 @@ describe('test global config', () => {
         expect(Config.default.isInitialised()).toBeFalsy()
         expect(Config.default.getBaseParams()).toEqual({})
         expect(Config.default.getCustomConfig()).toEqual({})
+      })
+
+      describe('config validation', () => {
+        beforeAll(() => {
+          jest.spyOn(Logger.default, 'error')
+        })
+
+        const appOptions = {
+          appToken: '123abc',
+          environment: 'sandbox'
+        }
+
+        it('does not log error when storeInfo contains both storeName and storeAppId', () => {
+          Config.default.set({
+            ...appOptions,
+            storeInfo: {
+              storeName: 'NameOfStore',
+              storeAppId: '12345'
+            }
+          })
+
+          expect(Logger.default.error).not.toHaveBeenCalled()
+          expect(Config.default.isInitialised()).toBeTruthy()
+        })
+
+        it('does not log error when storeInfo contains only storeName', () => {
+          Config.default.set({
+            ...appOptions,
+            storeInfo: {
+              storeName: 'NameOfStore',
+            }
+          })
+
+          expect(Logger.default.error).not.toHaveBeenCalled()
+          expect(Config.default.isInitialised()).toBeTruthy()
+        })
+
+        it('logs error when storeInfo is not an object', () => {
+          Config.default.set({
+            ...appOptions,
+            storeInfo: 'invalidStoreInfo'
+          })
+
+          expect(Logger.default.error).toHaveBeenCalledWith('storeInfo must be an object')
+          expect(Config.default.isInitialised()).toBeTruthy()
+        })
+
+        it('logs an error when storeInfo contains no storeName', () => {
+          Config.default.set({
+            ...appOptions,
+            storeInfo: {}
+          })
+
+          expect(Logger.default.error).toHaveBeenCalledWith('storeName must be a non-empty string')
+          expect(Config.default.isInitialised()).toBeTruthy()
+        })
+
+        it('logs an error when storeInfo contains invalid storeName', () => {
+          Config.default.set({
+            ...appOptions,
+            storeInfo: { storeName: [] }
+          })
+
+          expect(Logger.default.error).toHaveBeenCalledWith('storeName must be a non-empty string')
+          expect(Config.default.isInitialised()).toBeTruthy()
+        })
+
+        it('logs an error when storeInfo contains empty storeName', () => {
+          Config.default.set({
+            ...appOptions,
+            storeInfo: { storeName: '' }
+          })
+
+          expect(Logger.default.error).toHaveBeenCalledWith('storeName must be a non-empty string')
+          expect(Config.default.isInitialised()).toBeTruthy()
+        })
       })
     })
   })

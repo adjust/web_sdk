@@ -104,8 +104,9 @@ function _encodeParam ([key, value]: [string, $Values<ParamsWithAttemptsT>]): st
  * @private
  */
 function _logKey (header: string, str: string): string {
+  const indent = header.length - str.length - 1
   const spaces = header
-    .slice(0, header.length - str.length - 1)
+    .slice(0, indent > 0 ? indent : 0)
     .split('')
     .reduce(acc => acc.concat(' '), '')
   return `${str}${spaces}:`
@@ -122,9 +123,18 @@ function _logKey (header: string, str: string): string {
 function _encodeParams (params: ParamsWithAttemptsT, defaultParams: DefaultParamsT): string {
   const logParamsHeader = 'REQUEST PARAMETERS:'
   const toSnakeCase = key => key.replace(/([A-Z])/g, ($1) => `_${$1.toLowerCase()}`)
-  const allParams =
-    entries({...Config.getBaseParams(), ...defaultParams, ...params})
-      .map(([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<ParamsWithAttemptsT>]) => ([toSnakeCase(key), value]))
+  const allParams = [];
+  entries({...Config.getBaseParams(), ...defaultParams, ...params})
+    .forEach(([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<ParamsWithAttemptsT>]) => {
+      if (key === 'storeInfo') {
+        if (isObject(value)) {
+          allParams.push(['store_name_from_client', value.storeName])
+          allParams.push(['store_app_id_from_client', value.storeAppId])
+        }
+      } else {
+        allParams.push([toSnakeCase(key), value])
+      }
+    })
 
   Logger.log(logParamsHeader)
   return allParams

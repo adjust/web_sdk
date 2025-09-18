@@ -222,6 +222,21 @@ declare namespace Adjust {
      *   logOutput: '#output'
      * }); */
     logOutput?: string;
+
+    /** Optional. Intended Store name and app id within the Store.
+     *
+     * @example
+     * Adjust.initSdk({
+     *   // ... other params go here, including mandatory ones
+     *   storeInfo: {
+     *     storeName: 'NameOfTheStore',
+     *     storeAppId: 'AppIdForTheStore'
+     *   }
+     * }); */
+    storeInfo?: {
+      storeName: string,
+      storeAppId?: string
+    }
   }
 
   /**

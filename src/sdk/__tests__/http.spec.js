@@ -45,7 +45,7 @@ describe('perform api requests', () => {
     Utils.setGlobalProp(global.navigator, 'doNotTrack')
 
     jest.spyOn(Time, 'getTimestamp').mockReturnValue('some-time')
-    ActivityState.default.init({uuid: 'some-uuid'})
+    ActivityState.default.init({ uuid: 'some-uuid' })
 
     jest.spyOn(global.navigator, 'language', 'get').mockReturnValue('en-GB')
     jest.spyOn(global.navigator, 'platform', 'get').mockReturnValue('macos')
@@ -66,7 +66,7 @@ describe('perform api requests', () => {
 
   it('rejects when xhr transaction error', () => {
 
-    mockXHR = Utils.createMockXHR({error: 'connection failed'}, 4, 500, 'Connection failed')
+    mockXHR = Utils.createMockXHR({ error: 'connection failed' }, 4, 500, 'Connection failed')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -77,7 +77,7 @@ describe('perform api requests', () => {
       params: {}
     })).rejects.toEqual({
       status: 'error',
-      response: {error: 'connection failed'},
+      response: { error: 'connection failed' },
       action: 'RETRY',
       message: 'XHR transaction failed due to an error',
       code: 'TRANSACTION_ERROR'
@@ -116,7 +116,7 @@ describe('perform api requests', () => {
 
   it('resolves error returned from server (because of retry mechanism)', () => {
 
-    mockXHR = Utils.createMockXHR({error: 'Session failed (failed to get app token)'}, 4, 400, 'Some server')
+    mockXHR = Utils.createMockXHR({ error: 'Session failed (failed to get app token)' }, 4, 400, 'Some server')
     global.XMLHttpRequest = jest.fn(() => mockXHR)
 
     expect.assertions(1)
@@ -128,7 +128,7 @@ describe('perform api requests', () => {
     })).resolves.toEqual({
       status: 'error',
       action: 'CONTINUE',
-      response: {error: 'Session failed (failed to get app token)'},
+      response: { error: 'Session failed (failed to get app token)' },
       message: 'Server was not able to process the request, probably due to error coming from the client',
       code: 'SERVER_CANNOT_PROCESS'
     })
@@ -234,7 +234,7 @@ describe('perform api requests', () => {
           eventToken: '567abc',
           some: 'thing',
           very: 'nice',
-          and: {test: 'object'}
+          and: { test: 'object' }
         }
       })).resolves.toEqual({
         status: 'success',
@@ -287,7 +287,7 @@ describe('perform api requests', () => {
 
     it('performs GET request with defaultTracker parameter', () => {
 
-      Config.default.set({defaultTracker: 'blatruc', ...appParams})
+      Config.default.set({ defaultTracker: 'blatruc', ...appParams })
 
       const defaultParamsStringWithDefaultTracker = [
         'app_token=123abc',
@@ -330,9 +330,56 @@ describe('perform api requests', () => {
         })
     })
 
+    it.each([
+      [{ storeName: 'Store', storeAppId: '12345' }, ['store_name_from_client=Store', 'store_app_id_from_client=12345']],
+      [{ storeName: 'Store', storeAppId: '' },  ['store_name_from_client=Store']],
+      [{ storeName: 'Store' }, ['store_name_from_client=Store']],
+      [{ storeName: '', storeAppId: '' }, []],
+      [{ }, []],
+    ])('performs GET request with storeInfo', (storeInfo, expected) => {
+      Config.default.set({ ...appParams, storeInfo })
+
+      const defaultParams = [
+        'app_token=123abc',
+        'environment=sandbox',
+        ...expected,
+        'created_at=some-time',
+        'sent_at=some-time',
+        'web_uuid=some-uuid',
+        'tracking_enabled=true',
+        'platform=web',
+        'language=en',
+        'country=gb',
+        'machine_type=macos',
+        'queue_size=0'
+      ].join('&')
+
+      expect.assertions(4)
+
+      expect(http.default({
+        endpoint: 'app',
+        url: '/some-other-url',
+      })).resolves.toEqual({
+        status: 'success',
+        ...response
+      })
+
+      return Utils.flushPromises()
+        .then(() => {
+
+          expect(mockXHR.open).toHaveBeenCalledWith('GET', `app/some-other-url?${defaultParams}`, true)
+          expect(mockXHR.setRequestHeader).toHaveBeenCalledWith('Client-SDK', 'jsTEST')
+          expect(mockXHR.send).toHaveBeenCalledWith(undefined)
+
+          mockXHR.onreadystatechange()
+
+          Config.default.set(appParams)
+        })
+    })
+
     it('performs GET request with externalDeviceId parameter', () => {
 
-      Config.default.set({externalDeviceId: 'my-id', ...appParams})
+      Config.default.set({ externalDeviceId: 'my-id', ...appParams })
 
       const defaultParamsStringWithExternalDeviceId = [
         'app_token=123abc',
@@ -399,7 +446,7 @@ describe('perform api requests', () => {
 
     it('tries to inject unknown parameter through configuration', () => {
 
-      Config.default.set({something: 'strange', ...appParams})
+      Config.default.set({ something: 'strange', ...appParams })
 
       expect.assertions(4)
 
@@ -513,7 +560,7 @@ describe('perform api requests', () => {
         params: {
           some: 'thing',
           very: 'nice',
-          and: {test: 'object'}
+          and: { test: 'object' }
         }
       })).resolves.toEqual({
         status: 'success',
@@ -543,7 +590,7 @@ describe('perform api requests', () => {
         params: {
           some: 'thing',
           very: 'nice',
-          and: {test: 'object'}
+          and: { test: 'object' }
         }
       })).resolves.toEqual({
         status: 'success',
@@ -707,7 +754,7 @@ describe('perform api requests', () => {
 
     it('broadcasts session finish event only on session request', () => {
 
-      prepare({message: 'bla'})
+      prepare({ message: 'bla' })
 
       expect.assertions(2)
 
@@ -715,7 +762,7 @@ describe('perform api requests', () => {
         endpoint: 'app',
         url: '/session'
       }).then(result => {
-        expect(result).toEqual({status: 'success'})
+        expect(result).toEqual({ status: 'success' })
         expect(PubSub.publish).toHaveBeenCalledWith('session:finished', result)
       })
 

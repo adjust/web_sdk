@@ -26,7 +26,7 @@ function isEmpty(obj: Record<string, unknown>): boolean {
 /**
  * Check if value is object
  */
-function isObject(obj: any): boolean { // eslint-disable-line @typescript-eslint/no-explicit-any
+function isObject(obj: any): obj is Record<string, unknown> { // eslint-disable-line @typescript-eslint/no-explicit-any
   return typeof obj === 'object' && obj !== null && !(obj instanceof Array)
 }
 
