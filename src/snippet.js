@@ -1,5 +1,5 @@
 /* eslint-disable */
-(function (window, document, tag, url, corsMode, integrity, sdkName, methods, classes, instanceAlias, placeholder, script, first) {
+(function (window, document, tag, url, corsMode, integrity, sdkName, methods, asyncMethods, classes, instanceAlias, placeholder, asyncPlaceholder, script, first) {
 
   var queueName = sdkName + '_q';
   var callsQueueName = sdkName + '_c';
@@ -13,12 +13,17 @@
     placeholder(window[sdkName], window[queueName], methods[i]);
   }
 
+  // creating wrappers for SDK async functions
+  for (let i = 0; i < asyncMethods.length; i++) {
+    asyncPlaceholder(window[sdkName], window[queueName], asyncMethods[i]);
+  }
+
   // creating wrappers for SDK classes and their methods
   for (let i = 0; i < classes.length; i++) {
-    var ctor = classes[i][0]
-    var classMethods = classes[i][1]
+    const ctor = classes[i][0]
+    const classMethods = classes[i][1]
 
-    var pretender
+    let pretender
     window[sdkName][ctor] = function (...args) {
       pretender = this
       window[callsQueueName].push(function () {
@@ -56,14 +61,20 @@
     }
     window[callsQueueName] = [];
 
-    // create all real SDK functions
+    // call all real SDK functions
     for (var i = 0; i < window[queueName].length; i++) {
-      if (window[queueName][i][1][0][instanceAlias]) {
+      if (window[queueName][i][1][0] && window[queueName][i][1][0][instanceAlias]) {
         // if argument was an instance of some class, call function with real instance
         // TODO: this doesn't support SDK functions with multiple parameters when some of them is a class instance
         window[sdkName][window[queueName][i][0]](window[queueName][i][1][0][instanceAlias])
       } else {
-        window[sdkName][window[queueName][i][0]].apply(window[sdkName], window[queueName][i][1]);
+        const promiseProxy = window[queueName][i][2];
+        if (promiseProxy) {
+          window[sdkName][window[queueName][i][0]].apply(window[sdkName], window[queueName][i][1])
+            .then(result => promiseProxy.resolve(result))
+        } else {
+          window[sdkName][window[queueName][i][0]].apply(window[sdkName], window[queueName][i][1]);
+        }
       }
     }
     window[queueName] = [];
@@ -73,7 +84,7 @@
   window,
   document,
   'script',
-  'https://cdn.adjust.com/adjust-latest.min.js',
+  `https://cdn.adjust.com/adjust-${env.VERSION}.min.js`,
   'anonymous',
   env.INTEGRITY,
   'Adjust',
@@ -81,8 +92,6 @@
     'initSdk',
     'getAttribution',
     'getWebUUID',
-    'waitForAttribution',
-    'waitForWebUUID',
     'setReferrer',
     'trackEvent',
     'addGlobalCallbackParameters',
@@ -102,11 +111,23 @@
     'showSmartBanner',
     'hideSmartBanner',
   ],
+  ['waitForAttribution', 'waitForWebUUID'],
   [['ThirdPartySharing', ['addGranularOption', 'addPartnerSharingSetting']]],
   '__realObj',
   function (context, queue, methodName) {
     context[methodName] = function () {
       queue.push([methodName, arguments]);
     };
-  }
+  },
+  function (context, queue, methodName) {
+    context[methodName] = function () {
+      const proxy = {}
+      proxy.promise = new Promise((outerResolve, outerReject) => {
+        proxy.resolve = outerResolve
+        proxy.reject = outerReject
+      })
+      queue.push([methodName, arguments, proxy]);
+      return proxy.promise;
+    };
+  },
 )

@@ -49,6 +49,7 @@ function _typeof(o) {
     return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
   }, _typeof(o);
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
 
 function toPrimitive(t, r) {
@@ -61,6 +62,7 @@ function toPrimitive(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
 
 
@@ -68,22 +70,18 @@ function toPropertyKey(t) {
   var i = toPrimitive(t, "string");
   return "symbol" == _typeof(i) ? i : i + "";
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
 
-function _defineProperty(obj, key, value) {
-  key = toPropertyKey(key);
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
+function _defineProperty(e, r, t) {
+  return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+    value: t,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  }) : e[r] = t, e;
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
 
 function ownKeys(e, r) {
@@ -107,36 +105,32 @@ function _objectSpread2(e) {
   }
   return e;
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
+function _objectWithoutPropertiesLoose(r, e) {
+  if (null == r) return {};
+  var t = {};
+  for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
+    if (-1 !== e.indexOf(n)) continue;
+    t[n] = r[n];
   }
-  return target;
+  return t;
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js
 
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = _objectWithoutPropertiesLoose(source, excluded);
-  var key, i;
+function _objectWithoutProperties(e, t) {
+  if (null == e) return {};
+  var o,
+    r,
+    i = _objectWithoutPropertiesLoose(e, t);
   if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
+    var n = Object.getOwnPropertySymbols(e);
+    for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]);
   }
-  return target;
+  return i;
 }
+
 ;// CONCATENATED MODULE: ./src/sdk/constants.ts
 var SECOND = 1000;
 var MINUTE = SECOND * 60;
@@ -179,9 +173,10 @@ var PUB_SUB_EVENTS = {
   ATTRIBUTION_RECEIVED: 'activity:attribution'
 };
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
+function _arrayWithHoles(r) {
+  if (Array.isArray(r)) return r;
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
 function _iterableToArrayLimit(r, l) {
   var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
@@ -210,34 +205,38 @@ function _iterableToArrayLimit(r, l) {
     return a;
   }
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-  return arr2;
+function _arrayLikeToArray(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+function _unsupportedIterableToArray(r, a) {
+  if (r) {
+    if ("string" == typeof r) return _arrayLikeToArray(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+  }
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
 
 
 
 
-function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+function _slicedToArray(r, e) {
+  return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
 }
+
 ;// CONCATENATED MODULE: ./src/sdk/utilities.ts
 
 
@@ -268,7 +267,7 @@ function isEmpty(obj /*: Record<string, unknown>*/) /*: boolean*/{
 /**
  * Check if value is object
  */
-function isObject(obj /*: any*/) /*: boolean*/{
+function isObject(obj /*: any*/) /*: obj is Record<string, unknown>*/{
   // eslint-disable-line @typescript-eslint/no-explicit-any
   return _typeof(obj) === 'object' && obj !== null && !(obj instanceof Array);
 }
@@ -401,7 +400,7 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.7.2" || 0,
+  version: "5.8.0" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
@@ -568,7 +567,7 @@ var _customConfig /*: CustomConfig | null*/ = null;
 var _mandatory /*: Array<(keyof MandatoryParams)>*/ = ['appToken', 'environment'];
 
 /** Allowed params to be sent with each request */
-var _allowedParams /*: Array<(keyof BaseParams)>*/ = [].concat(_mandatory, ['defaultTracker', 'externalDeviceId']);
+var _allowedParams /*: Array<(keyof BaseParams)>*/ = [].concat(_mandatory, ['defaultTracker', 'externalDeviceId', 'storeInfo']);
 
 /** Allowed configuration overrides */
 var _allowedConfig /*: Array<(keyof CustomConfig)>*/ = ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
@@ -589,6 +588,7 @@ function set(options /*: InitOptions*/) /*: void*/{
   if (hasMissing(options)) {
     return;
   }
+  checkConfiguration(options);
   _baseParams = _allowedParams.filter(function (key) {
     return !!options[key];
   }).map(function (key) {
@@ -620,7 +620,7 @@ function getCustomConfig() /*: CustomConfig*/{
 }
 
 /**
- * Check if there are  missing mandatory parameters
+ * Check if there are missing mandatory parameters
  */
 function hasMissing(params /*: BaseParams*/) /*: boolean*/{
   var missing = _mandatory.filter(function (value) {
@@ -631,6 +631,23 @@ function hasMissing(params /*: BaseParams*/) /*: boolean*/{
     return true;
   }
   return false;
+}
+
+/**
+ * Log error if non-mandatory parameters are invalid
+ */
+function checkConfiguration(params /*: BaseParams*/) {
+  if (isObject(params) && Object.prototype.hasOwnProperty.call(params, 'storeInfo')) {
+    // Check if storeInfo present in parameters
+    var storeInfo = params.storeInfo;
+    if (!isObject(storeInfo)) {
+      // Check if it's an object
+      logger.error('storeInfo must be an object');
+    } else if (typeof storeInfo.storeName !== 'string' || storeInfo.storeName.length <= 0) {
+      // Check store name is not empty
+      logger.error('storeName must be a non-empty string');
+    }
+  }
 }
 
 /**
@@ -1185,30 +1202,24 @@ function decodeErrorMessage(storeName /*: ShortStoreNames*/, error /*: Error*/) 
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
+function _classCallCheck(a, n) {
+  if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
 
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
+function _defineProperties(e, r) {
+  for (var t = 0; t < r.length; t++) {
+    var o = r[t];
+    o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, toPropertyKey(o.key), o);
   }
 }
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
+function _createClass(e, r, t) {
+  return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
+    writable: !1
+  }), e;
 }
+
 ;// CONCATENATED MODULE: ./src/sdk/time.js
 /**
  * Prepend zero to be used in certain format
@@ -2794,25 +2805,29 @@ _defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
 
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
 
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+function _arrayWithoutHoles(r) {
+  if (Array.isArray(r)) return _arrayLikeToArray(r);
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+function _iterableToArray(r) {
+  if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
 function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
+
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
 
 
 
 
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+function _toConsumableArray(r) {
+  return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
 }
+
 ;// CONCATENATED MODULE: ./src/sdk/storage/localstorage.ts
 
 
@@ -3825,7 +3840,8 @@ function _encodeParam(_ref3 /*:: */) /*: string*/{
  * @private
  */
 function _logKey(header /*: string*/, str /*: string*/) /*: string*/{
-  var spaces = header.slice(0, header.length - str.length - 1).split('').reduce(function (acc) {
+  var indent = header.length - str.length - 1;
+  var spaces = header.slice(0, indent > 0 ? indent : 0).split('').reduce(function (acc) {
     return acc.concat(' ');
   }, '');
   return "".concat(str).concat(spaces, ":");
@@ -3846,11 +3862,19 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
       return "_".concat($1.toLowerCase());
     });
   };
-  var allParams = entries(_objectSpread2(_objectSpread2(_objectSpread2({}, sdk_config.getBaseParams()), defaultParams), params)).map(function (_ref5 /*:: */) {
+  var allParams = [];
+  entries(_objectSpread2(_objectSpread2(_objectSpread2({}, sdk_config.getBaseParams()), defaultParams), params)).forEach(function (_ref5 /*:: */) {
     var _ref6 = _slicedToArray(_ref5 /*:: */, 2),
       key = _ref6[0],
       value = _ref6[1];
-    return [toSnakeCase(key), value];
+    if (key === 'storeInfo') {
+      if (isObject(value)) {
+        allParams.push(['store_name_from_client', value.storeName]);
+        allParams.push(['store_app_id_from_client', value.storeAppId]);
+      }
+    } else {
+      allParams.push([toSnakeCase(key), value]);
+    }
   });
   logger.log(logParamsHeader);
   return allParams.filter(function (_ref7) {
@@ -4214,57 +4238,55 @@ function listeners_destroy() /*: void*/{
 
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createForOfIteratorHelper.js
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
-  if (!it) {
-    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
+function _createForOfIteratorHelper(r, e) {
+  var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (!t) {
+    if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) {
+      t && (r = t);
+      var _n = 0,
+        F = function F() {};
       return {
         s: F,
         n: function n() {
-          if (i >= o.length) return {
-            done: true
-          };
-          return {
-            done: false,
-            value: o[i++]
+          return _n >= r.length ? {
+            done: !0
+          } : {
+            done: !1,
+            value: r[_n++]
           };
         },
-        e: function e(_e) {
-          throw _e;
+        e: function e(r) {
+          throw r;
         },
         f: F
       };
     }
     throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
-  var normalCompletion = true,
-    didErr = false,
-    err;
+  var o,
+    a = !0,
+    u = !1;
   return {
     s: function s() {
-      it = it.call(o);
+      t = t.call(r);
     },
     n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
+      var r = t.next();
+      return a = r.done, r;
     },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
+    e: function e(r) {
+      u = !0, o = r;
     },
     f: function f() {
       try {
-        if (!normalCompletion && it["return"] != null) it["return"]();
+        a || null == t["return"] || t["return"]();
       } finally {
-        if (didErr) throw err;
+        if (u) throw o;
       }
     }
   };
 }
+
 ;// CONCATENATED MODULE: ./src/sdk/url-strategy.ts
 
 

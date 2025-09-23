@@ -1,0 +1,22 @@
+name: Create new version pull request
+
+on:
+  push:
+    branches: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pull-requesst:
+    name: Create pull request
+    if: github.repository == 'adjust/web_sdk'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create PR
+        run: |
+          gh pr create -B master -H ${{ github.ref_name }} --title 'Bump version to ${{ github.ref_name }}' --body ''

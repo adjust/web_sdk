@@ -153,11 +153,17 @@ export type EventParamsT = {|
   partnerParams?: Array<GlobalParamsT>
 |}
 
+export type StoreInfo = {|
+  storeName: string,
+  storeAppId?: string
+|}
+
 export type BaseParamsT = $ReadOnly<$Shape<{
   appToken: string,
   environment: 'production' | 'sandbox',
   defaultTracker: string,
-  externalDeviceId: string
+  externalDeviceId: string,
+  storeInfo: StoreInfo
 }>>
 
 export type CustomConfigT = $ReadOnly<$Shape<{
@@ -178,6 +184,7 @@ export type InitOptionsT = $ReadOnly<$Shape<{|
   environment: $PropertyType<BaseParamsT, 'environment'>,
   defaultTracker: $PropertyType<BaseParamsT, 'defaultTracker'>,
   externalDeviceId: $PropertyType<BaseParamsT, 'externalDeviceId'>,
+  storeInfo: $PropertyType<BaseParamsT, 'storeInfo'>,
   customUrl: $PropertyType<CustomConfigT, 'customUrl'>,
   dataResidency: $PropertyType<CustomConfigT, 'dataResidency'>,
   urlStrategy: $PropertyType<CustomConfigT, 'urlStrategy'>,

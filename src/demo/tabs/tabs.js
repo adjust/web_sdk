@@ -56,14 +56,30 @@ function _handleTab(e) {
 }
 
 function _getAppConfig(form) {
-  return Object.keys(form)
+  const appConfig = Object.keys(form)
     .map(key => [key, form[key].value])
     .filter(([, value]) => value)
+    .filter(([key,]) => key !== 'storeName' && key !== 'storeAppId')
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
+
+  return {
+    ...appConfig,
+    ...(form.storeName.value ? {
+      storeInfo: {
+        storeName: form.storeName.value,
+        storeAppId: form.storeAppId.value
+      }
+    } : {})
+  }
 }
 
 function _reflectConfigInForm(appConfig, form) {
   Object.keys(form).map(key => form[key].value = appConfig[key] || '')
+
+  if (appConfig.storeInfo) {
+    form.storeName.value = appConfig.storeInfo.storeName;
+    form.storeAppId.value = appConfig.storeInfo.storeAppId;
+  }
 }
 
 function _handleClearLog() {
@@ -174,6 +190,8 @@ function _prepareForm() {
   _form.logOutput = _ui.appConfigForm.querySelector('#log-output')
   _form.eventDeduplicationListLimit = _ui.appConfigForm.querySelector('#event-deduplication-list-limit')
   _form.externalDeviceId = _ui.appConfigForm.querySelector('#external-device-id')
+  _form.storeName = _ui.appConfigForm.querySelector('#store-name')
+  _form.storeAppId = _ui.appConfigForm.querySelector('#store-app-id')
 
   _reflectConfigInForm(appConfig, _form)
   _setJson(appConfig)

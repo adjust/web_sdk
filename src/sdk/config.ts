@@ -1,6 +1,6 @@
 import { type Attribution } from './ts-types'
 import { MINUTE, SECOND, DAY } from './constants'
-import { buildList, reducer } from './utilities'
+import { buildList, isObject, reducer } from './utilities'
 import Logger from './logger'
 
 type MandatoryParams = {
@@ -11,7 +11,11 @@ type MandatoryParams = {
 /** Base parameters set by client */
 type BaseParams = MandatoryParams & {
   defaultTracker?: string,
-  externalDeviceId?: string
+  externalDeviceId?: string,
+  storeInfo?: {
+    storeName: string,
+    storeAppId?: string
+  }
 }
 
 /** Custom config set by client */
@@ -41,7 +45,8 @@ const _mandatory: Array<(keyof MandatoryParams)> = [
 const _allowedParams: Array<(keyof BaseParams)> = [
   ..._mandatory,
   'defaultTracker',
-  'externalDeviceId'
+  'externalDeviceId',
+  'storeInfo',
 ]
 
 /** Allowed configuration overrides */
@@ -67,6 +72,8 @@ function set(options: InitOptions): void {
   if (hasMissing(options)) {
     return
   }
+
+  checkConfiguration(options)
 
   _baseParams = _allowedParams
     .filter(key => !!options[key])
@@ -98,7 +105,7 @@ function getCustomConfig(): CustomConfig {
 }
 
 /**
- * Check if there are  missing mandatory parameters
+ * Check if there are missing mandatory parameters
  */
 function hasMissing(params: BaseParams): boolean {
   const missing = _mandatory.filter(value => !params[value])
@@ -109,6 +116,21 @@ function hasMissing(params: BaseParams): boolean {
   }
 
   return false
+}
+
+/**
+ * Log error if non-mandatory parameters are invalid
+ */
+function checkConfiguration(params: BaseParams) {
+  if (isObject(params) && Object.prototype.hasOwnProperty.call(params, 'storeInfo')) { // Check if storeInfo present in parameters
+    const storeInfo = params.storeInfo;
+
+    if (!isObject(storeInfo)) { // Check if it's an object
+      Logger.error('storeInfo must be an object')
+    } else if (typeof storeInfo.storeName !== 'string' || storeInfo.storeName.length <= 0) { // Check store name is not empty
+      Logger.error('storeName must be a non-empty string')
+    }
+  }
 }
 
 /**

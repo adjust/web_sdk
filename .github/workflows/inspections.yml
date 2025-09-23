@@ -1,0 +1,14 @@
+name: Inspections
+
+on:
+  pull_request:
+
+jobs:
+  inspections:
+    name: Inspections
+    uses: adjust/githubWorkflows/.github/workflows/inspections.yml@v7.5.23
+    with:
+      package_manager: npm
+      node_version: '20.19.2'
+    secrets:
+      GITHUB_ORGANIZATION_ACCESS_TOKEN: ${{ secrets.AUTOMATE_GITHUB_ACCESS_TOKEN }}
