@@ -1,3 +1,9 @@
+### Version 5.8.0 (23rd September 2025)
+#### Added
+- Added support for configuring store information. You can now specify the store name and store app ID using `initSdk` method. This enables the SDK to record the intended app store source.
+
+---
+
 ### Version 5.7.2 (11th March 2025)
 #### Fixed
 - Fixed an issue with update `installed` flag in SDK data when `setReferrer` method called.

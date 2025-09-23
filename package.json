@@ -1,12 +1,12 @@
 {
   "name": "@adjustcom/adjust-web-sdk",
-  "version": "5.7.2",
+  "version": "5.8.0",
   "description": "This is the guide to the Javascript SDK of Adjust™ for web sites or web apps. You can read more about Adjust™ at [adjust.com].",
   "scripts": {
     "build:demo": "webpack --mode production --config webpack.demo.config.js",
     "build:sdk": "webpack --config webpack.sdk.config.js",
-    "build:snippet": "terser -d env.INTEGRITY=0 ./src/snippet.js -o ./dist/sdk.snippet.min.js -c -m",
-    "build:snippet-sri": "INTEGRITY=(\"sha384-$(openssl dgst -sha384 -binary ./dist/adjust-latest.min.js | openssl base64 -A)\") && terser -d env.INTEGRITY=\"'$INTEGRITY'\" ./src/snippet.js -o ./dist/sdk.snippet-sri.min.js -c -m && printf $INTEGRITY > dist/INTEGRITY",
+    "build:snippet": "terser -d env.INTEGRITY=0 -d env.VERSION=\"'latest'\" ./src/snippet.js -o ./dist/sdk.snippet.min.js -c -m",
+    "build:snippet-sri": "INTEGRITY=(\"sha384-$(openssl dgst -sha384 -binary ./dist/adjust-latest.min.js | openssl base64 -A)\") && terser -d env.VERSION=\"'$npm_package_version'\" -d env.INTEGRITY=\"'$INTEGRITY'\" ./src/snippet.js -o ./dist/sdk.snippet-sri.min.js -c -m && printf $INTEGRITY > dist/INTEGRITY",
     "build": "npm-run-all build:sdk build:demo build:snippet build:snippet-sri",
     "clean": "rm -rf ./demo/*",
     "start": "webpack serve --hot --mode development --config webpack.demo.config.js",
