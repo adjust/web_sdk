@@ -400,7 +400,7 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.8.0" || 0,
+  version: "5.8.1" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
