@@ -1,3 +1,9 @@
+### Version 5.8.1 (28th November 2025)
+#### Fixed
+- Updated npm dependencies to resolve reported security warnings.
+
+---
+
 ### Version 5.8.0 (23rd September 2025)
 #### Added
 - Added support for configuring store information. You can now specify the store name and store app ID using `initSdk` method. This enables the SDK to record the intended app store source.

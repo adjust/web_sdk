@@ -1,6 +1,6 @@
 {
   "name": "@adjustcom/adjust-web-sdk",
-  "version": "5.8.0",
+  "version": "5.8.1",
   "description": "This is the guide to the Javascript SDK of Adjust™ for web sites or web apps. You can read more about Adjust™ at [adjust.com].",
   "scripts": {
     "build:demo": "webpack --mode production --config webpack.demo.config.js",
@@ -17,7 +17,7 @@
     "test:ci": "TZ=UTC jest",
     "test:all": "npm-run-all test:ci lint types:validate",
     "types:validate": "flow status --quiet && tsc",
-    "publish:sync-repos": "git fetch --all && git push public origin/master:refs/remotes/public/v$npm_package_version"
+    "publish:sync-repos": "git fetch --all && git push public origin/master:refs/heads/v$npm_package_version"
   },
   "main": "dist/adjust-latest.js",
   "types": "dist/adjust-latest.d.ts",
@@ -80,7 +80,6 @@
     "dist/adjust-latest.d.ts",
     "dist/adjust-latest.js",
     "dist/adjust-latest.min.js",
-    "docs/**/*",
     "CHANGELOG.md"
   ],
   "repository": {
