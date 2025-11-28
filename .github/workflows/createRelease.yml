@@ -76,7 +76,7 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
-          tag: ${{ needs.variables.outputs.version }}
+          tag: v${{ needs.variables.outputs.version }}
           draft: true
           name: Version ${{ needs.variables.outputs.version }}
           body: ${{ needs.variables.outputs.changelog }}
