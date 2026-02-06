@@ -2,21 +2,63 @@ name: Create new version pull request
 
 on:
   push:
-    branches: ['v[0-9]+.[0-9]+.[0-9]+']
+    branches:
+      - 'v*'
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  create-pull-requesst:
+  create-pull-request:
     name: Create pull request
-    if: github.repository == 'adjust/web_sdk'
+    # if: github.repository == 'adjust/web_sdk' - commented temporary, just for testing
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
-      - name: Create PR
+
+      - name: Branch must match VERSION
+        id: gate
+        shell: bash
         run: |
-          gh pr create -B master -H ${{ github.ref_name }} --title 'Bump version to ${{ github.ref_name }}' --body ''
+          # Enable strict bash mode:
+          # -e - exit immediately if any command fails
+          # -u - treat unset variables as an error
+          # -o pipefail - fail the script if any command in a pipeline fails
+          set -euo pipefail
+
+          BRANCH="${{ github.ref_name }}"
+          VERSION="$(tr -d ' \t\r\n' < VERSION)"
+          EXPECTED="v$VERSION"
+
+          if [[ "$BRANCH" != "$EXPECTED" ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Skipping: branch '$BRANCH' != '$EXPECTED' (from VERSION)."
+            exit 0
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "OK: branch matches VERSION ($BRANCH)."
+
+      - name: Create PR (idempotent)
+        if: steps.gate.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BRANCH="${{ github.ref_name }}"
+          BASE="master"
+          TITLE="Bump version to $BRANCH"
+
+          # If PR already exists for this head/base, do nothing.
+          count=$(gh pr list -B "$BASE" -H "$BRANCH" --json number --jq 'length')
+          if (( count > 0 )); then
+            echo "Pull request already exists. Skipping without failing."
+            exit 0
+          fi
+
+          gh pr create -B "$BASE" -H "$BRANCH" --title "$TITLE" --body ""
+          echo "Pull request successfully created."
