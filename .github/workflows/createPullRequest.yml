@@ -10,12 +10,12 @@ permissions:
   pull-requests: write
 
 jobs:
-  create-pull-request:
-    name: Create pull request
-    # if: github.repository == 'adjust/web_sdk' - commented temporary, just for testing
+  check-branch-name:
+    name: Check branch name
+    if: github.repository == 'adjust/web_sdk'
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      skip: ${{ steps.gate.outputs.skip }}
 
     steps:
       - uses: actions/checkout@v4
@@ -43,8 +43,18 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
           echo "OK: branch matches VERSION ($BRANCH)."
 
+  create-pull-request:
+    name: Create pull request
+    needs: [check-branch-name]
+    if: needs.check-branch-name.outputs.skip != 'true' && github.repository == 'adjust/web_sdk'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Create PR (idempotent)
-        if: steps.gate.outputs.skip != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -62,3 +72,35 @@ jobs:
 
           gh pr create -B "$BASE" -H "$BRANCH" --title "$TITLE" --body ""
           echo "Pull request successfully created."
+
+  check-dist-is-up-to-date:
+    name: Check dist is up to date
+    needs: [check-branch-name, create-pull-request]
+    if: always() && needs.check-branch-name.outputs.skip != 'true' && github.repository == 'adjust/web_sdk'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.2'
+          check-latest: true
+          cache: "npm"
+
+      - name: Verify dist is up to date
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          npm ci
+          npm run build
+
+          if git status --porcelain -- dist/ | grep -q .; then
+            echo "ERROR: npm run build produced changes in dist/:"
+            git status --porcelain -- dist/
+            exit 1
+          fi
+
+          echo "OK: dist/ is up to date."
