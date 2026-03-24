@@ -39,7 +39,7 @@ __webpack_require__.d(__webpack_exports__, {
   "default": () => (/* binding */ main)
 });
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
+;// ./node_modules/@babel/runtime/helpers/esm/typeof.js
 function _typeof(o) {
   "@babel/helpers - typeof";
 
@@ -50,7 +50,7 @@ function _typeof(o) {
   }, _typeof(o);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
+;// ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
 
 function toPrimitive(t, r) {
   if ("object" != _typeof(t) || !t) return t;
@@ -63,7 +63,7 @@ function toPrimitive(t, r) {
   return ("string" === r ? String : Number)(t);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
+;// ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
 
 
 function toPropertyKey(t) {
@@ -71,7 +71,7 @@ function toPropertyKey(t) {
   return "symbol" == _typeof(i) ? i : i + "";
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+;// ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
 
 function _defineProperty(e, r, t) {
   return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
@@ -82,7 +82,7 @@ function _defineProperty(e, r, t) {
   }) : e[r] = t, e;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
+;// ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
 
 function ownKeys(e, r) {
   var t = Object.keys(e);
@@ -106,7 +106,7 @@ function _objectSpread2(e) {
   return e;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
+;// ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 function _objectWithoutPropertiesLoose(r, e) {
   if (null == r) return {};
   var t = {};
@@ -117,7 +117,7 @@ function _objectWithoutPropertiesLoose(r, e) {
   return t;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js
+;// ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js
 
 function _objectWithoutProperties(e, t) {
   if (null == e) return {};
@@ -131,7 +131,7 @@ function _objectWithoutProperties(e, t) {
   return i;
 }
 
-;// CONCATENATED MODULE: ./src/sdk/constants.ts
+;// ./src/sdk/constants.ts
 var SECOND = 1000;
 var MINUTE = SECOND * 60;
 var HOUR = MINUTE * 60;
@@ -172,12 +172,12 @@ var PUB_SUB_EVENTS = {
   WEB_UUID_CREATED: 'activity:web_uuid',
   ATTRIBUTION_RECEIVED: 'activity:attribution'
 };
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
+;// ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
 function _arrayWithHoles(r) {
   if (Array.isArray(r)) return r;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
+;// ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
 function _iterableToArrayLimit(r, l) {
   var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
   if (null != t) {
@@ -206,14 +206,14 @@ function _iterableToArrayLimit(r, l) {
   }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
 function _arrayLikeToArray(r, a) {
   (null == a || a > r.length) && (a = r.length);
   for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
   return n;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
 
 function _unsupportedIterableToArray(r, a) {
   if (r) {
@@ -223,12 +223,12 @@ function _unsupportedIterableToArray(r, a) {
   }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
+;// ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
 
 
 
@@ -237,7 +237,7 @@ function _slicedToArray(r, e) {
   return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/utilities.ts
+;// ./src/sdk/utilities.ts
 
 
 
@@ -390,7 +390,7 @@ function isLocalStorageSupported() /*: boolean*/{
   }
 }
 
-;// CONCATENATED MODULE: ./src/sdk/globals.js
+;// ./src/sdk/globals.js
 /*:: declare var __ADJUST__NAMESPACE: string*/
 /*:: declare var __ADJUST__SDK_VERSION: string*/
 /*:: declare var process: {|
@@ -400,11 +400,11 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.8.1" || 0,
+  version: "5.8.2" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
-;// CONCATENATED MODULE: ./src/sdk/logger.js
+;// ./src/sdk/logger.js
 
 
 
@@ -548,7 +548,7 @@ var Logger = {
   error: _applyLevel('error', LEVEL_ERROR)
 };
 /* harmony default export */ const logger = (Logger);
-;// CONCATENATED MODULE: ./src/sdk/config.ts
+;// ./src/sdk/config.ts
 
 
 
@@ -669,7 +669,7 @@ var Config = {
   destroy: destroy
 };
 /* harmony default export */ const sdk_config = (Config);
-;// CONCATENATED MODULE: ./src/sdk/storage/scheme.ts
+;// ./src/sdk/storage/scheme.ts
 
 
 
@@ -894,7 +894,7 @@ function isComplexStoreField(field /*: Maybe<StoreFieldScheme>*/) /*: field is S
 }
 
 /* harmony default export */ const storage_scheme = (scheme);
-;// CONCATENATED MODULE: ./src/sdk/storage/scheme-map.ts
+;// ./src/sdk/storage/scheme-map.ts
 
 
 
@@ -1074,7 +1074,7 @@ var StoreNamesAndConfigs = _getStoreNames();
     right: _flipStoreNames(StoreNamesAndConfigs)
   }
 });
-;// CONCATENATED MODULE: ./src/sdk/storage/types.ts
+;// ./src/sdk/storage/types.ts
 
 var KeyRangeCondition = /*#__PURE__*/function (KeyRangeCondition) {
   KeyRangeCondition["LowerBound"] = "lowerBound";
@@ -1085,7 +1085,7 @@ function valueIsRecord(value /*: StoredValue | Record<string, unknown>*/) /*: va
   return isObject(value);
 }
 
-;// CONCATENATED MODULE: ./src/sdk/storage/converter.ts
+;// ./src/sdk/storage/converter.ts
 
 
 
@@ -1201,12 +1201,12 @@ function decodeErrorMessage(storeName /*: ShortStoreNames*/, error /*: Error*/) 
   };
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
+;// ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
 function _classCallCheck(a, n) {
   if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
+;// ./node_modules/@babel/runtime/helpers/esm/createClass.js
 
 function _defineProperties(e, r) {
   for (var t = 0; t < r.length; t++) {
@@ -1220,7 +1220,7 @@ function _createClass(e, r, t) {
   }), e;
 }
 
-;// CONCATENATED MODULE: ./src/sdk/time.js
+;// ./src/sdk/time.js
 /**
  * Prepend zero to be used in certain format
  *
@@ -1312,7 +1312,7 @@ function timePassed(d1 /*: number*/, d2 /*: number*/) /*: number*/{
   return Math.abs(d2 - d1);
 }
 
-;// CONCATENATED MODULE: ./src/sdk/pub-sub.ts
+;// ./src/sdk/pub-sub.ts
 
 
 /**
@@ -1393,7 +1393,7 @@ function pub_sub_destroy() /*: void*/{
   _list = {};
 }
 
-;// CONCATENATED MODULE: ./src/sdk/activity-state.js
+;// ./src/sdk/activity-state.js
 
 /*:: // 
 import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonRequestParams } from './types';*/
@@ -1755,7 +1755,7 @@ var ActivityState = {
   waitForWebUUID: waitForWebUUID
 };
 /* harmony default export */ const activity_state = (ActivityState);
-;// CONCATENATED MODULE: ./src/sdk/storage/quick-storage.ts
+;// ./src/sdk/storage/quick-storage.ts
 
 
 
@@ -1900,7 +1900,7 @@ var QuickStorage = /*#__PURE__*/function () {
   }]);
 }();
 /* harmony default export */ const quick_storage = (new QuickStorage());
-;// CONCATENATED MODULE: ./src/sdk/preferences.ts
+;// ./src/sdk/preferences.ts
 
 
 
@@ -1983,7 +1983,7 @@ function recover() /*: void*/{
   }
 }
 
-;// CONCATENATED MODULE: ./src/sdk/storage/indexeddb.ts
+;// ./src/sdk/storage/indexeddb.ts
 
 
 
@@ -2803,23 +2803,23 @@ _defineProperty(IndexedDBWrapper, "dbValidationName", 'validate-db-openable');
  */
 _defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
+;// ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
 
 function _arrayWithoutHoles(r) {
   if (Array.isArray(r)) return _arrayLikeToArray(r);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
 function _iterableToArray(r) {
   if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
+;// ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
 function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
 
 
 
@@ -2828,7 +2828,7 @@ function _toConsumableArray(r) {
   return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/storage/localstorage.ts
+;// ./src/sdk/storage/localstorage.ts
 
 
 
@@ -3357,7 +3357,7 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
  */
 _defineProperty(LocalStorageWrapper, "isSupportedPromise", null);
 
-;// CONCATENATED MODULE: ./src/sdk/storage/storage.ts
+;// ./src/sdk/storage/storage.ts
 
 
 
@@ -3609,7 +3609,7 @@ function storage_init(dbName /*: string*/) /*: Promise<Storage>*/{
   init: storage_init,
   getType: getType
 }, _augment()));
-;// CONCATENATED MODULE: ./src/sdk/default-params.js
+;// ./src/sdk/default-params.js
 
 
 /*:: // 
@@ -3740,7 +3740,7 @@ function defaultParams() /*: Promise<DefaultParamsT>*/{
     return _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
   });
 }
-;// CONCATENATED MODULE: ./src/sdk/http.js
+;// ./src/sdk/http.js
 
 
 /*:: // 
@@ -4061,7 +4061,7 @@ function http(options /*: HttpRequestParamsT*/) /*: Promise<HttpSuccessResponseT
     return _interceptResponse(result, options.url);
   });
 }
-;// CONCATENATED MODULE: ./src/sdk/backoff.js
+;// ./src/sdk/backoff.js
 /*:: // 
 import { type BackOffStrategyT } from './types';*/
 
@@ -4119,7 +4119,7 @@ function backOff(attempts /*: number*/, strategy /*: ?BackOffStrategyT*/) /*: nu
   }
   return Math.round(delay);
 }
-;// CONCATENATED MODULE: ./src/sdk/listeners.js
+;// ./src/sdk/listeners.js
 
 /*:: // 
 import { type DocumentT } from './types';*/
@@ -4236,7 +4236,7 @@ function listeners_destroy() /*: void*/{
   off(window, 'offline', _handleOffline);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createForOfIteratorHelper.js
+;// ./node_modules/@babel/runtime/helpers/esm/createForOfIteratorHelper.js
 
 function _createForOfIteratorHelper(r, e) {
   var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
@@ -4287,7 +4287,7 @@ function _createForOfIteratorHelper(r, e) {
   };
 }
 
-;// CONCATENATED MODULE: ./src/sdk/url-strategy.ts
+;// ./src/sdk/url-strategy.ts
 
 
 
@@ -4454,7 +4454,7 @@ function getBaseUrlsIterator() /*: BaseUrlsIterator*/{
   };
 }
 
-;// CONCATENATED MODULE: ./src/sdk/request.js
+;// ./src/sdk/request.js
 
 
 /*:: // 
@@ -4951,7 +4951,7 @@ var Request = function Request() {
   };
 };
 /* harmony default export */ const request = (Request);
-;// CONCATENATED MODULE: ./src/sdk/disable.ts
+;// ./src/sdk/disable.ts
 
 
 
@@ -5083,7 +5083,7 @@ function disable_status() /*: StatusT*/{
   return 'on';
 }
 
-;// CONCATENATED MODULE: ./src/sdk/identity.ts
+;// ./src/sdk/identity.ts
 
 
 
@@ -5228,7 +5228,7 @@ function identity_destroy() /*: void*/{
   activity_state.destroy();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/queue.js
+;// ./src/sdk/queue.js
 
 
 /*:: // 
@@ -5534,7 +5534,7 @@ function queue_destroy() /*: void*/{
   _current.pause = null;
 }
 
-;// CONCATENATED MODULE: ./src/sdk/global-params.js
+;// ./src/sdk/global-params.js
 
 /*:: // 
 import { type GlobalParamsT, type GlobalParamsMapT } from './types';*/
@@ -5685,7 +5685,7 @@ function global_params_clear() /*: void*/{
   return storage.clear(global_params_storeName);
 }
 
-;// CONCATENATED MODULE: ./src/sdk/session.js
+;// ./src/sdk/session.js
 /*:: // 
 import { type DocumentT, type HttpSuccessResponseT, type HttpErrorResponseT, type GlobalParamsMapT, type SessionRequestParamsT } from './types';*/
 
@@ -5941,7 +5941,7 @@ function _checkSession() /*: Promise<mixed>*/{
   return persist();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/attribution.js
+;// ./src/sdk/attribution.js
 
 
 /*:: // 
@@ -6092,7 +6092,7 @@ function attribution_destroy() /*: void*/{
   attribution_request.clear();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/gdpr-forget-device.ts
+;// ./src/sdk/gdpr-forget-device.ts
 
 
 
@@ -6186,7 +6186,7 @@ function gdpr_forget_device_destroy() /*: void*/{
   gdpr_forget_device_request.clear();
 }
 
-;// CONCATENATED MODULE: ./src/sdk/track-third-party-sharing.ts
+;// ./src/sdk/track-third-party-sharing.ts
 
 
 
@@ -6269,7 +6269,7 @@ function trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOpt
     params: params
   });
 }
-;// CONCATENATED MODULE: ./src/sdk/scheduler.js
+;// ./src/sdk/scheduler.js
 
 /*:: type TaskT = {|
   method: (timestamp?: number) => mixed,
@@ -6318,7 +6318,7 @@ function scheduler_destroy() /*: void*/{
   _tasks = [];
 }
 
-;// CONCATENATED MODULE: ./src/sdk/event.js
+;// ./src/sdk/event.js
 
 /*:: // 
 import { type EventParamsT, type EventRequestParamsT, type GlobalParamsMapT, type GlobalKeyValueParamsT } from './types';*/
@@ -6485,7 +6485,7 @@ function event_event(params /*: EventParamsT*/, timestamp /*: number*/) /*: Prom
     return Promise.reject(error);
   });
 }
-;// CONCATENATED MODULE: ./src/sdk/sdk-click.js
+;// ./src/sdk/sdk-click.js
 /*:: // 
 import { type SdkClickRequestParamsT } from './types';*/
 
@@ -6541,7 +6541,7 @@ function sdkClick(manualReferrer /*: string*/, timestamp /*: number*/) /*: void*
     });
   }
 }
-;// CONCATENATED MODULE: ./src/sdk/main.js
+;// ./src/sdk/main.js
 
 
 var _excluded = ["logLevel", "logOutput"];

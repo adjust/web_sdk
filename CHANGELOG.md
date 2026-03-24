@@ -1,3 +1,9 @@
+### Version 5.8.2 (28th November 2025)
+#### Fixed
+- Updated vulnerable dependencies.
+
+---
+
 ### Version 5.8.1 (28th November 2025)
 #### Fixed
 - Updated npm dependencies to resolve reported security warnings.
