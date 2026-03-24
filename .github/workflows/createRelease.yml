@@ -5,26 +5,41 @@ on:
   push:
     branches:
       - master
-    paths: ['./VERSION']
+    paths:
+      - 'VERSION'
+
+permissions:
+  contents: write
 
 jobs:
   variables:
-    name: Read VERSION
-    if: github.repository == 'adjust/web_sdk'
+    name: Read VERSION and changelog
+    # if: github.repository == 'adjust/web_sdk' - commented temporary, just for testing
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.read-file.outputs.version }}
       changelog: ${{ steps.prepare-changelog.outputs.changelog }}
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Read VERSION file
         id: read-file
+        shell: bash
         run: |
-          echo "version=$(cat ./VERSION)" >> $GITHUB_OUTPUT
+          # Enable strict bash mode:
+          # -e - exit immediately if any command fails
+          # -u - treat unset variables as an error
+          # -o pipefail - fail the script if any command in a pipeline fails
+          set -euo pipefail
+          version="$(tr -d ' \t\r\n' < VERSION)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Prepare changelog
         id: prepare-changelog
         run: |
+          set -euo pipefail
+
           read_changelog() {
             CHANGELOG_FILE="./CHANGELOG.md"
 
@@ -62,17 +77,24 @@ jobs:
     name: Publish Github release
     if: github.repository == 'adjust/web_sdk'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     needs: [variables]
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Push tag
+        shell: bash
         run: |
-          git config --local user.name github-actions[bot]
-          git config --local user.email github-actions[bot]@users.noreply.github.com
-          git tag -a v${{ needs.variables.outputs.version }} -m "Version ${{ needs.variables.outputs.version }}"
-          git push origin tag v${{ needs.variables.outputs.version }}
+          set -euo pipefail
+
+          VERSION="${{ needs.variables.outputs.version }}"
+          TAG="v$VERSION"
+
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "$TAG" -m "Version $VERSION"
+          git push origin "$TAG"
 
       - uses: ncipollo/release-action@v1
         with:

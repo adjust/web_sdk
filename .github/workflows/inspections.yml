@@ -6,9 +6,26 @@ on:
 jobs:
   inspections:
     name: Inspections
-    uses: adjust/githubWorkflows/.github/workflows/inspections.yml@v7.5.23
-    with:
-      package_manager: npm
-      node_version: '20.19.2'
-    secrets:
-      GITHUB_ORGANIZATION_ACCESS_TOKEN: ${{ secrets.AUTOMATE_GITHUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        inspection_command: ["lint", "types:validate", "test:ci"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.2'
+          check-latest: true
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run inspection
+        run: npm run ${{ matrix.inspection_command }}
