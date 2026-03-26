@@ -1,4 +1,4 @@
-### Version 5.8.2 (28th November 2025)
+### Version 5.8.2 (24th March 2026)
 #### Fixed
 - Updated vulnerable dependencies.
 
