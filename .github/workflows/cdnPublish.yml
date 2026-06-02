@@ -1,0 +1,54 @@
+name: Publish to CDN
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    if: github.repository == 'adjust/web_sdk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          check-latest: true
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build:ci
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          workload_identity_provider: 'projects/313880847322/locations/global/workloadIdentityPools/websdk-identity-pool/providers/github-actions-web-sdk'
+
+      #Just for testing
+      - name: Set up gcloud
+        uses: 'google-github-actions/setup-gcloud@v3'
+
+      #Just for testing
+      - name: Verify Cloud Storage access
+        run: gcloud storage ls gs://cdn.adjust.com
+
+      # - id: 'upload-artifacts'
+      #   name: 'Upload SDK files to Google Cloud'
+      #   uses: 'google-github-actions/upload-cloud-storage@v3'
+      #   with:
+      #     path: 'dist/artifacts'
+      #     destination: 'cdn.adjust.com'
+      #     predefinedAcl: 'publicRead'
