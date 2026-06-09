@@ -1,7 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
-const FlowWebpackPlugin = require('flowtype-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const packageJson = require('./package.json')
@@ -33,7 +32,6 @@ module.exports = () => ({
       __ADJUST__NAMESPACE: JSON.stringify(namespace),
       __ADJUST__SDK_VERSION: JSON.stringify(version)
     }),
-    new FlowWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin()
   ],
   resolve: {
@@ -45,5 +43,8 @@ module.exports = () => ({
       test: /\.(js|ts)$/,
       exclude: /node_modules/
     }]
-  }
+  },
+  watchOptions: {
+    ignored: /node_modules/,
+  },
 })

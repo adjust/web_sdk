@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import './assets/scss/index.scss'
 import main from './demo/main'
 

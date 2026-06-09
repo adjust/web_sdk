@@ -1,3 +1,10 @@
+### Version 5.8.3 (9th June 2026)
+#### Fixed
+- Fixed an issue where the SDK’s installed state was not updated when a recent session had already been tracked in another SDK instance. In this case, queued events are now still sent even if the `/session` request is denied due to the session interval limit.
+- Added error logging for unsuccessful `/session` requests to make such cases easier to diagnose.
+
+---
+
 ### Version 5.8.2 (24th March 2026)
 #### Fixed
 - Updated vulnerable dependencies.

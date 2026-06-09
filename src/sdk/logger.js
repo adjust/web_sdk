@@ -3,7 +3,7 @@ import Globals from './globals'
 import {isObject} from './utilities'
 import {type LogOptionsT} from './types'
 
-type LogLevelT = $PropertyType<LogOptionsT, 'logLevel'>
+type LogLevelT = LogOptionsT['logLevel']
 type MethodNameT = 'log' | 'info' | 'error' | 'warn'
 
 const LEVEL_NONE = 'none'
@@ -116,7 +116,7 @@ function _log (methodName: MethodNameT, logLevel: LogLevelT, ...args: Array<mixe
   const messagePrefix = [`[${Globals.namespace}]`, time, `${methodName.toUpperCase()}:${spaces}`]
   const outputContainer = _output ? document.querySelector(_output) : null
 
-  console[methodName](...messagePrefix, ...args) // eslint-disable-line
+  console[methodName](...messagePrefix, ...args)
 
   if (outputContainer) {
     outputContainer.textContent += `${messagePrefix.join(' ')} ${args.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`

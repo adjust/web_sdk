@@ -1,4 +1,5 @@
-@import "../../assets/scss/variables";
+@use "../../assets/scss/_variables.scss" as *;
+@use "../../assets/scss/_flex-grid.scss" as *;
 
 $height: 300px;
 

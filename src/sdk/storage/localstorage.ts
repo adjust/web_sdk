@@ -433,12 +433,12 @@ class LocalStorageWrapper implements IStorage {
   /**
    * Does nothing, it simply matches the common storage interface
    */
-  destroy() { } // eslint-disable-line
+  destroy() { }  
 
   /**
    * Does nothing, it simply matches the common storage interface
    */
-  deleteDatabase() { } // eslint-disable-line
+  deleteDatabase() { }  
 
 }
 

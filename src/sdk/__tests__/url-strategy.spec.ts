@@ -53,7 +53,7 @@ describe('test url strategy', () => {
   })
 
   beforeEach(() => {
-    Config = require('../config').default
+    Config = require('../config').default // eslint-disable-line @typescript-eslint/no-require-imports
   })
 
   afterEach(() => {

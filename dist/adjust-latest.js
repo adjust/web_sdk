@@ -279,7 +279,7 @@ function isValidJson(string /*: string*/) /*: boolean*/{
   try {
     var json = JSON.parse(string);
     return isObject(json);
-  } catch (e) {
+  } catch (_unused) {
     return false;
   }
 }
@@ -385,7 +385,7 @@ function isLocalStorageSupported() /*: boolean*/{
     storage.removeItem(uid);
     var support = !!(result && storage);
     return support;
-  } catch (e) {
+  } catch (_unused2) {
     return false;
   }
 }
@@ -400,7 +400,7 @@ function isLocalStorageSupported() /*: boolean*/{
 |}*/
 var Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.8.2" || 0,
+  version: "5.8.3" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
@@ -409,7 +409,7 @@ var Globals = {
 
 
 /*:: import { type LogOptionsT } from './types';*/
-/*:: type LogLevelT = $PropertyType<LogOptionsT, 'logLevel'>*/
+/*:: type LogLevelT = LogOptionsT['logLevel']*/
 /*:: type MethodNameT = 'log' | 'info' | 'error' | 'warn'*/
 var LEVEL_NONE = 'none';
 var LEVEL_ERROR = 'error';
@@ -514,8 +514,7 @@ function _log(methodName /*: MethodNameT*/, logLevel /*: LogLevelT*/) /*: void*/
   for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
     args[_key - 2] = arguments[_key];
   }
-  (_console = console)[methodName].apply(_console, messagePrefix.concat(args)); // eslint-disable-line
-
+  (_console = console)[methodName].apply(_console, messagePrefix.concat(args));
   if (outputContainer) {
     outputContainer.textContent += "".concat(messagePrefix.join(' '), " ").concat(args.map(function (m) {
       return isObject(m) ? JSON.stringify(m) : m;
@@ -691,10 +690,10 @@ var StoreName = /*#__PURE__*/function (StoreName) {
   StoreName["EventDeduplication"] = "eventDeduplication";
   return StoreName;
 }(StoreName || {});
-var PreferencesStoreName = /*#__PURE__*/function (PreferencesStoreName) {
+var PreferencesStoreName = /*#__PURE__*/(/* unused pure expression or super */ null && (function (PreferencesStoreName) {
   PreferencesStoreName["Preferences"] = "preferences";
   return PreferencesStoreName;
-}(PreferencesStoreName || {});
+}(PreferencesStoreName || {})));
 var ShortStoreName = /*#__PURE__*/function (ShortStoreName) {
   ShortStoreName["Queue"] = "q";
   ShortStoreName["ActivityState"] = "as";
@@ -906,7 +905,7 @@ function _parseValue(value /*: string*/) /*: any*/{
   // eslint-disable-line @typescript-eslint/no-explicit-any
   try {
     return JSON.parse(value);
-  } catch (e) {
+  } catch (_unused) {
     return value;
   }
 }
@@ -997,9 +996,9 @@ function _prepareLeft() /*: StoreScheme*/{
  */
 function _prepareRight() /*: StoreScheme*/{
   var storesOptionsEncoded /*: Array<[StoreNames, StoreOptionsOptionalKey]>*/ = entries(Left).map(function (_ref9) {
-    var _ref10 = _slicedToArray(_ref9, 2),
-      storeName = _ref10[0],
-      storeScheme = _ref10[1];
+    var _ref0 = _slicedToArray(_ref9, 2),
+      storeName = _ref0[0],
+      storeScheme = _ref0[1];
     var options /*: StoreOptionsOptionalKey*/ = {
       keyPath: _getShortKey(storeName, storeScheme.keyPath),
       autoIncrement: storeScheme.autoIncrement,
@@ -1016,9 +1015,9 @@ function _prepareRight() /*: StoreScheme*/{
  */
 function _getValuesMap() /*: Record<string, number>*/{
   // all pairs of predefined keys and values such as {GET: 1}
-  return entries(storage_scheme).reduce(function (acc, _ref11) {
-    var _ref12 = _slicedToArray(_ref11, 2),
-      store = _ref12[1];
+  return entries(storage_scheme).reduce(function (acc, _ref1) {
+    var _ref10 = _slicedToArray(_ref1, 2),
+      store = _ref10[1];
     return acc.concat(store.scheme.fields);
   }, []).map(function (scheme) {
     return values(scheme).filter(isPredefinedValuesField).map(function (map) {
@@ -1049,10 +1048,10 @@ function _getShortKey(storeName /*: StoreNames*/, key /*: Maybe<string>*/) /*: M
  * Get store names and their general configuration (if store is permanent or not)
  */
 function _getStoreNames() /*: StoresConfigurationMap*/{
-  var storeNames /*: Array<[StoreNames, StoreConfiguration]>*/ = entries(storage_scheme).map(function (_ref13) {
-    var _ref14 = _slicedToArray(_ref13, 2),
-      name = _ref14[0],
-      store = _ref14[1];
+  var storeNames /*: Array<[StoreNames, StoreConfiguration]>*/ = entries(storage_scheme).map(function (_ref11) {
+    var _ref12 = _slicedToArray(_ref11, 2),
+      name = _ref12[0],
+      store = _ref12[1];
     var config = {
       name: store.name,
       permanent: store.permanent
@@ -2385,7 +2384,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
               store = _this6$getTransaction.store,
               options = _this6$getTransaction.options;
             var request = store[action](_this6.prepareTarget(options, target, action));
-            var _result = _this6.prepareResult(options, target);
+            var result = _this6.prepareResult(options, target);
             request.onsuccess = function () {
               if (action === Action.get && !request.result) {
                 reject({
@@ -2393,7 +2392,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
                   message: "Requested record not found in \"".concat(storeName, "\" store")
                 });
               } else {
-                resolve(_result || request.result || target);
+                resolve(result || request.result || target);
               }
             };
             request.onerror = function (error /*: Event*/) {
@@ -2436,24 +2435,24 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
               options = _this7$getTransaction.options;
 
             // Array contains or StoredRecord either RecordIds, but not both at the same time
-            var _result2 = new Array();
+            var result = new Array();
             var current = target[0];
             transaction.oncomplete = function () {
-              return resolve(_result2);
+              return resolve(result);
             };
-            var request = function request(req) {
+            var _request = function request(req) {
               req.onerror = function (error) {
                 return _this7.overrideError(reject, error);
               };
               req.onsuccess = function () {
-                _result2.push(_this7.prepareResult(options, current) || req.result);
-                current = target[_result2.length];
-                if (_result2.length < target.length) {
-                  request(store[action](_this7.prepareTarget(options, current, action)));
+                result.push(_this7.prepareResult(options, current) || req.result);
+                current = target[result.length];
+                if (result.length < target.length) {
+                  _request(store[action](_this7.prepareTarget(options, current, action)));
                 }
               };
             };
-            request(store[action](_this7.prepareTarget(options, current, action)));
+            _request(store[action](_this7.prepareTarget(options, current, action)));
           }
         });
       });
@@ -2464,16 +2463,16 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
      */
   }, {
     key: "openCursor",
-    value: function openCursor(_ref10 /*:: */) /*: Promise<Array<StoredRecord | StoredRecordId>>*/{
+    value: function openCursor(_ref0 /*:: */) /*: Promise<Array<StoredRecord | StoredRecordId>>*/{
       var _this8 = this;
-      var storeName = _ref10 /*:: */.storeName,
-        action = _ref10 /*:: */.action,
-        _ref10$range = _ref10 /*:: */.range,
-        range = _ref10$range === void 0 ? null : _ref10$range,
-        _ref10$firstOnly = _ref10 /*:: */.firstOnly,
-        firstOnly = _ref10$firstOnly === void 0 ? false : _ref10$firstOnly,
-        _ref10$mode = _ref10 /*:: */.mode,
-        mode = _ref10$mode === void 0 ? AccessMode.readonly : _ref10$mode;
+      var storeName = _ref0 /*:: */.storeName,
+        action = _ref0 /*:: */.action,
+        _ref0$range = _ref0 /*:: */.range,
+        range = _ref0$range === void 0 ? null : _ref0$range,
+        _ref0$firstOnly = _ref0 /*:: */.firstOnly,
+        firstOnly = _ref0$firstOnly === void 0 ? false : _ref0$firstOnly,
+        _ref0$mode = _ref0 /*:: */.mode,
+        mode = _ref0$mode === void 0 ? AccessMode.readonly : _ref0$mode;
       return this.open().then(function () {
         return new Promise(function (resolve, reject) {
           if (!_this8.indexedDbConnection) {
@@ -2660,12 +2659,12 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
   }, {
     key: "trimItems",
     value: function trimItems(storeName /*: ShortStoreName*/, length /*: number*/) /*: Promise<Array<StoredRecordId>>*/{
-      var _this10 = this;
+      var _this0 = this;
       var options = scheme_map.right[convertStoreName(storeName, Direction.right)];
       return this.getAll(storeName).then(function (records) {
         return records.length ? records[length - 1] : null;
       }).then(function (record) {
-        return record ? _this10.deleteBulk(storeName, record[options.keyPath], KeyRangeCondition.UpperBound) : [];
+        return record ? _this0.deleteBulk(storeName, record[options.keyPath], KeyRangeCondition.UpperBound) : [];
       });
     }
 
@@ -2675,23 +2674,23 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
   }, {
     key: "count",
     value: function count(storeName /*: ShortStoreName*/) /*: Promise<number>*/{
-      var _this11 = this;
+      var _this1 = this;
       return this.open().then(function () {
         return new Promise(function (resolve, reject) {
-          if (!_this11.indexedDbConnection) {
-            reject(_this11.noConnectionError);
+          if (!_this1.indexedDbConnection) {
+            reject(_this1.noConnectionError);
           } else {
-            var _this11$getTransactio = _this11.getTransactionStore({
+            var _this1$getTransaction = _this1.getTransactionStore({
                 storeName: storeName,
                 mode: AccessMode.readonly
-              }, reject, _this11.indexedDbConnection),
-              store = _this11$getTransactio.store;
+              }, reject, _this1.indexedDbConnection),
+              store = _this1$getTransaction.store;
             var request = store.count();
             request.onsuccess = function () {
               return resolve(request.result);
             };
             request.onerror = function (error) {
-              return _this11.overrideError(reject, error);
+              return _this1.overrideError(reject, error);
             };
           }
         });
@@ -2751,7 +2750,7 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
           request.onerror = function () {
             return resolve(false);
           };
-        } catch (error) {
+        } catch (_unused) {
           resolve(false);
         }
       });
@@ -3055,7 +3054,7 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
     key: "getItem",
     value: function getItem(storeName /*: ShortStoreName*/, id /*: StoredRecordId*/) /*: Promise<StoredRecord>*/{
       var _this3 = this;
-      var action /*: Action<StoredRecord>*/ = function action /*: Action<StoredRecord>*/(resolve, reject, _ref6) {
+      var action /*: Action<StoredRecord>*/ = function action(resolve, reject, _ref6) {
         var items = _ref6.items,
           index = _ref6.index,
           options = _ref6.options;
@@ -3201,9 +3200,9 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
       return this.initRequest({
         storeName: storeName,
         id: id
-      }, function (resolve, _, _ref10) {
-        var items = _ref10.items,
-          index = _ref10.index;
+      }, function (resolve, _, _ref0) {
+        var items = _ref0.items,
+          index = _ref0.index;
         if (index !== -1) {
           items.splice(index, 1);
           quick_storage.stores[storeName] = items;
@@ -3322,14 +3321,14 @@ var LocalStorageWrapper = /*#__PURE__*/function () {
      */
   }, {
     key: "destroy",
-    value: function destroy() {} // eslint-disable-line
+    value: function destroy() {}
 
     /**
      * Does nothing, it simply matches the common storage interface
      */
   }, {
     key: "deleteDatabase",
-    value: function deleteDatabase() {} // eslint-disable-line
+    value: function deleteDatabase() {}
   }], [{
     key: "isSupported",
     value:
@@ -3532,7 +3531,7 @@ function _augment() /*: StorageMethods*/{
     var _ref2 = _slicedToArray(_ref /*:: */, 2),
       methodName = _ref2[0],
       method = _ref2[1];
-    var augmentedMethod /*: StorageMethod*/ = function augmentedMethod /*: StorageMethod*/(storeName /*: StoreName*/) {
+    var augmentedMethod /*: StorageMethod*/ = function augmentedMethod(storeName /*: StoreName*/) {
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
@@ -3752,7 +3751,7 @@ import { type UrlT, type DefaultParamsT, type HttpSuccessResponseT, type HttpErr
 
 
 
-/*:: type ParamsWithAttemptsT = $PropertyType<HttpRequestParamsT, 'params'>*/
+/*:: type ParamsWithAttemptsT = HttpRequestParamsT['params']*/
 /**
  * Get filtered response from successful request
  *
@@ -3796,12 +3795,15 @@ function _getSuccessResponse(xhr /*: XMLHttpRequest*/, url /*: UrlT*/) /*: HttpS
  */
 function _getErrorResponse(xhr /*: XMLHttpRequest*/, code /*: ErrorCodeT*/) /*: HttpErrorResponseT*/{
   var proceed /*: boolean*/ = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var result = isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : null;
   return {
     status: 'error',
+    code: code,
     action: proceed ? 'CONTINUE' : 'RETRY',
-    response: isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText,
+    response: result || xhr.responseText,
     message: HTTP_ERRORS[code],
-    code: code
+    adid: result === null || result === void 0 ? void 0 : result.adid,
+    ask_in: result === null || result === void 0 ? void 0 : result.ask_in
   };
 }
 
@@ -3863,8 +3865,8 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
     });
   };
   var allParams = [];
-  entries(_objectSpread2(_objectSpread2(_objectSpread2({}, sdk_config.getBaseParams()), defaultParams), params)).forEach(function (_ref5 /*:: */) {
-    var _ref6 = _slicedToArray(_ref5 /*:: */, 2),
+  entries(_objectSpread2(_objectSpread2(_objectSpread2({}, sdk_config.getBaseParams()), defaultParams), params)).forEach(function (_ref5) {
+    var _ref6 = _slicedToArray(_ref5, 2),
       key = _ref6[0],
       value = _ref6[1];
     if (key === 'storeInfo') {
@@ -3882,9 +3884,9 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
       value = _ref8[1];
     return isEmptyEntry(value);
   }).map(function (_ref9) {
-    var _ref10 = _slicedToArray(_ref9, 2),
-      key = _ref10[0],
-      value = _ref10[1];
+    var _ref0 = _slicedToArray(_ref9, 2),
+      key = _ref0[0],
+      value = _ref0[1];
     logger.log(_logKey(logParamsHeader, key), value);
     return _encodeParam([key, value]);
   }).join('&');
@@ -3899,9 +3901,9 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
  * @param {string} url
  * @private
  */
-function _handleReadyStateChange(reject, resolve, _ref11 /*:: */) {
-  var xhr = _ref11 /*:: */.xhr,
-    url = _ref11 /*:: */.url;
+function _handleReadyStateChange(reject, resolve, _ref1 /*:: */) {
+  var xhr = _ref1 /*:: */.xhr,
+    url = _ref1 /*:: */.url;
   if (xhr.readyState !== 4) {
     return;
   }
@@ -3928,11 +3930,11 @@ function _handleReadyStateChange(reject, resolve, _ref11 /*:: */) {
  * @returns {{encodedParams: string, fullUrl: string}}
  * @private
  */
-function _prepareUrlAndParams(_ref12 /*:: */, defaultParams /*: DefaultParamsT*/) /*: {fullUrl: string, encodedParams: string}*/{
-  var endpoint = _ref12 /*:: */.endpoint,
-    url = _ref12 /*:: */.url,
-    method = _ref12 /*:: */.method,
-    params = _ref12 /*:: */.params;
+function _prepareUrlAndParams(_ref10 /*:: */, defaultParams /*: DefaultParamsT*/) /*: {fullUrl: string, encodedParams: string}*/{
+  var endpoint = _ref10 /*:: */.endpoint,
+    url = _ref10 /*:: */.url,
+    method = _ref10 /*:: */.method,
+    params = _ref10 /*:: */.params;
   var encodedParams = _encodeParams(params, defaultParams);
   return {
     fullUrl: endpoint + url + (method === 'GET' ? "?".concat(encodedParams) : ''),
@@ -3947,14 +3949,14 @@ function _prepareUrlAndParams(_ref12 /*:: */, defaultParams /*: DefaultParamsT*/
  * @param {string} method
  * @private
  */
-function _prepareHeaders(xhr /*: XMLHttpRequest*/, method /*: $PropertyType<HttpRequestParamsT, 'method'>*/) /*: void*/{
+function _prepareHeaders(xhr /*: XMLHttpRequest*/, method /*: HttpRequestParamsT['method']*/) /*: void*/{
   var logHeader = 'REQUEST HEADERS:';
   var headers = [['Client-SDK', "js".concat(globals.version)], ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']];
   logger.log(logHeader);
-  headers.forEach(function (_ref13) {
-    var _ref14 = _slicedToArray(_ref13, 2),
-      key = _ref14[0],
-      value = _ref14[1];
+  headers.forEach(function (_ref11) {
+    var _ref12 = _slicedToArray(_ref11, 2),
+      key = _ref12[0],
+      value = _ref12[1];
     xhr.setRequestHeader(key, value);
     logger.log(_logKey(logHeader, key), value);
   });
@@ -3969,13 +3971,13 @@ function _prepareHeaders(xhr /*: XMLHttpRequest*/, method /*: $PropertyType<Http
  * @param {Object} defaultParams
  * @returns {Promise}
  */
-function _buildXhr(_ref15 /*:: */, defaultParams /*: DefaultParamsT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-  var endpoint = _ref15 /*:: */.endpoint,
-    url = _ref15 /*:: */.url,
-    _ref15$method = _ref15 /*:: */.method,
-    method = _ref15$method === void 0 ? 'GET' : _ref15$method,
-    _ref15$params = _ref15 /*:: */.params,
-    params = _ref15$params === void 0 ? {} : _ref15$params;
+function _buildXhr(_ref13 /*:: */, defaultParams /*: DefaultParamsT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
+  var endpoint = _ref13 /*:: */.endpoint,
+    url = _ref13 /*:: */.url,
+    _ref13$method = _ref13 /*:: */.method,
+    method = _ref13$method === void 0 ? 'GET' : _ref13$method,
+    _ref13$params = _ref13 /*:: */.params,
+    params = _ref13$params === void 0 ? {} : _ref13$params;
   var _prepareUrlAndParams2 = _prepareUrlAndParams({
       endpoint: endpoint,
       url: url,
@@ -4011,33 +4013,15 @@ function _buildXhr(_ref15 /*:: */, defaultParams /*: DefaultParamsT*/) /*: Promi
  * @private
  */
 function _interceptResponse(result /*: HttpSuccessResponseT | HttpErrorResponseT*/, url /*: UrlT*/) /*: HttpSuccessResponseT | HttpErrorResponseT*/{
-  if (result.status === 'success') {
-    return _interceptSuccess(result, url);
-  }
-  return result;
-}
-
-/**
- * Intercept successful response from backend and:
- * - always check if tracking_state is set to `opted_out` and if yes disable sdk
- * - check if ask_in parameter is present in order to check if attribution have been changed
- * - emit session finish event if session request
- *
- * @param {Object} result
- * @param {string} result.tracking_state
- * @param {number} result.ask_in
- * @param {string} url
- * @returns {Object}
- * @private
- */
-function _interceptSuccess(result /*: HttpSuccessResponseT*/, url) /*: HttpSuccessResponseT*/{
   var isGdprRequest = isRequest(url, 'gdpr_forget_device');
   var isAttributionRequest = isRequest(url, 'attribution');
   var isSessionRequest = isRequest(url, 'session');
   var optedOut = result.tracking_state === 'opted_out';
-  if (!isGdprRequest && optedOut) {
-    publish('sdk:gdpr-forget-me');
-    return result;
+  if (result.status === 'success') {
+    if (!isGdprRequest && optedOut) {
+      publish('sdk:gdpr-forget-me');
+      return result;
+    }
   }
   if (!isAttributionRequest && !isGdprRequest && !optedOut && result.ask_in) {
     publish('attribution:check', result);
@@ -4316,12 +4300,12 @@ var UrlStrategy = /*#__PURE__*/function (UrlStrategy) {
   UrlStrategy["China"] = "china";
   return UrlStrategy;
 }(UrlStrategy || {});
-var DataResidency = /*#__PURE__*/function (DataResidency) {
+var DataResidency = /*#__PURE__*/(/* unused pure expression or super */ null && (function (DataResidency) {
   DataResidency["EU"] = "EU";
   DataResidency["TR"] = "TR";
   DataResidency["US"] = "US";
   return DataResidency;
-}(DataResidency || {});
+}(DataResidency || {})));
 function incorrectOptionIgnoredMessage(higherPriority /*: string*/, lowerPriority /*: string*/) {
   logger.warn("Both ".concat(higherPriority, " and ").concat(lowerPriority, " are set in config, ").concat(lowerPriority, " will be ignored"));
 }
@@ -4582,7 +4566,7 @@ var Request = function Request() {
    * @type {number|null}
    * @private
    */
-  var _timeoutId /*: ?TimeoutID*/ = null;
+  var _timeoutId /*: ?number*/ = null;
 
   /**
    * Number of request and connection attempts
@@ -5686,6 +5670,7 @@ function global_params_clear() /*: void*/{
 }
 
 ;// ./src/sdk/session.js
+
 /*:: // 
 import { type DocumentT, type HttpSuccessResponseT, type HttpErrorResponseT, type GlobalParamsMapT, type SessionRequestParamsT } from './types';*/
 
@@ -5716,7 +5701,7 @@ var _running = false;
  * @type {number}
  * @private
  */
-var _idInterval /*: ?IntervalID*/;
+var _idInterval /*: ?number*/;
 
 /**
  * Reference to timeout id to be used for clearing
@@ -5724,7 +5709,7 @@ var _idInterval /*: ?IntervalID*/;
  * @type {number}
  * @private
  */
-var _idTimeout /*: ?TimeoutID*/;
+var _idTimeout /*: ?number*/;
 
 /**
  * Browser-specific prefixes for accessing Page Visibility API
@@ -5855,9 +5840,23 @@ function _restoreAfterAsyncEnable() /*: void*/{
  * @private
  */
 function _handleSessionRequestFinish(e /*: string*/, result /*: HttpSuccessResponseT | HttpErrorResponseT*/) /*: ?Promise<mixed>*/{
-  if (result && result.status === 'error') {
-    logger.error('Session was not successful, error was returned from the server:', result.response);
-    return;
+  var _result$response;
+  var isTooFrequentSessionError = result === null || result === void 0 || (_result$response = result.response) === null || _result$response === void 0 || (_result$response = _result$response.error) === null || _result$response === void 0 ? void 0 : _result$response.includes('Ignoring too frequent session');
+  if ((result === null || result === void 0 ? void 0 : result.status) === 'error') {
+    var _result$response2;
+    logger.error('Session was not successful, error was returned from the server:', (result === null || result === void 0 || (_result$response2 = result.response) === null || _result$response2 === void 0 ? void 0 : _result$response2.error) || (result === null || result === void 0 ? void 0 : result.response));
+    if (!isTooFrequentSessionError) {
+      // do not return in case of too frequent session error, because it means a fresh session for this device is tracked,
+      // i.e. the device is known and we should update SDK installed status
+      return;
+    }
+  }
+  if (result !== null && result !== void 0 && result.adid) {
+    activity_state.current = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
+      attribution: _objectSpread2(_objectSpread2({}, activity_state.current.attribution), {}, {
+        adid: result.adid
+      })
+    });
   }
   activity_state.updateInstalled();
   return persist().then(function () {
@@ -6290,7 +6289,7 @@ var _tasks /*: Array<TaskT>*/ = [];
  * @param {Function} method
  * @param {string} description
  */
-function delay(method /*: $PropertyType<TaskT, 'method'>*/, description /*: $PropertyType<TaskT, 'description'>*/) /*: void*/{
+function delay(method /*: TaskT['method']*/, description /*: TaskT['description']*/) /*: void*/{
   _tasks.push({
     method: method,
     description: description,
@@ -6565,7 +6564,7 @@ import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalPara
 
 
 
-/*:: type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT |}>*/
+/*:: type InitConfigT = {|...InitOptionsT, ...LogOptionsT |}*/
 /**
  * In-memory parameters to be used if restarting
  *
@@ -6829,7 +6828,7 @@ function disableThirdPartySharing() /*: void*/{
 /**
  * Track third party sharing
  */
-function main_trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOptions*/) /*: void*/{
+function main_trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharing*/) /*: void*/{
   var callback = function callback() {
     return activity_state.waitForWebUUID() // ensure we have web_uuid to be sent with request
     .then(function () {

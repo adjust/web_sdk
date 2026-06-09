@@ -36,13 +36,14 @@ function setGlobalProp (o, prop) {
   })
 }
 
-function errorResponse (code) {
+function errorResponse(code, errorMessage, adid) {
   return {
     status: 'error',
     message: 'An error',
-    response: 'An error',
+    response: { error: errorMessage || 'An error' },
     action: 'RETRY',
-    code: code || 'ERROR'
+    code: code || 'ERROR',
+    ...(adid && { adid })
   }
 }
 

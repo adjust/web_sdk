@@ -3,6 +3,8 @@ import { getItem, setItem, clear } from '../storage'
 import { write, clear as clearLog } from '../log'
 import Adjust from '../../sdk/main'
 
+import './tabs.scss';
+
 const _ui = {}
 const _form = {}
 const _active = {}

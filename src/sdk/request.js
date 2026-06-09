@@ -125,7 +125,7 @@ const Request = ({url, method = 'GET', params = {}, continueCb, strategy, wait}:
    * @type {number|null}
    * @private
    */
-  let _timeoutId: ?TimeoutID = null
+  let _timeoutId: ?number = null
 
   /**
    * Number of request and connection attempts

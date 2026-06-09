@@ -21,7 +21,7 @@ let _tasks: Array<TaskT> = []
  * @param {Function} method
  * @param {string} description
  */
-function delay (method: $PropertyType<TaskT, 'method'>, description: $PropertyType<TaskT, 'description'>): void {
+function delay (method: TaskT['method'], description: TaskT['description']): void {
   _tasks.push({method, description, timestamp: Date.now()})
 }
 

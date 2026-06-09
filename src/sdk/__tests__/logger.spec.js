@@ -1,5 +1,4 @@
-/* eslint-disable */
-const _origDate = global.Date
+ const _origDate = global.Date
 
 describe('test Logger functionality', () => {
   const today = '2019-10-14T00:00:00.000Z'

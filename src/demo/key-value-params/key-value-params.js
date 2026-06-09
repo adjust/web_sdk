@@ -1,3 +1,5 @@
+import './key-value-params.scss';
+
 const ACTION_SYMBOLS = {
   add: '+',
   remove: '×'
