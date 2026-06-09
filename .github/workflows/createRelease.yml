@@ -14,7 +14,7 @@ permissions:
 jobs:
   variables:
     name: Read VERSION and changelog
-    # if: github.repository == 'adjust/web_sdk' - commented temporary, just for testing
+    if: github.repository == 'adjust/web_sdk'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.read-file.outputs.version }}
@@ -81,6 +81,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          check-latest: true
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build release artifacts
+        run: npm run build
 
       - name: Push tag
         shell: bash
