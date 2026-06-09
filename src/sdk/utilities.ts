@@ -37,7 +37,7 @@ function isValidJson(string: string): boolean {
   try {
     const json = JSON.parse(string)
     return isObject(json)
-  } catch (e) {
+  } catch {
     return false
   }
 }
@@ -134,7 +134,7 @@ function isLocalStorageSupported(): boolean {
 
     return support
 
-  } catch (e) {
+  } catch {
     return false
   }
 }

@@ -1,9 +1,6 @@
-@import "variables";
-@import "loader";
-@import "flex-grid";
-@import "../../demo/tabs/tabs";
-@import "../../demo/key-value-params/key-value-params";
-@import "../../demo/dynamic-params/dynamic-params";
+@use "_variables.scss" as *;
+@use "_loader.scss" as *;
+@use "_flex-grid.scss" as *;
 
 html, body {
   margin: 0;

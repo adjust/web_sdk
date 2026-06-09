@@ -1,5 +1,8 @@
 import { capitalize } from '../utils'
 
+
+import './dynamic-params.scss';
+
 const ACTION_SYMBOLS = {
   add: '+',
   remove: '×'

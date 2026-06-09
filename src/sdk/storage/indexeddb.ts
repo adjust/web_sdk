@@ -85,7 +85,7 @@ class IndexedDBWrapper implements IStorage {
           resolve(true)
         }
         request.onerror = () => resolve(false)
-      } catch (error) {
+      } catch {
         resolve(false)
       }
     })

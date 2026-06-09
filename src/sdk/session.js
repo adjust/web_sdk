@@ -34,7 +34,7 @@ let _running = false
  * @type {number}
  * @private
  */
-let _idInterval: ?IntervalID
+let _idInterval: ?number
 
 /**
  * Reference to timeout id to be used for clearing
@@ -42,7 +42,7 @@ let _idInterval: ?IntervalID
  * @type {number}
  * @private
  */
-let _idTimeout: ?TimeoutID
+let _idTimeout: ?number
 
 /**
  * Browser-specific prefixes for accessing Page Visibility API
@@ -188,10 +188,24 @@ function _restoreAfterAsyncEnable (): void {
  * @returns {Promise|void}
  * @private
  */
-function _handleSessionRequestFinish (e: string, result: HttpSuccessResponseT | HttpErrorResponseT): ?Promise<mixed> {
-  if (result && result.status === 'error') {
-    Logger.error('Session was not successful, error was returned from the server:', result.response)
-    return
+function _handleSessionRequestFinish(e: string, result: HttpSuccessResponseT | HttpErrorResponseT): ?Promise<mixed> {
+  const isTooFrequentSessionError = result?.response?.error?.includes('Ignoring too frequent session');
+
+  if (result?.status === 'error') {
+    Logger.error('Session was not successful, error was returned from the server:', result?.response?.error || result?.response)
+
+    if (!isTooFrequentSessionError) {
+      // do not return in case of too frequent session error, because it means a fresh session for this device is tracked,
+      // i.e. the device is known and we should update SDK installed status
+      return;
+    }
+  }
+
+  if (result?.adid) {
+    ActivityState.current = {
+      ...ActivityState.current,
+      attribution: { ...ActivityState.current.attribution, adid: result.adid }
+    }
   }
 
   ActivityState.updateInstalled()
@@ -233,7 +247,7 @@ function _stopTimer (): void {
  * @returns {Object}
  * @private
  */
-function _prepareParams ({callbackParams, partnerParams}: $ReadOnly<GlobalParamsMapT>): SessionRequestParamsT {
+function _prepareParams ({callbackParams, partnerParams}: GlobalParamsMapT): SessionRequestParamsT {
   return {
     callbackParams: callbackParams.length ? convertToMap(callbackParams) : null,
     partnerParams: partnerParams.length ? convertToMap(partnerParams) : null

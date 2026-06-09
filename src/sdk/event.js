@@ -66,7 +66,7 @@ function _getRevenue (revenue: number | void, currency: string | void): RevenueT
  * @returns {Object}
  * @private
  */
-function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: $ReadOnly<GlobalParamsMapT>): EventRequestParamsT {
+function _prepareParams (params: EventParamsT, {callbackParams, partnerParams}: GlobalParamsMapT): EventRequestParamsT {
   const globalParams = {}
   const baseParams = {
     eventToken: params.eventToken,

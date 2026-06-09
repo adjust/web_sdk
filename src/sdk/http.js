@@ -15,7 +15,7 @@ import {isObject, isValidJson, isRequest, entries, isEmptyEntry, reducer} from '
 import {publish} from './pub-sub'
 import defaultParams from './default-params'
 
-type ParamsWithAttemptsT = $PropertyType<HttpRequestParamsT, 'params'>
+type ParamsWithAttemptsT = HttpRequestParamsT['params']
 
 /**
  * Get filtered response from successful request
@@ -58,13 +58,17 @@ function _getSuccessResponse (xhr: XMLHttpRequest, url: UrlT): HttpSuccessRespon
  * @returns {Object}
  * @private
  */
-function _getErrorResponse (xhr: XMLHttpRequest, code: ErrorCodeT, proceed: boolean = false): HttpErrorResponseT {
+function _getErrorResponse(xhr: XMLHttpRequest, code: ErrorCodeT, proceed: boolean = false): HttpErrorResponseT {
+  const result = isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : null;
+
   return {
     status: 'error',
+    code,
     action: proceed ? 'CONTINUE' : 'RETRY',
-    response: isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : xhr.responseText,
+    response: result || xhr.responseText,
     message: HTTP_ERRORS[code],
-    code
+    adid: result?.adid,
+    ask_in: result?.ask_in,
   }
 }
 
@@ -76,7 +80,7 @@ function _getErrorResponse (xhr: XMLHttpRequest, code: ErrorCodeT, proceed: bool
  * @returns {string}
  * @private
  */
-function _encodeParam ([key, value]: [string, $Values<ParamsWithAttemptsT>]): string {
+function _encodeParam ([key, value]: [string, any]): string {
   const encodedKey = encodeURIComponent(key)
   let encodedValue = value
 
@@ -125,7 +129,7 @@ function _encodeParams (params: ParamsWithAttemptsT, defaultParams: DefaultParam
   const toSnakeCase = key => key.replace(/([A-Z])/g, ($1) => `_${$1.toLowerCase()}`)
   const allParams = [];
   entries({...Config.getBaseParams(), ...defaultParams, ...params})
-    .forEach(([key, value]: [$Keys<ParamsWithAttemptsT>, $Values<ParamsWithAttemptsT>]) => {
+    .forEach(([key, value]) => {
       if (key === 'storeInfo') {
         if (isObject(value)) {
           allParams.push(['store_name_from_client', value.storeName])
@@ -204,7 +208,7 @@ function _prepareUrlAndParams ({endpoint, url, method, params}: HttpRequestParam
  * @param {string} method
  * @private
  */
-function _prepareHeaders (xhr: XMLHttpRequest, method: $PropertyType<HttpRequestParamsT, 'method'>): void {
+function _prepareHeaders (xhr: XMLHttpRequest, method: HttpRequestParamsT['method']): void {
   const logHeader = 'REQUEST HEADERS:'
   const headers = [
     ['Client-SDK', `js${Globals.version}`],
@@ -252,36 +256,17 @@ function _buildXhr ({endpoint, url, method = 'GET', params = {}}: HttpRequestPar
  * @returns {Object}
  * @private
  */
-function _interceptResponse (result: HttpSuccessResponseT | HttpErrorResponseT, url: UrlT): HttpSuccessResponseT | HttpErrorResponseT {
-  if (result.status === 'success') {
-    return _interceptSuccess(result, url)
-  }
-
-  return result
-}
-
-/**
- * Intercept successful response from backend and:
- * - always check if tracking_state is set to `opted_out` and if yes disable sdk
- * - check if ask_in parameter is present in order to check if attribution have been changed
- * - emit session finish event if session request
- *
- * @param {Object} result
- * @param {string} result.tracking_state
- * @param {number} result.ask_in
- * @param {string} url
- * @returns {Object}
- * @private
- */
-function _interceptSuccess (result: HttpSuccessResponseT, url): HttpSuccessResponseT {
+function _interceptResponse(result: HttpSuccessResponseT | HttpErrorResponseT, url: UrlT): HttpSuccessResponseT | HttpErrorResponseT {
   const isGdprRequest = isRequest(url, 'gdpr_forget_device')
   const isAttributionRequest = isRequest(url, 'attribution')
   const isSessionRequest = isRequest(url, 'session')
   const optedOut = result.tracking_state === 'opted_out'
 
-  if (!isGdprRequest && optedOut) {
-    publish('sdk:gdpr-forget-me')
-    return result
+  if (result.status === 'success') {
+    if (!isGdprRequest && optedOut) {
+      publish('sdk:gdpr-forget-me')
+      return result
+    }
   }
 
   if (!isAttributionRequest && !isGdprRequest && !optedOut && result.ask_in) {

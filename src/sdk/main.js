@@ -27,7 +27,7 @@ import sdkClick from './sdk-click'
 import ActivityState from './activity-state'
 import { STORAGE_TYPES } from './constants'
 
-type InitConfigT = $ReadOnly<{|...InitOptionsT, ...LogOptionsT |}>
+type InitConfigT = {|...InitOptionsT, ...LogOptionsT |}
 
   /**
    * In-memory parameters to be used if restarting
@@ -273,7 +273,7 @@ function disableThirdPartySharing(): void {
 /**
  * Track third party sharing
  */
-function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharingOptions): void {
+function trackThirdPartySharing(adjustThirdPartySharing: ThirdPartySharing): void {
   const callback = () => ActivityState.waitForWebUUID() // ensure we have web_uuid to be sent with request
     .then(() => trackTPS(adjustThirdPartySharing))
 

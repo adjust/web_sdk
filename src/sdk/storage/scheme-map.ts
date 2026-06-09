@@ -30,7 +30,7 @@ type StoreScheme = Record<StoreNames, StoreOptions | StoreOptionsOptionalKey>
 function _parseValue(value: string): any { // eslint-disable-line @typescript-eslint/no-explicit-any
   try {
     return JSON.parse(value)
-  } catch (e) {
+  } catch {
     return value
   }
 }

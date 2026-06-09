@@ -75,7 +75,7 @@ describe('test session functionality', () => {
     jest.clearAllTimers()
   })
 
-  function expectStarted () {
+  async function expectStarted () {
     expect(PubSub.subscribe).toHaveBeenCalledWith('session:finished', expect.any(Function))
     expect(Listeners.on).toHaveBeenCalled()
     expect(Session.isRunning()).toBeTruthy()
@@ -132,13 +132,13 @@ describe('test session functionality', () => {
         })
     })
 
-    it('subscribes on session:finished event and on visibility change event when Page Visibility Api is available', () => {
+    it('subscribes on session:finished event and on visibility change event when Page Visibility Api is available', async () => {
 
       // by default Page Visibility is available
 
       Session.watch()
 
-      expectStarted()
+      await expectStarted()
 
       Session.destroy()
 
@@ -163,11 +163,11 @@ describe('test session functionality', () => {
       expect(Session.isRunning()).toBeFalsy()
     })
 
-    it('destroys session watch', () => {
+    it('destroys session watch', async () => {
 
       Session.watch()
 
-      expectStarted()
+      await expectStarted()
 
       Session.destroy()
 
@@ -175,10 +175,10 @@ describe('test session functionality', () => {
 
       Session.watch()
 
-      return expectStarted()
+      return await expectStarted()
     })
 
-    it('updates installed flag when session:finished event is recognized with successful session request', () => {
+    it('updates installed flag when session:finished event is recognized with successful session request',  async () => {
 
       Session.watch()
 
@@ -186,25 +186,16 @@ describe('test session functionality', () => {
 
       expect(ActivityState.default.current.installed).toBeUndefined()
 
-      return Storage.default.getFirst('activityState')
-        .then(activityState => {
-          expect(activityState.installed).toBeUndefined()
-
-          PubSub.publish('session:finished', {adid: 'bla'})
-
-          jest.runOnlyPendingTimers()
-
-          expect(ActivityState.default.updateInstalled).toHaveBeenCalled()
-          expect(ActivityState.default.current.installed).toBeTruthy()
-          expect(activityState.installed).toBeUndefined()
-
-          return Storage.default.getFirst('activityState')
-        })
-        .then(activityState => {
-          expect(activityState.installed).toBeTruthy()
-
-          return Utils.flushPromises()
-        })
+      let activityState = await Storage.default.getFirst('activityState')
+      expect(activityState.installed).toBeUndefined()
+      PubSub.publish('session:finished', { adid: 'bla' })
+      jest.runOnlyPendingTimers()
+      expect(ActivityState.default.updateInstalled).toHaveBeenCalled()
+      expect(ActivityState.default.current.installed).toBeTruthy()
+      expect(activityState.installed).toBeUndefined()
+      activityState = await Storage.default.getFirst('activityState')
+      expect(activityState.installed).toBeTruthy()
+      return Utils.flushPromises()
     })
 
     it('ignores update of installed flag when session:finished event is recognized with unsuccessful session request', () => {
@@ -235,6 +226,27 @@ describe('test session functionality', () => {
 
           return Utils.flushPromises()
         })
+    })
+
+    it('updates installed flag when session:finished event is recognized with too frequent session request', async () => {
+      const errorMessage = 'Ignoring too frequent session'
+      Session.watch()
+
+      expect.assertions(7)
+
+      expect(ActivityState.default.current.installed).toBeUndefined()
+
+      let activityState = await Storage.default.getFirst('activityState')
+      expect(activityState.installed).toBeUndefined()
+      PubSub.publish('session:finished', Utils.errorResponse('SERVER_INTERNAL_ERROR', errorMessage, 'fake-adid'))
+      jest.runOnlyPendingTimers()
+      expect(ActivityState.default.updateInstalled).toHaveBeenCalled()
+      expect(ActivityState.default.current.installed).toBeTruthy()
+      activityState = await Storage.default.getFirst('activityState')
+      expect(activityState.installed).toBeTruthy()
+      expect(activityState.attribution.adid).toBe('fake-adid')
+      expect(Logger.default.error).toHaveBeenCalledWith('Session was not successful, error was returned from the server:', errorMessage)
+      return Utils.flushPromises()
     })
 
     it('updates last active timestamp every n seconds', () => {

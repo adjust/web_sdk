@@ -1,4 +1,6 @@
 // @flow
+/* eslint-disable no-undef */
+
 export type NavigatorT = Navigator & {
   msDoNotTrack?: any,
   userLanguage?: string
@@ -40,11 +42,11 @@ export type ActivityStateMapT = $Shape<{|
 |}>
 
 export type CommonRequestParams = {|
-  timeSpent: $PropertyType<ActivityStateMapT, 'timeSpent'>,
-  sessionLength: $PropertyType<ActivityStateMapT, 'sessionLength'>,
-  sessionCount: $PropertyType<ActivityStateMapT, 'sessionCount'>,
-  lastInterval: $PropertyType<ActivityStateMapT, 'lastInterval'>,
-  eventCount?: $PropertyType<ActivityStateMapT, 'eventCount'>
+  timeSpent: ActivityStateMapT['timeSpent'],
+  sessionLength: ActivityStateMapT['sessionLength'],
+  sessionCount: ActivityStateMapT['sessionCount'],
+  lastInterval: ActivityStateMapT['lastInterval'],
+  eventCount?: ActivityStateMapT['eventCount']
 |}
 
 export type GlobalKeyValueParamsT = {[key: string]: string}
@@ -119,7 +121,9 @@ export type HttpErrorResponseT = $ReadOnly<{|
   action: 'CONTINUE' | 'RETRY',
   response: {[string]: string} | string,
   message: string,
-  code: ErrorCodeT
+  code: ErrorCodeT,
+  adid?: string,
+  ask_in?: number,
 |}>
 
 export type HttpFinishCbT = () => void
@@ -180,16 +184,16 @@ export type LogOptionsT = $ReadOnly<$Shape<{|
 |}>>
 
 export type InitOptionsT = $ReadOnly<$Shape<{|
-  appToken: $PropertyType<BaseParamsT, 'appToken'>,
-  environment: $PropertyType<BaseParamsT, 'environment'>,
-  defaultTracker: $PropertyType<BaseParamsT, 'defaultTracker'>,
-  externalDeviceId: $PropertyType<BaseParamsT, 'externalDeviceId'>,
-  storeInfo: $PropertyType<BaseParamsT, 'storeInfo'>,
-  customUrl: $PropertyType<CustomConfigT, 'customUrl'>,
-  dataResidency: $PropertyType<CustomConfigT, 'dataResidency'>,
-  urlStrategy: $PropertyType<CustomConfigT, 'urlStrategy'>,
-  eventDeduplicationListLimit: $PropertyType<CustomConfigT, 'eventDeduplicationListLimit'>,
-  namespace: $PropertyType<CustomConfigT, 'namespace'>,
+  appToken: BaseParamsT['appToken'],
+  environment: BaseParamsT['environment'],
+  defaultTracker: BaseParamsT['defaultTracker'],
+  externalDeviceId: BaseParamsT['externalDeviceId'],
+  storeInfo: BaseParamsT['storeInfo'],
+  customUrl: CustomConfigT['customUrl'],
+  dataResidency: CustomConfigT['dataResidency'],
+  urlStrategy: CustomConfigT['urlStrategy'],
+  eventDeduplicationListLimit: CustomConfigT['eventDeduplicationListLimit'],
+  namespace: CustomConfigT['namespace'],
   attributionCallback: (string, Object) => mixed
 |}>>
 

@@ -11,7 +11,7 @@ function isSupported () {
 
   try {
     _localStorageSupported = window.localStorage && true
-  } catch (e) {
+  } catch {
     _localStorageSupported = false
   }
 

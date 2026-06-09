@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
 const TerserPlugin = require('terser-webpack-plugin')
-const FlowWebpackPlugin = require('flowtype-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const webpack = require('webpack')
@@ -38,7 +37,6 @@ module.exports = () => ({
       __ADJUST__NAMESPACE: JSON.stringify(namespace),
       __ADJUST__SDK_VERSION: JSON.stringify(version)
     }),
-    new FlowWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin()
   ],
   resolve: {
@@ -74,5 +72,8 @@ module.exports = () => ({
       test: /\.(png|jpg|gif|svg)$/,
       type: 'asset/resource'
     }]
-  }
+  },
+  watchOptions: {
+    ignored: /node_modules/,
+  },
 })

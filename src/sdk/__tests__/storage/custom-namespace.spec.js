@@ -22,19 +22,44 @@ describe('Custom namespace functionality', () => {
     logLevel: 'verbose'
   }
 
-  function nextTick (times = 1) {
-    let result = Promise.resolve()
-    for (let i = 0; i < times; i++) {
-      result = result.then(() => {
-        jest.runOnlyPendingTimers()
-        return Utils.flushPromises()
-      })
-    }
-    return result
-  }
-
   function getFromLocalStorage (storage, storeName) {
     return localStorage.getItem(`${storage}.${storeName}`)
+  }
+
+  function deleteDatabase (name) {
+    return new Promise((resolve, reject) => {
+      const request = global.indexedDB.deleteDatabase(name)
+      request.onsuccess = () => resolve()
+      request.onerror = reject
+      request.onblocked = reject
+    })
+  }
+
+  function checkIfDatabaseExists (name) {
+    return new Promise((resolve, reject) => {
+      let created = false
+      const request = global.indexedDB.open(name)
+
+      request.onupgradeneeded = () => {
+        created = true
+      }
+      request.onerror = reject
+      request.onsuccess = (event) => {
+        const db = event.target.result
+        db.close()
+        resolve({ existed: !created, created })
+      }
+    })
+  }
+
+  async function databaseExists (name) {
+    const result = await checkIfDatabaseExists(name)
+
+    if (result.created) {
+      await deleteDatabase(name)
+    }
+
+    return result.existed
   }
 
   /**
@@ -63,44 +88,8 @@ describe('Custom namespace functionality', () => {
     }
   }
 
-  /**
-   * Checks indexeddb database exists or doesn't depending on `expectExists` argument
-   * Function tries to open a database with provided name and expects callbacks called properly
-   * 3 assertions
-   */
-  function expectDatabaseExists (name, expectExists = true) {
-    let existedBefore = true
-
-    const upgradeneededMock = jest.fn(() => existedBefore = false)
-    const successMock = jest.fn((event) => {
-      event.target.result.close()
-      if (!existedBefore) {
-        global.indexedDB.deleteDatabase(name)
-      }
-    })
-    const errorMock = jest.fn()
-
-    const request = global.indexedDB.open(name)
-
-    request.onupgradeneeded = upgradeneededMock
-    request.onerror = errorMock
-    request.onsuccess = successMock
-
-    return nextTick()
-      .then(() => {
-        if (expectExists) {
-          expect(upgradeneededMock).not.toHaveBeenCalled()
-        } else {
-          expect(upgradeneededMock).toHaveBeenCalled()
-        }
-
-        jest.runOnlyPendingTimers()
-      })
-      .then(() => nextTick(2))
-      .then(() => {
-        expect(successMock).toHaveBeenCalled()
-        expect(errorMock).not.toHaveBeenCalled()
-      })
+  async function expectDatabaseExists (name, expectExists = true) {
+    await expect(databaseExists(name)).resolves.toBe(expectExists)
   }
 
   describe('Checks namespace is correct', () => {
@@ -127,16 +116,14 @@ describe('Custom namespace functionality', () => {
 
     })
 
-    function checkStorageMigrated (config) {
+    async function checkStorageMigrated (config) {
       const { namespace } = config
       const custom = !!namespace && namespace.length
 
       AdjustInstance.initSdk(config)
 
-      expect.assertions(1)
-
-      return Utils.flushPromises()
-        .then(() => expectStorageExists(custom ? 'adjust-sdk-' + namespace : 'adjust-sdk'))
+      await Utils.flushPromises()
+      expectStorageExists(custom ? 'adjust-sdk-' + namespace : 'adjust-sdk')
     }
 
     it.each([
@@ -151,6 +138,7 @@ describe('Custom namespace functionality', () => {
   describe('No default-named storage created', () => {
 
     beforeEach(() => {
+      Storage = require('../../storage/storage').default
       QuickStorage = require('../../storage/quick-storage').default
       IndexedDB = require('../../storage/indexeddb').IndexedDB
       LocalStorage = require('../../storage/localstorage').LocalStorage
@@ -164,31 +152,22 @@ describe('Custom namespace functionality', () => {
       jest.resetModules()
     })
 
-    it('Creates a custom-named IndexedDb storage', () => {
-      AdjustInstance.initSdk({ ...config, namespace: 'test' })
+    it('Creates a custom-named IndexedDb storage', async () => {
+      await Storage.init('test')
+      Storage.destroy()
 
-      expect.assertions(3)
-
-      return Utils.flushPromises()
-        .then(() => nextTick(6))
-        .then(() => {
-          AdjustInstance.stop()
-          AdjustInstance.__testonly__.destroy()
-        })
-        .then(() => expectDatabaseExists('adjust-sdk-test'))
-        .then(() => AdjustInstance.__testonly__.clearDatabase())
+      await expectDatabaseExists('adjust-sdk-test')
+      await Storage.deleteDatabase()
     })
 
-    it('Creates a custom-named LocalStorage storage', () => {
+    it('Creates a custom-named LocalStorage storage', async () => {
       jest.spyOn(IndexedDB, 'isSupported').mockImplementation(() => Promise.resolve(false))
       jest.spyOn(LocalStorage, 'isSupported').mockImplementation(() => Promise.resolve(true))
 
       AdjustInstance.initSdk({ ...config, namespace: 'test' })
 
-      expect.assertions(1)
-
-      return Utils.flushPromises()
-        .then(() => expectLocalStorageExists('adjust-sdk-test'))
+      await Utils.flushPromises()
+      expectLocalStorageExists('adjust-sdk-test')
     })
   })
 
@@ -207,26 +186,25 @@ describe('Custom namespace functionality', () => {
     describe('IndexedDb', () => {
       let Logger
 
-      beforeEach(() => {
+      beforeEach(async () => {
         QuickStorage = require('../../storage/quick-storage').default
         IndexedDB = require('../../storage/indexeddb').IndexedDB
         Storage = require('../../storage/storage').default
 
-        return Storage.init() // No namespace initially set
-          .then(() => Storage.addItem('activityState', activityState)) // Add some data to check it was cloned into new database
-          .then(() => Storage.destroy())
-          .then(Utils.flushPromises)
-          .then(() => {
-            jest.resetModules() // Reset Storage module to clear cached initialisation promise
+        await Storage.init() // No namespace initially set
+        await Storage.addItem('activityState', activityState) // Add some data to check it was cloned into new database
+        Storage.destroy()
+        await Utils.flushPromises()
 
-            QuickStorage = require('../../storage/quick-storage').default
-            IndexedDB = require('../../storage/indexeddb').IndexedDB
-            Storage = require('../../storage/storage').default
-            Logger = require('../../logger')
+        jest.resetModules() // Reset Storage module to clear cached initialisation promise
 
-            jest.spyOn(IndexedDB.prototype, 'setCustomName') // Set mocks
-            jest.spyOn(Logger.default, 'info')
-          })
+        QuickStorage = require('../../storage/quick-storage').default
+        IndexedDB = require('../../storage/indexeddb').IndexedDB
+        Storage = require('../../storage/storage').default
+        Logger = require('../../logger')
+
+        jest.spyOn(IndexedDB.prototype, 'setCustomName') // Set mocks
+        jest.spyOn(Logger.default, 'info')
       })
 
       afterEach(() => {
@@ -236,16 +214,14 @@ describe('Custom namespace functionality', () => {
           })
       })
 
-      it('Migrates data', () => {
-        expect.assertions(9)
+      it('Migrates data', async () => {
+        await Storage.init(namespace)
 
-        return Storage.init(namespace)
-          .then(() => expect(IndexedDB.prototype.setCustomName).toHaveBeenCalledWith(namespace))
-          .then(() => expect(Logger.default.info).toHaveBeenCalledWith('Database migration finished'))
-          .then(() => expectDatabaseExists(defaultName, false)) // Check default-named database was removed
-          .then(() => expectDatabaseExists(customName)) // And a custom-named one exists
-          .then(() => Storage.getAll('activityState')) // Check new database contains data that was put into old one
-          .then(records => expect(records[0]).toEqual(activityState))
+        expect(IndexedDB.prototype.setCustomName).toHaveBeenCalledWith(namespace)
+        expect(Logger.default.info).toHaveBeenCalledWith('Database migration finished')
+        await expectDatabaseExists(defaultName, false) // Check default-named database was removed
+        await expectDatabaseExists(customName) // And a custom-named one exists
+        await expect(Storage.getAll('activityState')).resolves.toEqual([activityState]) // Check new database contains data that was put into old one
       })
 
     })
@@ -261,28 +237,25 @@ describe('Custom namespace functionality', () => {
         jest.spyOn(LocalStorage, 'isSupported').mockImplementation(() => Promise.resolve(true))
       }
 
-      beforeAll(() => {
+      beforeAll(async () => {
         requireModules()
 
-        return Storage.init() // No namespace initially set
-          .then(() => Storage.addItem('activityState', activityState)) // Add some data to check it was cloned into new database
-          .then(() => {
-            jest.resetModules() // Reset Storage module to clear cached initialisation promise
+        await Storage.init() // No namespace initially set
+        await Storage.addItem('activityState', activityState) // Add some data to check it was cloned into new database
+        jest.resetModules() // Reset Storage module to clear cached initialisation promise
 
-            requireModules()
+        requireModules()
 
-            jest.spyOn(QuickStorage, 'setCustomName') // Set mocks
-          })
+        jest.spyOn(QuickStorage, 'setCustomName') // Set mocks
       })
 
-      it('Migrates data', () => {
+      it('Migrates data', async () => {
+        await Storage.init(namespace)
 
-        return Storage.init(namespace)
-          .then(() => expect(QuickStorage.setCustomName).toHaveBeenCalledWith(namespace))
-          .then(() => expectLocalStorageExists(defaultName, false)) // Check default-named database was removed
-          .then(() => expectLocalStorageExists(customName)) // And a custom-named one exists
-          .then(() => Storage.getAll('activityState')) // Check new database contains data that was put into old one
-          .then(records => expect(records[0]).toEqual(activityState))
+        expect(QuickStorage.setCustomName).toHaveBeenCalledWith(namespace)
+        expectLocalStorageExists(defaultName, false) // Check default-named database was removed
+        expectLocalStorageExists(customName) // And a custom-named one exists
+        await expect(Storage.getAll('activityState')).resolves.toEqual([activityState]) // Check new database contains data that was put into old one
       })
     })
   })
