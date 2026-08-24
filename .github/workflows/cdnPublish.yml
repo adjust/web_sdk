@@ -37,13 +37,11 @@ jobs:
           project_id: 'websdk'
           workload_identity_provider: 'projects/313880847322/locations/global/workloadIdentityPools/websdk-identity-pool/providers/github-actions-web-sdk'
 
-      #Just for testing
-      - name: Create upload probe file
-        run: echo "upload test" > /tmp/cdn-upload-probe-web-sdk.txt
-
-      - id: 'test-upload'
+      - id: 'upload-artifacts'
         name: 'Upload SDK files to Google Cloud'
         uses: 'google-github-actions/upload-cloud-storage@v3'
         with:
-          path: '/tmp/cdn-upload-probe-web-sdk.txt'
+          path: 'dist/artifacts'
           destination: 'adjust-web-sdk'
+          process_gcloudignore: false
+          parent: false
