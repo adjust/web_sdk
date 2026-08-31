@@ -26,8 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build SDK
-        run: npm run build:sdk
+      - name: Build package
+        run: npm run build
+
+      - name: Create npm package artifact
+        run: |
+          mkdir -p ./npm-artifacts
+          npm pack --pack-destination ./npm-artifacts
 
       - name: Publish
-        run: npm publish --access public
+        run: npm publish ./npm-artifacts/*.tgz --access public

@@ -1,7 +1,6 @@
 name: Publish to CDN
 
 on:
-  workflow_dispatch:
   release:
     types: [published]
 
@@ -11,7 +10,7 @@ permissions:
 
 jobs:
   publish:
-    #if: github.repository == 'adjust/web_sdk'
+    if: github.repository == 'adjust/web_sdk'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
