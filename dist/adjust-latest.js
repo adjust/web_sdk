@@ -1906,16 +1906,14 @@ class IndexedDBWrapper /*:: implements IStorage*/{
         this.openDatabase(customName, this.handleUpgradeNeeded, this.dbVersion) // Open or create a new database, migrate version if needed
         ]).then(([defaultDbConnection, customDbConnection]) => {
           return this.cloneData(defaultDbConnection, customDbConnection).then(() => {
-            this.indexedDbConnection = customDbConnection;
+            this.setConnection(customDbConnection);
             defaultDbConnection.close();
             return this.deleteDatabaseByName(defaultName);
           });
         }).then(() => logger.info('Database migration finished'));
       } else {
         // There is no default-named database, let's just create or open a custom-named one
-        return this.openDatabase(customName, this.handleUpgradeNeeded, this.dbVersion).then(customDbConnection => {
-          this.indexedDbConnection = customDbConnection;
-        });
+        return this.openDatabase(customName, this.handleUpgradeNeeded, this.dbVersion).then(customDbConnection => this.setConnection(customDbConnection));
       }
     });
   }
@@ -1956,6 +1954,10 @@ class IndexedDBWrapper /*:: implements IStorage*/{
     recover();
     quick_storage.clear();
   }
+  setConnection(connection /*: IDBDatabase*/) /*: void*/{
+    this.indexedDbConnection = connection;
+    this.indexedDbConnection.onclose = () => this.destroy();
+  }
 
   /**
    * Open the database connection and create store if not existent
@@ -1967,8 +1969,7 @@ class IndexedDBWrapper /*:: implements IStorage*/{
       });
     }
     return this.openDatabase(this.dbName, this.handleUpgradeNeeded, this.dbVersion).then(connection => {
-      this.indexedDbConnection = connection;
-      this.indexedDbConnection.onclose = () => this.destroy();
+      this.setConnection(connection);
       return {
         success: true
       };
