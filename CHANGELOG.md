@@ -1,3 +1,9 @@
+### Version 5.8.4 (18th November 2026)
+#### Fixed
+- Fixed IndexedDB connection cleanup when the browser closes the database connection.
+
+---
+
 ### Version 5.8.3 (9th June 2026)
 #### Fixed
 - Fixed an issue where the SDK’s installed state was not updated when a recent session had already been tracked in another SDK instance. In this case, queued events are now still sent even if the `/session` request is denied due to the session interval limit.
