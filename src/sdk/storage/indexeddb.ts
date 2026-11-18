@@ -272,7 +272,7 @@ class IndexedDBWrapper implements IStorage {
             .then(([defaultDbConnection, customDbConnection]) => {
               return this.cloneData(defaultDbConnection, customDbConnection)
                 .then(() => {
-                  this.indexedDbConnection = customDbConnection
+                  this.setConnection(customDbConnection)
 
                   defaultDbConnection.close()
                   return this.deleteDatabaseByName(defaultName)
@@ -283,7 +283,7 @@ class IndexedDBWrapper implements IStorage {
         } else {
           // There is no default-named database, let's just create or open a custom-named one
           return this.openDatabase(customName, this.handleUpgradeNeeded, this.dbVersion)
-            .then(customDbConnection => { this.indexedDbConnection = customDbConnection })
+            .then(customDbConnection => this.setConnection(customDbConnection))
         }
       })
   }
@@ -335,6 +335,11 @@ class IndexedDBWrapper implements IStorage {
     QuickStorage.clear()
   }
 
+  private setConnection(connection: IDBDatabase): void {
+    this.indexedDbConnection = connection
+    this.indexedDbConnection.onclose = () => this.destroy()
+  }
+
   /**
    * Open the database connection and create store if not existent
    */
@@ -345,8 +350,7 @@ class IndexedDBWrapper implements IStorage {
 
     return this.openDatabase(this.dbName, this.handleUpgradeNeeded, this.dbVersion)
       .then(connection => {
-        this.indexedDbConnection = connection
-        this.indexedDbConnection.onclose = () => this.destroy()
+        this.setConnection(connection)
         return ({ success: true })
       })
   }

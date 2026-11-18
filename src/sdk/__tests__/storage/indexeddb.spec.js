@@ -119,6 +119,31 @@ describe('IndexedDB usage', () => {
 
       connection.close()
     })
+
+    it('destroys the cached custom connection when the browser closes it after migration', async () => {
+      global.indexedDB = fakeIDB
+      window.indexedDB = fakeIDB
+
+      const { IndexedDB } = require('../../storage/indexeddb')
+      jest.spyOn(IndexedDB, 'isSupported').mockResolvedValue(true)
+
+      const defaultStorage = new IndexedDB()
+      await defaultStorage.getAll('q')
+      defaultStorage.destroy()
+
+      const storage = new IndexedDB()
+      await storage.setCustomName('custom')
+
+      const connection = storage.indexedDbConnection
+      const destroySpy = jest.spyOn(storage, 'destroy')
+
+      connection.onclose()
+
+      expect(destroySpy).toHaveBeenCalledTimes(1)
+      expect(storage.indexedDbConnection).toBeNull()
+
+      fakeIDB._databases.clear()
+    })
   })
 
   describe('run common tests for IndexedDB implementation', () => {
