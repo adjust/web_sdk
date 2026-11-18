@@ -116,7 +116,7 @@ describe('event tracking functionality', () => {
         }
       })
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('resolves event request successfully without revenue and some map params 2', async () => {
@@ -140,7 +140,7 @@ describe('event tracking functionality', () => {
         }
       }, timestamp)
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('resolves event request successfully with revenue but no currency', async () => {
@@ -160,7 +160,7 @@ describe('event tracking functionality', () => {
         }
       })
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('resolves event request successfully but ignores malformed revenue', async () => {
@@ -180,7 +180,7 @@ describe('event tracking functionality', () => {
         }
       })
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('resolves event request successfully with revenue and some map params', async () => {
@@ -212,7 +212,7 @@ describe('event tracking functionality', () => {
         }
       })
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('sets default callback parameters to be appended to each track event request', async () => {
@@ -243,7 +243,7 @@ describe('event tracking functionality', () => {
         }
       })
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('sets default partner parameters to be appended to each track event request', async () => {
@@ -270,7 +270,7 @@ describe('event tracking functionality', () => {
         }
       })
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('overrides some default callback parameters with callback parameters passed directly', async () => {
@@ -301,7 +301,7 @@ describe('event tracking functionality', () => {
         }
       })
 
-      await expect(eventPromise).toResolve()
+      await expect(eventPromise).resolves.toBeDefined()
     })
 
     it('sets default callback and partner parameters and override both with some parameters passed directly', () => {
@@ -363,7 +363,7 @@ describe('event tracking functionality', () => {
           }
         }) // + 2 assertions
 
-        await expect(eventPromise).toResolve()
+        await expect(eventPromise).resolves.toBeDefined()
 
         expect(Storage.default.trimItems).not.toHaveBeenCalled()
         expect(Storage.default.addItem.mock.calls.length).toBe(1)
@@ -388,7 +388,7 @@ describe('event tracking functionality', () => {
           }
         }) // + 2 assertions
 
-        await expect(eventPromise).toResolve()
+        await expect(eventPromise).resolves.toBeDefined()
 
         expect(Storage.default.trimItems).not.toHaveBeenCalled()
         expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: '123-abc-456' })
@@ -410,7 +410,7 @@ describe('event tracking functionality', () => {
         await expect(event.default({
           eventToken: '123abc',
           deduplicationId: 'dedup-1235-abc'
-        })).toReject()
+        })).rejects.toEqual(expect.anything())
 
         expect(Storage.default.trimItems).not.toHaveBeenCalled()
         expect(Storage.default.addItem).not.toHaveBeenCalled()
@@ -455,7 +455,7 @@ describe('event tracking functionality', () => {
           }
         }) // + 2 assertions
 
-        await expect(eventPromise).toResolve()
+        await expect(eventPromise).resolves.toBeDefined()
 
         expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 1)
         expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (1 of them)')
@@ -485,7 +485,7 @@ describe('event tracking functionality', () => {
         await expect(event.default({
           eventToken: '123abc',
           deduplicationId: 'dedup-1240-abc'
-        })).toReject() // the error is being caught inside event tracking, so outside we have a fullfiled one
+        })).rejects.toEqual(expect.anything())
 
         expect(Storage.default.trimItems).not.toHaveBeenCalled()
         expect(Storage.default.addItem).not.toHaveBeenCalled()
@@ -530,7 +530,7 @@ describe('event tracking functionality', () => {
           }
         }) // + 2 assertions
 
-        await expect(eventPromise).toResolve()
+        await expect(eventPromise).resolves.toBeDefined()
 
         expect(Storage.default.trimItems).toHaveBeenCalledWith('eventDeduplication', 5)
         expect(Logger.default.log).toHaveBeenCalledWith('Event deduplication list limit has been reached. Oldest ids are about to be removed (5 of them)')
@@ -584,7 +584,7 @@ describe('event tracking functionality', () => {
           }
         }) // + 2 assertions
 
-        await expect(eventPromise).toResolve()
+        await expect(eventPromise).resolves.toBeDefined()
 
         expect(Storage.default.trimItems).not.toHaveBeenCalled()
         expect(Storage.default.addItem).toHaveBeenCalledWith('eventDeduplication', { id: 'dedup-1240-abc' })

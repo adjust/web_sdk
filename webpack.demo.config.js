@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
 const TerserPlugin = require('terser-webpack-plugin')
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const webpack = require('webpack')
 const packageJson = require('./package.json')
@@ -36,8 +35,7 @@ module.exports = () => ({
     new webpack.DefinePlugin({
       __ADJUST__NAMESPACE: JSON.stringify(namespace),
       __ADJUST__SDK_VERSION: JSON.stringify(version)
-    }),
-    new ForkTsCheckerWebpackPlugin()
+    })
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json']

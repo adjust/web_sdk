@@ -136,9 +136,8 @@ describe('main entry point - test instance initiation when storage is available'
                 .then(() => {
                   requests = Queue.push.mock.calls.map(call => call[0].url)
                   expect(requests[2]).toBe('/event')
-                  expect(trackEventPromise).toResolve()
-
-                  global.history.pushState({}, '', '?')
+                  return expect(trackEventPromise).resolves.toBeDefined()
+                    .then(() => global.history.pushState({}, '', '?'))
                 })
             })
         })
@@ -442,7 +441,7 @@ describe('main entry point - test instance initiation when storage is available'
       PubSub.publish('sdk:installed')
       jest.runOnlyPendingTimers()
 
-      await expect(AdjustInstance.trackEvent({ eventToken: 'blabla' })).toResolve()
+      await expect(AdjustInstance.trackEvent({ eventToken: 'blabla' })).resolves.toBeDefined()
 
       expect(event.default).toHaveBeenCalledWith({ eventToken: 'blabla' }, undefined)
     })

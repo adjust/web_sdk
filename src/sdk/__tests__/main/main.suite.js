@@ -109,7 +109,7 @@ function expectDelayedTrackEvent_Async () {
 
       expect(Logger.default.log).toHaveBeenLastCalledWith('Delayed track event task is running now')
       expect(event.default).toHaveBeenCalledWith({eventToken: 'bla123'}, expect.any(Number))
-      expect(eventPromise).toResolve()
+      return expect(eventPromise).resolves.toBeDefined()
     })
 
   return {assertions: 5, promise}

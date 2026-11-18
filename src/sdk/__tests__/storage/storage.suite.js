@@ -594,10 +594,10 @@ export default function Suite (getStorageCb) {
             return Storage.deleteBulk('globalParams', 'partner')
           })
           .then(deleted => {
-            expect(deleted).toEqualArrayIgnoringOrder([
+            expect(deleted.sort()).toEqual([
               ['key1', 'partner'],
               ['key2', 'partner']
-            ])
+            ].sort())
 
             return Storage.getAll('globalParams')
           })
@@ -612,12 +612,12 @@ export default function Suite (getStorageCb) {
             return Storage.deleteBulk('globalParams', 'callback')
           })
           .then(deleted => {
-            expect(deleted).toEqualArrayIgnoringOrder([
+            expect(deleted.sort()).toEqual([
               ['key1', 'callback'],
               ['key2', 'callback'],
               ['key3', 'callback'],
               ['key4', 'callback']
-            ])
+            ].sort())
 
             return Storage.getAll('globalParams')
           })
@@ -823,11 +823,11 @@ export default function Suite (getStorageCb) {
 
           return Storage.addBulk('globalParams', globalParamsSet1)
             .then(result => {
-              expect(result).toEqualArrayIgnoringOrder([
+              expect(result.sort()).toEqual([
                 ['bla', 'callback'],
                 ['key1', 'callback'],
                 ['eto', 'partner']
-              ])
+              ].sort())
 
               return Storage.addBulk('globalParams', globalParamsSet2)
             })
@@ -880,12 +880,12 @@ export default function Suite (getStorageCb) {
               return Storage.addBulk('globalParams', globalParamsSet2, true)
             })
             .then(result => {
-              expect(result).toEqualArrayIgnoringOrder([
+              expect(result.sort()).toEqual([
                 ['key1', 'callback'],
                 ['par', 'partner'],
                 ['bla', 'partner'],
                 ['eto', 'partner']
-              ])
+              ].sort())
 
               return Storage.getAll('globalParams')
             })

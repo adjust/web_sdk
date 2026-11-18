@@ -10,7 +10,6 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/src/sdk/__tests__/_setup/_utils.js',
-    '<rootDir>/src/sdk/__tests__/_setup/_matchers.js',
     '<rootDir>/src/sdk/__tests__/_setup/_structuredClone.js',
     '<rootDir>/src/sdk/__tests__/_setup/global.d.ts',
     '<rootDir>/src/sdk/__tests__/main/main.suite.js',
@@ -21,9 +20,6 @@ module.exports = {
     '<rootDir>/src/sdk/__tests__/_setup/_utils.js',
     '<rootDir>/src/sdk/__tests__/_setup/_structuredClone.js',
     '<rootDir>/src/sdk/__tests__/_setup/global.d.ts',
-  ],
-  setupFilesAfterEnv: [
-    '<rootDir>/src/sdk/__tests__/_setup/_matchers.js'
   ],
   moduleNameMapper: {
     "\.(css|scss)$": "<rootDir>/src/sdk/__mocks__/style.js"
