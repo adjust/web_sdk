@@ -95,6 +95,30 @@ describe('IndexedDB usage', () => {
           })
       })
     })
+
+  })
+
+  describe('database connection lifecycle', () => {
+    it('destroys the cached connection when the browser closes it', async () => {
+      global.indexedDB = fakeIDB
+      window.indexedDB = fakeIDB
+
+      const { IndexedDB } = require('../../storage/indexeddb')
+      const storage = new IndexedDB()
+      jest.spyOn(IndexedDB, 'isSupported').mockResolvedValue(true)
+
+      await storage.getAll('q')
+
+      const connection = storage.indexedDbConnection
+      const destroySpy = jest.spyOn(storage, 'destroy')
+
+      connection.onclose()
+
+      expect(destroySpy).toHaveBeenCalledTimes(1)
+      expect(storage.indexedDbConnection).toBeNull()
+
+      connection.close()
+    })
   })
 
   describe('run common tests for IndexedDB implementation', () => {

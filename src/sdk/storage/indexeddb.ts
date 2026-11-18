@@ -346,7 +346,7 @@ class IndexedDBWrapper implements IStorage {
     return this.openDatabase(this.dbName, this.handleUpgradeNeeded, this.dbVersion)
       .then(connection => {
         this.indexedDbConnection = connection
-        this.indexedDbConnection.onclose = () => this.destroy
+        this.indexedDbConnection.onclose = () => this.destroy()
         return ({ success: true })
       })
   }
