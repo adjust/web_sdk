@@ -17,7 +17,7 @@ import Logger from './logger'
 import backOff from './backoff'
 import {isConnected} from './listeners'
 import {SECOND, HTTP_ERRORS} from './constants'
-import {getBaseUrlsIterator, BaseUrlsIterator, BaseUrlsMap} from './url-strategy'
+import {getBaseUrlsIterator, type BaseUrlsIterator, type BaseUrlsMap} from './url-strategy'
 
 type RequestConfigT = {|
   url?: UrlT,

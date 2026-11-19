@@ -11,137 +11,41 @@
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The require scope
-/******/ 	var __webpack_require__ = {};
+/******/ 	const __webpack_require__ = {};
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
   "default": () => (/* binding */ main)
 });
 
-;// ./node_modules/@babel/runtime/helpers/esm/typeof.js
-function _typeof(o) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
-    return typeof o;
-  } : function (o) {
-    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
-  }, _typeof(o);
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
-
-function toPrimitive(t, r) {
-  if ("object" != _typeof(t) || !t) return t;
-  var e = t[Symbol.toPrimitive];
-  if (void 0 !== e) {
-    var i = e.call(t, r || "default");
-    if ("object" != _typeof(i)) return i;
-    throw new TypeError("@@toPrimitive must return a primitive value.");
-  }
-  return ("string" === r ? String : Number)(t);
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
-
-
-function toPropertyKey(t) {
-  var i = toPrimitive(t, "string");
-  return "symbol" == _typeof(i) ? i : i + "";
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
-
-function _defineProperty(e, r, t) {
-  return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
-    value: t,
-    enumerable: !0,
-    configurable: !0,
-    writable: !0
-  }) : e[r] = t, e;
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
-
-function ownKeys(e, r) {
-  var t = Object.keys(e);
-  if (Object.getOwnPropertySymbols) {
-    var o = Object.getOwnPropertySymbols(e);
-    r && (o = o.filter(function (r) {
-      return Object.getOwnPropertyDescriptor(e, r).enumerable;
-    })), t.push.apply(t, o);
-  }
-  return t;
-}
-function _objectSpread2(e) {
-  for (var r = 1; r < arguments.length; r++) {
-    var t = null != arguments[r] ? arguments[r] : {};
-    r % 2 ? ownKeys(Object(t), !0).forEach(function (r) {
-      _defineProperty(e, r, t[r]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) {
-      Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
-    });
-  }
-  return e;
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
-function _objectWithoutPropertiesLoose(r, e) {
-  if (null == r) return {};
-  var t = {};
-  for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
-    if (-1 !== e.indexOf(n)) continue;
-    t[n] = r[n];
-  }
-  return t;
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js
-
-function _objectWithoutProperties(e, t) {
-  if (null == e) return {};
-  var o,
-    r,
-    i = _objectWithoutPropertiesLoose(e, t);
-  if (Object.getOwnPropertySymbols) {
-    var n = Object.getOwnPropertySymbols(e);
-    for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]);
-  }
-  return i;
-}
-
 ;// ./src/sdk/constants.ts
-var SECOND = 1000;
-var MINUTE = SECOND * 60;
-var HOUR = MINUTE * 60;
-var DAY = HOUR * 24;
-var DISABLE_REASONS = /*#__PURE__*/function (DISABLE_REASONS) {
+const SECOND = 1000;
+const MINUTE = SECOND * 60;
+const HOUR = MINUTE * 60;
+const DAY = HOUR * 24;
+let DISABLE_REASONS = /*#__PURE__*/function (DISABLE_REASONS) {
   DISABLE_REASONS["REASON_GENERAL"] = "general";
   DISABLE_REASONS["REASON_GDPR"] = "gdpr";
   return DISABLE_REASONS;
 }({});
-var HTTP_ERRORS = {
+const HTTP_ERRORS = {
   'TRANSACTION_ERROR': 'XHR transaction failed due to an error',
   'SERVER_MALFORMED_RESPONSE': 'Response from server is malformed',
   'SERVER_INTERNAL_ERROR': 'Internal error occurred on the server',
@@ -150,13 +54,13 @@ var HTTP_ERRORS = {
   'SKIP': 'Skipping slower attempt',
   'MISSING_URL': 'Url is not provided'
 };
-var STORAGE_TYPES = /*#__PURE__*/function (STORAGE_TYPES) {
+let STORAGE_TYPES = /*#__PURE__*/function (STORAGE_TYPES) {
   STORAGE_TYPES["NO_STORAGE"] = "noStorage";
   STORAGE_TYPES["INDEXED_DB"] = "indexedDB";
   STORAGE_TYPES["LOCAL_STORAGE"] = "localStorage";
   return STORAGE_TYPES;
 }({});
-var ENDPOINTS = {
+const ENDPOINTS = {
   default: 'adjust.com',
   india: 'adjust.net.in',
   china: 'adjust.world',
@@ -165,83 +69,14 @@ var ENDPOINTS = {
   TR: 'tr.adjust.com',
   US: 'us.adjust.com'
 };
-var BASE_URL_PREFIX = 'https://app.';
-var GDPR_URL_PREFIX = 'https://gdpr.';
-var BASE_URL_NO_SUB_DOMAIN_PREFIX = 'https://';
-var PUB_SUB_EVENTS = {
+const BASE_URL_PREFIX = 'https://app.';
+const GDPR_URL_PREFIX = 'https://gdpr.';
+const BASE_URL_NO_SUB_DOMAIN_PREFIX = 'https://';
+const PUB_SUB_EVENTS = {
   WEB_UUID_CREATED: 'activity:web_uuid',
   ATTRIBUTION_RECEIVED: 'activity:attribution'
 };
-;// ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
-function _arrayWithHoles(r) {
-  if (Array.isArray(r)) return r;
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
-function _iterableToArrayLimit(r, l) {
-  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
-  if (null != t) {
-    var e,
-      n,
-      i,
-      u,
-      a = [],
-      f = !0,
-      o = !1;
-    try {
-      if (i = (t = t.call(r)).next, 0 === l) {
-        if (Object(t) !== t) return;
-        f = !1;
-      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
-    } catch (r) {
-      o = !0, n = r;
-    } finally {
-      try {
-        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
-      } finally {
-        if (o) throw n;
-      }
-    }
-    return a;
-  }
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
-function _arrayLikeToArray(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-  return n;
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
-
-function _unsupportedIterableToArray(r, a) {
-  if (r) {
-    if ("string" == typeof r) return _arrayLikeToArray(r, a);
-    var t = {}.toString.call(r).slice(8, -1);
-    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
-  }
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
-
-
-
-
-function _slicedToArray(r, e) {
-  return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
-}
-
 ;// ./src/sdk/utilities.ts
-
-
-
-
 /**
  * Build human readable list
  */
@@ -250,11 +85,11 @@ function buildList(array /*: Array<unknown>*/) /*: string*/{
     return '';
   }
   if (array.length === 1) {
-    return "".concat(array[0]);
+    return `${array[0]}`;
   }
-  var lastIndex = array.length - 1;
-  var firstPart = array.slice(0, lastIndex).join(', ');
-  return "".concat(firstPart, " and ").concat(array[lastIndex]);
+  const lastIndex = array.length - 1;
+  const firstPart = array.slice(0, lastIndex).join(', ');
+  return `${firstPart} and ${array[lastIndex]}`;
 }
 
 /**
@@ -269,7 +104,7 @@ function isEmpty(obj /*: Record<string, unknown>*/) /*: boolean*/{
  */
 function isObject(obj /*: any*/) /*: obj is Record<string, unknown>*/{
   // eslint-disable-line @typescript-eslint/no-explicit-any
-  return _typeof(obj) === 'object' && obj !== null && !(obj instanceof Array);
+  return typeof obj === 'object' && obj !== null && !(obj instanceof Array);
 }
 
 /**
@@ -277,9 +112,9 @@ function isObject(obj /*: any*/) /*: obj is Record<string, unknown>*/{
  */
 function isValidJson(string /*: string*/) /*: boolean*/{
   try {
-    var json = JSON.parse(string);
+    const json = JSON.parse(string);
     return isObject(json);
-  } catch (_unused) {
+  } catch {
     return false;
   }
 }
@@ -289,11 +124,9 @@ function isValidJson(string /*: string*/) /*: boolean*/{
  */
 function findIndex /*:: <K extends string, T extends Record<K, unknown>>*/(array /*: Array<T>*/, key /*: K | Array<K>*/, target /*: T*/) /*: number*/{
   function isEqual(item /*: T*/) {
-    return Array.isArray(key) ? key.every(function (k) {
-      return item[k] === target[k];
-    }) : item[key] === target;
+    return Array.isArray(key) ? key.every(k => item[k] === target[k]) : item[key] === target;
   }
-  for (var i = 0; i < array.length; i += 1) {
+  for (let i = 0; i < array.length; i += 1) {
     if (isEqual(array[i])) {
       return i;
     }
@@ -304,66 +137,57 @@ function findIndex /*:: <K extends string, T extends Record<K, unknown>>*/(array
 /**
  * Convert array with key/value item structure into key/value pairs object
  */
-function convertToMap /*:: <T>*/() /*: Record<string, T>*/{
-  var array /*: Array<{ key: string, value: T }>*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  return array.reduce(function (acc, o) {
-    return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, o.key, o.value));
-  }, {});
+function convertToMap /*:: <T>*/(array /*: Array<{ key: string, value: T }>*/ = []) /*: Record<string, T>*/{
+  return array.reduce((acc, o) => ({
+    ...acc,
+    [o.key]: o.value
+  }), {});
 }
 
 /**
  * Find intersecting values of provided array against given values
  */
-function intersection /*:: <T>*/() /*: Array<T>*/{
-  var array /*: Array<T>*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var values /*: Array<T>*/ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  return array.filter(function (item) {
-    return values.indexOf(item) !== -1;
-  });
+function intersection /*:: <T>*/(array /*: Array<T>*/ = [], values /*: Array<T>*/ = []) /*: Array<T>*/{
+  return array.filter(item => values.indexOf(item) !== -1);
 }
 
 /**
  * Check if particular url is a certain request
  */
 function isRequest(url /*: string*/, requestName /*: string*/) /*: boolean*/{
-  var regex = new RegExp("\\/".concat(requestName, "(\\/.*|\\?.*){0,1}$"));
+  const regex = new RegExp(`\\/${requestName}(\\/.*|\\?.*){0,1}$`);
   return regex.test(url);
 }
 
 /**
  * Extract the host name for the url
  */
-function getHostName() /*: string*/{
-  var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+function getHostName(url = '') /*: string*/{
   return url.replace(/^(http(s)*:\/\/)*(www\.)*/, '').split('/')[0].split('?')[0];
 }
 
 /**
  * Transform array entry into object key:value pair entry
  */
-function reducer /*:: <K extends string, T>*/(acc /*: Record<K, T>*/, _ref /*:: */) /*: Record<K, T>*/{
-  var _ref2 = _slicedToArray(_ref /*:: */, 2),
-    key = _ref2[0],
-    value = _ref2[1];
-  return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, value));
+function reducer /*:: <K extends string, T>*/(acc /*: Record<K, T>*/, [key, value]) /*: Record<K, T>*/{
+  return {
+    ...acc,
+    [key]: value
+  };
 }
 
 /**
  * Extracts object entries in the [key, value] format
  */
 function entries /*:: <K extends string, T>*/(object /*: Record<K, T>*/) /*: Array<[K, T]>*/{
-  return Object.keys(object).map(function (key /*: K*/) {
-    return [key, object[key]];
-  });
+  return Object.keys(object).map((key /*: K*/) => [key, object[key]]);
 }
 
 /**
  * Extracts object values
  */
 function values /*:: <T>*/(object /*: Record<string, T>*/) /*: Array<T>*/{
-  return Object.keys(object).map(function (key /*: string*/) {
-    return object[key];
-  });
+  return Object.keys(object).map((key /*: string*/) => object[key]);
 }
 
 /**
@@ -378,14 +202,14 @@ function isEmptyEntry(value /*: any*/) /*: boolean*/{
 }
 function isLocalStorageSupported() /*: boolean*/{
   try {
-    var uid = new Date().toString();
-    var storage = window.localStorage;
+    const uid = new Date().toString();
+    const storage = window.localStorage;
     storage.setItem(uid, uid);
-    var result = storage.getItem(uid) === uid;
+    const result = storage.getItem(uid) === uid;
     storage.removeItem(uid);
-    var support = !!(result && storage);
+    const support = !!(result && storage);
     return support;
-  } catch (_unused2) {
+  } catch {
     return false;
   }
 }
@@ -398,24 +222,23 @@ function isLocalStorageSupported() /*: boolean*/{
     NODE_ENV: 'development' | 'production' | 'test'
   |}
 |}*/
-var Globals = {
+const Globals = {
   namespace: "adjust-sdk" || 0,
-  version: "5.8.3" || 0,
+  version: "5.8.4" || 0,
   env: "production"
 };
 /* harmony default export */ const globals = (Globals);
 ;// ./src/sdk/logger.js
 
 
-
 /*:: import { type LogOptionsT } from './types';*/
 /*:: type LogLevelT = LogOptionsT['logLevel']*/
 /*:: type MethodNameT = 'log' | 'info' | 'error' | 'warn'*/
-var LEVEL_NONE = 'none';
-var LEVEL_ERROR = 'error';
-var LEVEL_WARNING = 'warning';
-var LEVEL_INFO = 'info';
-var LEVEL_VERBOSE = 'verbose';
+const LEVEL_NONE = 'none';
+const LEVEL_ERROR = 'error';
+const LEVEL_WARNING = 'warning';
+const LEVEL_INFO = 'info';
+const LEVEL_VERBOSE = 'verbose';
 
 /**
  * Logger levels
@@ -427,7 +250,13 @@ var LEVEL_VERBOSE = 'verbose';
  * @type {Object}
  * @private
  */
-var _levels = _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty({}, LEVEL_NONE, -1), LEVEL_ERROR, 0), LEVEL_WARNING, 1), LEVEL_INFO, 2), LEVEL_VERBOSE, 3);
+const _levels = {
+  [LEVEL_NONE]: -1,
+  [LEVEL_ERROR]: 0,
+  [LEVEL_WARNING]: 1,
+  [LEVEL_INFO]: 2,
+  [LEVEL_VERBOSE]: 3
+};
 
 /**
  * Spaces placed after log level tag in console to align messages.
@@ -435,7 +264,7 @@ var _levels = _defineProperty(_defineProperty(_defineProperty(_defineProperty(_d
  * @type {Object}
  * @private
  */
-var _spaces = {
+const _spaces = {
   'log': '  ',
   'info': ' ',
   'warn': ' ',
@@ -448,7 +277,7 @@ var _spaces = {
  * @type {Object}
  * @private
  */
-var _envLogLevels = {
+const _envLogLevels = {
   development: LEVEL_VERBOSE,
   production: LEVEL_ERROR,
   test: LEVEL_VERBOSE
@@ -457,7 +286,7 @@ var _envLogLevels = {
 /**
  * Current logger level
  */
-var _level = _getDefaultLogLevel();
+let _level = _getDefaultLogLevel();
 
 /**
  * Optional output container to display logs for easier debugging
@@ -465,7 +294,7 @@ var _level = _getDefaultLogLevel();
  * @type {string}
  * @private
  */
-var _output = '';
+let _output = '';
 
 /**
  * Get default logger error per environment and fallback to error level when unknown env
@@ -484,14 +313,14 @@ function _getDefaultLogLevel() /*: LogLevelT*/{
  * @param {string=} logOutput
  */
 function setLogLevel(logLevel /*: LogLevelT*/, logOutput /*: string*/) /*: void*/{
-  var exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1;
+  const exists = !logLevel || Object.keys(_levels).indexOf(logLevel) !== -1;
   if (!exists) {
     _log('error', 'error', 'You must set one of the available log levels: verbose, info, warning, error or none');
     return;
   }
   _level = logLevel || _getDefaultLogLevel();
   _output = logOutput || _output;
-  _log('info', logLevel, "Log level set to ".concat(_level));
+  _log('info', logLevel, `Log level set to ${_level}`);
 }
 
 /**
@@ -502,23 +331,17 @@ function setLogLevel(logLevel /*: LogLevelT*/, logOutput /*: string*/) /*: void*
  * @param {Array} args
  * @private
  */
-function _log(methodName /*: MethodNameT*/, logLevel /*: LogLevelT*/) /*: void*/{
-  var _console;
+function _log(methodName /*: MethodNameT*/, logLevel /*: LogLevelT*/, ...args /*: Array<mixed>*/) /*: void*/{
   if (_levels[_level] < _levels[logLevel]) {
     return;
   }
-  var time = new Date().toISOString();
-  var spaces = _spaces[methodName];
-  var messagePrefix = ["[".concat(globals.namespace, "]"), time, "".concat(methodName.toUpperCase(), ":").concat(spaces)];
-  var outputContainer = _output ? document.querySelector(_output) : null;
-  for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-    args[_key - 2] = arguments[_key];
-  }
-  (_console = console)[methodName].apply(_console, messagePrefix.concat(args));
+  const time = new Date().toISOString();
+  const spaces = _spaces[methodName];
+  const messagePrefix = [`[${globals.namespace}]`, time, `${methodName.toUpperCase()}:${spaces}`];
+  const outputContainer = _output ? document.querySelector(_output) : null;
+  console[methodName](...messagePrefix, ...args);
   if (outputContainer) {
-    outputContainer.textContent += "".concat(messagePrefix.join(' '), " ").concat(args.map(function (m) {
-      return isObject(m) ? JSON.stringify(m) : m;
-    }).join(' '), "\n");
+    outputContainer.textContent += `${messagePrefix.join(' ')} ${args.map(m => isObject(m) ? JSON.stringify(m) : m).join(' ')}\n`;
     outputContainer.scrollTop = outputContainer.scrollHeight;
   }
 }
@@ -532,15 +355,12 @@ function _log(methodName /*: MethodNameT*/, logLevel /*: LogLevelT*/) /*: void*/
  * @private
  */
 function _applyLevel(name /*: MethodNameT*/, logLevel /*: LogLevelT*/) {
-  return function () {
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-    _log.apply(void 0, [name, logLevel].concat(args));
+  return (...args /*: Array<mixed>*/) => {
+    _log(name, logLevel, ...args);
   };
 }
-var Logger = {
-  setLogLevel: setLogLevel,
+const Logger = {
+  setLogLevel,
   log: _applyLevel('log', LEVEL_VERBOSE),
   info: _applyLevel('info', LEVEL_INFO),
   warn: _applyLevel('warn', LEVEL_WARNING),
@@ -552,32 +372,29 @@ var Logger = {
 
 
 
-
 /** Base parameters set by client */
 
 /** Custom config set by client */
 /*:: export type InitOptions = BaseParams & CustomConfig & {
   attributionCallback: (eventName: string, attribution: Attribution) => unknown
 }*/
-var _baseParams /*: BaseParams | null*/ = null;
-var _customConfig /*: CustomConfig | null*/ = null;
+let _baseParams /*: BaseParams | null*/ = null;
+let _customConfig /*: CustomConfig | null*/ = null;
 
 /** Mandatory fields to set for sdk initialization */
-var _mandatory /*: Array<(keyof MandatoryParams)>*/ = ['appToken', 'environment'];
+const _mandatory /*: Array<(keyof MandatoryParams)>*/ = ['appToken', 'environment'];
 
 /** Allowed params to be sent with each request */
-var _allowedParams /*: Array<(keyof BaseParams)>*/ = [].concat(_mandatory, ['defaultTracker', 'externalDeviceId', 'storeInfo']);
+const _allowedParams /*: Array<(keyof BaseParams)>*/ = [..._mandatory, 'defaultTracker', 'externalDeviceId', 'storeInfo'];
 
 /** Allowed configuration overrides */
-var _allowedConfig /*: Array<(keyof CustomConfig)>*/ = ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
+const _allowedConfig /*: Array<(keyof CustomConfig)>*/ = ['customUrl', 'dataResidency', 'urlStrategy', 'eventDeduplicationListLimit', 'namespace'];
 
 /**
  * Check of configuration has been initialized
  */
 function isInitialised() /*: boolean*/{
-  return _mandatory.reduce(function (acc, key) {
-    return acc && !!_baseParams && !!_baseParams[key];
-  }, true);
+  return _mandatory.reduce((acc, key) => acc && !!_baseParams && !!_baseParams[key], true);
 }
 
 /**
@@ -588,25 +405,17 @@ function set(options /*: InitOptions*/) /*: void*/{
     return;
   }
   checkConfiguration(options);
-  _baseParams = _allowedParams.filter(function (key) {
-    return !!options[key];
-  }).map(function (key) {
-    return [key, options[key]];
-  }).reduce(function (acc, item) {
-    return reducer(acc, item);
-  }, {});
-  _customConfig = _allowedConfig.filter(function (key) {
-    return !!options[key];
-  }).map(function (key) {
-    return [key, options[key]];
-  }).reduce(reducer, {});
+  _baseParams = _allowedParams.filter(key => !!options[key]).map(key => [key, options[key]]).reduce((acc, item) => reducer(acc, item), {});
+  _customConfig = _allowedConfig.filter(key => !!options[key]).map(key => [key, options[key]]).reduce(reducer, {});
 }
 
 /**
  * Get base params set by client
  */
 function getBaseParams() /*: Partial<BaseParams>*/{
-  return _baseParams ? _objectSpread2({}, _baseParams) // intentionally returns a copy
+  return _baseParams ? {
+    ..._baseParams
+  } // intentionally returns a copy
   : {};
 }
 
@@ -614,7 +423,9 @@ function getBaseParams() /*: Partial<BaseParams>*/{
  * Get custom config set by client
  */
 function getCustomConfig() /*: CustomConfig*/{
-  return _customConfig ? _objectSpread2({}, _customConfig) // intentionally returns a copy
+  return _customConfig ? {
+    ..._customConfig
+  } // intentionally returns a copy
   : {};
 }
 
@@ -622,11 +433,9 @@ function getCustomConfig() /*: CustomConfig*/{
  * Check if there are missing mandatory parameters
  */
 function hasMissing(params /*: BaseParams*/) /*: boolean*/{
-  var missing = _mandatory.filter(function (value) {
-    return !params[value];
-  });
+  const missing = _mandatory.filter(value => !params[value]);
   if (missing.length) {
-    logger.error("You must define ".concat(buildList(missing)));
+    logger.error(`You must define ${buildList(missing)}`);
     return true;
   }
   return false;
@@ -638,7 +447,7 @@ function hasMissing(params /*: BaseParams*/) /*: boolean*/{
 function checkConfiguration(params /*: BaseParams*/) {
   if (isObject(params) && Object.prototype.hasOwnProperty.call(params, 'storeInfo')) {
     // Check if storeInfo present in parameters
-    var storeInfo = params.storeInfo;
+    const storeInfo = params.storeInfo;
     if (!isObject(storeInfo)) {
       // Check if it's an object
       logger.error('storeInfo must be an object');
@@ -656,20 +465,19 @@ function destroy() /*: void*/{
   _baseParams = null;
   _customConfig = null;
 }
-var Config = {
-  sessionWindow: 30 * MINUTE,
-  sessionTimerWindow: 60 * SECOND,
+const Config = {
+  sessionWindow: 30 * (/* inlined export .MINUTE */60000),
+  sessionTimerWindow: 60 * (/* inlined export .SECOND */1000),
   requestValidityWindow: 28 * DAY,
-  set: set,
-  getBaseParams: getBaseParams,
-  getCustomConfig: getCustomConfig,
-  isInitialised: isInitialised,
-  hasMissing: hasMissing,
-  destroy: destroy
+  set,
+  getBaseParams,
+  getCustomConfig,
+  isInitialised,
+  hasMissing,
+  destroy
 };
-/* harmony default export */ const sdk_config = (Config);
+/* harmony default export */ const config = (Config);
 ;// ./src/sdk/storage/scheme.ts
-
 
 
 /**
@@ -705,7 +513,7 @@ var ShortPreferencesStoreName = /*#__PURE__*/function (ShortPreferencesStoreName
   ShortPreferencesStoreName["Preferences"] = "p";
   return ShortPreferencesStoreName;
 }(ShortPreferencesStoreName || {});
-var _queueScheme /*: StoreOptions*/ = {
+const _queueScheme /*: StoreOptions*/ = {
   keyPath: 'timestamp',
   autoIncrement: false,
   fields: {
@@ -747,7 +555,7 @@ var _queueScheme /*: StoreOptions*/ = {
     }
   }
 };
-var _activityStateScheme /*: StoreOptions*/ = {
+const _activityStateScheme /*: StoreOptions*/ = {
   keyPath: 'uuid',
   autoIncrement: false,
   fields: {
@@ -792,7 +600,7 @@ var _activityStateScheme /*: StoreOptions*/ = {
     }
   }
 };
-var _globalParamsScheme /*: StoreOptions*/ = {
+const _globalParamsScheme /*: StoreOptions*/ = {
   keyPath: 'keyType',
   autoIncrement: false,
   index: 'type',
@@ -812,7 +620,7 @@ var _globalParamsScheme /*: StoreOptions*/ = {
     }
   }
 };
-var _eventDeduplicationScheme /*: StoreOptions*/ = {
+const _eventDeduplicationScheme /*: StoreOptions*/ = {
   keyPath: 'internalId',
   autoIncrement: true,
   fields: {
@@ -820,14 +628,16 @@ var _eventDeduplicationScheme /*: StoreOptions*/ = {
     id: 'i'
   }
 };
-var _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
+const _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
   fields: {
     thirdPartySharingDisabled: {
       key: 'td',
       keys: {
         reason: {
           key: 'r',
-          values: _defineProperty({}, DISABLE_REASONS.REASON_GENERAL, 1)
+          values: {
+            [DISABLE_REASONS.REASON_GENERAL]: 1
+          }
         },
         pending: {
           key: 'p',
@@ -843,7 +653,10 @@ var _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
       keys: {
         reason: {
           key: 'r',
-          values: _defineProperty(_defineProperty({}, DISABLE_REASONS.REASON_GENERAL, 1), DISABLE_REASONS.REASON_GDPR, 2)
+          values: {
+            [DISABLE_REASONS.REASON_GENERAL]: 1,
+            [DISABLE_REASONS.REASON_GDPR]: 2
+          }
         },
         pending: {
           key: 'p',
@@ -856,7 +669,7 @@ var _preferencesScheme /*: StoreOptionsOptionalKey*/ = {
     }
   }
 };
-var scheme /*: Scheme*/ = {
+const scheme /*: Scheme*/ = {
   queue: {
     name: ShortStoreName.Queue,
     scheme: _queueScheme
@@ -896,8 +709,6 @@ function isComplexStoreField(field /*: Maybe<StoreFieldScheme>*/) /*: field is S
 ;// ./src/sdk/storage/scheme-map.ts
 
 
-
-
 /**
  * Cast value into it's original type
  */
@@ -905,7 +716,7 @@ function _parseValue(value /*: string*/) /*: any*/{
   // eslint-disable-line @typescript-eslint/no-explicit-any
   try {
     return JSON.parse(value);
-  } catch (_unused) {
+  } catch {
     return value;
   }
 }
@@ -914,12 +725,7 @@ function _parseValue(value /*: string*/) /*: any*/{
  * Flip key/value pairs
  */
 function _flipObject(obj /*: Record<string, unknown>*/) /*: Record<string, unknown>*/{
-  return entries(obj).map(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      key = _ref2[0],
-      value = _ref2[1];
-    return [value, _parseValue(key)];
-  }).reduce(reducer, {});
+  return entries(obj).map(([key, value]) => [value, _parseValue(key)]).reduce(reducer, {});
 }
 
 /**
@@ -927,12 +733,9 @@ function _flipObject(obj /*: Record<string, unknown>*/) /*: Record<string, unkno
  * - short key pointing the long one along with additional configuration
  */
 function _flipStoreNames(obj /*: StoresConfigurationMap*/) /*: StoresConfigurationMapFlipped*/{
-  var flippedConfigs /*: Array<[ShortStoreNames, StoreConfigurationFlipped]>*/ = entries(obj).map(function (_ref3 /*:: */) {
-    var _ref4 = _slicedToArray(_ref3 /*:: */, 2),
-      name = _ref4[0],
-      options = _ref4[1];
-    var config = {
-      name: name,
+  const flippedConfigs /*: Array<[ShortStoreNames, StoreConfigurationFlipped]>*/ = entries(obj).map(([name, options]) => {
+    const config = {
+      name,
       permanent: options.permanent
     };
     return [options.name, config];
@@ -944,30 +747,28 @@ function _flipStoreNames(obj /*: StoresConfigurationMap*/) /*: StoresConfigurati
  * Flip store scheme values
  */
 function _flipStoreScheme(storeName /*: StoreNames*/, key /*: string*/, scheme /*: StoreFieldScheme*/) {
-  var values = isPredefinedValuesField(scheme) ? {
+  const values = isPredefinedValuesField(scheme) ? {
     values: _flipObject(scheme.values)
   } : {};
-  var keys = isNestingStoreField(scheme) ? {
+  const keys = isNestingStoreField(scheme) ? {
     keys: _flipScheme(storeName, scheme.keys)
   } : {};
-  var composite = isCompositeKeyStoreField(scheme) ? {
-    composite: scheme.composite.map(function (key) {
-      return _getShortKey(storeName, key);
-    })
+  const composite = isCompositeKeyStoreField(scheme) ? {
+    composite: scheme.composite.map(key => _getShortKey(storeName, key))
   } : {};
-  return _objectSpread2(_objectSpread2(_objectSpread2({
-    key: key
-  }, values), keys), composite);
+  return {
+    key,
+    ...values,
+    ...keys,
+    ...composite
+  };
 }
 
 /**
  * Flip general scheme recursivelly
  */
 function _flipScheme(storeName /*: StoreNames*/, fieldsScheme /*: StoreFields*/) {
-  return entries(fieldsScheme).map(function (_ref5 /*:: */) {
-    var _ref6 = _slicedToArray(_ref5 /*:: */, 2),
-      key = _ref6[0],
-      scheme = _ref6[1];
+  return entries(fieldsScheme).map(([key, scheme]) => {
     return isComplexStoreField(scheme) ? [scheme.key, _flipStoreScheme(storeName, key, scheme)] : [scheme, key];
   }).reduce(reducer, {});
 }
@@ -976,11 +777,8 @@ function _flipScheme(storeName /*: StoreNames*/, fieldsScheme /*: StoreFields*/)
  * Extend base scheme with some more maps for encoding
  */
 function _prepareLeft() /*: StoreScheme*/{
-  var storesOptions /*: Array<[StoreNames, StoreOptionsOptionalKey]>*/ = entries(storage_scheme).map(function (_ref7 /*:: */) {
-    var _ref8 = _slicedToArray(_ref7 /*:: */, 2),
-      storeName = _ref8[0],
-      store = _ref8[1];
-    var options /*: StoreOptionsOptionalKey*/ = {
+  const storesOptions /*: Array<[StoreNames, StoreOptionsOptionalKey]>*/ = entries(storage_scheme).map(([storeName, store]) => {
+    const options /*: StoreOptionsOptionalKey*/ = {
       keyPath: store.scheme.keyPath,
       autoIncrement: store.scheme.autoIncrement,
       index: store.scheme.index,
@@ -995,11 +793,8 @@ function _prepareLeft() /*: StoreScheme*/{
  * Prepare scheme for decoding
  */
 function _prepareRight() /*: StoreScheme*/{
-  var storesOptionsEncoded /*: Array<[StoreNames, StoreOptionsOptionalKey]>*/ = entries(Left).map(function (_ref9) {
-    var _ref0 = _slicedToArray(_ref9, 2),
-      storeName = _ref0[0],
-      storeScheme = _ref0[1];
-    var options /*: StoreOptionsOptionalKey*/ = {
+  const storesOptionsEncoded /*: Array<[StoreNames, StoreOptionsOptionalKey]>*/ = entries(Left).map(([storeName, storeScheme]) => {
+    const options /*: StoreOptionsOptionalKey*/ = {
       keyPath: _getShortKey(storeName, storeScheme.keyPath),
       autoIncrement: storeScheme.autoIncrement,
       index: _getShortKey(storeName, storeScheme.index),
@@ -1015,19 +810,7 @@ function _prepareRight() /*: StoreScheme*/{
  */
 function _getValuesMap() /*: Record<string, number>*/{
   // all pairs of predefined keys and values such as {GET: 1}
-  return entries(storage_scheme).reduce(function (acc, _ref1) {
-    var _ref10 = _slicedToArray(_ref1, 2),
-      store = _ref10[1];
-    return acc.concat(store.scheme.fields);
-  }, []).map(function (scheme) {
-    return values(scheme).filter(isPredefinedValuesField).map(function (map) {
-      return entries(map.values);
-    }).reduce(function (acc, map) {
-      return acc.concat(map);
-    }, []);
-  }).reduce(function (acc, map) {
-    return acc.concat(map);
-  }, []).reduce(reducer, {});
+  return entries(storage_scheme).reduce((acc, [, store]) => acc.concat(store.scheme.fields), []).map(scheme => values(scheme).filter(isPredefinedValuesField).map(map => entries(map.values)).reduce((acc, map) => acc.concat(map), [])).reduce((acc, map) => acc.concat(map), []).reduce(reducer, {});
 }
 
 /**
@@ -1037,7 +820,7 @@ function _getShortKey(storeName /*: StoreNames*/, key /*: Maybe<string>*/) /*: M
   if (!key) {
     return undefined;
   }
-  var map = storage_scheme[storeName].scheme.fields[key];
+  const map = storage_scheme[storeName].scheme.fields[key];
   if (isComplexStoreField(map)) {
     return map.key;
   }
@@ -1048,11 +831,8 @@ function _getShortKey(storeName /*: StoreNames*/, key /*: Maybe<string>*/) /*: M
  * Get store names and their general configuration (if store is permanent or not)
  */
 function _getStoreNames() /*: StoresConfigurationMap*/{
-  var storeNames /*: Array<[StoreNames, StoreConfiguration]>*/ = entries(storage_scheme).map(function (_ref11) {
-    var _ref12 = _slicedToArray(_ref11, 2),
-      name = _ref12[0],
-      store = _ref12[1];
-    var config = {
+  const storeNames /*: Array<[StoreNames, StoreConfiguration]>*/ = entries(storage_scheme).map(([name, store]) => {
+    const config = {
       name: store.name,
       permanent: store.permanent
     };
@@ -1060,10 +840,10 @@ function _getStoreNames() /*: StoresConfigurationMap*/{
   });
   return storeNames.reduce(reducer, {});
 }
-var Left = _prepareLeft();
-var Right = _prepareRight();
-var Values = _getValuesMap();
-var StoreNamesAndConfigs = _getStoreNames();
+const Left = _prepareLeft();
+const Right = _prepareRight();
+const Values = _getValuesMap();
+const StoreNamesAndConfigs = _getStoreNames();
 /* harmony default export */ const scheme_map = ({
   left: Left,
   right: Right,
@@ -1089,9 +869,6 @@ function valueIsRecord(value /*: StoredValue | Record<string, unknown>*/) /*: va
 
 
 
-
-
-
 var Direction = /*#__PURE__*/function (Direction) {
   Direction["right"] = "right";
   Direction["left"] = "left";
@@ -1111,12 +888,12 @@ function _convert(storeName /*: StoreNameType*/, dir /*: Direction*/, key /*: st
   if (!scheme) {
     return [key, value];
   }
-  var encodedKey = isComplexStoreField(scheme) ? scheme.key : scheme;
+  const encodedKey = isComplexStoreField(scheme) ? scheme.key : scheme;
   if (valueIsRecord(value)) {
-    var keys = isNestingStoreField(scheme) ? scheme.keys : null;
+    const keys = isNestingStoreField(scheme) ? scheme.keys : null;
     return [encodedKey, convertRecord(storeName, dir, value, keys)];
   }
-  var valuesMap = isPredefinedValuesField(scheme) ? scheme.values : null;
+  const valuesMap = isPredefinedValuesField(scheme) ? scheme.values : null;
   return [encodedKey, _getValue(valuesMap, value)];
 }
 
@@ -1136,41 +913,31 @@ function convertRecord(storeName /*: StoreNameType*/, dir /*: Direction*/, recor
   if (!record) {
     return undefined;
   }
-  var _scheme /*: StoreFields*/ = scheme || scheme_map[dir][convertStoreName(storeName, Direction.right)].fields;
-  return entries(record).map(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      key = _ref2[0],
-      value = _ref2[1];
-    return _convert(storeName, dir, key, value, _scheme[key]);
-  }).reduce(function (acc, _ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-      key = _ref4[0],
-      value = _ref4[1];
-    return _objectSpread2(_objectSpread2({}, acc), {}, _defineProperty({}, key, value));
-  }, {});
+  const _scheme /*: StoreFields*/ = scheme || scheme_map[dir][convertStoreName(storeName, Direction.right)].fields;
+  return entries(record).map(([key, value]) => _convert(storeName, dir, key, value, _scheme[key])).reduce((acc, [key, value]) => ({
+    ...acc,
+    [key]: value
+  }), {});
 }
 
 /**
  * Convert records by defined direction
  */
-function convertRecords(storeName /*: StoreNameType*/, dir /*: Direction*/) /*: Array<StoredRecord>*/{
-  var records /*: Array<StoredRecord>*/ = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  return records.map(function (record) {
-    return convertRecord(storeName, dir, record);
-  });
+function convertRecords(storeName /*: StoreNameType*/, dir /*: Direction*/, records /*: Array<StoredRecord>*/ = []) /*: Array<StoredRecord>*/{
+  return records.map(record => convertRecord(storeName, dir, record));
 }
 
 /**
  * Convert values by defined direction
  */
 function convertValues(storeName /*: StoreNameType*/, dir /*: Direction*/, target /*: StoredRecordId*/) /*: StoredValue | Array<StoredValue>*/{
-  var scheme /*: StoreOptions*/ = scheme_map[dir][convertStoreName(storeName, Direction.right)];
-  var keyPathScheme = scheme.fields[scheme.keyPath];
-  var values = target instanceof Array ? target.slice() : [target];
-  var keys = isCompositeKeyStoreField(keyPathScheme) ? keyPathScheme.composite : [scheme.keyPath];
-  var converted = keys.map(function (key /*: string*/, index /*: number*/) {
-    var field = scheme.fields[key];
-    var predefinedValuesMap = isPredefinedValuesField(field) ? field.values : null;
+  const scheme /*: StoreOptions*/ = scheme_map[dir][convertStoreName(storeName, Direction.right)];
+  const keyPathScheme = scheme.fields[scheme.keyPath];
+  const values = target instanceof Array ? target.slice() : [target];
+  const keys = isCompositeKeyStoreField(keyPathScheme) ? keyPathScheme.composite : [scheme.keyPath];
+  const converted = keys.map((key /*: string*/, index /*: number*/) => {
+    const field = scheme.fields[key];
+    const predefinedValuesMap = isPredefinedValuesField(field) ? field.values : null;
     return _getValue(predefinedValuesMap, values[index]);
   });
   return converted.length === 1 ? converted[0] : converted;
@@ -1196,27 +963,8 @@ function convertStoreName(storeName /*: StoreNameType*/, dir /*: Direction*/) /*
 function decodeErrorMessage(storeName /*: ShortStoreNames*/, error /*: Error*/) /*: Error*/{
   return {
     name: error.name,
-    message: error.message.replace("\"".concat(storeName, "\""), convertStoreName(storeName, Direction.right))
+    message: error.message.replace(`"${storeName}"`, convertStoreName(storeName, Direction.right))
   };
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
-function _classCallCheck(a, n) {
-  if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/createClass.js
-
-function _defineProperties(e, r) {
-  for (var t = 0; t < r.length; t++) {
-    var o = r[t];
-    o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, toPropertyKey(o.key), o);
-  }
-}
-function _createClass(e, r, t) {
-  return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
-    writable: !1
-  }), e;
 }
 
 ;// ./src/sdk/time.js
@@ -1228,12 +976,11 @@ function _createClass(e, r, t) {
  * @returns {string}
  * @private
  */
-function _prependZero(value /*: number*/) /*: string*/{
-  var power /*: number*/ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-  var formatted = value + '';
-  for (var i = 1; i <= power; i += 1) {
+function _prependZero(value /*: number*/, power /*: number*/ = 1) /*: string*/{
+  let formatted = value + '';
+  for (let i = 1; i <= power; i += 1) {
     if (value < Math.pow(10, i)) {
-      formatted = "0".concat(formatted);
+      formatted = `0${formatted}`;
     }
   }
   return formatted;
@@ -1247,9 +994,9 @@ function _prependZero(value /*: number*/) /*: string*/{
  * @private
  */
 function _getDate(date /*: Date*/) /*: string*/{
-  var day = _prependZero(date.getDate());
-  var month = _prependZero(date.getMonth() + 1);
-  var year = date.getFullYear();
+  const day = _prependZero(date.getDate());
+  const month = _prependZero(date.getMonth() + 1);
+  const year = date.getFullYear();
   return [year, month, day].join('-');
 }
 
@@ -1261,10 +1008,10 @@ function _getDate(date /*: Date*/) /*: string*/{
  * @private
  */
 function _getTime(date /*: Date*/) /*: string*/{
-  var hours = _prependZero(date.getHours(), 1);
-  var minutes = _prependZero(date.getMinutes());
-  var seconds = _prependZero(date.getSeconds());
-  var milliseconds = _prependZero(date.getMilliseconds(), 2);
+  const hours = _prependZero(date.getHours(), 1);
+  const minutes = _prependZero(date.getMinutes());
+  const seconds = _prependZero(date.getSeconds());
+  const milliseconds = _prependZero(date.getMilliseconds(), 2);
   return [hours, minutes, seconds].join(':') + '.' + milliseconds;
 }
 
@@ -1276,10 +1023,10 @@ function _getTime(date /*: Date*/) /*: string*/{
  * @private
  */
 function _getTimezone(date /*: Date*/) /*: string*/{
-  var offsetInMinutes = date.getTimezoneOffset();
-  var hoursOffset = _prependZero(Math.floor(Math.abs(offsetInMinutes) / 60));
-  var minutesOffset = _prependZero(Math.abs(offsetInMinutes) % 60);
-  var sign = offsetInMinutes > 0 ? '-' : '+';
+  const offsetInMinutes = date.getTimezoneOffset();
+  const hoursOffset = _prependZero(Math.floor(Math.abs(offsetInMinutes) / 60));
+  const minutesOffset = _prependZero(Math.abs(offsetInMinutes) % 60);
+  const sign = offsetInMinutes > 0 ? '-' : '+';
   return sign + hoursOffset + minutesOffset;
 }
 
@@ -1290,11 +1037,11 @@ function _getTimezone(date /*: Date*/) /*: string*/{
  * @returns {string}
  */
 function getTimestamp(timestamp /*: number*/) /*: string*/{
-  var d = timestamp ? new Date(timestamp) : new Date();
-  var date = _getDate(d);
-  var time = _getTime(d);
-  var timezone = _getTimezone(d);
-  return "".concat(date, "T").concat(time, "Z").concat(timezone);
+  const d = timestamp ? new Date(timestamp) : new Date();
+  const date = _getDate(d);
+  const time = _getTime(d);
+  const timezone = _getTimezone(d);
+  return `${date}T${time}Z${timezone}`;
 }
 
 /**
@@ -1313,16 +1060,15 @@ function timePassed(d1 /*: number*/, d2 /*: number*/) /*: number*/{
 
 ;// ./src/sdk/pub-sub.ts
 
-
 /**
  * List of events with subscribed callbacks
  */
-var _list /*: Record<string, Array<CallbackWithId>>*/ = {};
+let _list /*: Record<string, Array<CallbackWithId>>*/ = {};
 
 /**
  * Reference to timeout ids so they can be cleared on destroy
  */
-var _timeoutIds /*: Array<ReturnType<typeof setTimeout>>*/ = [];
+let _timeoutIds /*: Array<ReturnType<typeof setTimeout>>*/ = [];
 
 /**
  * Get unique id for the callback to use for unsubscribe
@@ -1335,10 +1081,10 @@ function _getId() /*: string*/{
  * Subscribe to a certain event
  */
 function subscribe /*:: <T>*/(name /*: string*/, cb /*: (name: string, arg: T) => unknown*/) /*: string*/{
-  var id = _getId();
-  var callback /*: CallbackWithId<T>*/ = {
-    id: id,
-    cb: cb
+  const id = _getId();
+  const callback /*: CallbackWithId<T>*/ = {
+    id,
+    cb
   };
   if (!_list[name]) {
     _list[name] = [];
@@ -1354,17 +1100,11 @@ function unsubscribe(id /*: string*/) {
   if (!id) {
     return;
   }
-  entries(_list).some(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      callbacks = _ref2[1];
-    return callbacks.some(function
-      /*:: <T>*/
-    (callback /*: CallbackWithId<T>*/, i /*: number*/) {
-      if (callback.id === id) {
-        callbacks.splice(i, 1);
-      }
-    });
-  });
+  entries(_list).some(([, callbacks]) => callbacks.some((callback /*: CallbackWithId<T>*/, i /*: number*/) /*:: <T>*/ => {
+    if (callback.id === id) {
+      callbacks.splice(i, 1);
+    }
+  }));
 }
 
 /**
@@ -1374,11 +1114,9 @@ function publish /*:: <T>*/(name /*: string*/, args /*: T*/) /*: void*/{
   if (!_list[name]) {
     return;
   }
-  _list[name].forEach(function (item /*: CallbackWithId<T>*/) {
+  _list[name].forEach((item /*: CallbackWithId<T>*/) => {
     if (typeof item.cb === 'function') {
-      _timeoutIds.push(setTimeout(function () {
-        return item.cb(name, args);
-      }));
+      _timeoutIds.push(setTimeout(() => item.cb(name, args)));
     }
   });
 }
@@ -1393,7 +1131,6 @@ function pub_sub_destroy() /*: void*/{
 }
 
 ;// ./src/sdk/activity-state.js
-
 /*:: // 
 import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonRequestParams } from './types';*/
 
@@ -1410,7 +1147,7 @@ import { type UrlT, type ActivityStateMapT, type AttributionMapT, type CommonReq
  * @type {Object}
  * @private
  */
-var _activityState /*: ActivityStateMapT*/ = {};
+let _activityState /*: ActivityStateMapT*/ = {};
 
 /**
  * Started flag, if activity state has been initiated
@@ -1418,7 +1155,7 @@ var _activityState /*: ActivityStateMapT*/ = {};
  * @type {boolean}
  * @private
  */
-var _started /*: boolean*/ = false;
+let _started /*: boolean*/ = false;
 
 /**
  * Active flag, if in foreground
@@ -1426,7 +1163,7 @@ var _started /*: boolean*/ = false;
  * @type {boolean}
  * @private
  */
-var _active /*: boolean*/ = false;
+let _active /*: boolean*/ = false;
 
 /**
  * Get current activity state
@@ -1434,7 +1171,9 @@ var _active /*: boolean*/ = false;
  * @returns {Object}
  */
 function currentGetter() /*: ActivityStateMapT*/{
-  return _started ? _objectSpread2({}, _activityState) : {};
+  return _started ? {
+    ..._activityState
+  } : {};
 }
 
 /**
@@ -1442,9 +1181,10 @@ function currentGetter() /*: ActivityStateMapT*/{
  *
  * @param {Object} params
  */
-function currentSetter() {
-  var params /*: ActivityStateMapT*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  _activityState = _started ? _objectSpread2({}, params) : {};
+function currentSetter(params /*: ActivityStateMapT*/ = {}) {
+  _activityState = _started ? {
+    ...params
+  } : {};
 }
 
 /**
@@ -1486,7 +1226,10 @@ function updateLastActive() /*: void*/{
  * @private
  */
 function _update(params /*: ActivityStateMapT*/) /*: void*/{
-  _activityState = _objectSpread2(_objectSpread2({}, _activityState), params);
+  _activityState = {
+    ..._activityState,
+    ...params
+  };
 }
 
 /**
@@ -1510,8 +1253,8 @@ function toBackground() /*: void*/{
  * @private
  */
 function _getOffset() /*: number*/{
-  var lastActive = _activityState.lastActive;
-  return Math.round(timePassed(lastActive, Date.now()) / SECOND);
+  const lastActive = _activityState.lastActive;
+  return Math.round(timePassed(lastActive, Date.now()) / (/* inlined export .SECOND */1000));
 }
 
 /**
@@ -1531,9 +1274,9 @@ function _getTimeSpent() /*: number*/{
  * @private
  */
 function _getSessionLength() /*: number*/{
-  var lastActive = _activityState.lastActive;
-  var withinWindow = timePassed(lastActive, Date.now()) < sdk_config.sessionWindow;
-  var withOffset = _active || !_active && withinWindow;
+  const lastActive = _activityState.lastActive;
+  const withinWindow = timePassed(lastActive, Date.now()) < config.sessionWindow;
+  const withOffset = _active || !_active && withinWindow;
   return (_activityState.sessionLength || 0) + (withOffset ? _getOffset() : 0);
 }
 
@@ -1564,9 +1307,9 @@ function _getEventCount() /*: number*/{
  * @private
  */
 function _getLastInterval() /*: number*/{
-  var lastActive = _activityState.lastActive;
+  const lastActive = _activityState.lastActive;
   if (lastActive) {
-    return Math.round(timePassed(lastActive, Date.now()) / SECOND);
+    return Math.round(timePassed(lastActive, Date.now()) / (/* inlined export .SECOND */1000));
   }
   return -1;
 }
@@ -1588,8 +1331,8 @@ function getParams(url /*: UrlT*/) /*: ?CommonRequestParams*/{
   if (!_started) {
     return null;
   }
-  var lastInterval = _activityState.lastInterval >= 0 ? _activityState.lastInterval : 0;
-  var baseParams /*: CommonRequestParams*/ = {
+  const lastInterval = _activityState.lastInterval >= 0 ? _activityState.lastInterval : 0;
+  const baseParams /*: CommonRequestParams*/ = {
     timeSpent: _activityState.timeSpent || 0,
     sessionLength: _activityState.sessionLength || 0,
     sessionCount: _activityState.sessionCount || 1,
@@ -1611,7 +1354,7 @@ function updateParams(url /*: string*/, auto /*: boolean*/) /*: void*/{
   if (!_started) {
     return;
   }
-  var params = {};
+  const params = {};
   params.timeSpent = _getTimeSpent();
   params.sessionLength = _getSessionLength();
   if (isRequest(url, 'session')) {
@@ -1648,11 +1391,11 @@ function updateSessionOffset() /*: void*/{
   if (!_started) {
     return;
   }
-  var timeSpent = _getTimeSpent();
-  var sessionLength = _getSessionLength();
+  const timeSpent = _getTimeSpent();
+  const sessionLength = _getSessionLength();
   _update({
-    timeSpent: timeSpent,
-    sessionLength: sessionLength
+    timeSpent,
+    sessionLength
   });
   updateLastActive();
 }
@@ -1664,9 +1407,9 @@ function updateSessionLength() /*: void*/{
   if (!_started) {
     return;
   }
-  var sessionLength = _getSessionLength();
+  const sessionLength = _getSessionLength();
   _update({
-    sessionLength: sessionLength
+    sessionLength
   });
   updateLastActive();
 }
@@ -1706,11 +1449,7 @@ function waitForAttribution() /*: Promise<AttributionMapT>*/{
   if (_activityState.attribution) {
     return Promise.resolve(_activityState.attribution);
   }
-  return new Promise(function (resolve) {
-    return subscribe(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, function (_name /*: string*/, attribution /*: AttributionMapT*/) {
-      return resolve(attribution);
-    });
-  });
+  return new Promise(resolve => subscribe(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, (_name /*: string*/, attribution /*: AttributionMapT*/) => resolve(attribution)));
 }
 function getWebUUID() /*: string*/{
   if (!_started) {
@@ -1722,36 +1461,32 @@ function waitForWebUUID() /*: Promise<string>*/{
   if (_activityState.uuid) {
     return Promise.resolve(_activityState.uuid);
   }
-  return new Promise(function (resolve) {
-    return subscribe(PUB_SUB_EVENTS.WEB_UUID_CREATED, function (_name /*: string*/, webUuid /*: string*/) {
-      return resolve(webUuid);
-    });
-  });
+  return new Promise(resolve => subscribe(PUB_SUB_EVENTS.WEB_UUID_CREATED, (_name /*: string*/, webUuid /*: string*/) => resolve(webUuid)));
 }
-var ActivityState = {
+const ActivityState = {
   get current() {
     return currentGetter();
   },
   set current(value) {
     currentSetter(value);
   },
-  init: init,
-  isStarted: isStarted,
-  toForeground: toForeground,
-  toBackground: toBackground,
-  initParams: initParams,
-  getParams: getParams,
-  updateParams: updateParams,
-  updateInstalled: updateInstalled,
-  updateSessionOffset: updateSessionOffset,
-  updateSessionLength: updateSessionLength,
-  resetSessionOffset: resetSessionOffset,
-  updateLastActive: updateLastActive,
+  init,
+  isStarted,
+  toForeground,
+  toBackground,
+  initParams,
+  getParams,
+  updateParams,
+  updateInstalled,
+  updateSessionOffset,
+  updateSessionLength,
+  resetSessionOffset,
+  updateLastActive,
   destroy: activity_state_destroy,
-  getAttribution: getAttribution,
-  getWebUUID: getWebUUID,
-  waitForAttribution: waitForAttribution,
-  waitForWebUUID: waitForWebUUID
+  getAttribution,
+  getWebUUID,
+  waitForAttribution,
+  waitForWebUUID
 };
 /* harmony default export */ const activity_state = (ActivityState);
 ;// ./src/sdk/storage/quick-storage.ts
@@ -1761,53 +1496,80 @@ var ActivityState = {
 
 
 
-
-
-
-var InMemoryStorage = /*#__PURE__*/function () {
-  function InMemoryStorage() {
-    _classCallCheck(this, InMemoryStorage);
-    _defineProperty(this, "items", {});
+class InMemoryStorage /*:: implements LocalStorage*/{
+  items = {};
+  getItem(key /*: string*/) /*: string | null*/{
+    return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null;
   }
-  return _createClass(InMemoryStorage, [{
-    key: "getItem",
-    value: function getItem(key /*: string*/) /*: string | null*/{
-      return Object.prototype.hasOwnProperty.call(this.items, key) ? this.items[key] : null;
+  removeItem(key /*: string*/) /*: void*/{
+    delete this.items[key];
+  }
+  setItem(key /*: string*/, value /*: string*/) /*: void*/{
+    this.items[key] = value;
+  }
+}
+class QuickStorage {
+  defaultName = globals.namespace;
+  storageName = this.defaultName;
+  storeNames = scheme_map.storeNames.left;
+  /**
+   * Get the value for specified key
+   */
+  read(key /*: ShortStoreName | ShortPreferencesStoreName*/) /*: Nullable<StoreContent>*/{
+    const valueToParse = this.storage.getItem(`${this.storageName}.${key}`);
+    const value = valueToParse ? JSON.parse(valueToParse) : null;
+    if (key === ShortPreferencesStoreName.Preferences && value) {
+      return convertRecord(ShortPreferencesStoreName.Preferences, Direction.right, value);
     }
-  }, {
-    key: "removeItem",
-    value: function removeItem(key /*: string*/) /*: void*/{
-      delete this.items[key];
+    return value;
+  }
+
+  /**
+   * Set the value for specified key
+   */
+  write(key /*: ShortStoreName | ShortPreferencesStoreName*/, value /*: StoreContent*/) {
+    if (!value) {
+      this.storage.removeItem(`${this.storageName}.${key}`);
+    } else {
+      this.storage.setItem(`${this.storageName}.${key}`, JSON.stringify(value instanceof Array ? value : convertRecord(ShortPreferencesStoreName.Preferences, Direction.left, value)));
     }
-  }, {
-    key: "setItem",
-    value: function setItem(key /*: string*/, value /*: string*/) /*: void*/{
-      this.items[key] = value;
-    }
-  }]);
-}();
-var QuickStorage = /*#__PURE__*/function () {
-  function QuickStorage() {
-    var _this = this;
-    _classCallCheck(this, QuickStorage);
-    _defineProperty(this, "defaultName", globals.namespace);
-    _defineProperty(this, "storageName", this.defaultName);
-    _defineProperty(this, "storeNames", scheme_map.storeNames.left);
+  }
+
+  /**
+   * Clear all data related to the sdk
+   */
+  clear() {
+    this.deleteData();
+  }
+
+  /**
+   * Clear all data related to the sdk
+   *
+   * @param wipe if true then also remove permanent data such as user's preferences
+   */
+  deleteData(wipe = false) {
+    values(this.storeNames).forEach(store => {
+      if (wipe || !store.permanent) {
+        this.storage.removeItem(`${this.storageName}.${store.name}`);
+      }
+    });
+  }
+  constructor() {
     this.storesMap = {};
     if (isLocalStorageSupported()) {
       this.storage = window.localStorage;
     } else {
       this.storage = new InMemoryStorage();
     }
-    var read = this.read.bind(this);
-    var write = this.write.bind(this);
-    values(this.storeNames).forEach(function (store) {
-      var shortStoreName = store.name;
-      Object.defineProperty(_this.storesMap, shortStoreName, {
-        get: function get() {
+    const read = this.read.bind(this);
+    const write = this.write.bind(this);
+    values(this.storeNames).forEach(store => {
+      const shortStoreName = store.name;
+      Object.defineProperty(this.storesMap, shortStoreName, {
+        get() {
           return read(shortStoreName);
         },
-        set: function set(value) {
+        set(value) {
           write(shortStoreName, value);
         }
       });
@@ -1818,101 +1580,41 @@ var QuickStorage = /*#__PURE__*/function () {
   /**
    * Sets custom name to use in data keys and updates existing keys in localStorage
    */
-  return _createClass(QuickStorage, [{
-    key: "read",
-    value:
-    /**
-     * Get the value for specified key
-     */
-    function read(key /*: ShortStoreName | ShortPreferencesStoreName*/) /*: Nullable<StoreContent>*/{
-      var valueToParse = this.storage.getItem("".concat(this.storageName, ".").concat(key));
-      var value = valueToParse ? JSON.parse(valueToParse) : null;
-      if (key === ShortPreferencesStoreName.Preferences && value) {
-        return convertRecord(ShortPreferencesStoreName.Preferences, Direction.right, value);
+  setCustomName(customName /*: string*/) {
+    if (!customName || !customName.length) {
+      return;
+    }
+    const newName = `${globals.namespace}-${customName}`;
+
+    // Clone data
+    values(this.storeNames).forEach(store => {
+      const key = store.name;
+      const rawData = this.storage.getItem(`${this.storageName}.${key}`); // Get data from the store, no need to encode it
+      if (rawData) {
+        this.storage.setItem(`${newName}.${key}`, rawData); // Put data into a new store
       }
-      return value;
-    }
-
-    /**
-     * Set the value for specified key
-     */
-  }, {
-    key: "write",
-    value: function write(key /*: ShortStoreName | ShortPreferencesStoreName*/, value /*: StoreContent*/) {
-      if (!value) {
-        this.storage.removeItem("".concat(this.storageName, ".").concat(key));
-      } else {
-        this.storage.setItem("".concat(this.storageName, ".").concat(key), JSON.stringify(value instanceof Array ? value : convertRecord(ShortPreferencesStoreName.Preferences, Direction.left, value)));
-      }
-    }
-
-    /**
-     * Clear all data related to the sdk
-     */
-  }, {
-    key: "clear",
-    value: function clear() {
-      this.deleteData();
-    }
-
-    /**
-     * Clear all data related to the sdk
-     *
-     * @param wipe if true then also remove permanent data such as user's preferences
-     */
-  }, {
-    key: "deleteData",
-    value: function deleteData() {
-      var _this2 = this;
-      var wipe = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      values(this.storeNames).forEach(function (store) {
-        if (wipe || !store.permanent) {
-          _this2.storage.removeItem("".concat(_this2.storageName, ".").concat(store.name));
-        }
-      });
-    }
-  }, {
-    key: "setCustomName",
-    value: function setCustomName(customName /*: string*/) {
-      var _this3 = this;
-      if (!customName || !customName.length) {
-        return;
-      }
-      var newName = "".concat(globals.namespace, "-").concat(customName);
-
-      // Clone data
-      values(this.storeNames).forEach(function (store) {
-        var key = store.name;
-        var rawData = _this3.storage.getItem("".concat(_this3.storageName, ".").concat(key)); // Get data from the store, no need to encode it
-        if (rawData) {
-          _this3.storage.setItem("".concat(newName, ".").concat(key), rawData); // Put data into a new store
-        }
-      });
-      this.deleteData(true);
-      this.storageName = newName;
-    }
-  }, {
-    key: "stores",
-    get: function get() {
-      return this.storesMap;
-    }
-  }]);
-}();
+    });
+    this.deleteData(true);
+    this.storageName = newName;
+  }
+  get stores() {
+    return this.storesMap;
+  }
+}
 /* harmony default export */ const quick_storage = (new QuickStorage());
 ;// ./src/sdk/preferences.ts
-
 
 
 
 /**
  * Name of the store used by preferences
  */
-var _storeName /*: string*/ = storage_scheme.preferences.name;
+const _storeName /*: string*/ = storage_scheme.preferences.name;
 
 /**
  * Local reference to be used for recovering preserved state
  */
-var _preferences /*: PreferencesT | null*/ = null;
+let _preferences /*: PreferencesT | null*/ = null;
 _preferences = _getPreferences();
 
 /**
@@ -1925,7 +1627,9 @@ function _getPreferences() /*: PreferencesT | null*/{
   if (!_preferences) {
     _setPreferences();
   }
-  return _preferences ? _objectSpread2({}, _preferences) : null;
+  return _preferences ? {
+    ..._preferences
+  } : null;
 }
 
 /**
@@ -1943,7 +1647,7 @@ function _setPreferences() /*: void*/{
  * @returns {Object|null}
  */
 function getDisabled() /*: SdkDisabledT | null*/{
-  var preferences = _getPreferences();
+  const preferences = _getPreferences();
   return preferences && preferences.sdkDisabled || null;
 }
 
@@ -1953,10 +1657,13 @@ function getDisabled() /*: SdkDisabledT | null*/{
  * @param {Object|null} value
  */
 function setDisabled(value /*: SdkDisabledT | null*/) /*: void*/{
-  var sdkDisabled = value ? _objectSpread2({}, value) : null;
-  quick_storage.stores[_storeName] = _objectSpread2(_objectSpread2({}, _getPreferences()), {}, {
-    sdkDisabled: sdkDisabled
-  });
+  const sdkDisabled = value ? {
+    ...value
+  } : null;
+  quick_storage.stores[_storeName] = {
+    ..._getPreferences(),
+    sdkDisabled
+  };
   _setPreferences();
 }
 
@@ -1964,8 +1671,8 @@ function setDisabled(value /*: SdkDisabledT | null*/) /*: void*/{
  * Reload current preferences from localStorage if changed outside of current scope (e.g. tab)
  */
 function reload() /*: void*/{
-  var stored /*: PreferencesT*/ = quick_storage.stores[_storeName] || {};
-  var sdkDisabled /*: SdkDisabledT | null*/ = (_preferences || {}).sdkDisabled || null;
+  const stored /*: PreferencesT*/ = quick_storage.stores[_storeName] || {};
+  const sdkDisabled /*: SdkDisabledT | null*/ = (_preferences || {}).sdkDisabled || null;
   if (stored.sdkDisabled && !sdkDisabled) {
     publish('sdk:shutdown');
   }
@@ -1976,18 +1683,15 @@ function reload() /*: void*/{
  * Recover preferences from memory if storage was lost
  */
 function recover() /*: void*/{
-  var stored /*: PreferencesT*/ = quick_storage.stores[_storeName];
+  const stored /*: PreferencesT*/ = quick_storage.stores[_storeName];
   if (!stored) {
-    quick_storage.stores[_storeName] = _objectSpread2({}, _preferences);
+    quick_storage.stores[_storeName] = {
+      ..._preferences
+    };
   }
 }
 
 ;// ./src/sdk/storage/indexeddb.ts
-
-
-
-
-
 
 
 
@@ -2012,26 +1716,85 @@ var AccessMode = /*#__PURE__*/function (AccessMode) {
   AccessMode["readwrite"] = "readwrite";
   return AccessMode;
 }(AccessMode || {});
-var IndexedDBWrapper = /*#__PURE__*/function () {
-  function IndexedDBWrapper() {
-    _classCallCheck(this, IndexedDBWrapper);
-    _defineProperty(this, "dbDefaultName", globals.namespace);
-    _defineProperty(this, "dbName", this.dbDefaultName);
-    _defineProperty(this, "dbVersion", 1);
-    _defineProperty(this, "indexedDbConnection", null);
-    _defineProperty(this, "notSupportedError", {
-      name: 'IDBNotSupported',
-      message: 'IndexedDB is not supported'
+class IndexedDBWrapper /*:: implements IStorage*/{
+  static dbValidationName = 'validate-db-openable';
+  dbDefaultName = globals.namespace;
+  dbName = this.dbDefaultName;
+  dbVersion = 1;
+  indexedDbConnection = null;
+  notSupportedError = {
+    name: 'IDBNotSupported',
+    message: 'IndexedDB is not supported'
+  };
+  databaseOpenError = {
+    name: 'CannotOpenDatabaseError',
+    message: 'Cannot open a database'
+  };
+  noConnectionError = {
+    name: 'NoDatabaseConnection',
+    message: 'Cannot open a transaction'
+  };
+
+  /**
+   * Cached promise of IndexedDB validation
+   */
+  static isSupportedPromise = null;
+
+  /**
+   * Tries to open a temporary database
+   */
+  static tryOpen(db /*: IDBFactory*/) /*: Promise<boolean>*/{
+    return new Promise(resolve => {
+      try {
+        const request = db.open(IndexedDBWrapper.dbValidationName);
+        request.onsuccess = () => {
+          request.result.close();
+          db.deleteDatabase(IndexedDBWrapper.dbValidationName);
+          resolve(true);
+        };
+        request.onerror = () => resolve(false);
+      } catch {
+        resolve(false);
+      }
     });
-    _defineProperty(this, "databaseOpenError", {
-      name: 'CannotOpenDatabaseError',
-      message: 'Cannot open a database'
-    });
-    _defineProperty(this, "noConnectionError", {
-      name: 'NoDatabaseConnection',
-      message: 'Cannot open a transaction'
-    });
-    var idb = IndexedDBWrapper.getIndexedDB();
+  }
+
+  /**
+   * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
+   */
+  static isSupported() /*: Promise<boolean>*/{
+    if (IndexedDBWrapper.isSupportedPromise) {
+      return IndexedDBWrapper.isSupportedPromise;
+    } else {
+      const notSupportedMessage = 'IndexedDB is not supported in this browser';
+      IndexedDBWrapper.isSupportedPromise = new Promise(resolve => {
+        const indexedDB = IndexedDBWrapper.getIndexedDB();
+        const iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+        if (!indexedDB || iOS) {
+          logger.warn(notSupportedMessage);
+          resolve(false);
+        } else {
+          const dbOpenablePromise = IndexedDBWrapper.tryOpen(indexedDB).then(dbOpenable => {
+            if (!dbOpenable) {
+              logger.warn(notSupportedMessage);
+            }
+            return dbOpenable;
+          });
+          resolve(dbOpenablePromise);
+        }
+      });
+    }
+    return IndexedDBWrapper.isSupportedPromise;
+  }
+
+  /**
+   * Get indexedDB instance
+   */
+  static getIndexedDB() /*: Maybe<IDBFactory>*/{
+    return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+  }
+  constructor() {
+    const idb = IndexedDBWrapper.getIndexedDB();
     if (!idb) {
       throw this.notSupportedError;
     }
@@ -2041,790 +1804,572 @@ var IndexedDBWrapper = /*#__PURE__*/function () {
   /**
    * Sets custom name if provided and migrates database
    */
-  return _createClass(IndexedDBWrapper, [{
-    key: "setCustomName",
-    value: function setCustomName(customName /*: string*/) /*: Promise<void>*/{
-      if (customName && customName.length > 0) {
-        this.dbName = "".concat(globals.namespace, "-").concat(customName);
-        return this.migrateDb(this.dbDefaultName, this.dbName);
-      }
-      return Promise.resolve();
+  setCustomName(customName /*: string*/) /*: Promise<void>*/{
+    if (customName && customName.length > 0) {
+      this.dbName = `${globals.namespace}-${customName}`;
+      return this.migrateDb(this.dbDefaultName, this.dbName);
     }
+    return Promise.resolve();
+  }
 
-    /**
-     * Opens database with defined name and resolves with database connection if successed
-     * @param name name of database to open
-     * @param version optional version of database schema
-     * @param upgradeCallback optional `IDBOpenRequest.onupgradeneeded` event handler
-     */
-  }, {
-    key: "openDatabase",
-    value: function openDatabase(name /*: string*/, upgradeCallback /*: (event: IDBVersionChangeEvent, reject: () => void) => void*/, version /*: number*/) /*: Promise<IDBDatabase>*/{
-      var _this = this;
-      return IndexedDBWrapper.isSupported().then(function (supported) {
-        if (!supported) {
-          return Promise.reject(_this.notSupportedError);
-        } else {
-          return new Promise(function (resolve, reject) {
-            var request = _this.idbFactory.open(name, version);
-            if (upgradeCallback) {
-              request.onupgradeneeded = function (event) {
-                return upgradeCallback(event, reject);
-              };
+  /**
+   * Opens database with defined name and resolves with database connection if successed
+   * @param name name of database to open
+   * @param version optional version of database schema
+   * @param upgradeCallback optional `IDBOpenRequest.onupgradeneeded` event handler
+   */
+  openDatabase(name /*: string*/, upgradeCallback /*: (event: IDBVersionChangeEvent, reject: () => void) => void*/, version /*: number*/) /*: Promise<IDBDatabase>*/{
+    return IndexedDBWrapper.isSupported().then(supported => {
+      if (!supported) {
+        return Promise.reject(this.notSupportedError);
+      } else {
+        return new Promise((resolve, reject) => {
+          const request = this.idbFactory.open(name, version);
+          if (upgradeCallback) {
+            request.onupgradeneeded = event => upgradeCallback(event, reject);
+          }
+          request.onsuccess = (event /*: IDBOpenDBEvent*/) => {
+            const connection = event.target.result;
+            if (connection) {
+              resolve(connection);
+            } else {
+              reject(this.databaseOpenError);
             }
-            request.onsuccess = function (event /*: IDBOpenDBEvent*/) {
-              var connection = event.target.result;
-              if (connection) {
-                resolve(connection);
-              } else {
-                reject(_this.databaseOpenError);
-              }
-            };
-            request.onerror = reject;
-          });
-        }
-      });
-    }
-
-    /**
-     * Checks if database with passed name exists
-     */
-  }, {
-    key: "databaseExists",
-    value: function databaseExists(name /*: string*/) /*: Promise<boolean>*/{
-      var _this2 = this;
-      return new Promise(function (resolve /*: (result: boolean) => void*/) {
-        var existed = true;
-        _this2.openDatabase(name, function () {
-          existed = false;
-        }).then(function (connection) {
-          connection.close();
-          if (existed) {
-            return;
-          }
-
-          // We didn't have this database before the check, so remove it
-          return _this2.deleteDatabaseByName(name);
-        }).then(function () {
-          return resolve(existed);
+          };
+          request.onerror = reject;
         });
-      });
-    }
-  }, {
-    key: "cloneData",
-    value: function cloneData(defaultDbConnection /*: IDBDatabase*/, customDbConnection /*: IDBDatabase*/) /*: Promise<void>*/{
-      var _this3 = this;
-      // Function to clone a single store
-      var cloneStore = function cloneStore(storeName /*: ShortStoreName*/) {
-        var connection = _this3.indexedDbConnection;
-        _this3.indexedDbConnection = defaultDbConnection;
-        return _this3.getAll(storeName) // Get all records from default-named database
-        .then(function (records) {
-          _this3.indexedDbConnection = customDbConnection;
-          if (records.length < 1) {
-            // There is no records in the store
-            return;
-          }
-          return _this3.addBulk(storeName, records, true); // Put all records into custom-named database
-        }).then(function () {
-          _this3.indexedDbConnection = connection; // Restore initial state
-        });
-      };
-
-      // Type guard to filter stores
-      function isStoreName(key /*: ShortStoreNames*/) /*: key is ShortStoreName*/{
-        return key !== 'p';
       }
+    });
+  }
 
-      // Get names of stores
-      var storeNames /*: ShortStoreName[]*/ = values(scheme_map.storeNames.left).map(function (store) {
-        return store.name;
-      }).filter(isStoreName);
-      var cloneStorePromises = storeNames.map(function (name) {
-        return function () {
-          return cloneStore(name);
-        };
-      });
-
-      // Run clone operations one by one
-      return cloneStorePromises.reduce(function (previousTask, currentTask) {
-        return previousTask.then(currentTask);
-      }, Promise.resolve());
-    }
-
-    /**
-     * Migrates created database with default name to custom
-     * The IndexedDb API doesn't provide method to rename existing database so we have to create a new database, clone
-     * data and remove the old one.
-     */
-  }, {
-    key: "migrateDb",
-    value: function migrateDb(defaultName /*: string*/, customName /*: string*/) /*: Promise<void>*/{
-      var _this4 = this;
-      return this.databaseExists(defaultName).then(function (defaultExists) {
-        if (defaultExists) {
-          // Migration hadn't finished yet
-          return Promise.all([_this4.openDatabase(defaultName, _this4.handleUpgradeNeeded, _this4.dbVersion),
-          // Open the default database, migrate version if needed
-          _this4.openDatabase(customName, _this4.handleUpgradeNeeded, _this4.dbVersion) // Open or create a new database, migrate version if needed
-          ]).then(function (_ref) {
-            var _ref2 = _slicedToArray(_ref, 2),
-              defaultDbConnection = _ref2[0],
-              customDbConnection = _ref2[1];
-            return _this4.cloneData(defaultDbConnection, customDbConnection).then(function () {
-              _this4.indexedDbConnection = customDbConnection;
-              defaultDbConnection.close();
-              return _this4.deleteDatabaseByName(defaultName);
-            });
-          }).then(function () {
-            return logger.info('Database migration finished');
-          });
-        } else {
-          // There is no default-named database, let's just create or open a custom-named one
-          return _this4.openDatabase(customName, _this4.handleUpgradeNeeded, _this4.dbVersion).then(function (customDbConnection) {
-            _this4.indexedDbConnection = customDbConnection;
-          });
-        }
-      });
-    }
-
-    /**
-     * Handle database upgrade/initialization
-     * - store activity state from memory if database unexpectedly got lost in the middle of the window session
-     * - migrate data from localStorage if available on browser upgrade
-     */
-  }, {
-    key: "handleUpgradeNeeded",
-    value: function handleUpgradeNeeded(e /*: IDBVersionChangeEvent*/, reject /*: (reason: Event) => void*/) {
-      var db = e.target.result;
-      e.target.transaction.onerror = reject;
-      e.target.transaction.onabort = reject;
-      var storeNames = scheme_map.storeNames.left;
-      var activityState = activity_state.current || {};
-      var inMemoryAvailable = activityState && !isEmpty(activityState);
-      entries(storeNames).filter(function (_ref3) {
-        var _ref4 = _slicedToArray(_ref3, 2),
-          store = _ref4[1];
-        return !store.permanent;
-      }).forEach(function (_ref5) {
-        var _ref6 = _slicedToArray(_ref5, 2),
-          longStoreName = _ref6[0],
-          store = _ref6[1];
-        var shortStoreName = store.name;
-        var options = scheme_map.right[longStoreName];
-        var objectStore = db.createObjectStore(shortStoreName, {
-          keyPath: options.keyPath,
-          autoIncrement: options.autoIncrement || false
-        });
-        if (options.index) {
-          objectStore.createIndex("".concat(options.index, "Index"), options.index);
-        }
-        if (shortStoreName === ShortStoreName.ActivityState && inMemoryAvailable) {
-          objectStore.add(convertRecord(longStoreName, Direction.left, activityState));
-          logger.info('Activity state has been recovered');
+  /**
+   * Checks if database with passed name exists
+   */
+  databaseExists(name /*: string*/) /*: Promise<boolean>*/{
+    return new Promise((resolve /*: (result: boolean) => void*/) => {
+      let existed = true;
+      this.openDatabase(name, () => {
+        existed = false;
+      }).then(connection => {
+        connection.close();
+        if (existed) {
           return;
         }
-        var localStorageRecord /*: Nullable<Array<StoredRecord>>*/ = quick_storage.stores[shortStoreName];
-        if (localStorageRecord) {
-          localStorageRecord.forEach(function (record) {
-            return objectStore.add(record);
+
+        // We didn't have this database before the check, so remove it
+        return this.deleteDatabaseByName(name);
+      }).then(() => resolve(existed));
+    });
+  }
+  cloneData(defaultDbConnection /*: IDBDatabase*/, customDbConnection /*: IDBDatabase*/) /*: Promise<void>*/{
+    // Function to clone a single store
+    const cloneStore = (storeName /*: ShortStoreName*/) => {
+      const connection = this.indexedDbConnection;
+      this.indexedDbConnection = defaultDbConnection;
+      return this.getAll(storeName) // Get all records from default-named database
+      .then(records => {
+        this.indexedDbConnection = customDbConnection;
+        if (records.length < 1) {
+          // There is no records in the store
+          return;
+        }
+        return this.addBulk(storeName, records, true); // Put all records into custom-named database
+      }).then(() => {
+        this.indexedDbConnection = connection; // Restore initial state
+      });
+    };
+
+    // Type guard to filter stores
+    function isStoreName(key /*: ShortStoreNames*/) /*: key is ShortStoreName*/{
+      return key !== 'p';
+    }
+
+    // Get names of stores
+    const storeNames /*: ShortStoreName[]*/ = values(scheme_map.storeNames.left).map(store => store.name).filter(isStoreName);
+    const cloneStorePromises = storeNames.map(name => () => cloneStore(name));
+
+    // Run clone operations one by one
+    return cloneStorePromises.reduce((previousTask, currentTask) => previousTask.then(currentTask), Promise.resolve());
+  }
+
+  /**
+   * Migrates created database with default name to custom
+   * The IndexedDb API doesn't provide method to rename existing database so we have to create a new database, clone
+   * data and remove the old one.
+   */
+  migrateDb(defaultName /*: string*/, customName /*: string*/) /*: Promise<void>*/{
+    return this.databaseExists(defaultName).then(defaultExists => {
+      if (defaultExists) {
+        // Migration hadn't finished yet
+        return Promise.all([this.openDatabase(defaultName, this.handleUpgradeNeeded, this.dbVersion),
+        // Open the default database, migrate version if needed
+        this.openDatabase(customName, this.handleUpgradeNeeded, this.dbVersion) // Open or create a new database, migrate version if needed
+        ]).then(([defaultDbConnection, customDbConnection]) => {
+          return this.cloneData(defaultDbConnection, customDbConnection).then(() => {
+            this.setConnection(customDbConnection);
+            defaultDbConnection.close();
+            return this.deleteDatabaseByName(defaultName);
           });
-          logger.info("Migration from localStorage done for ".concat(longStoreName, " store"));
-        }
-      });
-      recover();
-      quick_storage.clear();
-    }
-
-    /**
-     * Open the database connection and create store if not existent
-     */
-  }, {
-    key: "open",
-    value: function open() /*: Promise<{ success: boolean }>*/{
-      var _this5 = this;
-      if (this.indexedDbConnection) {
-        return Promise.resolve({
-          success: true
-        });
+        }).then(() => logger.info('Database migration finished'));
+      } else {
+        // There is no default-named database, let's just create or open a custom-named one
+        return this.openDatabase(customName, this.handleUpgradeNeeded, this.dbVersion).then(customDbConnection => this.setConnection(customDbConnection));
       }
-      return this.openDatabase(this.dbName, this.handleUpgradeNeeded, this.dbVersion).then(function (connection) {
-        _this5.indexedDbConnection = connection;
-        _this5.indexedDbConnection.onclose = function () {
-          return _this5.destroy;
-        };
-        return {
-          success: true
-        };
-      });
-    }
+    });
+  }
 
-    /**
-     * Get transaction and the store
-     */
-  }, {
-    key: "getTransactionStore",
-    value: function getTransactionStore(_ref7 /*:: */, reject /*: (reason: Event) => void*/, db /*: IDBDatabase*/) /*: Transaction*/{
-      var storeName = _ref7 /*:: */.storeName,
-        mode = _ref7 /*:: */.mode;
-      var transaction /*: IDBTransaction*/ = db.transaction([storeName], mode);
-      var store = transaction.objectStore(storeName);
-      var options = scheme_map.right[convertStoreName(storeName, Direction.right)];
-      var index;
+  /**
+   * Handle database upgrade/initialization
+   * - store activity state from memory if database unexpectedly got lost in the middle of the window session
+   * - migrate data from localStorage if available on browser upgrade
+   */
+  handleUpgradeNeeded(e /*: IDBVersionChangeEvent*/, reject /*: (reason: Event) => void*/) {
+    const db = e.target.result;
+    e.target.transaction.onerror = reject;
+    e.target.transaction.onabort = reject;
+    const storeNames = scheme_map.storeNames.left;
+    const activityState = activity_state.current || {};
+    const inMemoryAvailable = activityState && !isEmpty(activityState);
+    entries(storeNames).filter(([, store]) => !store.permanent).forEach(([longStoreName, store]) => {
+      const shortStoreName = store.name;
+      const options = scheme_map.right[longStoreName];
+      const objectStore = db.createObjectStore(shortStoreName, {
+        keyPath: options.keyPath,
+        autoIncrement: options.autoIncrement || false
+      });
       if (options.index) {
-        index = store.index("".concat(options.index, "Index"));
+        objectStore.createIndex(`${options.index}Index`, options.index);
       }
-      transaction.onerror = reject;
-      transaction.onabort = reject;
-      return {
-        transaction: transaction,
-        store: store,
-        index: index,
-        options: options
-      };
-    }
+      if (shortStoreName === ShortStoreName.ActivityState && inMemoryAvailable) {
+        objectStore.add(convertRecord(longStoreName, Direction.left, activityState));
+        logger.info('Activity state has been recovered');
+        return;
+      }
+      const localStorageRecord /*: Nullable<Array<StoredRecord>>*/ = quick_storage.stores[shortStoreName];
+      if (localStorageRecord) {
+        localStorageRecord.forEach(record => objectStore.add(record));
+        logger.info(`Migration from localStorage done for ${longStoreName} store`);
+      }
+    });
+    recover();
+    quick_storage.clear();
+  }
+  setConnection(connection /*: IDBDatabase*/) /*: void*/{
+    this.indexedDbConnection = connection;
+    this.indexedDbConnection.onclose = () => this.destroy();
+  }
 
-    /**
-     * Override the error by extracting only name and message of the error
-     */
-  }, {
-    key: "overrideError",
-    value: function overrideError(reject /*: (reason: Error) => void*/, error /*: IDBError*/) {
-      var _error$target$error = error.target.error,
-        name = _error$target$error.name,
-        message = _error$target$error.message;
-      return reject({
-        name: name,
-        message: message
+  /**
+   * Open the database connection and create store if not existent
+   */
+  open() /*: Promise<{ success: boolean }>*/{
+    if (this.indexedDbConnection) {
+      return Promise.resolve({
+        success: true
       });
     }
+    return this.openDatabase(this.dbName, this.handleUpgradeNeeded, this.dbVersion).then(connection => {
+      this.setConnection(connection);
+      return {
+        success: true
+      };
+    });
+  }
 
-    /**
-     * Get list of composite keys if available
-     */
-  }, {
-    key: "getCompositeKeys",
-    value: function getCompositeKeys(options /*: StoreOptions*/) /*: Nullable<Array<string>>*/{
-      var keyField = options.fields[options.keyPath];
-      return isCompositeKeyStoreField(keyField) ? keyField.composite : null;
+  /**
+   * Get transaction and the store
+   */
+  getTransactionStore({
+    storeName,
+    mode
+  } /*: { storeName: ShortStoreName, mode: AccessMode }*/, reject /*: (reason: Event) => void*/, db /*: IDBDatabase*/) /*: Transaction*/{
+    const transaction /*: IDBTransaction*/ = db.transaction([storeName], mode);
+    const store = transaction.objectStore(storeName);
+    const options = scheme_map.right[convertStoreName(storeName, Direction.right)];
+    let index;
+    if (options.index) {
+      index = store.index(`${options.index}Index`);
     }
+    transaction.onerror = reject;
+    transaction.onabort = reject;
+    return {
+      transaction,
+      store,
+      index,
+      options
+    };
+  }
 
-    /**
-     * Check if target is an object
-     */
-  }, {
-    key: "targetIsObject",
-    value: function targetIsObject(target /*: Nullable<StoredRecord | StoredRecordId>*/) /*: target is Record<string, StoredValue>*/{
-      return isObject(target);
+  /**
+   * Override the error by extracting only name and message of the error
+   */
+  overrideError(reject /*: (reason: Error) => void*/, error /*: IDBError*/) {
+    const {
+      name,
+      message
+    } = error.target.error;
+    return reject({
+      name,
+      message
+    });
+  }
+
+  /**
+   * Get list of composite keys if available
+   */
+  getCompositeKeys(options /*: StoreOptions*/) /*: Nullable<Array<string>>*/{
+    const keyField = options.fields[options.keyPath];
+    return isCompositeKeyStoreField(keyField) ? keyField.composite : null;
+  }
+
+  /**
+   * Check if target is an object
+   */
+  targetIsObject(target /*: Nullable<StoredRecord | StoredRecordId>*/) /*: target is Record<string, StoredValue>*/{
+    return isObject(target);
+  }
+
+  /**
+   * Prepare the target to be queried depending on the composite key if defined
+   */
+  prepareTarget(options /*: StoreOptions*/, target /*: Nullable<StoredRecord | StoredRecordId>*/, action /*: Action*/) /*: Nullable<StoredRecord | StoredRecordId>*/{
+    if (action === Action.clear || !target) {
+      return null; // No target needed when we clear the whole store
     }
-
-    /**
-     * Prepare the target to be queried depending on the composite key if defined
-     */
-  }, {
-    key: "prepareTarget",
-    value: function prepareTarget(options /*: StoreOptions*/, target /*: Nullable<StoredRecord | StoredRecordId>*/, action /*: Action*/) /*: Nullable<StoredRecord | StoredRecordId>*/{
-      if (action === Action.clear || !target) {
-        return null; // No target needed when we clear the whole store
-      }
-      var composite = this.getCompositeKeys(options);
-      var needObjectTarget = [Action.add, Action.put].indexOf(action) !== -1;
-      if (needObjectTarget) {
-        if (this.targetIsObject(target)) {
-          // target is a StoredRecord
-          // extend target with composite path if needed and return it
-          return composite ? _objectSpread2(_defineProperty({}, options.keyPath, composite.map(function (key) {
-            return target[key];
-          }).join('')), target) : target;
-        }
-        return null;
-      }
-
-      // target is StoredRecordId (plain or composite)
-      return target instanceof Array ? target.join('') : target;
-    }
-
-    /**
-     * Prepare the result to be return depending on the composite key definition
-     */
-  }, {
-    key: "prepareResult",
-    value: function prepareResult(options /*: StoreOptions*/, target /*: Nullable<StoredRecord | StoredRecordId>*/) /*: Nullable<Array<StoredValue>>*/{
-      var composite = this.getCompositeKeys(options);
-      if (composite && this.targetIsObject(target)) {
-        return composite.map(function (key) {
-          return target[key];
-        });
+    const composite = this.getCompositeKeys(options);
+    const needObjectTarget = [Action.add, Action.put].indexOf(action) !== -1;
+    if (needObjectTarget) {
+      if (this.targetIsObject(target)) {
+        // target is a StoredRecord
+        // extend target with composite path if needed and return it
+        return composite ? {
+          [options.keyPath]: composite.map(key => target[key]).join(''),
+          ...target
+        } : target;
       }
       return null;
     }
 
-    /**
-     * Initiate the database request
-     */
-  }, {
-    key: "initRequest",
-    value: function initRequest(_ref8 /*:: */) /*: Promise<Maybe<StoredRecord | StoredRecordId>>*/{
-      var _this6 = this;
-      var storeName = _ref8 /*:: */.storeName,
-        _ref8$target = _ref8 /*:: */.target,
-        target = _ref8$target === void 0 ? null : _ref8$target,
-        action = _ref8 /*:: */.action,
-        _ref8$mode = _ref8 /*:: */.mode,
-        mode = _ref8$mode === void 0 ? AccessMode.readonly : _ref8$mode;
-      return this.open().then(function () {
-        return new Promise(function (resolve, reject) {
-          if (!_this6.indexedDbConnection) {
-            reject(_this6.noConnectionError);
-          } else {
-            var _this6$getTransaction = _this6.getTransactionStore({
-                storeName: storeName,
-                mode: mode
-              }, reject, _this6.indexedDbConnection),
-              store = _this6$getTransaction.store,
-              options = _this6$getTransaction.options;
-            var request = store[action](_this6.prepareTarget(options, target, action));
-            var result = _this6.prepareResult(options, target);
-            request.onsuccess = function () {
-              if (action === Action.get && !request.result) {
-                reject({
-                  name: 'NotRecordFoundError',
-                  message: "Requested record not found in \"".concat(storeName, "\" store")
-                });
-              } else {
-                resolve(result || request.result || target);
-              }
-            };
-            request.onerror = function (error /*: Event*/) {
-              return _this6.overrideError(reject, error);
-            };
-          }
-        });
-      });
-    }
+    // target is StoredRecordId (plain or composite)
+    return target instanceof Array ? target.join('') : target;
+  }
 
-    /**
-     * Initiate bulk database request by reusing the same transaction to perform the operation
-     */
-  }, {
-    key: "initBulkRequest",
-    value: function initBulkRequest(_ref9 /*:: */) /*: Promise<Array<StoredRecord | StoredRecordId>>*/{
-      var _this7 = this;
-      var storeName = _ref9 /*:: */.storeName,
-        target = _ref9 /*:: */.target,
-        action = _ref9 /*:: */.action,
-        _ref9$mode = _ref9 /*:: */.mode,
-        mode = _ref9$mode === void 0 ? AccessMode.readwrite : _ref9$mode;
-      if (!target || target && !target.length) {
-        return Promise.reject({
-          name: 'NoTargetDefined',
-          message: "No array provided to perform ".concat(action, " bulk operation into \"").concat(storeName, "\" store")
-        });
-      }
-      return this.open().then(function () {
-        return new Promise(function (resolve, reject) {
-          if (!_this7.indexedDbConnection) {
-            reject(_this7.noConnectionError);
-          } else {
-            var _this7$getTransaction = _this7.getTransactionStore({
-                storeName: storeName,
-                mode: mode
-              }, reject, _this7.indexedDbConnection),
-              transaction = _this7$getTransaction.transaction,
-              store = _this7$getTransaction.store,
-              options = _this7$getTransaction.options;
+  /**
+   * Prepare the result to be return depending on the composite key definition
+   */
+  prepareResult(options /*: StoreOptions*/, target /*: Nullable<StoredRecord | StoredRecordId>*/) /*: Nullable<Array<StoredValue>>*/{
+    const composite = this.getCompositeKeys(options);
+    if (composite && this.targetIsObject(target)) {
+      return composite.map(key => target[key]);
+    }
+    return null;
+  }
 
-            // Array contains or StoredRecord either RecordIds, but not both at the same time
-            var result = new Array();
-            var current = target[0];
-            transaction.oncomplete = function () {
-              return resolve(result);
-            };
-            var _request = function request(req) {
-              req.onerror = function (error) {
-                return _this7.overrideError(reject, error);
-              };
-              req.onsuccess = function () {
-                result.push(_this7.prepareResult(options, current) || req.result);
-                current = target[result.length];
-                if (result.length < target.length) {
-                  _request(store[action](_this7.prepareTarget(options, current, action)));
-                }
-              };
-            };
-            _request(store[action](_this7.prepareTarget(options, current, action)));
-          }
-        });
-      });
-    }
-
-    /**
-     * Open cursor for bulk operations or listing
-     */
-  }, {
-    key: "openCursor",
-    value: function openCursor(_ref0 /*:: */) /*: Promise<Array<StoredRecord | StoredRecordId>>*/{
-      var _this8 = this;
-      var storeName = _ref0 /*:: */.storeName,
-        action = _ref0 /*:: */.action,
-        _ref0$range = _ref0 /*:: */.range,
-        range = _ref0$range === void 0 ? null : _ref0$range,
-        _ref0$firstOnly = _ref0 /*:: */.firstOnly,
-        firstOnly = _ref0$firstOnly === void 0 ? false : _ref0$firstOnly,
-        _ref0$mode = _ref0 /*:: */.mode,
-        mode = _ref0$mode === void 0 ? AccessMode.readonly : _ref0$mode;
-      return this.open().then(function () {
-        return new Promise(function (resolve, reject) {
-          if (!_this8.indexedDbConnection) {
-            reject(_this8.noConnectionError);
-          } else {
-            var _this8$getTransaction = _this8.getTransactionStore({
-                storeName: storeName,
-                mode: mode
-              }, reject, _this8.indexedDbConnection),
-              transaction = _this8$getTransaction.transaction,
-              store = _this8$getTransaction.store,
-              index = _this8$getTransaction.index,
-              options = _this8$getTransaction.options;
-            var cursorRequest /*: OpenIDBCursorRequest*/ = (index || store).openCursor(range);
-            var items = new Array();
-            transaction.oncomplete = function () {
-              return resolve(items);
-            };
-            cursorRequest.onsuccess = function (e) {
-              var cursor = e.target.result;
-              if (cursor) {
-                if (action === Action.delete) {
-                  cursor.delete();
-                  items.push(_this8.prepareResult(options, cursor.value) || cursor.value[options.keyPath]);
-                } else {
-                  items.push(cursor.value);
-                }
-                if (!firstOnly) {
-                  cursor.continue();
-                }
-              }
-            };
-            cursorRequest.onerror = function (error) {
-              return _this8.overrideError(reject, error);
-            };
-          }
-        });
-      });
-    }
-  }, {
-    key: "deleteDatabaseByName",
-    value: function deleteDatabaseByName(dbName /*: string*/) /*: Promise<void>*/{
-      var _this9 = this;
-      return new Promise(function (resolve, reject) {
-        var request = _this9.idbFactory.deleteDatabase(dbName);
-        request.onerror = function (error) {
-          return _this9.overrideError(reject, error);
-        };
-        request.onsuccess = function () {
-          return resolve();
-        };
-        request.onblocked = function (e) {
-          return reject(e.target);
-        };
-      });
-    }
-
-    /**
-     * Get all records from particular store
-     */
-  }, {
-    key: "getAll",
-    value: function getAll(storeName /*: ShortStoreName*/) /*: Promise<Array<StoredRecord>>*/{
-      var firstOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      return this.openCursor({
-        storeName: storeName,
-        action: Action.list,
-        firstOnly: firstOnly
-      });
-    }
-
-    /**
-     * Get the first row from the store
-     */
-  }, {
-    key: "getFirst",
-    value: function getFirst(storeName /*: ShortStoreName*/) /*: Promise<Maybe<StoredRecord>>*/{
-      return this.getAll(storeName, true).then(function (all) {
-        return all.length ? all[0] : undefined;
-      });
-    }
-
-    /**
-     * Get item from a particular store
-     */
-  }, {
-    key: "getItem",
-    value: function getItem(storeName /*: ShortStoreName*/, target /*: StoredRecordId*/) /*: Promise<StoredRecord>*/{
-      return this.initRequest({
-        storeName: storeName,
-        target: target,
-        action: Action.get
-      });
-    }
-
-    /**
-     * Return filtered result by value on available index
-     */
-  }, {
-    key: "filterBy",
-    value: function filterBy(storeName /*: ShortStoreName*/, by /*: StoredValue*/) /*: Promise<Array<StoredRecord>>*/{
-      var range = IDBKeyRange.only(by);
-      return this.openCursor({
-        storeName: storeName,
-        action: Action.list,
-        range: range
-      });
-    }
-
-    /**
-     * Add item to a particular store
-     */
-  }, {
-    key: "addItem",
-    value: function addItem(storeName /*: ShortStoreName*/, target /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
-      return this.initRequest({
-        storeName: storeName,
-        target: target,
-        action: Action.add,
-        mode: AccessMode.readwrite
-      });
-    }
-
-    /**
-     * Add multiple items into particular store
-     */
-  }, {
-    key: "addBulk",
-    value: function addBulk(storeName /*: ShortStoreName*/, target /*: Array<StoredRecord>*/, overwrite /*: boolean*/) /*: Promise<Array<StoredRecordId>>*/{
-      return this.initBulkRequest({
-        storeName: storeName,
-        target: target,
-        action: overwrite ? Action.put : Action.add,
-        mode: AccessMode.readwrite
-      });
-    }
-
-    /**
-     * Update item in a particular store
-     */
-  }, {
-    key: "updateItem",
-    value: function updateItem(storeName /*: ShortStoreName*/, target /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
-      return this.initRequest({
-        storeName: storeName,
-        target: target,
-        action: Action.put,
-        mode: AccessMode.readwrite
-      });
-    }
-
-    /**
-     * Delete item from a particular store
-     */
-  }, {
-    key: "deleteItem",
-    value: function deleteItem(storeName /*: ShortStoreName*/, target /*: StoredRecordId*/) /*: Promise<StoredRecordId>*/{
-      return this.initRequest({
-        storeName: storeName,
-        target: target,
-        action: Action.delete,
-        mode: AccessMode.readwrite
-      });
-    }
-
-    /**
-     * Delete items until certain bound (primary key as a bound scope)
-     */
-  }, {
-    key: "deleteBulk",
-    value: function deleteBulk(storeName /*: ShortStoreName*/, value /*: StoredValue*/, condition /*: KeyRangeCondition*/) /*: Promise<Array<StoredRecordId>>*/{
-      var range = condition ? IDBKeyRange[condition](value) : IDBKeyRange.only(value);
-      return this.openCursor({
-        storeName: storeName,
-        action: Action.delete,
-        range: range,
-        mode: AccessMode.readwrite
-      });
-    }
-
-    /**
-     * Trim the store from the left by specified length
-     */
-  }, {
-    key: "trimItems",
-    value: function trimItems(storeName /*: ShortStoreName*/, length /*: number*/) /*: Promise<Array<StoredRecordId>>*/{
-      var _this0 = this;
-      var options = scheme_map.right[convertStoreName(storeName, Direction.right)];
-      return this.getAll(storeName).then(function (records) {
-        return records.length ? records[length - 1] : null;
-      }).then(function (record) {
-        return record ? _this0.deleteBulk(storeName, record[options.keyPath], KeyRangeCondition.UpperBound) : [];
-      });
-    }
-
-    /**
-     * Count the number of records in the store
-     */
-  }, {
-    key: "count",
-    value: function count(storeName /*: ShortStoreName*/) /*: Promise<number>*/{
-      var _this1 = this;
-      return this.open().then(function () {
-        return new Promise(function (resolve, reject) {
-          if (!_this1.indexedDbConnection) {
-            reject(_this1.noConnectionError);
-          } else {
-            var _this1$getTransaction = _this1.getTransactionStore({
-                storeName: storeName,
-                mode: AccessMode.readonly
-              }, reject, _this1.indexedDbConnection),
-              store = _this1$getTransaction.store;
-            var request = store.count();
-            request.onsuccess = function () {
-              return resolve(request.result);
-            };
-            request.onerror = function (error) {
-              return _this1.overrideError(reject, error);
-            };
-          }
-        });
-      });
-    }
-
-    /**
-     * Clear all records from a particular store
-     */
-  }, {
-    key: "clear",
-    value: function clear(storeName /*: ShortStoreName*/) /*: Promise<void>*/{
-      return this.initRequest({
-        storeName: storeName,
-        action: Action.clear,
-        mode: AccessMode.readwrite
-      });
-    }
-
-    /**
-     * Close the database and destroy the reference to it
-     */
-  }, {
-    key: "destroy",
-    value: function destroy() /*: void*/{
-      if (this.indexedDbConnection) {
-        this.indexedDbConnection.close();
-      }
-      this.indexedDbConnection = null;
-    }
-
-    /**
-     * Close db connection and delete the db
-     * WARNING: should be used only by adjust's demo app!
-     */
-  }, {
-    key: "deleteDatabase",
-    value: function deleteDatabase() /*: Promise<void>*/{
-      this.destroy();
-      return this.deleteDatabaseByName(this.dbName);
-    }
-  }], [{
-    key: "tryOpen",
-    value:
-    /**
-     * Tries to open a temporary database
-     */
-    function tryOpen(db /*: IDBFactory*/) /*: Promise<boolean>*/{
-      return new Promise(function (resolve) {
-        try {
-          var request = db.open(IndexedDBWrapper.dbValidationName);
-          request.onsuccess = function () {
-            request.result.close();
-            db.deleteDatabase(IndexedDBWrapper.dbValidationName);
-            resolve(true);
+  /**
+   * Initiate the database request
+   */
+  initRequest({
+    storeName,
+    target = null,
+    action,
+    mode = AccessMode.readonly
+  } /*: Request*/) /*: Promise<Maybe<StoredRecord | StoredRecordId>>*/{
+    return this.open().then(() => {
+      return new Promise((resolve, reject) => {
+        if (!this.indexedDbConnection) {
+          reject(this.noConnectionError);
+        } else {
+          const {
+            store,
+            options
+          } = this.getTransactionStore({
+            storeName,
+            mode
+          }, reject, this.indexedDbConnection);
+          const request = store[action](this.prepareTarget(options, target, action));
+          const result = this.prepareResult(options, target);
+          request.onsuccess = () => {
+            if (action === Action.get && !request.result) {
+              reject({
+                name: 'NotRecordFoundError',
+                message: `Requested record not found in "${storeName}" store`
+              });
+            } else {
+              resolve(result || request.result || target);
+            }
           };
-          request.onerror = function () {
-            return resolve(false);
-          };
-        } catch (_unused) {
-          resolve(false);
+          request.onerror = (error /*: Event*/) => this.overrideError(reject, error);
         }
       });
-    }
+    });
+  }
 
-    /**
-     * Check if IndexedDB is supported in the current browser (exclude iOS forcefully)
-     */
-  }, {
-    key: "isSupported",
-    value: function isSupported() /*: Promise<boolean>*/{
-      if (IndexedDBWrapper.isSupportedPromise) {
-        return IndexedDBWrapper.isSupportedPromise;
-      } else {
-        var notSupportedMessage = 'IndexedDB is not supported in this browser';
-        IndexedDBWrapper.isSupportedPromise = new Promise(function (resolve) {
-          var indexedDB = IndexedDBWrapper.getIndexedDB();
-          var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-          if (!indexedDB || iOS) {
-            logger.warn(notSupportedMessage);
-            resolve(false);
-          } else {
-            var dbOpenablePromise = IndexedDBWrapper.tryOpen(indexedDB).then(function (dbOpenable) {
-              if (!dbOpenable) {
-                logger.warn(notSupportedMessage);
+  /**
+   * Initiate bulk database request by reusing the same transaction to perform the operation
+   */
+  initBulkRequest({
+    storeName,
+    target,
+    action,
+    mode = AccessMode.readwrite
+  } /*: BulkRequest*/) /*: Promise<Array<StoredRecord | StoredRecordId>>*/{
+    if (!target || target && !target.length) {
+      return Promise.reject({
+        name: 'NoTargetDefined',
+        message: `No array provided to perform ${action} bulk operation into "${storeName}" store`
+      });
+    }
+    return this.open().then(() => {
+      return new Promise((resolve, reject) => {
+        if (!this.indexedDbConnection) {
+          reject(this.noConnectionError);
+        } else {
+          const {
+            transaction,
+            store,
+            options
+          } = this.getTransactionStore({
+            storeName,
+            mode
+          }, reject, this.indexedDbConnection);
+
+          // Array contains or StoredRecord either RecordIds, but not both at the same time
+          const result = new Array();
+          let current = target[0];
+          transaction.oncomplete = () => resolve(result);
+          const request = req => {
+            req.onerror = error => this.overrideError(reject, error);
+            req.onsuccess = () => {
+              result.push(this.prepareResult(options, current) || req.result);
+              current = target[result.length];
+              if (result.length < target.length) {
+                request(store[action](this.prepareTarget(options, current, action)));
               }
-              return dbOpenable;
-            });
-            resolve(dbOpenablePromise);
-          }
-        });
-      }
-      return IndexedDBWrapper.isSupportedPromise;
+            };
+          };
+          request(store[action](this.prepareTarget(options, current, action)));
+        }
+      });
+    });
+  }
+
+  /**
+   * Open cursor for bulk operations or listing
+   */
+  openCursor({
+    storeName,
+    action,
+    range = null,
+    firstOnly = false,
+    mode = AccessMode.readonly
+  } /*: BulkRequest*/) /*: Promise<Array<StoredRecord | StoredRecordId>>*/{
+    return this.open().then(() => {
+      return new Promise((resolve, reject) => {
+        if (!this.indexedDbConnection) {
+          reject(this.noConnectionError);
+        } else {
+          const {
+            transaction,
+            store,
+            index,
+            options
+          } = this.getTransactionStore({
+            storeName,
+            mode
+          }, reject, this.indexedDbConnection);
+          const cursorRequest /*: OpenIDBCursorRequest*/ = (index || store).openCursor(range);
+          const items = new Array();
+          transaction.oncomplete = () => resolve(items);
+          cursorRequest.onsuccess = e => {
+            const cursor = e.target.result;
+            if (cursor) {
+              if (action === Action.delete) {
+                cursor.delete();
+                items.push(this.prepareResult(options, cursor.value) || cursor.value[options.keyPath]);
+              } else {
+                items.push(cursor.value);
+              }
+              if (!firstOnly) {
+                cursor.continue();
+              }
+            }
+          };
+          cursorRequest.onerror = error => this.overrideError(reject, error);
+        }
+      });
+    });
+  }
+  deleteDatabaseByName(dbName /*: string*/) /*: Promise<void>*/{
+    return new Promise((resolve, reject) => {
+      const request = this.idbFactory.deleteDatabase(dbName);
+      request.onerror = error => this.overrideError(reject, error);
+      request.onsuccess = () => resolve();
+      request.onblocked = e => reject(e.target);
+    });
+  }
+
+  /**
+   * Get all records from particular store
+   */
+  getAll(storeName /*: ShortStoreName*/, firstOnly = false) /*: Promise<Array<StoredRecord>>*/{
+    return this.openCursor({
+      storeName,
+      action: Action.list,
+      firstOnly
+    });
+  }
+
+  /**
+   * Get the first row from the store
+   */
+  getFirst(storeName /*: ShortStoreName*/) /*: Promise<Maybe<StoredRecord>>*/{
+    return this.getAll(storeName, true).then(all => all.length ? all[0] : undefined);
+  }
+
+  /**
+   * Get item from a particular store
+   */
+  getItem(storeName /*: ShortStoreName*/, target /*: StoredRecordId*/) /*: Promise<StoredRecord>*/{
+    return this.initRequest({
+      storeName,
+      target,
+      action: Action.get
+    });
+  }
+
+  /**
+   * Return filtered result by value on available index
+   */
+  filterBy(storeName /*: ShortStoreName*/, by /*: StoredValue*/) /*: Promise<Array<StoredRecord>>*/{
+    const range = IDBKeyRange.only(by);
+    return this.openCursor({
+      storeName,
+      action: Action.list,
+      range
+    });
+  }
+
+  /**
+   * Add item to a particular store
+   */
+  addItem(storeName /*: ShortStoreName*/, target /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
+    return this.initRequest({
+      storeName,
+      target,
+      action: Action.add,
+      mode: AccessMode.readwrite
+    });
+  }
+
+  /**
+   * Add multiple items into particular store
+   */
+  addBulk(storeName /*: ShortStoreName*/, target /*: Array<StoredRecord>*/, overwrite /*: boolean*/) /*: Promise<Array<StoredRecordId>>*/{
+    return this.initBulkRequest({
+      storeName,
+      target,
+      action: overwrite ? Action.put : Action.add,
+      mode: AccessMode.readwrite
+    });
+  }
+
+  /**
+   * Update item in a particular store
+   */
+  updateItem(storeName /*: ShortStoreName*/, target /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
+    return this.initRequest({
+      storeName,
+      target,
+      action: Action.put,
+      mode: AccessMode.readwrite
+    });
+  }
+
+  /**
+   * Delete item from a particular store
+   */
+  deleteItem(storeName /*: ShortStoreName*/, target /*: StoredRecordId*/) /*: Promise<StoredRecordId>*/{
+    return this.initRequest({
+      storeName,
+      target,
+      action: Action.delete,
+      mode: AccessMode.readwrite
+    });
+  }
+
+  /**
+   * Delete items until certain bound (primary key as a bound scope)
+   */
+  deleteBulk(storeName /*: ShortStoreName*/, value /*: StoredValue*/, condition /*: KeyRangeCondition*/) /*: Promise<Array<StoredRecordId>>*/{
+    const range = condition ? IDBKeyRange[condition](value) : IDBKeyRange.only(value);
+    return this.openCursor({
+      storeName,
+      action: Action.delete,
+      range,
+      mode: AccessMode.readwrite
+    });
+  }
+
+  /**
+   * Trim the store from the left by specified length
+   */
+  trimItems(storeName /*: ShortStoreName*/, length /*: number*/) /*: Promise<Array<StoredRecordId>>*/{
+    const options = scheme_map.right[convertStoreName(storeName, Direction.right)];
+    return this.getAll(storeName).then(records => records.length ? records[length - 1] : null).then(record => record ? this.deleteBulk(storeName, record[options.keyPath], KeyRangeCondition.UpperBound) : []);
+  }
+
+  /**
+   * Count the number of records in the store
+   */
+  count(storeName /*: ShortStoreName*/) /*: Promise<number>*/{
+    return this.open().then(() => {
+      return new Promise((resolve, reject) => {
+        if (!this.indexedDbConnection) {
+          reject(this.noConnectionError);
+        } else {
+          const {
+            store
+          } = this.getTransactionStore({
+            storeName,
+            mode: AccessMode.readonly
+          }, reject, this.indexedDbConnection);
+          const request = store.count();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = error => this.overrideError(reject, error);
+        }
+      });
+    });
+  }
+
+  /**
+   * Clear all records from a particular store
+   */
+  clear(storeName /*: ShortStoreName*/) /*: Promise<void>*/{
+    return this.initRequest({
+      storeName,
+      action: Action.clear,
+      mode: AccessMode.readwrite
+    });
+  }
+
+  /**
+   * Close the database and destroy the reference to it
+   */
+  destroy() /*: void*/{
+    if (this.indexedDbConnection) {
+      this.indexedDbConnection.close();
     }
+    this.indexedDbConnection = null;
+  }
 
-    /**
-     * Get indexedDB instance
-     */
-  }, {
-    key: "getIndexedDB",
-    value: function getIndexedDB() /*: Maybe<IDBFactory>*/{
-      return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-    }
-  }]);
-}();
-_defineProperty(IndexedDBWrapper, "dbValidationName", 'validate-db-openable');
-/**
- * Cached promise of IndexedDB validation
- */
-_defineProperty(IndexedDBWrapper, "isSupportedPromise", null);
-
-;// ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
-
-function _arrayWithoutHoles(r) {
-  if (Array.isArray(r)) return _arrayLikeToArray(r);
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-function _iterableToArray(r) {
-  if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
-
-
-
-
-function _toConsumableArray(r) {
-  return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
+  /**
+   * Close db connection and delete the db
+   * WARNING: should be used only by adjust's demo app!
+   */
+  deleteDatabase() /*: Promise<void>*/{
+    this.destroy();
+    return this.deleteDatabaseByName(this.dbName);
+  }
 }
 
 ;// ./src/sdk/storage/localstorage.ts
@@ -2837,528 +2382,440 @@ function _toConsumableArray(r) {
 
 
 
+class LocalStorageWrapper /*:: implements IStorage*/{
+  /**
+   * Cached promise of LocalStorage validation
+   */
+  static isSupportedPromise = null;
 
-
-
-
-
-
-var LocalStorageWrapper = /*#__PURE__*/function () {
-  function LocalStorageWrapper() {
-    _classCallCheck(this, LocalStorageWrapper);
-  }
-  return _createClass(LocalStorageWrapper, [{
-    key: "open",
-    value:
-    /**
-     * Prepare schema details if not existent
-     */
-    function open() /*: Promise<StorageOpenStatus>*/{
-      return LocalStorageWrapper.isSupported().then(function (supported) {
+  /**
+   * Check if LocalStorage is supported in the current browser
+   */
+  static isSupported() /*: Promise<boolean>*/{
+    if (LocalStorageWrapper.isSupportedPromise) {
+      return LocalStorageWrapper.isSupportedPromise;
+    } else {
+      LocalStorageWrapper.isSupportedPromise = new Promise((resolve /*: (value: boolean) => void*/) => {
+        const supported = isLocalStorageSupported();
         if (!supported) {
-          return {
-            status: 'error',
-            error: {
-              name: 'LSNotSupported',
-              message: 'LocalStorage is not supported'
-            }
+          logger.warn('LocalStorage is not supported in this browser');
+        }
+        resolve(supported);
+      });
+    }
+    return LocalStorageWrapper.isSupportedPromise;
+  }
+
+  /**
+   * Prepare schema details if not existent
+   */
+  open() /*: Promise<StorageOpenStatus>*/{
+    return LocalStorageWrapper.isSupported().then(supported => {
+      if (!supported) {
+        return {
+          status: 'error',
+          error: {
+            name: 'LSNotSupported',
+            message: 'LocalStorage is not supported'
+          }
+        };
+      }
+      const storeNames = scheme_map.storeNames.left;
+      const activityState = activity_state.current || {};
+      const inMemoryAvailable = activityState && !isEmpty(activityState);
+      entries(storeNames).filter(([, store]) => !store.permanent).forEach(([longStoreName, store]) => {
+        const shortStoreName = store.name;
+        if (shortStoreName === ShortStoreName.ActivityState && !quick_storage.stores[shortStoreName]) {
+          quick_storage.stores[shortStoreName] = inMemoryAvailable ? [convertRecord(longStoreName, Direction.left, activityState)] : [];
+        } else if (!quick_storage.stores[shortStoreName]) {
+          quick_storage.stores[shortStoreName] = [];
+        }
+      });
+      recover();
+      return {
+        status: 'success'
+      };
+    });
+  }
+
+  /**
+   * Get list of composite keys if available
+   */
+  getCompositeKeys(options /*: StoreOptions*/) /*: Nullable<Array<string>>*/{
+    const field = options.fields[options.keyPath];
+    return isCompositeKeyStoreField(field) ? field.composite : null;
+  }
+
+  /**
+   * Get composite keys when defined or fallback to primary key for particular store
+   */
+  getKeys(storeName /*: ShortStoreName*/) /*: Array<string>*/{
+    const name = convertStoreName(storeName, Direction.right);
+    const options /*: StoreOptions*/ = scheme_map.right[name];
+    return this.getCompositeKeys(options) || [options.keyPath];
+  }
+
+  /**
+   * Return next index using the current one and undefined if current is undefined
+   */
+  nextIndex(current /*: Maybe<number>*/) /*: Maybe<number>*/{
+    return typeof current === 'number' ? current + 1 : undefined;
+  }
+
+  /**
+   * Initiate quasi-database request
+   */
+  initRequest({
+    storeName,
+    id,
+    item
+  } /*: RequestParameters*/, action /*: Action<T>*/) /*: Promise<T>*/{
+    const options = scheme_map.right[convertStoreName(storeName, Direction.right)];
+    return this.open().then(open => {
+      if (open.status === 'error') {
+        return Promise.reject(open.error);
+      }
+      return new Promise((resolve, reject) => {
+        const items /*: Array<StoredRecord>*/ = quick_storage.stores[storeName];
+        const keys = this.getKeys(storeName);
+        const lastId = (items[items.length - 1] || {})[options.keyPath] || 0;
+        let target /*: StoredRecord*/;
+        if (!id) {
+          target = {
+            ...item
+          };
+        } else {
+          const ids = Array.isArray(id) ? id.slice() : [id];
+          target = keys.map((key, index) => [key, ids[index]]).reduce(reducer, {});
+        }
+        const index = target ? findIndex(items, keys, target) : 0;
+        return action(resolve, reject, {
+          keys,
+          items,
+          index,
+          options,
+          lastId
+        });
+      });
+    });
+  }
+  /*:: <T>*/
+
+  /**
+   * Sort the array by provided key (key can be a composite one)
+   * - by default sorts in ascending order by primary keys
+   * - force order by provided value
+   */
+  sort(items /*: Array<T>*/, keys /*: Array<string>*/, exact /*: Nullable<StoredValue>*/) /*: Array<T>*/{
+    const clone = [...items];
+    const reversed = keys.slice().reverse();
+    function compare(a /*: T*/, b /*: T*/, key /*: string*/) {
+      const expr1 = exact ? exact === a[key] : a[key] < b[key];
+      const expr2 = exact ? exact > a[key] : a[key] > b[key];
+      return expr1 ? -1 : expr2 ? 1 : 0;
+    }
+    return clone.sort((a, b) => reversed.reduce((acc, key) => {
+      return acc || compare(a, b, key);
+    }, 0));
+  }
+  /*:: <T>*/
+
+  /**
+   * Prepare the target to be queried depending on the composite key if defined
+   */
+  prepareTarget(options /*: StoreOptions*/, target /*: StoredRecord*/, next /*: number*/) /*: StoredRecord*/{
+    const composite = this.getCompositeKeys(options);
+    return composite ? {
+      [options.keyPath]: composite.map(key => target[key]).join(''),
+      ...target
+    } : options.autoIncrement && next ? {
+      [options.keyPath]: next,
+      ...target
+    } : {
+      ...target
+    };
+  }
+
+  /**
+   * Prepare the result to be return depending on the composite key definition
+   */
+  prepareResult(options /*: StoreOptions*/, target /*: StoredRecord*/) /*: StoredRecordId*/{
+    const composite = this.getCompositeKeys(options);
+    if (composite) {
+      return composite.map(key => target[key]).filter(value => /*: value is StoredValue*/!valueIsRecord(value));
+    }
+    return target[options.keyPath];
+  }
+
+  /**
+   * Get all records from particular store
+   */
+  getAll(storeName /*: ShortStoreName*/, firstOnly = false) /*: Promise<Array<StoredRecord>>*/{
+    return this.open().then(open => {
+      if (open.status === 'error') {
+        return Promise.reject(open.error);
+      }
+      return new Promise((resolve, reject) => {
+        const value = quick_storage.stores[storeName];
+        if (value instanceof Array) {
+          resolve(firstOnly ? [value[0]] : this.sort(value, this.getKeys(storeName)));
+        } else {
+          reject({
+            name: 'NotFoundError',
+            message: `No objectStore named ${storeName} in this database`
+          });
+        }
+      });
+    });
+  }
+
+  /**
+   * Get the first row from the store
+   */
+  getFirst(storeName /*: ShortStoreName*/) /*: Promise<Maybe<StoredRecord>>*/{
+    return this.getAll(storeName, true).then(all => all.length ? all[0] : undefined);
+  }
+
+  /**
+   * Get item from a particular store
+   */
+  getItem(storeName /*: ShortStoreName*/, id /*: StoredRecordId*/) /*: Promise<StoredRecord>*/{
+    const action /*: Action<StoredRecord>*/ = (resolve, reject, {
+      items,
+      index,
+      options
+    }) => {
+      if (index === -1) {
+        reject({
+          name: 'NotRecordFoundError',
+          message: `Requested record not found in "${storeName}" store`
+        });
+      } else {
+        resolve(this.prepareTarget(options, items[index]));
+      }
+    };
+    return this.initRequest({
+      storeName,
+      id
+    }, action);
+  }
+
+  /**
+   * Return filtered result by value on available index
+   */
+  filterBy(storeName /*: ShortStoreName*/, by /*: StoredValue*/) /*: Promise<Array<StoredRecord>>*/{
+    return this.getAll(storeName).then((result /*: Array<StoredRecord>*/) => {
+      return result.filter(item => {
+        const store = scheme_map.right[convertStoreName(storeName, Direction.right)];
+        const indexedValue = store.index && item[store.index];
+        return indexedValue === by;
+      });
+    });
+  }
+
+  /**
+   * Add item to a particular store
+   */
+  addItem(storeName /*: ShortStoreName*/, item /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
+    return this.initRequest({
+      storeName,
+      item
+    }, (resolve, reject, {
+      items,
+      index,
+      options,
+      lastId
+    }) => {
+      if (index !== -1) {
+        reject({
+          name: 'ConstraintError',
+          message: `Constraint was not satisfied, trying to add existing item into "${storeName}" store`
+        });
+      } else {
+        items.push(this.prepareTarget(options, item, this.nextIndex(lastId)));
+        quick_storage.stores[storeName] = items;
+        resolve(this.prepareResult(options, item));
+      }
+    });
+  }
+
+  /**
+   * Add multiple items into particular store
+   */
+  addBulk(storeName /*: ShortStoreName*/, target /*: Array<StoredRecord>*/, overwrite /*: boolean*/) /*: Promise<Array<StoredRecordId>>*/{
+    return this.initRequest({
+      storeName
+    }, (resolve, reject, {
+      keys,
+      items,
+      options,
+      lastId
+    }) => {
+      if (!target || target && !target.length) {
+        reject({
+          name: 'NoTargetDefined',
+          message: `No array provided to perform add bulk operation into "${storeName}" store`
+        });
+        return;
+      }
+      let id = lastId;
+      const newItems = target.map(item => this.prepareTarget(options, item, id = this.nextIndex(id)));
+      const overlapping = newItems.filter(item => findIndex(items, keys, item) !== -1).map(item => item[options.keyPath]);
+      const currentItems = overwrite ? items.filter(item => overlapping.indexOf(item[options.keyPath]) === -1) : [...items];
+      if (overlapping.length && !overwrite) {
+        reject({
+          name: 'ConstraintError',
+          message: `Constraint was not satisfied, trying to add existing items into "${storeName}" store`
+        });
+      } else {
+        quick_storage.stores[storeName] = this.sort([...currentItems, ...newItems], keys);
+        const result = target.map(item => this.prepareResult(options, item));
+        resolve(result);
+      }
+    });
+  }
+
+  /**
+   * Update item in a particular store
+   */
+  updateItem(storeName /*: ShortStoreName*/, item /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
+    return this.initRequest({
+      storeName,
+      item
+    }, (resolve, _, {
+      items,
+      index,
+      options,
+      lastId
+    }) => {
+      const nextId = index === -1 ? this.nextIndex(lastId) : undefined;
+      const target = this.prepareTarget(options, item, nextId);
+      if (index === -1) {
+        items.push(target);
+      } else {
+        items.splice(index, 1, target);
+      }
+      quick_storage.stores[storeName] = items;
+      resolve(this.prepareResult(options, item));
+    });
+  }
+
+  /**
+   * Delete item from a particular store
+   */
+  deleteItem(storeName /*: ShortStoreName*/, id /*: StoredRecordId*/) /*: Promise<StoredRecordId>*/{
+    return this.initRequest({
+      storeName,
+      id
+    }, (resolve, _, {
+      items,
+      index
+    }) => {
+      if (index !== -1) {
+        items.splice(index, 1);
+        quick_storage.stores[storeName] = items;
+      }
+      resolve(id);
+    });
+  }
+
+  /**
+   * Find index of the item with the closest value to the bound
+   */
+  findMax(array /*: Array<StoredRecord>*/, key /*: string*/, value /*: StoredValue*/) /*: number*/{
+    if (!array.length) {
+      return -1;
+    }
+    let max = {
+      index: -1,
+      value: typeof value === 'string' ? '' : 0
+    };
+    for (let i = 0; i < array.length; i += 1) {
+      if (array[i][key] <= value) {
+        if (array[i][key] >= max.value) {
+          max = {
+            value: array[i][key],
+            index: i
           };
         }
-        var storeNames = scheme_map.storeNames.left;
-        var activityState = activity_state.current || {};
-        var inMemoryAvailable = activityState && !isEmpty(activityState);
-        entries(storeNames).filter(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 2),
-            store = _ref2[1];
-          return !store.permanent;
-        }).forEach(function (_ref3) {
-          var _ref4 = _slicedToArray(_ref3, 2),
-            longStoreName = _ref4[0],
-            store = _ref4[1];
-          var shortStoreName = store.name;
-          if (shortStoreName === ShortStoreName.ActivityState && !quick_storage.stores[shortStoreName]) {
-            quick_storage.stores[shortStoreName] = inMemoryAvailable ? [convertRecord(longStoreName, Direction.left, activityState)] : [];
-          } else if (!quick_storage.stores[shortStoreName]) {
-            quick_storage.stores[shortStoreName] = [];
-          }
-        });
-        recover();
-        return {
-          status: 'success'
-        };
-      });
-    }
-
-    /**
-     * Get list of composite keys if available
-     */
-  }, {
-    key: "getCompositeKeys",
-    value: function getCompositeKeys(options /*: StoreOptions*/) /*: Nullable<Array<string>>*/{
-      var field = options.fields[options.keyPath];
-      return isCompositeKeyStoreField(field) ? field.composite : null;
-    }
-
-    /**
-     * Get composite keys when defined or fallback to primary key for particular store
-     */
-  }, {
-    key: "getKeys",
-    value: function getKeys(storeName /*: ShortStoreName*/) /*: Array<string>*/{
-      var name = convertStoreName(storeName, Direction.right);
-      var options /*: StoreOptions*/ = scheme_map.right[name];
-      return this.getCompositeKeys(options) || [options.keyPath];
-    }
-
-    /**
-     * Return next index using the current one and undefined if current is undefined
-     */
-  }, {
-    key: "nextIndex",
-    value: function nextIndex(current /*: Maybe<number>*/) /*: Maybe<number>*/{
-      return typeof current === 'number' ? current + 1 : undefined;
-    }
-
-    /**
-     * Initiate quasi-database request
-     */
-  }, {
-    key: "initRequest",
-    value: function initRequest /*:: <T>*/(_ref5 /*:: */, action /*: Action<T>*/) /*: Promise<T>*/{
-      var _this = this;
-      var storeName = _ref5 /*:: */.storeName,
-        id = _ref5 /*:: */.id,
-        item = _ref5 /*:: */.item;
-      var options = scheme_map.right[convertStoreName(storeName, Direction.right)];
-      return this.open().then(function (open) {
-        if (open.status === 'error') {
-          return Promise.reject(open.error);
-        }
-        return new Promise(function (resolve, reject) {
-          var items /*: Array<StoredRecord>*/ = quick_storage.stores[storeName];
-          var keys = _this.getKeys(storeName);
-          var lastId = (items[items.length - 1] || {})[options.keyPath] || 0;
-          var target /*: StoredRecord*/;
-          if (!id) {
-            target = _objectSpread2({}, item);
-          } else {
-            var ids = Array.isArray(id) ? id.slice() : [id];
-            target = keys.map(function (key, index) {
-              return [key, ids[index]];
-            }).reduce(reducer, {});
-          }
-          var index = target ? findIndex(items, keys, target) : 0;
-          return action(resolve, reject, {
-            keys: keys,
-            items: items,
-            index: index,
-            options: options,
-            lastId: lastId
-          });
-        });
-      });
-    }
-
-    /**
-     * Sort the array by provided key (key can be a composite one)
-     * - by default sorts in ascending order by primary keys
-     * - force order by provided value
-     */
-  }, {
-    key: "sort",
-    value: function sort /*:: <T>*/(items /*: Array<T>*/, keys /*: Array<string>*/, exact /*: Nullable<StoredValue>*/) /*: Array<T>*/{
-      var clone = _toConsumableArray(items);
-      var reversed = keys.slice().reverse();
-      function compare(a /*: T*/, b /*: T*/, key /*: string*/) {
-        var expr1 = exact ? exact === a[key] : a[key] < b[key];
-        var expr2 = exact ? exact > a[key] : a[key] > b[key];
-        return expr1 ? -1 : expr2 ? 1 : 0;
-      }
-      return clone.sort(function (a, b) {
-        return reversed.reduce(function (acc, key) {
-          return acc || compare(a, b, key);
-        }, 0);
-      });
-    }
-
-    /**
-     * Prepare the target to be queried depending on the composite key if defined
-     */
-  }, {
-    key: "prepareTarget",
-    value: function prepareTarget(options /*: StoreOptions*/, target /*: StoredRecord*/, next /*: number*/) /*: StoredRecord*/{
-      var composite = this.getCompositeKeys(options);
-      return composite ? _objectSpread2(_defineProperty({}, options.keyPath, composite.map(function (key) {
-        return target[key];
-      }).join('')), target) : options.autoIncrement && next ? _objectSpread2(_defineProperty({}, options.keyPath, next), target) : _objectSpread2({}, target);
-    }
-
-    /**
-     * Prepare the result to be return depending on the composite key definition
-     */
-  }, {
-    key: "prepareResult",
-    value: function prepareResult(options /*: StoreOptions*/, target /*: StoredRecord*/) /*: StoredRecordId*/{
-      var composite = this.getCompositeKeys(options);
-      if (composite) {
-        return composite.map(function (key) {
-          return target[key];
-        }).filter(function (value) {
-          return /*: value is StoredValue*/!valueIsRecord(value);
-        });
-      }
-      return target[options.keyPath];
-    }
-
-    /**
-     * Get all records from particular store
-     */
-  }, {
-    key: "getAll",
-    value: function getAll(storeName /*: ShortStoreName*/) /*: Promise<Array<StoredRecord>>*/{
-      var _this2 = this;
-      var firstOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      return this.open().then(function (open) {
-        if (open.status === 'error') {
-          return Promise.reject(open.error);
-        }
-        return new Promise(function (resolve, reject) {
-          var value = quick_storage.stores[storeName];
-          if (value instanceof Array) {
-            resolve(firstOnly ? [value[0]] : _this2.sort(value, _this2.getKeys(storeName)));
-          } else {
-            reject({
-              name: 'NotFoundError',
-              message: "No objectStore named ".concat(storeName, " in this database")
-            });
-          }
-        });
-      });
-    }
-
-    /**
-     * Get the first row from the store
-     */
-  }, {
-    key: "getFirst",
-    value: function getFirst(storeName /*: ShortStoreName*/) /*: Promise<Maybe<StoredRecord>>*/{
-      return this.getAll(storeName, true).then(function (all) {
-        return all.length ? all[0] : undefined;
-      });
-    }
-
-    /**
-     * Get item from a particular store
-     */
-  }, {
-    key: "getItem",
-    value: function getItem(storeName /*: ShortStoreName*/, id /*: StoredRecordId*/) /*: Promise<StoredRecord>*/{
-      var _this3 = this;
-      var action /*: Action<StoredRecord>*/ = function action(resolve, reject, _ref6) {
-        var items = _ref6.items,
-          index = _ref6.index,
-          options = _ref6.options;
-        if (index === -1) {
-          reject({
-            name: 'NotRecordFoundError',
-            message: "Requested record not found in \"".concat(storeName, "\" store")
-          });
-        } else {
-          resolve(_this3.prepareTarget(options, items[index]));
-        }
-      };
-      return this.initRequest({
-        storeName: storeName,
-        id: id
-      }, action);
-    }
-
-    /**
-     * Return filtered result by value on available index
-     */
-  }, {
-    key: "filterBy",
-    value: function filterBy(storeName /*: ShortStoreName*/, by /*: StoredValue*/) /*: Promise<Array<StoredRecord>>*/{
-      return this.getAll(storeName).then(function (result /*: Array<StoredRecord>*/) {
-        return result.filter(function (item) {
-          var store = scheme_map.right[convertStoreName(storeName, Direction.right)];
-          var indexedValue = store.index && item[store.index];
-          return indexedValue === by;
-        });
-      });
-    }
-
-    /**
-     * Add item to a particular store
-     */
-  }, {
-    key: "addItem",
-    value: function addItem(storeName /*: ShortStoreName*/, item /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
-      var _this4 = this;
-      return this.initRequest({
-        storeName: storeName,
-        item: item
-      }, function (resolve, reject, _ref7) {
-        var items = _ref7.items,
-          index = _ref7.index,
-          options = _ref7.options,
-          lastId = _ref7.lastId;
-        if (index !== -1) {
-          reject({
-            name: 'ConstraintError',
-            message: "Constraint was not satisfied, trying to add existing item into \"".concat(storeName, "\" store")
-          });
-        } else {
-          items.push(_this4.prepareTarget(options, item, _this4.nextIndex(lastId)));
-          quick_storage.stores[storeName] = items;
-          resolve(_this4.prepareResult(options, item));
-        }
-      });
-    }
-
-    /**
-     * Add multiple items into particular store
-     */
-  }, {
-    key: "addBulk",
-    value: function addBulk(storeName /*: ShortStoreName*/, target /*: Array<StoredRecord>*/, overwrite /*: boolean*/) /*: Promise<Array<StoredRecordId>>*/{
-      var _this5 = this;
-      return this.initRequest({
-        storeName: storeName
-      }, function (resolve, reject, _ref8) {
-        var keys = _ref8.keys,
-          items = _ref8.items,
-          options = _ref8.options,
-          lastId = _ref8.lastId;
-        if (!target || target && !target.length) {
-          reject({
-            name: 'NoTargetDefined',
-            message: "No array provided to perform add bulk operation into \"".concat(storeName, "\" store")
-          });
-          return;
-        }
-        var id = lastId;
-        var newItems = target.map(function (item) {
-          return _this5.prepareTarget(options, item, id = _this5.nextIndex(id));
-        });
-        var overlapping = newItems.filter(function (item) {
-          return findIndex(items, keys, item) !== -1;
-        }).map(function (item) {
-          return item[options.keyPath];
-        });
-        var currentItems = overwrite ? items.filter(function (item) {
-          return overlapping.indexOf(item[options.keyPath]) === -1;
-        }) : _toConsumableArray(items);
-        if (overlapping.length && !overwrite) {
-          reject({
-            name: 'ConstraintError',
-            message: "Constraint was not satisfied, trying to add existing items into \"".concat(storeName, "\" store")
-          });
-        } else {
-          quick_storage.stores[storeName] = _this5.sort([].concat(_toConsumableArray(currentItems), _toConsumableArray(newItems)), keys);
-          var result = target.map(function (item) {
-            return _this5.prepareResult(options, item);
-          });
-          resolve(result);
-        }
-      });
-    }
-
-    /**
-     * Update item in a particular store
-     */
-  }, {
-    key: "updateItem",
-    value: function updateItem(storeName /*: ShortStoreName*/, item /*: StoredRecord*/) /*: Promise<StoredRecordId>*/{
-      var _this6 = this;
-      return this.initRequest({
-        storeName: storeName,
-        item: item
-      }, function (resolve, _, _ref9) {
-        var items = _ref9.items,
-          index = _ref9.index,
-          options = _ref9.options,
-          lastId = _ref9.lastId;
-        var nextId = index === -1 ? _this6.nextIndex(lastId) : undefined;
-        var target = _this6.prepareTarget(options, item, nextId);
-        if (index === -1) {
-          items.push(target);
-        } else {
-          items.splice(index, 1, target);
-        }
-        quick_storage.stores[storeName] = items;
-        resolve(_this6.prepareResult(options, item));
-      });
-    }
-
-    /**
-     * Delete item from a particular store
-     */
-  }, {
-    key: "deleteItem",
-    value: function deleteItem(storeName /*: ShortStoreName*/, id /*: StoredRecordId*/) /*: Promise<StoredRecordId>*/{
-      return this.initRequest({
-        storeName: storeName,
-        id: id
-      }, function (resolve, _, _ref0) {
-        var items = _ref0.items,
-          index = _ref0.index;
-        if (index !== -1) {
-          items.splice(index, 1);
-          quick_storage.stores[storeName] = items;
-        }
-        resolve(id);
-      });
-    }
-
-    /**
-     * Find index of the item with the closest value to the bound
-     */
-  }, {
-    key: "findMax",
-    value: function findMax(array /*: Array<StoredRecord>*/, key /*: string*/, value /*: StoredValue*/) /*: number*/{
-      if (!array.length) {
-        return -1;
-      }
-      var max = {
-        index: -1,
-        value: typeof value === 'string' ? '' : 0
-      };
-      for (var i = 0; i < array.length; i += 1) {
-        if (array[i][key] <= value) {
-          if (array[i][key] >= max.value) {
-            max = {
-              value: array[i][key],
-              index: i
-            };
-          }
-        } else {
-          return max.index;
-        }
-      }
-      return max.index;
-    }
-
-    /**
-     * Delete items until certain bound (primary key as a bound scope)
-     * Returns array of deleted elements
-     */
-  }, {
-    key: "deleteBulk",
-    value: function deleteBulk(storeName /*: ShortStoreName*/, value /*: StoredValue*/, condition /*: KeyRangeCondition*/) /*: Promise<Array<StoredRecordId>>*/{
-      var _this7 = this;
-      return this.getAll(storeName).then(function (items /*: Array<StoredRecord>*/) {
-        var keys = _this7.getKeys(storeName);
-        var key = scheme_map.right[convertStoreName(storeName, Direction.right)].index || keys[0];
-        var exact = condition ? null : value;
-        var sorted /*: Array<StoredRecord>*/ = _this7.sort(items, keys, exact);
-        var index = _this7.findMax(sorted, key, value);
-        if (index === -1) {
-          return [];
-        }
-        var start = condition === KeyRangeCondition.LowerBound ? index : 0;
-        var end = !condition || condition === KeyRangeCondition.UpperBound ? index + 1 : sorted.length;
-        var deleted /*: Array<StoredRecordId>*/ = sorted.splice(start, end).map(function (item) {
-          return keys.length === 1 ? item[key] : keys.map(function (k) {
-            return item[k];
-          });
-        });
-        quick_storage.stores[storeName] = sorted;
-        return deleted;
-      });
-    }
-
-    /**
-     * Trim the store from the left by specified length
-     */
-  }, {
-    key: "trimItems",
-    value: function trimItems(storeName /*: ShortStoreName*/, length /*: number*/) /*: Promise<Array<StoredRecordId>>*/{
-      var _this8 = this;
-      var convertedName = convertStoreName(storeName, Direction.right);
-      var options /*: StoreOptions*/ = scheme_map.right[convertedName];
-      return this.getAll(storeName).then(function (records /*: Array<Record<string, StoredValue>>*/) {
-        return records.length ? records[length - 1] : null;
-      }).then(function (record) {
-        return record ? _this8.deleteBulk(storeName, record[options.keyPath], KeyRangeCondition.UpperBound) : [];
-      });
-    }
-
-    /**
-     * Count the number of records in the store
-     */
-  }, {
-    key: "count",
-    value: function count(storeName /*: ShortStoreName*/) /*: Promise<number>*/{
-      return this.open().then(function (open) {
-        if (open.status === 'error') {
-          return Promise.reject(open.error);
-        }
-        var records = quick_storage.stores[storeName];
-        return Promise.resolve(records instanceof Array ? records.length : 1);
-      });
-    }
-
-    /**
-     * Clear all records from a particular store
-     */
-  }, {
-    key: "clear",
-    value: function clear(storeName /*: ShortStoreName*/) /*: Promise<void>*/{
-      return this.open().then(function (open) {
-        if (open.status === 'error') {
-          return Promise.reject(open.error);
-        }
-        return new Promise(function (resolve) {
-          quick_storage.stores[storeName] = [];
-          resolve();
-        });
-      });
-    }
-
-    /**
-     * Does nothing, it simply matches the common storage interface
-     */
-  }, {
-    key: "destroy",
-    value: function destroy() {}
-
-    /**
-     * Does nothing, it simply matches the common storage interface
-     */
-  }, {
-    key: "deleteDatabase",
-    value: function deleteDatabase() {}
-  }], [{
-    key: "isSupported",
-    value:
-    /**
-     * Check if LocalStorage is supported in the current browser
-     */
-    function isSupported() /*: Promise<boolean>*/{
-      if (LocalStorageWrapper.isSupportedPromise) {
-        return LocalStorageWrapper.isSupportedPromise;
       } else {
-        LocalStorageWrapper.isSupportedPromise = new Promise(function (resolve /*: (value: boolean) => void*/) {
-          var supported = isLocalStorageSupported();
-          if (!supported) {
-            logger.warn('LocalStorage is not supported in this browser');
-          }
-          resolve(supported);
-        });
+        return max.index;
       }
-      return LocalStorageWrapper.isSupportedPromise;
     }
-  }]);
-}();
-/**
- * Cached promise of LocalStorage validation
- */
-_defineProperty(LocalStorageWrapper, "isSupportedPromise", null);
+    return max.index;
+  }
+
+  /**
+   * Delete items until certain bound (primary key as a bound scope)
+   * Returns array of deleted elements
+   */
+  deleteBulk(storeName /*: ShortStoreName*/, value /*: StoredValue*/, condition /*: KeyRangeCondition*/) /*: Promise<Array<StoredRecordId>>*/{
+    return this.getAll(storeName).then((items /*: Array<StoredRecord>*/) => {
+      const keys = this.getKeys(storeName);
+      const key = scheme_map.right[convertStoreName(storeName, Direction.right)].index || keys[0];
+      const exact = condition ? null : value;
+      const sorted /*: Array<StoredRecord>*/ = this.sort(items, keys, exact);
+      const index = this.findMax(sorted, key, value);
+      if (index === -1) {
+        return [];
+      }
+      const start = condition === KeyRangeCondition.LowerBound ? index : 0;
+      const end = !condition || condition === KeyRangeCondition.UpperBound ? index + 1 : sorted.length;
+      const deleted /*: Array<StoredRecordId>*/ = sorted.splice(start, end).map(item => keys.length === 1 ? item[key] : keys.map(k => item[k]));
+      quick_storage.stores[storeName] = sorted;
+      return deleted;
+    });
+  }
+
+  /**
+   * Trim the store from the left by specified length
+   */
+  trimItems(storeName /*: ShortStoreName*/, length /*: number*/) /*: Promise<Array<StoredRecordId>>*/{
+    const convertedName = convertStoreName(storeName, Direction.right);
+    const options /*: StoreOptions*/ = scheme_map.right[convertedName];
+    return this.getAll(storeName).then((records /*: Array<Record<string, StoredValue>>*/) => records.length ? records[length - 1] : null).then(record => record ? this.deleteBulk(storeName, record[options.keyPath], KeyRangeCondition.UpperBound) : []);
+  }
+
+  /**
+   * Count the number of records in the store
+   */
+  count(storeName /*: ShortStoreName*/) /*: Promise<number>*/{
+    return this.open().then(open => {
+      if (open.status === 'error') {
+        return Promise.reject(open.error);
+      }
+      const records = quick_storage.stores[storeName];
+      return Promise.resolve(records instanceof Array ? records.length : 1);
+    });
+  }
+
+  /**
+   * Clear all records from a particular store
+   */
+  clear(storeName /*: ShortStoreName*/) /*: Promise<void>*/{
+    return this.open().then(open => {
+      if (open.status === 'error') {
+        return Promise.reject(open.error);
+      }
+      return new Promise(resolve => {
+        quick_storage.stores[storeName] = [];
+        resolve();
+      });
+    });
+  }
+
+  /**
+   * Does nothing, it simply matches the common storage interface
+   */
+  destroy() {}
+
+  /**
+   * Does nothing, it simply matches the common storage interface
+   */
+  deleteDatabase() {}
+}
 
 ;// ./src/sdk/storage/storage.ts
-
-
 
 
 
@@ -3377,7 +2834,7 @@ var StorageType = function (StorageType) {
 /**
  * Methods to extend
  */
-var _methods /*: CommonStorageMethods*/ = {
+const _methods /*: CommonStorageMethods*/ = {
   getAll: _getAll,
   getFirst: _getFirst,
   getItem: _getItem,
@@ -3398,94 +2855,66 @@ var _methods /*: CommonStorageMethods*/ = {
  * Extends storage's getAll method by decoding returned records
  */
 function _getAll(storage /*: IStorage*/, storeName /*: ShortStoreName*/, firstOnly /*: boolean*/) {
-  return storage.getAll(storeName, firstOnly).then(function (records) {
-    return convertRecords(storeName, Direction.right, records);
-  });
+  return storage.getAll(storeName, firstOnly).then(records => convertRecords(storeName, Direction.right, records));
 }
 
 /**
  * Extends storage's getFirst method by decoding returned record
  */
 function _getFirst(storage /*: IStorage*/, storeName /*: ShortStoreName*/) {
-  return storage.getFirst(storeName).then(function (record) {
-    return convertRecord(storeName, Direction.right, record);
-  });
+  return storage.getFirst(storeName).then(record => convertRecord(storeName, Direction.right, record));
 }
 
 /**
  * Extends storage's getItem method by encoding target value and then decoding returned record
  */
 function _getItem(storage /*: IStorage*/, storeName /*: ShortStoreName*/, target /*: StoredRecordId*/) {
-  return storage.getItem(storeName, convertValues(storeName, Direction.left, target)).then(function (record) {
-    return convertRecord(storeName, Direction.right, record);
-  }).catch(function (error) {
-    return Promise.reject(decodeErrorMessage(storeName, error));
-  });
+  return storage.getItem(storeName, convertValues(storeName, Direction.left, target)).then(record => convertRecord(storeName, Direction.right, record)).catch(error => Promise.reject(decodeErrorMessage(storeName, error)));
 }
 
 /**
  * Extends storage's filterBy method by encoding target value and then decoding returned records
  */
 function _filterBy(storage /*: IStorage*/, storeName /*: ShortStoreName*/, target /*: string*/) {
-  return storage.filterBy(storeName, encodeValue(target)).then(function (records) {
-    return convertRecords(storeName, Direction.right, records);
-  });
+  return storage.filterBy(storeName, encodeValue(target)).then(records => convertRecords(storeName, Direction.right, records));
 }
 
 /**
  * Extends storage's addItem method by encoding target record and then decoding returned keys
  */
 function _addItem(storage /*: IStorage*/, storeName /*: ShortStoreName*/, record /*: StoredRecord*/) {
-  var convertedRecord = convertRecord(storeName, Direction.left, record);
-  return storage.addItem(storeName, convertedRecord).then(function (target) {
-    return convertValues(storeName, Direction.right, target);
-  }).catch(function (error) {
-    return Promise.reject(decodeErrorMessage(storeName, error));
-  });
+  const convertedRecord = convertRecord(storeName, Direction.left, record);
+  return storage.addItem(storeName, convertedRecord).then(target => convertValues(storeName, Direction.right, target)).catch(error => Promise.reject(decodeErrorMessage(storeName, error)));
 }
 
 /**
  * Extends storage's addBulk method by encoding target records and then decoding returned keys
  */
 function _addBulk(storage /*: IStorage*/, storeName /*: ShortStoreName*/, records /*: Array<StoredRecord>*/, overwrite /*: boolean*/) {
-  var convertedRecords /*: Array<StoredRecord>*/ = convertRecords(storeName, Direction.left, records);
-  return storage.addBulk(storeName, convertedRecords, overwrite).then(function (values) {
-    return values.map(function (target) {
-      return convertValues(storeName, Direction.right, target);
-    });
-  }).catch(function (error) {
-    return Promise.reject(decodeErrorMessage(storeName, error));
-  });
+  const convertedRecords /*: Array<StoredRecord>*/ = convertRecords(storeName, Direction.left, records);
+  return storage.addBulk(storeName, convertedRecords, overwrite).then(values => values.map(target => convertValues(storeName, Direction.right, target))).catch(error => Promise.reject(decodeErrorMessage(storeName, error)));
 }
 
 /**
  * Extends storage's updateItem method by encoding target record and then decoding returned keys
  */
 function _updateItem(storage /*: IStorage*/, storeName /*: ShortStoreName*/, record /*: StoredRecord*/) {
-  var convertedRecord = convertRecord(storeName, Direction.left, record);
-  return storage.updateItem(storeName, convertedRecord).then(function (target) {
-    return convertValues(storeName, Direction.right, target);
-  });
+  const convertedRecord = convertRecord(storeName, Direction.left, record);
+  return storage.updateItem(storeName, convertedRecord).then(target => convertValues(storeName, Direction.right, target));
 }
 
 /**
  * Extends storage's deleteItem method by encoding target value and then decoding returned keys
  */
 function _deleteItem(storage /*: IStorage*/, storeName /*: ShortStoreName*/, target /*: StoredRecordId*/) {
-  return storage.deleteItem(storeName, convertValues(storeName, Direction.left, target)).then(function (target) {
-    return convertValues(storeName, Direction.right, target);
-  });
+  return storage.deleteItem(storeName, convertValues(storeName, Direction.left, target)).then(target => convertValues(storeName, Direction.right, target));
 }
 
 /**
  * Extends storage's deleteBulk method by encoding target value and then decoding returned records that are deleted
  */
 function _deleteBulk(storage /*: IStorage*/, storeName /*: ShortStoreName*/, value /*: StoredValue*/, condition /*: KeyRangeCondition*/) {
-  return storage.deleteBulk(storeName, encodeValue(value), condition).then(function (records) {
-    return records.map(function (record) {
-      return convertValues(storeName, Direction.right, record);
-    });
-  });
+  return storage.deleteBulk(storeName, encodeValue(value), condition).then(records => records.map(record => convertValues(storeName, Direction.right, record)));
 }
 
 /**
@@ -3527,18 +2956,13 @@ function _deleteDatabase(storage /*: IndexedDB | LocalStorage*/) {
  * Augment whitelisted methods with encoding/decoding functionality
  */
 function _augment() /*: StorageMethods*/{
-  var methods /*: Array<[MethodName, StorageMethod]>*/ = entries(_methods).map(function (_ref /*:: */) {
-    var _ref2 = _slicedToArray(_ref /*:: */, 2),
-      methodName = _ref2[0],
-      method = _ref2[1];
-    var augmentedMethod /*: StorageMethod*/ = function augmentedMethod(storeName /*: StoreName*/) {
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-      return storage_init().then(function (_ref3) {
-        var storage = _ref3.storage;
+  const methods /*: Array<[MethodName, StorageMethod]>*/ = entries(_methods).map(([methodName, method]) => {
+    const augmentedMethod /*: StorageMethod*/ = (storeName /*: StoreName*/, ...args) => {
+      return storage_init().then(({
+        storage
+      }) => {
         if (storage) {
-          return method.call.apply(method, [null, storage, convertStoreName(storeName, Direction.left)].concat(args));
+          return method.call(null, storage, convertStoreName(storeName, Direction.left), ...args);
         }
       });
     };
@@ -3550,7 +2974,7 @@ function _augment() /*: StorageMethods*/{
 /**
  * Type of available storage
  */
-var type /*: StorageType*/;
+let type /*: StorageType*/;
 
 /**
  * Returns type of used storage which is one of possible values INDEXED_DB, LOCAL_STORAGE or NO_STORAGE if there is no
@@ -3563,28 +2987,23 @@ function getType() /*: StorageType*/{
 /**
  * Cached promise of Storage initialization
  */
-var _initializationPromise /*: Nullable<Promise<Storage>>*/ = null;
+let _initializationPromise /*: Nullable<Promise<Storage>>*/ = null;
 
 /**
  * Check which storage is available and pick it up
  * Prefer indexedDB over localStorage
  */
 function storage_init(dbName /*: string*/) /*: Promise<Storage>*/{
-  var storage /*: Nullable<IStorage>*/ = null;
+  let storage /*: Nullable<IStorage>*/ = null;
   if (_initializationPromise !== null) {
     return _initializationPromise;
   } else {
-    _initializationPromise = Promise.all([IndexedDBWrapper.isSupported(), LocalStorageWrapper.isSupported()]).then(function (_ref4) {
-      var _ref5 = _slicedToArray(_ref4, 2),
-        idbSupported = _ref5[0],
-        lsSupported = _ref5[1];
+    _initializationPromise = Promise.all([IndexedDBWrapper.isSupported(), LocalStorageWrapper.isSupported()]).then(([idbSupported, lsSupported]) => {
       quick_storage.setCustomName(dbName);
       if (idbSupported) {
         type = StorageType.indexedDB;
-        var idb = new IndexedDBWrapper();
-        return idb.setCustomName(dbName).then(function () {
-          return storage = idb;
-        });
+        const idb = new IndexedDBWrapper();
+        return idb.setCustomName(dbName).then(() => storage = idb);
       } else if (lsSupported) {
         type = StorageType.localStorage;
         storage = new LocalStorageWrapper();
@@ -3595,22 +3014,21 @@ function storage_init(dbName /*: string*/) /*: Promise<Storage>*/{
         storage = null;
         return Promise.resolve(storage);
       }
-    }).then(function () {
+    }).then(() => {
       return {
-        type: type,
-        storage: storage
+        type,
+        storage
       };
     });
   }
   return _initializationPromise;
 }
-/* harmony default export */ const storage = (_objectSpread2({
+/* harmony default export */ const storage = ({
   init: storage_init,
-  getType: getType
-}, _augment()));
+  getType,
+  ..._augment()
+});
 ;// ./src/sdk/default-params.js
-
-
 /*:: // 
 import { type NavigatorT, type CreatedAtT, type SentAtT, type WebUuidT, type TrackEnabledT, type PlatformT, type LanguageT, type MachineTypeT, type QueueSizeT, type DefaultParamsT } from './types';*/
 
@@ -3660,11 +3078,11 @@ function _getWebUuid() /*: WebUuidT*/{
  * @private
  */
 function _getTrackEnabled() /*: ?TrackEnabledT*/{
-  var navigatorExt = (navigator /*: NavigatorT*/);
-  var isNavigatorDNT = typeof navigatorExt.doNotTrack !== 'undefined';
-  var isWindowDNT = typeof window.doNotTrack !== 'undefined';
-  var isMsDNT = typeof navigatorExt.msDoNotTrack !== 'undefined';
-  var dnt = isNavigatorDNT ? navigatorExt.doNotTrack : isWindowDNT ? window.doNotTrack : isMsDNT ? navigatorExt.msDoNotTrack : null;
+  const navigatorExt = (navigator /*: NavigatorT*/);
+  const isNavigatorDNT = typeof navigatorExt.doNotTrack !== 'undefined';
+  const isWindowDNT = typeof window.doNotTrack !== 'undefined';
+  const isMsDNT = typeof navigatorExt.msDoNotTrack !== 'undefined';
+  const dnt = isNavigatorDNT ? navigatorExt.doNotTrack : isWindowDNT ? window.doNotTrack : isMsDNT ? navigatorExt.msDoNotTrack : null;
   if (parseInt(dnt, 10) === 0 || dnt === 'no') {
     return {
       trackingEnabled: true
@@ -3697,13 +3115,10 @@ function _getPlatform() /*: PlatformT*/{
  * @private
  */
 function _getLanguage() /*: LanguageT*/{
-  var navigatorExt = (navigator /*: NavigatorT*/);
-  var _split = (navigatorExt.language || navigatorExt.userLanguage || 'en').split('-'),
-    _split2 = _slicedToArray(_split, 2),
-    language = _split2[0],
-    country = _split2[1];
+  const navigatorExt = (navigator /*: NavigatorT*/);
+  const [language, country] = (navigatorExt.language || navigatorExt.userLanguage || 'en').split('-');
   return {
-    language: language,
+    language,
     country: country ? '' + country.toLowerCase() : undefined
   };
 }
@@ -3714,8 +3129,8 @@ function _getLanguage() /*: LanguageT*/{
  * @returns {{machineType: (string|undefined)}}
  */
 function _getMachineType() /*: MachineTypeT*/{
-  var ua = navigator.userAgent || navigator.vendor;
-  var overrideWin32 = navigator.platform === 'Win32' && (ua.indexOf('WOW64') !== -1 || ua.indexOf('Win64') !== -1);
+  const ua = navigator.userAgent || navigator.vendor;
+  const overrideWin32 = navigator.platform === 'Win32' && (ua.indexOf('WOW64') !== -1 || ua.indexOf('Win64') !== -1);
   return {
     machineType: overrideWin32 ? 'Win64' : navigator.platform
   };
@@ -3728,20 +3143,23 @@ function _getMachineType() /*: MachineTypeT*/{
  * @private
  */
 function _getQueueSize() /*: Promise<QueueSizeT>*/{
-  return storage.getAll('queue').then(function (records) {
-    return {
-      queueSize: records.length
-    };
-  });
+  return storage.getAll('queue').then(records => ({
+    queueSize: records.length
+  }));
 }
 function defaultParams() /*: Promise<DefaultParamsT>*/{
-  return _getQueueSize().then(function (queueSize) {
-    return _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, _getCreatedAt()), _getSentAt()), _getWebUuid()), _getTrackEnabled()), _getPlatform()), _getLanguage()), _getMachineType()), queueSize);
-  });
+  return _getQueueSize().then(queueSize => ({
+    ..._getCreatedAt(),
+    ..._getSentAt(),
+    ..._getWebUuid(),
+    ..._getTrackEnabled(),
+    ..._getPlatform(),
+    ..._getLanguage(),
+    ..._getMachineType(),
+    ...queueSize
+  }));
 }
 ;// ./src/sdk/http.js
-
-
 /*:: // 
 import { type UrlT, type DefaultParamsT, type HttpSuccessResponseT, type HttpErrorResponseT, type HttpRequestParamsT, type ErrorCodeT } from './types';*/
 
@@ -3761,8 +3179,8 @@ import { type UrlT, type DefaultParamsT, type HttpSuccessResponseT, type HttpErr
  * @private
  */
 function _getSuccessResponse(xhr /*: XMLHttpRequest*/, url /*: UrlT*/) /*: HttpSuccessResponseT*/{
-  var result = JSON.parse(xhr.responseText);
-  var response = {
+  const result = JSON.parse(xhr.responseText);
+  let response = {
     status: 'success',
     adid: result.adid,
     timestamp: result.timestamp,
@@ -3777,11 +3195,7 @@ function _getSuccessResponse(xhr /*: XMLHttpRequest*/, url /*: UrlT*/) /*: HttpS
     response.attribution = result.attribution;
     response.message = result.message;
   }
-  return entries(response).filter(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      value = _ref2[1];
-    return !!value;
-  }).reduce(reducer, {});
+  return entries(response).filter(([, value]) => !!value).reduce(reducer, {});
 }
 
 /**
@@ -3793,17 +3207,16 @@ function _getSuccessResponse(xhr /*: XMLHttpRequest*/, url /*: UrlT*/) /*: HttpS
  * @returns {Object}
  * @private
  */
-function _getErrorResponse(xhr /*: XMLHttpRequest*/, code /*: ErrorCodeT*/) /*: HttpErrorResponseT*/{
-  var proceed /*: boolean*/ = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var result = isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : null;
+function _getErrorResponse(xhr /*: XMLHttpRequest*/, code /*: ErrorCodeT*/, proceed /*: boolean*/ = false) /*: HttpErrorResponseT*/{
+  const result = isValidJson(xhr.responseText) ? JSON.parse(xhr.responseText) : null;
   return {
     status: 'error',
-    code: code,
+    code,
     action: proceed ? 'CONTINUE' : 'RETRY',
     response: result || xhr.responseText,
     message: HTTP_ERRORS[code],
-    adid: result === null || result === void 0 ? void 0 : result.adid,
-    ask_in: result === null || result === void 0 ? void 0 : result.ask_in
+    adid: result?.adid,
+    ask_in: result?.ask_in
   };
 }
 
@@ -3815,12 +3228,9 @@ function _getErrorResponse(xhr /*: XMLHttpRequest*/, code /*: ErrorCodeT*/) /*: 
  * @returns {string}
  * @private
  */
-function _encodeParam(_ref3 /*:: */) /*: string*/{
-  var _ref4 = _slicedToArray(_ref3 /*:: */, 2),
-    key = _ref4[0],
-    value = _ref4[1];
-  var encodedKey = encodeURIComponent(key);
-  var encodedValue = value;
+function _encodeParam([key, value] /*: [string, any]*/) /*: string*/{
+  const encodedKey = encodeURIComponent(key);
+  let encodedValue = value;
   if (typeof value === 'string') {
     encodedValue = encodeURIComponent(value);
   }
@@ -3842,11 +3252,9 @@ function _encodeParam(_ref3 /*:: */) /*: string*/{
  * @private
  */
 function _logKey(header /*: string*/, str /*: string*/) /*: string*/{
-  var indent = header.length - str.length - 1;
-  var spaces = header.slice(0, indent > 0 ? indent : 0).split('').reduce(function (acc) {
-    return acc.concat(' ');
-  }, '');
-  return "".concat(str).concat(spaces, ":");
+  const indent = header.length - str.length - 1;
+  const spaces = header.slice(0, indent > 0 ? indent : 0).split('').reduce(acc => acc.concat(' '), '');
+  return `${str}${spaces}:`;
 }
 
 /**
@@ -3858,17 +3266,14 @@ function _logKey(header /*: string*/, str /*: string*/) /*: string*/{
  * @private
  */
 function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: DefaultParamsT*/) /*: string*/{
-  var logParamsHeader = 'REQUEST PARAMETERS:';
-  var toSnakeCase = function toSnakeCase(key) {
-    return key.replace(/([A-Z])/g, function ($1) {
-      return "_".concat($1.toLowerCase());
-    });
-  };
-  var allParams = [];
-  entries(_objectSpread2(_objectSpread2(_objectSpread2({}, sdk_config.getBaseParams()), defaultParams), params)).forEach(function (_ref5) {
-    var _ref6 = _slicedToArray(_ref5, 2),
-      key = _ref6[0],
-      value = _ref6[1];
+  const logParamsHeader = 'REQUEST PARAMETERS:';
+  const toSnakeCase = key => key.replace(/([A-Z])/g, $1 => `_${$1.toLowerCase()}`);
+  const allParams = [];
+  entries({
+    ...config.getBaseParams(),
+    ...defaultParams,
+    ...params
+  }).forEach(([key, value]) => {
     if (key === 'storeInfo') {
       if (isObject(value)) {
         allParams.push(['store_name_from_client', value.storeName]);
@@ -3879,14 +3284,7 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
     }
   });
   logger.log(logParamsHeader);
-  return allParams.filter(function (_ref7) {
-    var _ref8 = _slicedToArray(_ref7, 2),
-      value = _ref8[1];
-    return isEmptyEntry(value);
-  }).map(function (_ref9) {
-    var _ref0 = _slicedToArray(_ref9, 2),
-      key = _ref0[0],
-      value = _ref0[1];
+  return allParams.filter(([, value]) => isEmptyEntry(value)).map(([key, value]) => {
     logger.log(_logKey(logParamsHeader, key), value);
     return _encodeParam([key, value]);
   }).join('&');
@@ -3901,14 +3299,15 @@ function _encodeParams(params /*: ParamsWithAttemptsT*/, defaultParams /*: Defau
  * @param {string} url
  * @private
  */
-function _handleReadyStateChange(reject, resolve, _ref1 /*:: */) {
-  var xhr = _ref1 /*:: */.xhr,
-    url = _ref1 /*:: */.url;
+function _handleReadyStateChange(reject, resolve, {
+  xhr,
+  url
+} /*: {xhr: XMLHttpRequest, url: UrlT}*/) {
   if (xhr.readyState !== 4) {
     return;
   }
-  var okStatus = xhr.status >= 200 && xhr.status < 300;
-  var validJson = isValidJson(xhr.responseText);
+  const okStatus = xhr.status >= 200 && xhr.status < 300;
+  const validJson = isValidJson(xhr.responseText);
   if (xhr.status === 0) {
     reject(_getErrorResponse(xhr, 'NO_CONNECTION'));
   } else {
@@ -3930,15 +3329,16 @@ function _handleReadyStateChange(reject, resolve, _ref1 /*:: */) {
  * @returns {{encodedParams: string, fullUrl: string}}
  * @private
  */
-function _prepareUrlAndParams(_ref10 /*:: */, defaultParams /*: DefaultParamsT*/) /*: {fullUrl: string, encodedParams: string}*/{
-  var endpoint = _ref10 /*:: */.endpoint,
-    url = _ref10 /*:: */.url,
-    method = _ref10 /*:: */.method,
-    params = _ref10 /*:: */.params;
-  var encodedParams = _encodeParams(params, defaultParams);
+function _prepareUrlAndParams({
+  endpoint,
+  url,
+  method,
+  params
+} /*: HttpRequestParamsT*/, defaultParams /*: DefaultParamsT*/) /*: {fullUrl: string, encodedParams: string}*/{
+  const encodedParams = _encodeParams(params, defaultParams);
   return {
-    fullUrl: endpoint + url + (method === 'GET' ? "?".concat(encodedParams) : ''),
-    encodedParams: encodedParams
+    fullUrl: endpoint + url + (method === 'GET' ? `?${encodedParams}` : ''),
+    encodedParams
   };
 }
 
@@ -3950,13 +3350,10 @@ function _prepareUrlAndParams(_ref10 /*:: */, defaultParams /*: DefaultParamsT*/
  * @private
  */
 function _prepareHeaders(xhr /*: XMLHttpRequest*/, method /*: HttpRequestParamsT['method']*/) /*: void*/{
-  var logHeader = 'REQUEST HEADERS:';
-  var headers = [['Client-SDK', "js".concat(globals.version)], ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']];
+  const logHeader = 'REQUEST HEADERS:';
+  const headers = [['Client-SDK', `js${globals.version}`], ['Content-Type', method === 'POST' ? 'application/x-www-form-urlencoded' : 'application/json']];
   logger.log(logHeader);
-  headers.forEach(function (_ref11) {
-    var _ref12 = _slicedToArray(_ref11, 2),
-      key = _ref12[0],
-      value = _ref12[1];
+  headers.forEach(([key, value]) => {
     xhr.setRequestHeader(key, value);
     logger.log(_logKey(logHeader, key), value);
   });
@@ -3971,34 +3368,30 @@ function _prepareHeaders(xhr /*: XMLHttpRequest*/, method /*: HttpRequestParamsT
  * @param {Object} defaultParams
  * @returns {Promise}
  */
-function _buildXhr(_ref13 /*:: */, defaultParams /*: DefaultParamsT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-  var endpoint = _ref13 /*:: */.endpoint,
-    url = _ref13 /*:: */.url,
-    _ref13$method = _ref13 /*:: */.method,
-    method = _ref13$method === void 0 ? 'GET' : _ref13$method,
-    _ref13$params = _ref13 /*:: */.params,
-    params = _ref13$params === void 0 ? {} : _ref13$params;
-  var _prepareUrlAndParams2 = _prepareUrlAndParams({
-      endpoint: endpoint,
-      url: url,
-      method: method,
-      params: params
-    }, defaultParams),
-    fullUrl = _prepareUrlAndParams2.fullUrl,
-    encodedParams = _prepareUrlAndParams2.encodedParams;
-  return new Promise(function (resolve, reject) {
-    var xhr = new XMLHttpRequest();
+function _buildXhr({
+  endpoint,
+  url,
+  method = 'GET',
+  params = {}
+} /*: HttpRequestParamsT*/, defaultParams /*: DefaultParamsT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
+  const {
+    fullUrl,
+    encodedParams
+  } = _prepareUrlAndParams({
+    endpoint,
+    url,
+    method,
+    params
+  }, defaultParams);
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
     xhr.open(method, fullUrl, true);
     _prepareHeaders(xhr, method);
-    xhr.onreadystatechange = function () {
-      return _handleReadyStateChange(reject, resolve, {
-        xhr: xhr,
-        url: url
-      });
-    };
-    xhr.onerror = function () {
-      return reject(_getErrorResponse(xhr, 'TRANSACTION_ERROR'));
-    };
+    xhr.onreadystatechange = () => _handleReadyStateChange(reject, resolve, {
+      xhr,
+      url
+    });
+    xhr.onerror = () => reject(_getErrorResponse(xhr, 'TRANSACTION_ERROR'));
     xhr.send(method === 'GET' ? undefined : encodedParams);
   });
 }
@@ -4013,10 +3406,10 @@ function _buildXhr(_ref13 /*:: */, defaultParams /*: DefaultParamsT*/) /*: Promi
  * @private
  */
 function _interceptResponse(result /*: HttpSuccessResponseT | HttpErrorResponseT*/, url /*: UrlT*/) /*: HttpSuccessResponseT | HttpErrorResponseT*/{
-  var isGdprRequest = isRequest(url, 'gdpr_forget_device');
-  var isAttributionRequest = isRequest(url, 'attribution');
-  var isSessionRequest = isRequest(url, 'session');
-  var optedOut = result.tracking_state === 'opted_out';
+  const isGdprRequest = isRequest(url, 'gdpr_forget_device');
+  const isAttributionRequest = isRequest(url, 'attribution');
+  const isSessionRequest = isRequest(url, 'session');
+  const optedOut = result.tracking_state === 'opted_out';
   if (result.status === 'success') {
     if (!isGdprRequest && optedOut) {
       publish('sdk:gdpr-forget-me');
@@ -4039,11 +3432,7 @@ function _interceptResponse(result /*: HttpSuccessResponseT | HttpErrorResponseT
  * @returns {Promise}
  */
 function http(options /*: HttpRequestParamsT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-  return defaultParams().then(function (defaultParams) {
-    return _buildXhr(options, defaultParams);
-  }).then(function (result) {
-    return _interceptResponse(result, options.url);
-  });
+  return defaultParams().then(defaultParams => _buildXhr(options, defaultParams)).then(result => _interceptResponse(result, options.url));
 }
 ;// ./src/sdk/backoff.js
 /*:: // 
@@ -4055,9 +3444,9 @@ import { type BackOffStrategyT } from './types';*/
  *
  * @type {Object}
  */
-var _options = {
+const _options = {
   long: {
-    delay: 2 * MINUTE,
+    delay: 2 * (/* inlined export .MINUTE */60000),
     maxDelay: DAY,
     minRange: 0.5,
     maxRange: 1.0
@@ -4095,8 +3484,8 @@ function _randomInRange(min, max) {
  */
 function backOff(attempts /*: number*/, strategy /*: ?BackOffStrategyT*/) /*: number*/{
   strategy = strategy || 'long';
-  var options =  false ? 0 : _options[strategy];
-  var delay = options.delay * Math.pow(2, attempts - 1);
+  const options =  false ? 0 : _options[strategy];
+  let delay = options.delay * Math.pow(2, attempts - 1);
   delay = Math.min(delay, options.maxDelay);
   if (options.minRange && options.maxRange) {
     delay = delay * _randomInRange(options.minRange, options.maxRange);
@@ -4104,7 +3493,6 @@ function backOff(attempts /*: number*/, strategy /*: ?BackOffStrategyT*/) /*: nu
   return Math.round(delay);
 }
 ;// ./src/sdk/listeners.js
-
 /*:: // 
 import { type DocumentT } from './types';*/
 
@@ -4115,7 +3503,7 @@ import { type DocumentT } from './types';*/
   hidden: PageVisibilityHiddenAttr,
   visibilityChange: PageVisibilityEventName
 |}*/
-var _connected /*: boolean*/ = navigator.onLine;
+let _connected /*: boolean*/ = navigator.onLine;
 
 /**
  * Bind to online and offline events
@@ -4175,28 +3563,26 @@ function off(element /*: Document | any*/, eventName /*: string*/, func /*: Even
  * @private
  */
 function getVisibilityApiAccess() /*: ?PageVisibilityApiMap*/{
-  var documentExt = (document /*: DocumentT*/);
+  const documentExt = (document /*: DocumentT*/);
   if (typeof documentExt.hidden !== 'undefined') {
     return {
       hidden: 'hidden',
       visibilityChange: 'visibilitychange'
     };
   }
-  var accessMap /*: {[key: PageVisibilityHiddenAttr]: PageVisibilityEventName}*/ = {
+  const accessMap /*: {[key: PageVisibilityHiddenAttr]: PageVisibilityEventName}*/ = {
     mozHidden: 'mozvisibilitychange',
     msHidden: 'msvisibilitychange',
     oHidden: 'ovisibilitychange',
     webkitHidden: 'webkitvisibilitychange'
   };
-  var accessMapEntries = entries(accessMap);
-  for (var i = 0; i < accessMapEntries.length; i += 1) {
-    var _accessMapEntries$i = _slicedToArray(accessMapEntries[i], 2),
-      hidden = _accessMapEntries$i[0],
-      visibilityChange = _accessMapEntries$i[1];
+  const accessMapEntries = entries(accessMap);
+  for (let i = 0; i < accessMapEntries.length; i += 1) {
+    const [hidden, visibilityChange] = accessMapEntries[i];
     if (typeof documentExt[hidden] !== 'undefined') {
       return {
-        hidden: hidden,
-        visibilityChange: visibilityChange
+        hidden,
+        visibilityChange
       };
     }
   }
@@ -4220,60 +3606,7 @@ function listeners_destroy() /*: void*/{
   off(window, 'offline', _handleOffline);
 }
 
-;// ./node_modules/@babel/runtime/helpers/esm/createForOfIteratorHelper.js
-
-function _createForOfIteratorHelper(r, e) {
-  var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
-  if (!t) {
-    if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) {
-      t && (r = t);
-      var _n = 0,
-        F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          return _n >= r.length ? {
-            done: !0
-          } : {
-            done: !1,
-            value: r[_n++]
-          };
-        },
-        e: function e(r) {
-          throw r;
-        },
-        f: F
-      };
-    }
-    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  var o,
-    a = !0,
-    u = !1;
-  return {
-    s: function s() {
-      t = t.call(r);
-    },
-    n: function n() {
-      var r = t.next();
-      return a = r.done, r;
-    },
-    e: function e(r) {
-      u = !0, o = r;
-    },
-    f: function f() {
-      try {
-        a || null == t["return"] || t["return"]();
-      } finally {
-        if (u) throw o;
-      }
-    }
-  };
-}
-
 ;// ./src/sdk/url-strategy.ts
-
-
 
 
 
@@ -4307,7 +3640,7 @@ var DataResidency = /*#__PURE__*/(/* unused pure expression or super */ null && 
   return DataResidency;
 }(DataResidency || {})));
 function incorrectOptionIgnoredMessage(higherPriority /*: string*/, lowerPriority /*: string*/) {
-  logger.warn("Both ".concat(higherPriority, " and ").concat(lowerPriority, " are set in config, ").concat(lowerPriority, " will be ignored"));
+  logger.warn(`Both ${higherPriority} and ${lowerPriority} are set in config, ${lowerPriority} will be ignored`);
 }
 
 /**
@@ -4315,10 +3648,11 @@ function incorrectOptionIgnoredMessage(higherPriority /*: string*/, lowerPriorit
  * and `null` otherwise
  */
 function transfromDeprecatedParamsToUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig | null*/{
-  var _Config$getCustomConf = sdk_config.getCustomConfig(),
-    customUrl = _Config$getCustomConf.customUrl,
-    urlStrategy = _Config$getCustomConf.urlStrategy,
-    dataResidency = _Config$getCustomConf.dataResidency;
+  const {
+    customUrl,
+    urlStrategy,
+    dataResidency
+  } = config.getCustomConfig();
   if (customUrl) {
     // If custom URL is set then send all requests there
     logger.warn('customUrl is deprecated, use urlStrategy instead');
@@ -4369,10 +3703,11 @@ function transfromDeprecatedParamsToUrlStrategyConfig(endpoints /*: Record<Endpo
  * Checks if passed UrlStrategyConfig is valid and returns it, returns `DEFAULT_URL_STRATEGY_CONFIG` otherwise
  */
 function validateUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: UrlStrategyConfig*/{
-  var _Config$getCustomConf2 = sdk_config.getCustomConfig(),
-    urlStrategy = _Config$getCustomConf2.urlStrategy;
-  if (urlStrategy && _typeof(urlStrategy) === 'object') {
-    var config = urlStrategy;
+  const {
+    urlStrategy
+  } = config.getCustomConfig();
+  if (urlStrategy && typeof urlStrategy === 'object') {
+    const config = urlStrategy;
     if (!config.domains || !Array.isArray(config.domains) || config.domains.length < 1) {
       logger.warn('Invalid urlStartegy: `domains` should be a non-empty array');
       return getDefaultUrlStrategyConfig(endpoints);
@@ -4389,37 +3724,28 @@ function getUrlStrategyConfig(endpoints /*: Record<Endpoints, string>*/) /*: Url
   return transfromDeprecatedParamsToUrlStrategyConfig(endpoints) || validateUrlStrategyConfig(endpoints);
 }
 function getPreferredUrls(endpoints /*: Record<Endpoints, string>*/) /*: BaseUrlsMap[]*/{
-  var urlStrategyConfig /*: UrlStrategyConfig*/ = getUrlStrategyConfig(endpoints);
-  var urls = [];
+  const urlStrategyConfig /*: UrlStrategyConfig*/ = getUrlStrategyConfig(endpoints);
+  const urls = [];
 
   //if (urlStrategyConfig.isDataResidency) { }
-  var _iterator = _createForOfIteratorHelper(urlStrategyConfig.domains),
-    _step;
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var domain = _step.value;
-      var map = urlStrategyConfig.useSubdomains ? {
-        app: "".concat(BASE_URL_PREFIX).concat(domain),
-        gdpr: "".concat(GDPR_URL_PREFIX).concat(domain)
-      } : {
-        app: "".concat(BASE_URL_NO_SUB_DOMAIN_PREFIX).concat(domain),
-        gdpr: "".concat(BASE_URL_NO_SUB_DOMAIN_PREFIX).concat(domain)
-      };
-      urls.push(map);
-    }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
+
+  for (const domain of urlStrategyConfig.domains) {
+    const map = urlStrategyConfig.useSubdomains ? {
+      app: `${BASE_URL_PREFIX}${domain}`,
+      gdpr: `${GDPR_URL_PREFIX}${domain}`
+    } : {
+      app: `${BASE_URL_NO_SUB_DOMAIN_PREFIX}${domain}`,
+      gdpr: `${BASE_URL_NO_SUB_DOMAIN_PREFIX}${domain}`
+    };
+    urls.push(map);
   }
   return urls;
 }
-function getBaseUrlsIterator() /*: BaseUrlsIterator*/{
-  var endpoints /*: Record<Endpoints, string>*/ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ENDPOINTS;
-  var _urls = getPreferredUrls(endpoints);
-  var _counter = 0;
+function getBaseUrlsIterator(endpoints /*: Record<Endpoints, string>*/ = ENDPOINTS) /*: BaseUrlsIterator*/{
+  const _urls = getPreferredUrls(endpoints);
+  let _counter = 0;
   return {
-    next: function next() {
+    next: () => {
       if (_counter < _urls.length) {
         return {
           value: _urls[_counter++],
@@ -4432,15 +3758,13 @@ function getBaseUrlsIterator() /*: BaseUrlsIterator*/{
         };
       }
     },
-    reset: function reset() {
+    reset: () => {
       _counter = 0;
     }
   };
 }
 
 ;// ./src/sdk/request.js
-
-
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpContinueCbT, type BackOffStrategyT, type WaitT, type UrlT, type MethodT, type RequestParamsT, type HttpRequestParamsT } from './types';*/
 
@@ -4451,6 +3775,7 @@ import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpContinueCb
 
 
 
+/*:: import { type BaseUrlsIterator, type BaseUrlsMap } from './url-strategy';*/
 /*:: type RequestConfigT = {|
   url?: UrlT,
   method?: MethodT,
@@ -4467,31 +3792,29 @@ import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpContinueCb
 |}*/
 /*:: type AttemptsT = number*/
 /*:: type StartAtT = number*/
-var DEFAULT_ATTEMPTS /*: AttemptsT*/ = 0;
-var DEFAULT_WAIT /*: WaitT*/ = 150;
-var MAX_WAIT /*: WaitT*/ = 0x7FFFFFFF; // 2^31 - 1
-var NO_CONNECTION_WAIT = 60 * SECOND;
-var Request = function Request() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    url = _ref.url,
-    _ref$method = _ref.method,
-    method = _ref$method === void 0 ? 'GET' : _ref$method,
-    _ref$params = _ref.params,
-    params = _ref$params === void 0 ? {} : _ref$params,
-    continueCb = _ref.continueCb,
-    strategy = _ref.strategy,
-    wait = _ref.wait;
+const DEFAULT_ATTEMPTS /*: AttemptsT*/ = 0;
+const DEFAULT_WAIT /*: WaitT*/ = 150;
+const MAX_WAIT /*: WaitT*/ = 0x7FFFFFFF; // 2^31 - 1
+const NO_CONNECTION_WAIT = 60 * (/* inlined export .SECOND */1000);
+const Request = ({
+  url,
+  method = 'GET',
+  params = {},
+  continueCb,
+  strategy,
+  wait
+} /*: RequestConfigT*/ = {}) => {
   /**
    * Global param values set on request instantiation and later used for restore
    *
    * @type {{url: string, method: string, params: Object, continueCb: Function}}
    * @private
    */
-  var _default /*: DefaultConfigT*/ = {
-    url: url,
-    method: method,
-    params: params,
-    continueCb: continueCb
+  let _default /*: DefaultConfigT*/ = {
+    url,
+    method,
+    params,
+    continueCb
   };
 
   /**
@@ -4500,7 +3823,7 @@ var Request = function Request() {
    * @type {string}
    * @private
    */
-  var _url /*: ?UrlT*/ = url;
+  let _url /*: ?UrlT*/ = url;
 
   /**
    * Method param per instance or per request, defaults to `GET`
@@ -4508,7 +3831,7 @@ var Request = function Request() {
    * @type {string}
    * @private
    */
-  var _method /*: MethodT*/ = method;
+  let _method /*: MethodT*/ = method;
 
   /**
    * Request params per instance or per request
@@ -4516,7 +3839,9 @@ var Request = function Request() {
    * @type {Object}
    * @private
    */
-  var _params /*: RequestParamsT*/ = _objectSpread2({}, params);
+  let _params /*: RequestParamsT*/ = {
+    ...params
+  };
 
   /**
    * Optional continue callback per instance or per request
@@ -4524,7 +3849,7 @@ var Request = function Request() {
    * @type {Function}
    * @private
    */
-  var _continueCb /*: ?HttpContinueCbT*/ = continueCb;
+  let _continueCb /*: ?HttpContinueCbT*/ = continueCb;
 
   /**
    * Back-off strategy
@@ -4532,22 +3857,22 @@ var Request = function Request() {
    * @type {string|null}
    * @private
    */
-  var _strategy /*: ?BackOffStrategyT*/ = strategy;
+  const _strategy /*: ?BackOffStrategyT*/ = strategy;
 
   /**
    * Url Startegy iterator to go through endpoints to retry to send request
    */
-  var _baseUrlsIterator /*: BaseUrlsIterator*/;
+  let _baseUrlsIterator /*: BaseUrlsIterator*/;
 
   /**
    * Current base urls map to send request
    */
-  var _baseUrlsIteratorCurrent /*: { value: BaseUrlsMap, done: boolean }*/;
+  let _baseUrlsIteratorCurrent /*: { value: BaseUrlsMap, done: boolean }*/;
 
   /**
    * Reset iterator state and get the first endpoint to use it in the next try
    */
-  var _resetBaseUrlsIterator = function _resetBaseUrlsIterator() {
+  const _resetBaseUrlsIterator = () => {
     _baseUrlsIterator.reset();
     _baseUrlsIteratorCurrent = _baseUrlsIterator.next();
   };
@@ -4555,8 +3880,8 @@ var Request = function Request() {
   /**
    * Returns base url depending on request path
    */
-  var _getBaseUrl = function _getBaseUrl(urlsMap /*: BaseUrlsMap*/, url /*: UrlT*/) /*: string*/{
-    var base = url === '/gdpr_forget_device' ? 'gdpr' : 'app';
+  const _getBaseUrl = (urlsMap /*: BaseUrlsMap*/, url /*: UrlT*/) => /*: string*/{
+    const base = url === '/gdpr_forget_device' ? 'gdpr' : 'app';
     return urlsMap[base];
   };
 
@@ -4566,7 +3891,7 @@ var Request = function Request() {
    * @type {number|null}
    * @private
    */
-  var _timeoutId /*: ?number*/ = null;
+  let _timeoutId /*: ?number*/ = null;
 
   /**
    * Number of request and connection attempts
@@ -4574,7 +3899,7 @@ var Request = function Request() {
    * @type {{request: number, connection: number}}
    * @private
    */
-  var _attempts
+  const _attempts
   /*: {
       request: AttemptsT,
       connection: AttemptsT
@@ -4590,7 +3915,7 @@ var Request = function Request() {
    * @type {number}
    * @private
    */
-  var _wait /*: WaitT*/ = _prepareWait(wait);
+  let _wait /*: WaitT*/ = _prepareWait(wait);
 
   /**
    * Timestamp when the request has been scheduled
@@ -4598,7 +3923,7 @@ var Request = function Request() {
    * @type {Date|null}
    * @private
    */
-  var _startAt /*: ?StartAtT*/ = null;
+  let _startAt /*: ?StartAtT*/ = null;
 
   /**
    * Ensure that wait is not more than maximum 32int so it does not cause overflow in setTimeout
@@ -4621,11 +3946,12 @@ var Request = function Request() {
    * @param {Function=} continueCb
    * @private
    */
-  function _prepareParams(_ref2 /*:: */) /*: void*/{
-    var url = _ref2 /*:: */.url,
-      method = _ref2 /*:: */.method,
-      params = _ref2 /*:: */.params,
-      continueCb = _ref2 /*:: */.continueCb;
+  function _prepareParams({
+    url,
+    method,
+    params,
+    continueCb
+  } /*: RequestConfigT*/) /*: void*/{
     if (url) {
       _url = url;
     }
@@ -4633,11 +3959,14 @@ var Request = function Request() {
       _method = method;
     }
     if (!isEmpty(params)) {
-      _params = _objectSpread2({}, params);
+      _params = {
+        ...params
+      };
     }
-    _params = _objectSpread2({
-      createdAt: getTimestamp()
-    }, _params);
+    _params = {
+      createdAt: getTimestamp(),
+      ..._params
+    };
     if (typeof continueCb === 'function') {
       _continueCb = continueCb;
     }
@@ -4655,7 +3984,7 @@ var Request = function Request() {
       return false;
     }
     if (_timeoutId) {
-      var remainingTime = _wait - (Date.now() - _startAt);
+      const remainingTime = _wait - (Date.now() - _startAt);
       if (wait && remainingTime < wait) {
         return true;
       }
@@ -4672,9 +4001,10 @@ var Request = function Request() {
    * @returns {Promise}
    * @private
    */
-  function _prepareRequest(_ref3 /*:: */) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-    var wait = _ref3 /*:: */.wait,
-      retrying = _ref3 /*:: */.retrying;
+  function _prepareRequest({
+    wait,
+    retrying
+  } /*: {wait?: ?WaitT, retrying?: boolean}*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
     if (!_baseUrlsIterator) {
       _baseUrlsIterator = getBaseUrlsIterator();
       _baseUrlsIteratorCurrent = _baseUrlsIterator.next();
@@ -4699,15 +4029,16 @@ var Request = function Request() {
         code: 'MISSING_URL'
       });
     }
-    logger.log("".concat(retrying ? 'Re-trying' : 'Trying', " request ").concat(_url, " in ").concat(_wait, "ms"));
+    logger.log(`${retrying ? 'Re-trying' : 'Trying'} request ${_url} in ${_wait}ms`);
     _startAt = Date.now();
     return _preRequest({
       endpoint: _getBaseUrl(_baseUrlsIteratorCurrent.value, _url),
       url: _url,
       method: _method,
-      params: _objectSpread2({
-        attempts: 1
-      }, _params)
+      params: {
+        attempts: 1,
+        ..._params
+      }
     });
   }
 
@@ -4724,9 +4055,9 @@ var Request = function Request() {
       return _request(options);
     }
     _attempts.connection += 1;
-    logger.log("No internet connectivity, trying request ".concat(options.url, " in ").concat(NO_CONNECTION_WAIT, "ms"));
-    return new Promise(function (resolve) {
-      _timeoutId = setTimeout(function () {
+    logger.log(`No internet connectivity, trying request ${options.url} in ${NO_CONNECTION_WAIT}ms`);
+    return new Promise(resolve => {
+      _timeoutId = setTimeout(() => {
         resolve(_preRequest(options));
       }, NO_CONNECTION_WAIT);
     });
@@ -4740,26 +4071,19 @@ var Request = function Request() {
    * @private
    */
   function _request(options /*: HttpRequestParamsT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-    return new Promise(function (resolve, reject) {
-      _timeoutId = setTimeout(function () {
+    return new Promise((resolve, reject) => {
+      _timeoutId = setTimeout(() => {
         _startAt = null;
-        var filteredParams = entries(options.params).filter(function (_ref4) {
-          var _ref5 = _slicedToArray(_ref4, 2),
-            value = _ref5[1];
-          return isEmptyEntry(value);
-        }).reduce(reducer, {});
+        const filteredParams = entries(options.params).filter(([, value]) => isEmptyEntry(value)).reduce(reducer, {});
         return http({
           endpoint: options.endpoint,
           url: options.url,
           method: options.method,
-          params: _objectSpread2(_objectSpread2({}, filteredParams), {}, {
+          params: {
+            ...filteredParams,
             attempts: (_attempts.request ? _attempts.request + 1 : 1) + _attempts.connection
-          })
-        }).then(function (result) {
-          return _continue(result, resolve);
-        }).catch(function (result) {
-          return _error(result, resolve, reject);
-        });
+          }
+        }).then(result => _continue(result, resolve)).catch(result => _error(result, resolve, reject));
       }, _wait);
     });
   }
@@ -4772,7 +4096,9 @@ var Request = function Request() {
   function _restore() /*: void*/{
     _url = _default.url;
     _method = _default.method;
-    _params = _objectSpread2({}, _default.params);
+    _params = {
+      ..._default.params
+    };
     _continueCb = _default.continueCb;
   }
 
@@ -4783,7 +4109,7 @@ var Request = function Request() {
    * @private
    */
   function _finish(failed /*: boolean*/) /*: void*/{
-    logger.log("Request ".concat(_url || 'unknown', " ").concat(failed ? 'failed' : 'has been finished'));
+    logger.log(`Request ${_url || 'unknown'} ${failed ? 'failed' : 'has been finished'}`);
     _attempts.request = DEFAULT_ATTEMPTS;
     _attempts.connection = DEFAULT_ATTEMPTS;
     _wait = DEFAULT_WAIT;
@@ -4843,7 +4169,7 @@ var Request = function Request() {
   function _error(result /*: HttpErrorResponseT*/, resolve, reject) /*: void*/{
     if (result && result.action === 'RETRY') {
       if (result.code === 'NO_CONNECTION') {
-        var nextEndpoint = _baseUrlsIterator.next(); // get next endpoint
+        const nextEndpoint = _baseUrlsIterator.next(); // get next endpoint
 
         if (!nextEndpoint.done) {
           // next endpoint exists
@@ -4873,22 +4199,21 @@ var Request = function Request() {
    * @param {number=} wait
    * @returns {Promise}
    */
-  function send() /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-    var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      url = _ref6.url,
-      method = _ref6.method,
-      _ref6$params = _ref6.params,
-      params = _ref6$params === void 0 ? {} : _ref6$params,
-      continueCb = _ref6.continueCb,
-      wait = _ref6.wait;
+  function send({
+    url,
+    method,
+    params = {},
+    continueCb,
+    wait
+  } /*: RequestConfigT*/ = {}) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
     _prepareParams({
-      url: url,
-      method: method,
-      params: params,
-      continueCb: continueCb
+      url,
+      method,
+      params,
+      continueCb
     });
     return _prepareRequest({
-      wait: wait
+      wait
     });
   }
 
@@ -4917,21 +4242,21 @@ var Request = function Request() {
    * Clear the current request
    */
   function clear() /*: void*/{
-    var stillRunning = !!_startAt;
+    const stillRunning = !!_startAt;
     _clearTimeout();
     _startAt = null;
     if (stillRunning) {
       _wait = DEFAULT_WAIT;
       _attempts.request = DEFAULT_ATTEMPTS;
       _attempts.connection = DEFAULT_ATTEMPTS;
-      logger.log("Previous ".concat(_url || 'unknown', " request attempt canceled"));
+      logger.log(`Previous ${_url || 'unknown'} request attempt canceled`);
       _restore();
     }
   }
   return {
-    send: send,
-    isRunning: isRunning,
-    clear: clear
+    send,
+    isRunning,
+    clear
   };
 };
 /* harmony default export */ const request = (Request);
@@ -4946,9 +4271,7 @@ var Request = function Request() {
  * @returns {string}
  * @private
  */
-var _disableReason = function _disableReason(reason /*: ReasonT*/) {
-  return reason === DISABLE_REASONS.REASON_GDPR ? 'GDPR disable' : 'disable';
-};
+const _disableReason = (reason /*: ReasonT*/) => reason === DISABLE_REASONS.REASON_GDPR ? 'GDPR disable' : 'disable';
 
 /**
  * Get log messages depending on the disable reason
@@ -4957,18 +4280,16 @@ var _disableReason = function _disableReason(reason /*: ReasonT*/) {
  * @returns {Object}
  * @private
  */
-var _logMessages = function _logMessages(reason /*: ReasonT*/) {
-  return {
-    start: {
-      inProgress: "Adjust SDK ".concat(_disableReason(reason), " process has already started"),
-      done: "Adjust SDK ".concat(_disableReason(reason), " process is now started")
-    },
-    finish: {
-      inProgress: "Adjust SDK ".concat(_disableReason(reason), " process has already finished"),
-      done: "Adjust SDK ".concat(_disableReason(reason), " process is now finished")
-    }
-  };
-};
+const _logMessages = (reason /*: ReasonT*/) => ({
+  start: {
+    inProgress: `Adjust SDK ${_disableReason(reason)} process has already started`,
+    done: `Adjust SDK ${_disableReason(reason)} process is now started`
+  },
+  finish: {
+    inProgress: `Adjust SDK ${_disableReason(reason)} process has already finished`,
+    done: `Adjust SDK ${_disableReason(reason)} process is now finished`
+  }
+});
 
 /**
  * Start or finish disable process
@@ -4979,15 +4300,17 @@ var _logMessages = function _logMessages(reason /*: ReasonT*/) {
  * @returns {boolean}
  * @private
  */
-function _disable(_ref /*:: */, expectedAction /*: 'start' | 'finish'*/) /*: boolean*/{
-  var reason = _ref /*:: */.reason,
-    pending = _ref /*:: */.pending;
-  var _ref2 = getDisabled() || {},
-    savedReason = _ref2.reason,
-    savedPending = _ref2.pending;
-  var action = expectedAction === 'start' && savedPending ? 'start' : 'finish';
-  var shouldNotStart = expectedAction === 'start' && savedReason;
-  var shouldNotFinish = expectedAction === 'finish' && savedReason && !savedPending;
+function _disable({
+  reason,
+  pending
+} /*: ReasonMapT*/, expectedAction /*: 'start' | 'finish'*/) /*: boolean*/{
+  const {
+    reason: savedReason,
+    pending: savedPending
+  } = getDisabled() || {};
+  const action = expectedAction === 'start' && savedPending ? 'start' : 'finish';
+  const shouldNotStart = expectedAction === 'start' && savedReason;
+  const shouldNotFinish = expectedAction === 'finish' && savedReason && !savedPending;
   if (shouldNotStart || shouldNotFinish) {
     logger.log(_logMessages(savedReason)[action].inProgress);
     return false;
@@ -4995,7 +4318,7 @@ function _disable(_ref /*:: */, expectedAction /*: 'start' | 'finish'*/) /*: boo
   logger.log(_logMessages(reason)[action].done);
   setDisabled({
     reason: reason || DISABLE_REASONS.REASON_GENERAL,
-    pending: pending
+    pending
   });
   return true;
 }
@@ -5007,11 +4330,10 @@ function _disable(_ref /*:: */, expectedAction /*: 'start' | 'finish'*/) /*: boo
  * @param {boolean} pending
  * @private
  */
-function disable(reason /*: ReasonT*/) /*: boolean*/{
-  var pending = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+function disable(reason /*: ReasonT*/, pending = false) /*: boolean*/{
   return _disable({
-    reason: reason,
-    pending: pending
+    reason,
+    pending
   }, 'start');
 }
 
@@ -5023,7 +4345,7 @@ function disable(reason /*: ReasonT*/) /*: boolean*/{
  */
 function finish(reason /*: ReasonT*/) /*: boolean*/{
   return _disable({
-    reason: reason,
+    reason,
     pending: false
   }, 'finish');
 }
@@ -5032,8 +4354,9 @@ function finish(reason /*: ReasonT*/) /*: boolean*/{
  * Enable sdk if not GDPR forgotten
  */
 function restore() /*: boolean*/{
-  var _ref3 = getDisabled() || {},
-    reason = _ref3.reason;
+  const {
+    reason
+  } = getDisabled() || {};
   if (reason === DISABLE_REASONS.REASON_GDPR) {
     logger.log('Adjust SDK is disabled due to GDPR-Forget-Me request and it can not be re-enabled');
     return false;
@@ -5056,9 +4379,10 @@ function restore() /*: boolean*/{
  * @returns {string}
  */
 function disable_status() /*: StatusT*/{
-  var _ref4 = getDisabled() || {},
-    reason = _ref4.reason,
-    pending = _ref4.pending;
+  const {
+    reason,
+    pending
+  } = getDisabled() || {};
   if (reason === DISABLE_REASONS.REASON_GENERAL || reason === DISABLE_REASONS.REASON_GDPR && !pending) {
     return 'off';
   } else if (reason === DISABLE_REASONS.REASON_GDPR && pending) {
@@ -5076,18 +4400,17 @@ function disable_status() /*: StatusT*/{
 
 
 
-
 /** Name of the store used by activityState */
-var identity_storeName = StoreName.ActivityState;
+const identity_storeName = StoreName.ActivityState;
 
 /** Boolean used in start in order to avoid duplicated activity state */
-var _starting /*: boolean*/ = false;
+let _starting /*: boolean*/ = false;
 
 /** Generate random  uuid v4 */
 function _generateUuid() /*: string*/{
-  var seed = Date.now();
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (seed + Math.random() * 16) % 16 | 0;
+  let seed = Date.now();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (seed + Math.random() * 16) % 16 | 0;
     seed = Math.floor(seed / 16);
     return (c === 'x' ? r : r & (0x3 | 0x8)).toString(16);
   });
@@ -5126,21 +4449,21 @@ function start() /*: Promise<ActivityStateMapT>*/{
     });
   }
   _starting = true;
-  return storage.getFirst(identity_storeName).then(_intercept).then(function (result /*: InterceptT*/) {
+  return storage.getFirst(identity_storeName).then(_intercept).then((result /*: InterceptT*/) => {
     if (result.exists) {
       _starting = false;
       return result.stored;
     }
-    var activityState = isEmpty(activity_state.current) ? {
+    const activityState = isEmpty(activity_state.current) ? {
       uuid: _generateUuid()
     } : activity_state.current;
-    return storage.addItem(identity_storeName, activityState).then(function () {
+    return storage.addItem(identity_storeName, activityState).then(() => {
       activity_state.init(activityState);
       reload();
       _starting = false;
       return activityState;
     });
-  }).then(function (activityState /*: ActivityStateMapT | null*/) {
+  }).then((activityState /*: ActivityStateMapT | null*/) => {
     if (activityState) {
       publish(PUB_SUB_EVENTS.WEB_UUID_CREATED, activityState.uuid);
     } else {
@@ -5162,12 +4485,11 @@ function persist() /*: Promise<ActivityStateMapT>*/{
   if (!_isLive()) {
     return Promise.resolve(null);
   }
-  var activityState = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
+  const activityState = {
+    ...activity_state.current,
     lastActive: Date.now()
-  });
-  return storage.updateItem(identity_storeName, activityState).then(function () {
-    return activity_state.current = activityState;
-  });
+  };
+  return storage.updateItem(identity_storeName, activityState).then(() => activity_state.current = activityState);
 }
 
 /**
@@ -5175,13 +4497,13 @@ function persist() /*: Promise<ActivityStateMapT>*/{
  * - should be used when change from another tab is possible and critical
  */
 function sync() /*: Promise<ActivityStateMapT>*/{
-  return storage.getFirst(identity_storeName).then(function (activityState /*: ActivityStateMapT*/) {
-    var current = activity_state.current;
-    var lastActive = current.lastActive || 0;
+  return storage.getFirst(identity_storeName).then((activityState /*: ActivityStateMapT*/) => {
+    const current = activity_state.current;
+    const lastActive = current.lastActive || 0;
     if (_isLive() && lastActive < activityState.lastActive) {
       // Checking if another SDK instance was installed while this one was in backgound
-      var installedUpdated = !current.installed && activityState.installed;
-      var sessionCountUpdated = (current.sessionCount || 0) < (activityState.sessionCount || 0);
+      const installedUpdated = !current.installed && activityState.installed;
+      const sessionCountUpdated = (current.sessionCount || 0) < (activityState.sessionCount || 0);
       if (installedUpdated || sessionCountUpdated) {
         publish('sdk:installed');
       }
@@ -5196,13 +4518,11 @@ function sync() /*: Promise<ActivityStateMapT>*/{
  * Clear activity state store - set uuid to be unknown
  */
 function clear() /*: Promise<unknown>*/{
-  var newActivityState = {
+  const newActivityState = {
     uuid: 'unknown'
   };
   activity_state.current = newActivityState;
-  return storage.clear(identity_storeName).then(function () {
-    return storage.addItem(identity_storeName, newActivityState);
-  });
+  return storage.clear(identity_storeName).then(() => storage.addItem(identity_storeName, newActivityState));
 }
 
 /**
@@ -5213,8 +4533,6 @@ function identity_destroy() /*: void*/{
 }
 
 ;// ./src/sdk/queue.js
-
-
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type WaitT, type UrlT, type MethodT, type RequestParamsT, type ActivityStateMapT } from './types';*/
 
@@ -5238,7 +4556,7 @@ import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT,
  * @type {Object}
  * @private
  */
-var _request = request({
+const _request = request({
   strategy: 'long',
   continueCb: _continue
 });
@@ -5249,7 +4567,7 @@ var _request = request({
  * @type {boolean}
  * @private
  */
-var _isOffline = false;
+let _isOffline = false;
 
 /**
  * Name of the store used by queue
@@ -5257,7 +4575,7 @@ var _isOffline = false;
  * @type {string}
  * @private
  */
-var queue_storeName = 'queue';
+const queue_storeName = 'queue';
 
 /**
  * Current running state and task timestamp
@@ -5265,7 +4583,7 @@ var queue_storeName = 'queue';
  * @type {{running: boolean, timestamp: void|number, pause: void|Object}}
  * @private
  */
-var _current
+const _current
 /*: {|
   running: boolean,
   timestamp: ?number,
@@ -5289,20 +4607,17 @@ var _current
  * @private
  */
 function _continue(result /*: HttpSuccessResponseT | HttpErrorResponseT*/, finish /*: HttpFinishCbT*/) /*: Promise<HttpSuccessResponseT | HttpErrorResponseT>*/{
-  var wait = result && result.continue_in || null;
+  const wait = result && result.continue_in || null;
   _current.pause = wait ? {
     timestamp: Date.now(),
-    wait: wait
+    wait
   } : null;
-  return storage.getFirst(queue_storeName).then(function (pending) {
-    return pending ? storage.deleteItem(queue_storeName, pending.timestamp) : null;
-  }).then(function () {
-    var _result$response;
-    var isError = result.status === 'error' || ((_result$response = result.response) === null || _result$response === void 0 ? void 0 : _result$response.error);
+  return storage.getFirst(queue_storeName).then(pending => pending ? storage.deleteItem(queue_storeName, pending.timestamp) : null).then(() => {
+    const isError = result.status === 'error' || result.response?.error;
     finish(isError);
     _current.running = false;
     return run({
-      wait: wait
+      wait
     });
   });
 }
@@ -5317,7 +4632,7 @@ function _continue(result /*: HttpSuccessResponseT | HttpErrorResponseT*/, finis
  * @private
  */
 function _prepareTimestamp() /*: number*/{
-  var timestamp = Date.now();
+  let timestamp = Date.now();
   if (_current.timestamp && timestamp <= _current.timestamp) {
     timestamp = _current.timestamp + 1;
   }
@@ -5350,33 +4665,29 @@ function _persist(url) /*: Promise<?ActivityStateMapT>*/{
  * @param {number=} timestamp
  * @returns {Promise}
  */
-function push(_ref /*:: */) {
-  var url = _ref /*:: */.url,
-    method = _ref /*:: */.method,
-    params = _ref /*:: */.params;
-  var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    auto = _ref2.auto,
-    timestamp = _ref2.timestamp;
+function push({
+  url,
+  method,
+  params
+} /*: {|url: UrlT, method: MethodT, params?: RequestParamsT|}*/, {
+  auto,
+  timestamp
+} /*: {|auto?: boolean, timestamp?: number|}*/ = {}) {
   activity_state.updateParams(url, auto);
-  var filteredParams = entries(params || {}).filter(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-      value = _ref4[1];
-    return isEmptyEntry(value);
-  }).reduce(reducer, {});
-  var pending /*: PendingT*/ = {
+  const filteredParams = entries(params || {}).filter(([, value]) => isEmptyEntry(value)).reduce(reducer, {});
+  const pending /*: PendingT*/ = {
     timestamp: _prepareTimestamp(),
-    url: url,
-    method: method,
-    params: _objectSpread2(_objectSpread2({}, activity_state.getParams(url)), filteredParams)
+    url,
+    method,
+    params: {
+      ...activity_state.getParams(url),
+      ...filteredParams
+    }
   };
   if (timestamp) {
     pending.createdAt = timestamp;
   }
-  return storage.addItem(queue_storeName, pending).then(function () {
-    return _persist(url);
-  }).then(function () {
-    return _current.running ? {} : run();
-  });
+  return storage.addItem(queue_storeName, pending).then(() => _persist(url)).then(() => _current.running ? {} : run());
 }
 
 /**
@@ -5391,27 +4702,27 @@ function push(_ref /*:: */) {
  * @returns {Promise}
  * @private
  */
-function _prepareToSend() /*: Promise<mixed>*/{
-  var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    timestamp = _ref5.timestamp,
-    createdAt = _ref5.createdAt,
-    url = _ref5.url,
-    method = _ref5.method,
-    params = _ref5.params;
-  var wait /*:: ?: ?WaitT*/ = arguments.length > 1 ? arguments[1] : undefined;
-  var activityState = activity_state.current || {};
-  var firstSession = url === '/session' && !activityState.installed;
-  var noPending = !url && !method && !params;
+function _prepareToSend({
+  timestamp,
+  createdAt,
+  url,
+  method,
+  params
+} /*: PendingT*/ = {}, wait /*: ?WaitT*/) /*: Promise<mixed>*/{
+  const activityState = activity_state.current || {};
+  const firstSession = url === '/session' && !activityState.installed;
+  const noPending = !url && !method && !params;
   if (_isOffline && !firstSession || noPending) {
     _current.running = false;
     return Promise.resolve({});
   }
   return _request.send({
-    url: url,
-    method: method,
-    params: _objectSpread2(_objectSpread2({}, params), {}, {
+    url,
+    method,
+    params: {
+      ...params,
       createdAt: getTimestamp(createdAt || timestamp)
-    }),
+    },
     wait: wait || _checkWait()
   });
 }
@@ -5423,10 +4734,11 @@ function _prepareToSend() /*: Promise<mixed>*/{
  * @private
  */
 function _checkWait() /*: ?WaitT*/{
-  var _ref6 = _current.pause || {},
-    timestamp = _ref6.timestamp,
-    wait = _ref6.wait;
-  var rest = Date.now() - (timestamp || 0);
+  const {
+    timestamp,
+    wait
+  } = _current.pause || {};
+  const rest = Date.now() - (timestamp || 0);
   return rest < wait ? wait - rest : null;
 }
 
@@ -5437,23 +4749,19 @@ function _checkWait() /*: ?WaitT*/{
  * @param {number=} wait
  * @returns {Promise}
  */
-function run() /*: Promise<mixed>*/{
-  var _ref7 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    cleanUp = _ref7.cleanUp,
-    wait = _ref7.wait;
+function run({
+  cleanUp,
+  wait
+} /*: {cleanUp?: boolean, wait?: ?WaitT}*/ = {}) /*: Promise<mixed>*/{
   if (_current.running) {
     return Promise.resolve({});
   }
   _current.running = true;
-  var chain = Promise.resolve({});
+  let chain = Promise.resolve({});
   if (cleanUp) {
     chain = chain.then(_cleanUp);
   }
-  return chain.then(function () {
-    return storage.getFirst(queue_storeName);
-  }).then(function (pending) {
-    return _prepareToSend(pending, wait);
-  });
+  return chain.then(() => storage.getFirst(queue_storeName)).then(pending => _prepareToSend(pending, wait));
 }
 
 /**
@@ -5469,15 +4777,15 @@ function setOffline(state /*: boolean*/) /*: void*/{
     return;
   }
   if (state === _isOffline) {
-    logger.error("The app is already in ".concat(state ? 'offline' : 'online', " mode"));
+    logger.error(`The app is already in ${state ? 'offline' : 'online'} mode`);
     return;
   }
-  var wasOffline = _isOffline;
+  const wasOffline = _isOffline;
   _isOffline = state;
   if (!state && wasOffline) {
     run();
   }
-  logger.info("The app is now in ".concat(state ? 'offline' : 'online', " mode"));
+  logger.info(`The app is now in ${state ? 'offline' : 'online'} mode`);
 }
 
 /**
@@ -5487,7 +4795,7 @@ function setOffline(state /*: boolean*/) /*: void*/{
  * @returns {Promise}
  */
 function _cleanUp() /*: Promise<mixed>*/{
-  var upperBound = Date.now() - sdk_config.requestValidityWindow;
+  const upperBound = Date.now() - config.requestValidityWindow;
   return storage.deleteBulk(queue_storeName, upperBound, 'upperBound');
 }
 
@@ -5519,7 +4827,6 @@ function queue_destroy() /*: void*/{
 }
 
 ;// ./src/sdk/global-params.js
-
 /*:: // 
 import { type GlobalParamsT, type GlobalParamsMapT } from './types';*/
 
@@ -5534,7 +4841,7 @@ import { type GlobalParamsT, type GlobalParamsMapT } from './types';*/
  * @type {string}
  * @private
  */
-var global_params_storeName = 'globalParams';
+const global_params_storeName = 'globalParams';
 
 /**
  * Error message for type missing
@@ -5542,7 +4849,7 @@ var global_params_storeName = 'globalParams';
  * @type {Object}
  * @private
  */
-var _error = {
+const _error = {
   short: 'No type provided',
   long: 'Global parameter type not provided, `callback` or `partner` types are available'
 };
@@ -5555,14 +4862,13 @@ var _error = {
  * @private
  */
 function _omitType(params) /*: Array<GlobalParamsT>*/{
-  return (params || []).map(function (_ref) {
-    var key = _ref.key,
-      value = _ref.value;
-    return {
-      key: key,
-      value: value
-    };
-  });
+  return (params || []).map(({
+    key,
+    value
+  }) => ({
+    key,
+    value
+  }));
 }
 
 /**
@@ -5571,10 +4877,7 @@ function _omitType(params) /*: Array<GlobalParamsT>*/{
  * @returns {Promise}
  */
 function get() /*: Promise<GlobalParamsMapT>*/{
-  return Promise.all([storage.filterBy(global_params_storeName, 'callback'), storage.filterBy(global_params_storeName, 'partner')]).then(function (_ref2) {
-    var _ref3 = _slicedToArray(_ref2, 2),
-      callbackParams = _ref3[0],
-      partnerParams = _ref3[1];
+  return Promise.all([storage.filterBy(global_params_storeName, 'callback'), storage.filterBy(global_params_storeName, 'partner')]).then(([callbackParams, partnerParams]) => {
     return {
       callbackParams: _omitType(callbackParams),
       partnerParams: _omitType(partnerParams)
@@ -5597,28 +4900,17 @@ function add(params /*: Array<GlobalParamsT>*/, type /*: TypeT*/) /*: void | Pro
     });
   }
   /*:: type GlobalParamsWithTypeT = {|...GlobalParamsT, type: string|}*/
-  var map /*: {[key: string]: string}*/ = convertToMap(params);
-  var prepared /*: Array<GlobalParamsWithTypeT>*/ = Object.keys(map).map(function (key) {
-    return {
-      key: key,
-      value: map[key],
-      type: type
-    };
-  });
-  return Promise.all([storage.filterBy(global_params_storeName, type), storage.addBulk(global_params_storeName, prepared, true)]).then(function (_ref4) {
-    var _ref5 = _slicedToArray(_ref4, 2),
-      oldParams = _ref5[0],
-      newParams = _ref5[1];
-    var intersecting = intersection(oldParams.map(function (param) {
-      return param.key;
-    }), newParams.map(function (param) {
-      return param[0];
-    }));
-    logger.log("Following ".concat(type, " parameters have been saved: ").concat(prepared.map(function (p) {
-      return "".concat(p.key, ":").concat(p.value);
-    }).join(', ')));
+  const map /*: {[key: string]: string}*/ = convertToMap(params);
+  const prepared /*: Array<GlobalParamsWithTypeT>*/ = Object.keys(map).map(key => ({
+    key,
+    value: map[key],
+    type
+  }));
+  return Promise.all([storage.filterBy(global_params_storeName, type), storage.addBulk(global_params_storeName, prepared, true)]).then(([oldParams, newParams]) => {
+    const intersecting = intersection(oldParams.map(param => param.key), newParams.map(param => param[0]));
+    logger.log(`Following ${type} parameters have been saved: ${prepared.map(p => `${p.key}:${p.value}`).join(', ')}`);
     if (intersecting.length) {
-      logger.log("Keys: ".concat(intersecting.join(', '), " already existed so their values have been updated"));
+      logger.log(`Keys: ${intersecting.join(', ')} already existed so their values have been updated`);
     }
     return newParams;
   });
@@ -5638,8 +4930,8 @@ function remove(key /*: string*/, type /*: TypeT*/) /*: void | Promise<KeysT>*/{
       message: _error.short
     });
   }
-  return storage.deleteItem(global_params_storeName, [key, type]).then(function (result) {
-    logger.log("".concat(key, " ").concat(type, " parameter has been deleted"));
+  return storage.deleteItem(global_params_storeName, [key, type]).then(result => {
+    logger.log(`${key} ${type} parameter has been deleted`);
     return result;
   });
 }
@@ -5656,8 +4948,8 @@ function removeAll(type /*: TypeT*/) /*: void | Promise<KeysArrayT>*/{
       message: _error.short
     });
   }
-  return storage.deleteBulk(global_params_storeName, type).then(function (result) {
-    logger.log("All ".concat(type, " parameters have been deleted"));
+  return storage.deleteBulk(global_params_storeName, type).then(result => {
+    logger.log(`All ${type} parameters have been deleted`);
     return result;
   });
 }
@@ -5670,7 +4962,6 @@ function global_params_clear() /*: void*/{
 }
 
 ;// ./src/sdk/session.js
-
 /*:: // 
 import { type DocumentT, type HttpSuccessResponseT, type HttpErrorResponseT, type GlobalParamsMapT, type SessionRequestParamsT } from './types';*/
 
@@ -5693,7 +4984,7 @@ import { type DocumentT, type HttpSuccessResponseT, type HttpErrorResponseT, typ
  * @type {boolean}
  * @private
  */
-var _running = false;
+let _running = false;
 
 /**
  * Reference to interval id to be used for clearing
@@ -5701,7 +4992,7 @@ var _running = false;
  * @type {number}
  * @private
  */
-var _idInterval /*: ?number*/;
+let _idInterval /*: ?number*/;
 
 /**
  * Reference to timeout id to be used for clearing
@@ -5709,7 +5000,7 @@ var _idInterval /*: ?number*/;
  * @type {number}
  * @private
  */
-var _idTimeout /*: ?number*/;
+let _idTimeout /*: ?number*/;
 
 /**
  * Browser-specific prefixes for accessing Page Visibility API
@@ -5717,14 +5008,14 @@ var _idTimeout /*: ?number*/;
  * @type {{hidden, visibilityChange}}
  * @private
  */
-var _pva;
+let _pva;
 
 /**
  * Reference to the document casted to a plain object
  *
  * @type {Document}
  */
-var documentExt = (document /*: DocumentT*/);
+const documentExt = (document /*: DocumentT*/);
 
 /**
  * Initiate session watch:
@@ -5804,7 +5095,7 @@ function _handleBackground() /*: Promise<mixed>*/{
  * @private
  */
 function _handleForeground() /*: Promise<mixed>*/{
-  return sync().then(function () {
+  return sync().then(() => {
     activity_state.updateSessionLength();
     activity_state.toForeground();
   }).then(_checkSession);
@@ -5817,7 +5108,7 @@ function _handleForeground() /*: Promise<mixed>*/{
  */
 function _handleVisibilityChange() /*: void*/{
   clearTimeout(_idTimeout);
-  var handler = _pva && documentExt[_pva.hidden] ? _handleBackground : _handleForeground;
+  const handler = _pva && documentExt[_pva.hidden] ? _handleBackground : _handleForeground;
   _idTimeout = setTimeout(handler, 0);
 }
 function _restoreAfterAsyncEnable() /*: void*/{
@@ -5840,28 +5131,26 @@ function _restoreAfterAsyncEnable() /*: void*/{
  * @private
  */
 function _handleSessionRequestFinish(e /*: string*/, result /*: HttpSuccessResponseT | HttpErrorResponseT*/) /*: ?Promise<mixed>*/{
-  var _result$response;
-  var isTooFrequentSessionError = result === null || result === void 0 || (_result$response = result.response) === null || _result$response === void 0 || (_result$response = _result$response.error) === null || _result$response === void 0 ? void 0 : _result$response.includes('Ignoring too frequent session');
-  if ((result === null || result === void 0 ? void 0 : result.status) === 'error') {
-    var _result$response2;
-    logger.error('Session was not successful, error was returned from the server:', (result === null || result === void 0 || (_result$response2 = result.response) === null || _result$response2 === void 0 ? void 0 : _result$response2.error) || (result === null || result === void 0 ? void 0 : result.response));
+  const isTooFrequentSessionError = result?.response?.error?.includes('Ignoring too frequent session');
+  if (result?.status === 'error') {
+    logger.error('Session was not successful, error was returned from the server:', result?.response?.error || result?.response);
     if (!isTooFrequentSessionError) {
       // do not return in case of too frequent session error, because it means a fresh session for this device is tracked,
       // i.e. the device is known and we should update SDK installed status
       return;
     }
   }
-  if (result !== null && result !== void 0 && result.adid) {
-    activity_state.current = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
-      attribution: _objectSpread2(_objectSpread2({}, activity_state.current.attribution), {}, {
+  if (result?.adid) {
+    activity_state.current = {
+      ...activity_state.current,
+      attribution: {
+        ...activity_state.current.attribution,
         adid: result.adid
-      })
-    });
+      }
+    };
   }
   activity_state.updateInstalled();
-  return persist().then(function () {
-    return publish('sdk:installed');
-  });
+  return persist().then(() => publish('sdk:installed'));
 }
 
 /**
@@ -5873,10 +5162,10 @@ function _handleSessionRequestFinish(e /*: string*/, result /*: HttpSuccessRespo
  */
 function _startTimer() /*: void*/{
   _stopTimer();
-  _idInterval = setInterval(function () {
+  _idInterval = setInterval(() => {
     activity_state.updateSessionOffset();
     return persist();
-  }, sdk_config.sessionTimerWindow);
+  }, config.sessionTimerWindow);
 }
 
 /**
@@ -5896,9 +5185,10 @@ function _stopTimer() /*: void*/{
  * @returns {Object}
  * @private
  */
-function _prepareParams(_ref /*:: */) /*: SessionRequestParamsT*/{
-  var callbackParams = _ref /*:: */.callbackParams,
-    partnerParams = _ref /*:: */.partnerParams;
+function _prepareParams({
+  callbackParams,
+  partnerParams
+} /*: GlobalParamsMapT*/) /*: SessionRequestParamsT*/{
   return {
     callbackParams: callbackParams.length ? convertToMap(callbackParams) : null,
     partnerParams: partnerParams.length ? convertToMap(partnerParams) : null
@@ -5911,7 +5201,7 @@ function _prepareParams(_ref /*:: */) /*: SessionRequestParamsT*/{
  * @private
  */
 function _trackSession() /*: Promise<mixed>*/{
-  return get().then(function (globalParams) {
+  return get().then(globalParams => {
     push({
       url: '/session',
       method: 'POST',
@@ -5929,11 +5219,11 @@ function _trackSession() /*: Promise<mixed>*/{
  */
 function _checkSession() /*: Promise<mixed>*/{
   _startTimer();
-  var activityState = activity_state.current;
-  var lastInterval = activityState.lastInterval;
-  var isEnqueued = activityState.sessionCount > 0;
-  var currentWindow = lastInterval * SECOND;
-  if (!isEnqueued || isEnqueued && currentWindow >= sdk_config.sessionWindow) {
+  const activityState = activity_state.current;
+  const lastInterval = activityState.lastInterval;
+  const isEnqueued = activityState.sessionCount > 0;
+  const currentWindow = lastInterval * (/* inlined export .SECOND */1000);
+  if (!isEnqueued || isEnqueued && currentWindow >= config.sessionWindow) {
     return _trackSession();
   }
   publish('attribution:check');
@@ -5941,8 +5231,6 @@ function _checkSession() /*: Promise<mixed>*/{
 }
 
 ;// ./src/sdk/attribution.js
-
-
 /*:: // 
 import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT, type HttpRetryCbT, type AttributionStateT, type AttributionWhiteListT, type ActivityStateMapT, type AttributionMapT } from './types';*/
 
@@ -5959,7 +5247,7 @@ import { type HttpSuccessResponseT, type HttpErrorResponseT, type HttpFinishCbT,
  * @type {Object}
  * @private
  */
-var attribution_request = request({
+const attribution_request = request({
   url: '/attribution',
   strategy: 'short',
   continueCb: attribution_continue
@@ -5971,7 +5259,7 @@ var attribution_request = request({
  * @type {string[]}
  * @private
  */
-var _whitelist /*: AttributionWhiteListT*/ = ['tracker_token', 'tracker_name', 'network', 'campaign', 'adgroup', 'creative', 'click_label', 'state'];
+const _whitelist /*: AttributionWhiteListT*/ = ['tracker_token', 'tracker_name', 'network', 'campaign', 'adgroup', 'creative', 'click_label', 'state'];
 
 /**
  * Check if new attribution is the same as old one
@@ -5981,13 +5269,12 @@ var _whitelist /*: AttributionWhiteListT*/ = ['tracker_token', 'tracker_name', '
  * @returns {boolean}
  * @private
  */
-function _isSame(_ref /*:: */) /*: boolean*/{
-  var adid = _ref /*:: */.adid,
-    attribution = _ref /*:: */.attribution;
-  var oldAttribution = activity_state.current.attribution || {};
-  var anyDifferent = attribution && _whitelist.some(function (k) {
-    return oldAttribution[k] !== attribution[k];
-  });
+function _isSame({
+  adid,
+  attribution
+} /*: HttpSuccessResponseT*/) /*: boolean*/{
+  const oldAttribution = activity_state.current.attribution || {};
+  const anyDifferent = attribution && _whitelist.some(k => oldAttribution[k] !== attribution[k]);
   return !anyDifferent && adid === oldAttribution.adid;
 }
 
@@ -5999,11 +5286,10 @@ function _isSame(_ref /*:: */) /*: boolean*/{
  * @returns {boolean}
  * @private
  */
-function _isValid(_ref2 /*:: */) /*: boolean*/{
-  var _ref2$adid = _ref2 /*:: */.adid,
-    adid = _ref2$adid === void 0 ? '' : _ref2$adid,
-    _ref2$attribution = _ref2 /*:: */.attribution,
-    attribution = _ref2$attribution === void 0 ? {} : _ref2$attribution;
+function _isValid({
+  adid = '',
+  attribution = {}
+} /*: HttpSuccessResponseT*/) /*: boolean*/{
   return !!adid && !!intersection(_whitelist, Object.keys(attribution)).length;
 }
 
@@ -6019,17 +5305,14 @@ function _setAttribution(result /*: HttpSuccessResponseT*/) /*: Promise<Attribut
       state: 'same'
     });
   }
-  var attribution /*: AttributionMapT*/ = entries(result.attribution).filter(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 1),
-      key = _ref4[0];
-    return _whitelist.indexOf(key) !== -1;
-  }).reduce(reducer, {
+  const attribution /*: AttributionMapT*/ = entries(result.attribution).filter(([key]) => _whitelist.indexOf(key) !== -1).reduce(reducer, {
     adid: result.adid
   });
-  activity_state.current = _objectSpread2(_objectSpread2({}, activity_state.current), {}, {
-    attribution: attribution
-  });
-  return persist().then(function () {
+  activity_state.current = {
+    ...activity_state.current,
+    attribution
+  };
+  return persist().then(() => {
     publish('attribution:change', attribution);
     publish(PUB_SUB_EVENTS.ATTRIBUTION_RECEIVED, attribution);
     logger.info('Attribution has been updated');
@@ -6069,15 +5352,16 @@ function attribution_continue(result /*: HttpSuccessResponseT | HttpErrorRespons
  * @param {number=} sessionResult.ask_in
  */
 function check(sessionResult /*: HttpSuccessResponseT*/) /*: Promise<?ActivityStateMapT>*/{
-  var activityState = activity_state.current;
-  var askIn = (sessionResult || {}).ask_in;
+  const activityState = activity_state.current;
+  const askIn = (sessionResult || {}).ask_in;
   if (!askIn && (activityState.attribution || !activityState.installed)) {
     return Promise.resolve(activityState);
   }
   attribution_request.send({
-    params: _objectSpread2({
-      initiatedBy: !sessionResult ? 'sdk' : 'backend'
-    }, activity_state.getParams()),
+    params: {
+      initiatedBy: !sessionResult ? 'sdk' : 'backend',
+      ...activity_state.getParams()
+    },
     wait: askIn
   });
   activity_state.updateSessionOffset();
@@ -6100,14 +5384,13 @@ function attribution_destroy() /*: void*/{
 
 
 
-
 /**
  * Http request instance
  *
  * @type {Object}
  * @private
  */
-var gdpr_forget_device_request = request({
+const gdpr_forget_device_request = request({
   url: '/gdpr_forget_device',
   method: 'POST',
   strategy: 'short'
@@ -6119,7 +5402,7 @@ var gdpr_forget_device_request = request({
  * @type {Object}
  * @private
  */
-var gdpr_forget_device_logMessages = {
+const gdpr_forget_device_logMessages = {
   running: 'Adjust SDK is running pending GDPR Forget Me request',
   pending: 'Adjust SDK will run GDPR Forget Me request after initialisation',
   paused: 'Adjust SDK is already prepared to send GDPR Forget Me request',
@@ -6133,18 +5416,20 @@ var gdpr_forget_device_logMessages = {
  * @returns {boolean}
  */
 function forget(force /*: boolean*/) /*: boolean*/{
-  var sdkStatus = disable_status();
+  const sdkStatus = disable_status();
   if (!force && sdkStatus !== 'on') {
     logger.log(gdpr_forget_device_logMessages[sdkStatus]);
     return false;
   }
-  if (!sdk_config.isInitialised()) {
+  if (!config.isInitialised()) {
     logger.log(gdpr_forget_device_logMessages.pending);
     return true;
   }
   gdpr_forget_device_request.send({
-    params: _objectSpread2({}, activity_state.getParams())
-  }).then(function () {
+    params: {
+      ...activity_state.getParams()
+    }
+  }).then(() => {
     publish('sdk:gdpr-forget-me');
   });
   return true;
@@ -6188,76 +5473,70 @@ function gdpr_forget_device_destroy() /*: void*/{
 ;// ./src/sdk/track-third-party-sharing.ts
 
 
-
-
-
-
 /*:: export interface ThirdPartySharingOptions {
   isEnabled: boolean;
   granularOptions: Record<string, Record<string, string>>;
   partnerSharingSettings: Record<string, Record<string, boolean>>;
 }*/
-var ThirdPartySharing = /*#__PURE__*/function () {
-  function ThirdPartySharing(isEnabled /*: boolean*/) {
-    _classCallCheck(this, ThirdPartySharing);
-    _defineProperty(this, "_granularOptions", {});
-    _defineProperty(this, "_partnerSharingSettings", {});
+class ThirdPartySharing /*:: implements ThirdPartySharingOptions*/{
+  _granularOptions = {};
+  _partnerSharingSettings = {};
+  constructor(isEnabled /*: boolean*/) {
     if (typeof isEnabled !== 'boolean') {
-      logger.warn("isEnabled should be boolean, converting ".concat(isEnabled, " results ").concat(!!isEnabled));
+      logger.warn(`isEnabled should be boolean, converting ${isEnabled} results ${!!isEnabled}`);
     }
     this._isEnabled = !!isEnabled;
   }
-  return _createClass(ThirdPartySharing, [{
-    key: "isEnabled",
-    get: function get() /*: boolean*/{
-      return this._isEnabled;
+  get isEnabled() /*: boolean*/{
+    return this._isEnabled;
+  }
+  get granularOptions() /*: Record<string, Record<string, string>>*/{
+    return this._granularOptions;
+  }
+  get partnerSharingSettings() /*: Record<string, Record<string, boolean>>*/{
+    return this._partnerSharingSettings;
+  }
+  addGranularOption(partnerName /*: string*/, key /*: string*/, value /*: string*/) {
+    if (!partnerName || !key || value === undefined) {
+      logger.error('Cannot add granular option, partnerName, key and value are mandatory');
+      return;
     }
-  }, {
-    key: "granularOptions",
-    get: function get() /*: Record<string, Record<string, string>>*/{
-      return this._granularOptions;
+    const pair = {
+      [key]: value
+    };
+    if (this.granularOptions[partnerName]) {
+      this.granularOptions[partnerName] = {
+        ...this.granularOptions[partnerName],
+        ...pair
+      };
+    } else {
+      this.granularOptions[partnerName] = pair;
     }
-  }, {
-    key: "partnerSharingSettings",
-    get: function get() /*: Record<string, Record<string, boolean>>*/{
-      return this._partnerSharingSettings;
+  }
+  addPartnerSharingSetting(partnerName /*: string*/, key /*: string*/, value /*: boolean*/) {
+    if (!partnerName || !key || value === undefined) {
+      logger.error('Cannot add partner sharing setting, partnerName, key and value are mandatory');
+      return;
     }
-  }, {
-    key: "addGranularOption",
-    value: function addGranularOption(partnerName /*: string*/, key /*: string*/, value /*: string*/) {
-      if (!partnerName || !key || value === undefined) {
-        logger.error('Cannot add granular option, partnerName, key and value are mandatory');
-        return;
-      }
-      var pair = _defineProperty({}, key, value);
-      if (this.granularOptions[partnerName]) {
-        this.granularOptions[partnerName] = _objectSpread2(_objectSpread2({}, this.granularOptions[partnerName]), pair);
-      } else {
-        this.granularOptions[partnerName] = pair;
-      }
+    const pair = {
+      [key]: value
+    };
+    if (this.partnerSharingSettings[partnerName]) {
+      this.partnerSharingSettings[partnerName] = {
+        ...this.partnerSharingSettings[partnerName],
+        ...pair
+      };
+    } else {
+      this.partnerSharingSettings[partnerName] = pair;
     }
-  }, {
-    key: "addPartnerSharingSetting",
-    value: function addPartnerSharingSetting(partnerName /*: string*/, key /*: string*/, value /*: boolean*/) {
-      if (!partnerName || !key || value === undefined) {
-        logger.error('Cannot add partner sharing setting, partnerName, key and value are mandatory');
-        return;
-      }
-      var pair = _defineProperty({}, key, value);
-      if (this.partnerSharingSettings[partnerName]) {
-        this.partnerSharingSettings[partnerName] = _objectSpread2(_objectSpread2({}, this.partnerSharingSettings[partnerName]), pair);
-      } else {
-        this.partnerSharingSettings[partnerName] = pair;
-      }
-    }
-  }]);
-}();
+  }
+}
 function trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOptions*/) {
   if (!adjustThirdPartySharing || adjustThirdPartySharing.isEnabled === undefined) {
     logger.error('Can not track third-party sharing without parameters');
     return;
   }
-  var params = {
+  const params = {
     sharing: adjustThirdPartySharing.isEnabled ? 'enable' : 'disable',
     granularThirdPartySharingOptions: adjustThirdPartySharing.granularOptions,
     partnerSharingSettings: adjustThirdPartySharing.partnerSharingSettings
@@ -6265,7 +5544,7 @@ function trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOpt
   push({
     url: '/third_party_sharing',
     method: 'POST',
-    params: params
+    params
   });
 }
 ;// ./src/sdk/scheduler.js
@@ -6281,7 +5560,7 @@ function trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharingOpt
  * @type {Array}
  * @private
  */
-var _tasks /*: Array<TaskT>*/ = [];
+let _tasks /*: Array<TaskT>*/ = [];
 
 /**
  * Put the dask in the delayed list
@@ -6291,8 +5570,8 @@ var _tasks /*: Array<TaskT>*/ = [];
  */
 function delay(method /*: TaskT['method']*/, description /*: TaskT['description']*/) /*: void*/{
   _tasks.push({
-    method: method,
-    description: description,
+    method,
+    description,
     timestamp: Date.now()
   });
 }
@@ -6301,9 +5580,9 @@ function delay(method /*: TaskT['method']*/, description /*: TaskT['description'
  * Flush all delayed tasks
  */
 function flush() /*: void*/{
-  _tasks.forEach(function (task /*: TaskT*/) {
+  _tasks.forEach((task /*: TaskT*/) => {
     if (typeof task.method === 'function') {
-      logger.log("Delayed ".concat(task.description, " task is running now"));
+      logger.log(`Delayed ${task.description} task is running now`);
       task.method(task.timestamp);
     }
   });
@@ -6318,7 +5597,6 @@ function scheduler_destroy() /*: void*/{
 }
 
 ;// ./src/sdk/event.js
-
 /*:: // 
 import { type EventParamsT, type EventRequestParamsT, type GlobalParamsMapT, type GlobalKeyValueParamsT } from './types';*/
 
@@ -6331,7 +5609,7 @@ import { type EventParamsT, type EventRequestParamsT, type GlobalParamsMapT, typ
   revenue: string,
   currency: string
 }*/
-var DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT = 10;
+const DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT = 10;
 
 /**
  * Name of the store used by event deduplication ids
@@ -6339,7 +5617,7 @@ var DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT = 10;
  * @type {string}
  * @private
  */
-var event_storeName = 'eventDeduplication';
+const event_storeName = 'eventDeduplication';
 
 /**
  * Get revenue value if positive and limit to 5 decimal places
@@ -6359,7 +5637,7 @@ function _getRevenue(revenue /*: number | void*/, currency /*: string | void*/) 
   }
   return {
     revenue: revenue.toFixed(5),
-    currency: currency
+    currency
   };
 }
 
@@ -6377,23 +5655,34 @@ function _getRevenue(revenue /*: number | void*/, currency /*: string | void*/) 
  * @returns {Object}
  * @private
  */
-function event_prepareParams(params /*: EventParamsT*/, _ref /*:: */) /*: EventRequestParamsT*/{
-  var callbackParams = _ref /*:: */.callbackParams,
-    partnerParams = _ref /*:: */.partnerParams;
-  var globalParams = {};
-  var baseParams = _objectSpread2({
+function event_prepareParams(params /*: EventParamsT*/, {
+  callbackParams,
+  partnerParams
+} /*: GlobalParamsMapT*/) /*: EventRequestParamsT*/{
+  const globalParams = {};
+  const baseParams = {
     eventToken: params.eventToken,
-    deduplicationId: params.deduplicationId
-  }, _getRevenue(params.revenue, params.currency));
-  var eventCallbackParams /*: GlobalKeyValueParamsT*/ = _objectSpread2(_objectSpread2({}, convertToMap(callbackParams)), convertToMap(params.callbackParams));
-  var eventPartnerParams /*: GlobalKeyValueParamsT*/ = _objectSpread2(_objectSpread2({}, convertToMap(partnerParams)), convertToMap(params.partnerParams));
+    deduplicationId: params.deduplicationId,
+    ..._getRevenue(params.revenue, params.currency)
+  };
+  const eventCallbackParams /*: GlobalKeyValueParamsT*/ = {
+    ...convertToMap(callbackParams),
+    ...convertToMap(params.callbackParams)
+  };
+  const eventPartnerParams /*: GlobalKeyValueParamsT*/ = {
+    ...convertToMap(partnerParams),
+    ...convertToMap(params.partnerParams)
+  };
   if (!isEmpty(eventCallbackParams)) {
     globalParams.callbackParams = eventCallbackParams;
   }
   if (!isEmpty(eventPartnerParams)) {
     globalParams.partnerParams = eventPartnerParams;
   }
-  return _objectSpread2(_objectSpread2({}, baseParams), globalParams);
+  return {
+    ...baseParams,
+    ...globalParams
+  };
 }
 
 /**
@@ -6403,11 +5692,7 @@ function event_prepareParams(params /*: EventParamsT*/, _ref /*:: */) /*: EventR
  * @private
  */
 function _getEventDeduplicationIds() /*: Promise<Array<string>>*/{
-  return storage.getAll(event_storeName).then(function (records) {
-    return records.map(function (record) {
-      return record.id;
-    });
-  });
+  return storage.getAll(event_storeName).then(records => records.map(record => record.id));
 }
 
 /**
@@ -6418,20 +5703,20 @@ function _getEventDeduplicationIds() /*: Promise<Array<string>>*/{
  * @private
  */
 function _pushEventDeduplicationId(id /*: string*/) /*: Promise<number>*/{
-  var customLimit = sdk_config.getCustomConfig().eventDeduplicationListLimit;
-  var limit = customLimit > 0 ? customLimit : DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT;
-  return storage.count(event_storeName).then(function (count) {
-    var chain = Promise.resolve();
+  const customLimit = config.getCustomConfig().eventDeduplicationListLimit;
+  const limit = customLimit > 0 ? customLimit : DEFAULT_EVENT_DEDUPLICATION_LIST_LIMIT;
+  return storage.count(event_storeName).then(count => {
+    let chain = Promise.resolve();
     if (count >= limit) {
-      var removeLength = count - limit + 1;
-      logger.log("Event deduplication list limit has been reached. Oldest ids are about to be removed (".concat(removeLength, " of them)"));
+      const removeLength = count - limit + 1;
+      logger.log(`Event deduplication list limit has been reached. Oldest ids are about to be removed (${removeLength} of them)`);
       chain = storage.trimItems(event_storeName, removeLength);
     }
     return chain;
-  }).then(function () {
-    logger.info("New event deduplication id is added to the list: ".concat(id));
+  }).then(() => {
+    logger.info(`New event deduplication id is added to the list: ${id}`);
     return storage.addItem(event_storeName, {
-      id: id
+      id
     });
   });
 }
@@ -6449,9 +5734,9 @@ function _checkEventDeduplicationId(id /*: string*/) /*: Promise<?number>*/{
   if (!id) {
     return Promise.resolve();
   }
-  return _getEventDeduplicationIds().then(function (list) {
+  return _getEventDeduplicationIds().then(list => {
     return list.indexOf(id) === -1 ? _pushEventDeduplicationId(id) : Promise.reject({
-      message: "Event won't be tracked, since it was previously tracked with the same deduplication id ".concat(id)
+      message: `Event won't be tracked, since it was previously tracked with the same deduplication id ${id}`
     });
   });
 }
@@ -6465,19 +5750,19 @@ function _checkEventDeduplicationId(id /*: string*/) /*: Promise<?number>*/{
  */
 function event_event(params /*: EventParamsT*/, timestamp /*: number*/) /*: Promise<void>*/{
   if (!params || params && (isEmpty(params) || !params.eventToken)) {
-    var reason = 'You must provide event token in order to track event';
+    const reason = 'You must provide event token in order to track event';
     logger.error(reason);
     return Promise.reject(reason);
   }
-  return _checkEventDeduplicationId(params.deduplicationId).then(get).then(function (globalParams) {
+  return _checkEventDeduplicationId(params.deduplicationId).then(get).then(globalParams => {
     return push({
       url: '/event',
       method: 'POST',
       params: event_prepareParams(params, globalParams)
     }, {
-      timestamp: timestamp
+      timestamp
     });
-  }).catch(function (error) {
+  }).catch(error => {
     if (error && error.message) {
       logger.error(error.message);
     }
@@ -6500,9 +5785,7 @@ import { type SdkClickRequestParamsT } from './types';*/
  * @private
  */
 function _getReferrer() /*: ?string*/{
-  return window.location.search.substring(1).split('&').map(function (pair) {
-    return pair.split('=');
-  }).reduce(reducer, {})['adjust_referrer'];
+  return window.location.search.substring(1).split('&').map(pair => pair.split('=')).reduce(reducer, {})['adjust_referrer'];
 }
 
 /**
@@ -6524,7 +5807,7 @@ function sdk_click_prepareParams(referrer) /*: SdkClickRequestParamsT*/{
  * Sends sdk_click request with manually settled referrer or with automatically grabbed one
  */
 function sdkClick(manualReferrer /*: string*/, timestamp /*: number*/) /*: void*/{
-  var referrer;
+  let referrer;
   if (manualReferrer) {
     referrer = manualReferrer;
   } else {
@@ -6536,14 +5819,11 @@ function sdkClick(manualReferrer /*: string*/, timestamp /*: number*/) /*: void*
       method: 'POST',
       params: sdk_click_prepareParams(referrer)
     }, {
-      timestamp: timestamp
+      timestamp
     });
   }
 }
 ;// ./src/sdk/main.js
-
-
-var _excluded = ["logLevel", "logOutput"];
 /*:: // 
 import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalParamsT, type CustomErrorT, type ActivityStateMapT, type AttributionMapT } from './types';*/
 
@@ -6571,7 +5851,7 @@ import { type InitOptionsT, type LogOptionsT, type EventParamsT, type GlobalPara
  * @type {Object}
  * @private
  */
-var main_options /*: ? InitOptionsT*/ = null;
+let main_options /*: ? InitOptionsT*/ = null;
 
 /**
  * Flag to mark id sdk is in starting process
@@ -6579,7 +5859,7 @@ var main_options /*: ? InitOptionsT*/ = null;
  * @type {boolean}
  * @private
  */
-var _isInitialising /*: boolean*/ = false;
+let _isInitialising /*: boolean*/ = false;
 
 /**
  * Flag to mark if sdk is started
@@ -6587,7 +5867,7 @@ var _isInitialising /*: boolean*/ = false;
  * @type {boolean}
  * @private
  */
-var _isStarted /*: boolean*/ = false;
+let _isStarted /*: boolean*/ = false;
 
 /**
  * Flag to mark if sdk is installed to delay public methods until SDK is ready to perform them
@@ -6595,8 +5875,8 @@ var _isStarted /*: boolean*/ = false;
  * @type {boolean}
  * @private
  */
-var _isInstalled /*: boolean*/ = false;
-var _installationCallbackId /*: string*/ = null;
+let _isInstalled /*: boolean*/ = false;
+let _installationCallbackId /*: string*/ = null;
 
 /**
  * Initiate the instance with parameters
@@ -6605,27 +5885,29 @@ var _installationCallbackId /*: string*/ = null;
  * @param {string} logLevel
  * @param {string} logOutput
  */
-function initSdk() /*: void*/{
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    logLevel = _ref.logLevel,
-    logOutput = _ref.logOutput,
-    options = _objectWithoutProperties(_ref, _excluded);
+function initSdk({
+  logLevel,
+  logOutput,
+  ...options
+} /*: InitConfigT*/ = {}) /*: void*/{
   logger.setLogLevel(logLevel, logOutput);
   if (_isInitialised()) {
     logger.error('You already initiated your instance');
     return;
   }
-  if (sdk_config.hasMissing(options)) {
+  if (config.hasMissing(options)) {
     return;
   }
   _isInitialising = true;
-  storage.init(options.namespace).then(function (availableStorage) {
+  storage.init(options.namespace).then(availableStorage => {
     if (availableStorage.type === STORAGE_TYPES.NO_STORAGE) {
       logger.error('Adjust SDK can not start, there is no storage available');
       return;
     }
-    logger.info("Available storage is ".concat(availableStorage.type));
-    main_options = _objectSpread2({}, options);
+    logger.info(`Available storage is ${availableStorage.type}`);
+    main_options = {
+      ...options
+    };
     _start(options);
   });
 }
@@ -6638,18 +5920,14 @@ function initSdk() /*: void*/{
  * @deprecated Use {@link waitForAttribution} instead
  */
 function main_getAttribution() /*: ?AttributionMapT*/{
-  return _preCheck('get attribution', function () {
-    return activity_state.getAttribution();
-  });
+  return _preCheck('get attribution', () => activity_state.getAttribution());
 }
 
 /**
  * Returns a promise which resolves when current attribution information becomes available
  */
 function main_waitForAttribution() /*: Promise<AttributionMapT>*/{
-  return _preCheck('get attribution', function () {
-    return activity_state.waitForAttribution();
-  }, {
+  return _preCheck('get attribution', () => activity_state.waitForAttribution(), {
     schedule: false
   });
 }
@@ -6662,18 +5940,14 @@ function main_waitForAttribution() /*: Promise<AttributionMapT>*/{
  * @deprecated Use {@link waitForWebUUID} instead
  */
 function main_getWebUUID() /*: ?string*/{
-  return _preCheck('get web_uuid', function () {
-    return activity_state.getWebUUID();
-  });
+  return _preCheck('get web_uuid', () => activity_state.getWebUUID());
 }
 
 /**
  * Returns a promise which resolves when `web_uuid` becomes available
  */
 function main_waitForWebUUID() /*: Promise<string>*/{
-  return _preCheck('get web_uuid', function () {
-    return activity_state.waitForWebUUID();
-  }, {
+  return _preCheck('get web_uuid', () => activity_state.waitForWebUUID(), {
     schedule: false
   });
 }
@@ -6682,9 +5956,7 @@ function setReferrer(referrer /*: string*/) {
     logger.error('You must provide a string referrer');
     return;
   }
-  _preCheck('setting reftag', function (timestamp) {
-    return sdkClick(referrer, timestamp);
-  }, {
+  _preCheck('setting reftag', timestamp => sdkClick(referrer, timestamp), {
     schedule: true,
     waitForInitFinished: true,
     optionalInit: true
@@ -6706,9 +5978,7 @@ function trackEvent(params /*: EventParamsT*/) /*: Promise<void>*/{
  * @param {Array} params
  */
 function addGlobalCallbackParameters(params /*: Array<GlobalParamsT>*/) /*: void*/{
-  _preCheck('add global callback parameters', function () {
-    return add(params, 'callback');
-  });
+  _preCheck('add global callback parameters', () => add(params, 'callback'));
 }
 
 /**
@@ -6717,9 +5987,7 @@ function addGlobalCallbackParameters(params /*: Array<GlobalParamsT>*/) /*: void
  * @param {Array} params
  */
 function addGlobalPartnerParameters(params /*: Array<GlobalParamsT>*/) /*: void*/{
-  _preCheck('add global partner parameters', function () {
-    return add(params, 'partner');
-  });
+  _preCheck('add global partner parameters', () => add(params, 'partner'));
 }
 
 /**
@@ -6728,9 +5996,7 @@ function addGlobalPartnerParameters(params /*: Array<GlobalParamsT>*/) /*: void*
  * @param {string} key
  */
 function removeGlobalCallbackParameter(key /*: string*/) /*: void*/{
-  _preCheck('remove global callback parameter', function () {
-    return remove(key, 'callback');
-  });
+  _preCheck('remove global callback parameter', () => remove(key, 'callback'));
 }
 
 /**
@@ -6739,53 +6005,43 @@ function removeGlobalCallbackParameter(key /*: string*/) /*: void*/{
  * @param {string} key
  */
 function removeGlobalPartnerParameter(key /*: string*/) /*: void*/{
-  _preCheck('remove global partner parameter', function () {
-    return remove(key, 'partner');
-  });
+  _preCheck('remove global partner parameter', () => remove(key, 'partner'));
 }
 
 /**
  * Remove all global callback parameters
  */
 function clearGlobalCallbackParameters() /*: void*/{
-  _preCheck('remove all global callback parameters', function () {
-    return removeAll('callback');
-  });
+  _preCheck('remove all global callback parameters', () => removeAll('callback'));
 }
 
 /**
  * Remove all global partner parameters
  */
 function clearGlobalPartnerParameters() /*: void*/{
-  _preCheck('remove all global partner parameters', function () {
-    return removeAll('partner');
-  });
+  _preCheck('remove all global partner parameters', () => removeAll('partner'));
 }
 
 /**
  * Switch offline mode
  */
 function switchToOfflineMode() /*: void*/{
-  _preCheck('set offline mode', function () {
-    return setOffline(true);
-  });
+  _preCheck('set offline mode', () => setOffline(true));
 }
 
 /**
  * Switch online mode
  */
 function switchBackToOnlineMode() /*: void*/{
-  _preCheck('set online mode', function () {
-    return setOffline(false);
-  });
+  _preCheck('set online mode', () => setOffline(false));
 }
 
 /**
  * Stop SDK
  */
 function stop() /*: void*/{
-  var done = disable();
-  if (done && sdk_config.isInitialised()) {
+  const done = disable();
+  if (done && config.isInitialised()) {
     _shutdown();
   }
 }
@@ -6794,7 +6050,7 @@ function stop() /*: void*/{
  * Restart sdk if not GDPR forgotten
  */
 function restart() /*: void*/{
-  var done = restore();
+  const done = restore();
   if (done && main_options) {
     _start(main_options);
   }
@@ -6804,12 +6060,12 @@ function restart() /*: void*/{
  * Disable sdk and send GDPR-Forget-Me request
  */
 function gdprForgetMe() /*: void*/{
-  var done = forget();
+  let done = forget();
   if (!done) {
     return;
   }
   done = gdpr_forget_device_disable();
-  if (done && sdk_config.isInitialised()) {
+  if (done && config.isInitialised()) {
     _pause();
   }
 }
@@ -6829,12 +6085,8 @@ function disableThirdPartySharing() /*: void*/{
  * Track third party sharing
  */
 function main_trackThirdPartySharing(adjustThirdPartySharing /*: ThirdPartySharing*/) /*: void*/{
-  var callback = function callback() {
-    return activity_state.waitForWebUUID() // ensure we have web_uuid to be sent with request
-    .then(function () {
-      return trackThirdPartySharing(adjustThirdPartySharing);
-    });
-  };
+  const callback = () => activity_state.waitForWebUUID() // ensure we have web_uuid to be sent with request
+  .then(() => trackThirdPartySharing(adjustThirdPartySharing));
   _preCheck('third-party sharing', callback, {
     schedule: false,
     optionalInit: true
@@ -6875,7 +6127,7 @@ function _handleGdprForgetMe() /*: void*/{
  * @private
  */
 function _isInitialised() /*: boolean*/{
-  return _isInitialising || sdk_config.isInitialised();
+  return _isInitialising || config.isInitialised();
 }
 
 /**
@@ -6908,7 +6160,7 @@ function _shutdown(async) /*: void*/{
   identity_destroy();
   listeners_destroy();
   storage.destroy();
-  sdk_config.destroy();
+  config.destroy();
 }
 
 /**
@@ -6932,13 +6184,11 @@ function main_destroy() /*: void*/{
  * @private
  */
 function main_continue(activityState /*: ActivityStateMapT*/) /*: Promise<void>*/{
-  logger.log("Adjust SDK is starting with web_uuid set to ".concat(activityState.uuid));
-  var isInstalled = activity_state.current.installed;
+  logger.log(`Adjust SDK is starting with web_uuid set to ${activityState.uuid}`);
+  const isInstalled = activity_state.current.installed;
   gdpr_forget_device_check();
-  var sdkStatus = disable_status();
-  var message = function message(rest) {
-    return "Adjust SDK start has been interrupted ".concat(rest);
-  };
+  const sdkStatus = disable_status();
+  let message = rest => `Adjust SDK start has been interrupted ${rest}`;
   if (sdkStatus === 'off') {
     _shutdown();
     return Promise.reject({
@@ -6962,7 +6212,7 @@ function main_continue(activityState /*: ActivityStateMapT*/) /*: Promise<void>*
   run({
     cleanUp: true
   });
-  return watch().then(function () {
+  return watch().then(() => {
     _isInitialising = false;
     _isStarted = true;
     if (isInstalled) {
@@ -7024,16 +6274,12 @@ function _start(options /*: InitOptionsT*/) /*: void*/{
     logger.log('Adjust SDK is disabled, can not start the sdk');
     return;
   }
-  sdk_config.set(options);
+  config.set(options);
   register();
   _installationCallbackId = subscribe('sdk:installed', _handleSdkInstalled);
-  subscribe('sdk:shutdown', function () {
-    return _shutdown(true);
-  });
+  subscribe('sdk:shutdown', () => _shutdown(true));
   subscribe('sdk:gdpr-forget-me', _handleGdprForgetMe);
-  subscribe('attribution:check', function (e, result) {
-    return check(result);
-  });
+  subscribe('attribution:check', (e, result) => check(result));
   if (typeof options.attributionCallback === 'function') {
     subscribe('attribution:change', options.attributionCallback);
   }
@@ -7041,24 +6287,22 @@ function _start(options /*: InitOptionsT*/) /*: void*/{
 }
 function _internalTrackEvent(params /*: EventParamsT*/) {
   if (storage.getType() === STORAGE_TYPES.NO_STORAGE) {
-    var reason = 'Adjust SDK can not track event, no storage available';
+    const reason = 'Adjust SDK can not track event, no storage available';
     logger.log(reason);
     return Promise.reject(reason);
   }
   if (disable_status() !== 'on') {
-    var _reason = 'Adjust SDK is disabled, can not track event';
-    logger.log(_reason);
-    return Promise.reject(_reason);
+    const reason = 'Adjust SDK is disabled, can not track event';
+    logger.log(reason);
+    return Promise.reject(reason);
   }
   if (!_isInitialised()) {
-    var _reason2 = 'Adjust SDK can not track event, sdk instance is not initialized';
-    logger.error(_reason2);
-    return Promise.reject(_reason2);
+    const reason = 'Adjust SDK can not track event, sdk instance is not initialized';
+    logger.error(reason);
+    return Promise.reject(reason);
   }
-  return new Promise(function (resolve) {
-    var _callback = function _callback(timestamp) {
-      return resolve(event_event(params, timestamp));
-    };
+  return new Promise(resolve => {
+    const _callback = timestamp => resolve(event_event(params, timestamp));
     if (!_isInstalled || !_isStarted && _isInitialised()) {
       delay(_callback, 'track event');
       logger.log('Running track event is delayed until Adjust SDK is up');
@@ -7076,27 +6320,27 @@ function _internalTrackEvent(params /*: EventParamsT*/) {
  * @param {boolean=false} schedule
  * @private
  */
-function _preCheck(description /*: string*/, callback /*: () => mixed*/) /*: mixed*/{
-  var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-    schedule = _ref2.schedule,
-    waitForInitFinished = _ref2.waitForInitFinished,
-    optionalInit = _ref2.optionalInit;
+function _preCheck(description /*: string*/, callback /*: () => mixed*/, {
+  schedule,
+  waitForInitFinished,
+  optionalInit
+} /*: { schedule?: boolean, waitForInitFinished?: boolean, optionalInit?: boolean }*/ = {}) /*: mixed*/{
   if (storage.getType() === STORAGE_TYPES.NO_STORAGE) {
-    logger.log("Adjust SDK can not ".concat(description, ", no storage available"));
+    logger.log(`Adjust SDK can not ${description}, no storage available`);
     return;
   }
   if (disable_status() !== 'on') {
-    logger.log("Adjust SDK is disabled, can not ".concat(description));
+    logger.log(`Adjust SDK is disabled, can not ${description}`);
     return;
   }
   if (!(optionalInit || _isInitialised()) && waitForInitFinished) {
-    logger.error("Adjust SDK can not ".concat(description, ", sdk instance is not initialized"));
+    logger.error(`Adjust SDK can not ${description}, sdk instance is not initialized`);
     return;
   }
   if (typeof callback === 'function') {
     if (schedule && !(_isInstalled && _isStarted) && (optionalInit || _isInitialised())) {
       delay(callback, description);
-      logger.log("Running ".concat(description, " is delayed until Adjust SDK is up"));
+      logger.log(`Running ${description} is delayed until Adjust SDK is up`);
     } else {
       return callback();
     }
@@ -7111,31 +6355,31 @@ function _restartAfterAsyncEnable() {
     _start(main_options);
   }
 }
-var Adjust = {
-  initSdk: initSdk,
+const Adjust = {
+  initSdk,
   getAttribution: main_getAttribution,
   getWebUUID: main_getWebUUID,
   waitForAttribution: main_waitForAttribution,
   waitForWebUUID: main_waitForWebUUID,
-  setReferrer: setReferrer,
-  trackEvent: trackEvent,
-  addGlobalCallbackParameters: addGlobalCallbackParameters,
-  addGlobalPartnerParameters: addGlobalPartnerParameters,
-  removeGlobalCallbackParameter: removeGlobalCallbackParameter,
-  removeGlobalPartnerParameter: removeGlobalPartnerParameter,
-  clearGlobalCallbackParameters: clearGlobalCallbackParameters,
-  clearGlobalPartnerParameters: clearGlobalPartnerParameters,
-  switchToOfflineMode: switchToOfflineMode,
-  switchBackToOnlineMode: switchBackToOnlineMode,
-  stop: stop,
-  restart: restart,
-  gdprForgetMe: gdprForgetMe,
-  disableThirdPartySharing: disableThirdPartySharing,
+  setReferrer,
+  trackEvent,
+  addGlobalCallbackParameters,
+  addGlobalPartnerParameters,
+  removeGlobalCallbackParameter,
+  removeGlobalPartnerParameter,
+  clearGlobalCallbackParameters,
+  clearGlobalPartnerParameters,
+  switchToOfflineMode,
+  switchBackToOnlineMode,
+  stop,
+  restart,
+  gdprForgetMe,
+  disableThirdPartySharing,
   trackThirdPartySharing: main_trackThirdPartySharing,
   ThirdPartySharing: ThirdPartySharing,
-  initSmartBanner: initSmartBanner,
-  showSmartBanner: showSmartBanner,
-  hideSmartBanner: hideSmartBanner,
+  initSmartBanner,
+  showSmartBanner,
+  hideSmartBanner,
   __testonly__: {
     destroy: main_destroy,
     clearDatabase: _clearDatabase

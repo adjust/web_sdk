@@ -1,7 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const packageJson = require('./package.json')
 const namespace = 'adjust-sdk'
@@ -31,8 +30,7 @@ module.exports = () => ({
     new webpack.DefinePlugin({
       __ADJUST__NAMESPACE: JSON.stringify(namespace),
       __ADJUST__SDK_VERSION: JSON.stringify(version)
-    }),
-    new ForkTsCheckerWebpackPlugin()
+    })
   ],
   resolve: {
     extensions: ['.ts', '.js', '.json']
